@@ -12,5 +12,6 @@ public class Tarea_1_Prog_app {
 
     public static void main(String[] args) {
         System.out.println("Hello World!!!!!");
+        System.out.println("hola gente");
     }
 }
