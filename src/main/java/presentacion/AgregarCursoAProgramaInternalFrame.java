@@ -73,8 +73,8 @@ public class AgregarCursoAProgramaInternalFrame extends javax.swing.JInternalFra
 
             // Asumiendo un método para obtener nombres de cursos en la controladora
             cbCursos.removeAllItems();
-            // List<String> cursos = controlPersistencia.listarNombresCursos();
-            // for (String c : cursos) cbCursos.addItem(c);
+            List<String> cursos = controlPersistencia.listarNombresCursos();
+            for (String c : cursos) cbCursos.addItem(c);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
