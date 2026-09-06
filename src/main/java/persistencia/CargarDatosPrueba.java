@@ -37,7 +37,7 @@ public class CargarDatosPrueba {
                             "eleven11@gmail.com",
                             "Eleven",
                             "Twelve",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("31/12/1971")
+                            fecha("31/12/1971")
                     );
 
             Estudiante CO =
@@ -46,7 +46,7 @@ public class CargarDatosPrueba {
                             "gcostas@gmail.com",
                             "Gerardo",
                             "Costas",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("15/11/1983")
+                            fecha("15/11/1983")
                     );
 
             Estudiante RO =
@@ -55,7 +55,7 @@ public class CargarDatosPrueba {
                             "rcotelo@yahoo.com",
                             "Rodrigo",
                             "Cotelo",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("02/08/1975")
+                            fecha("02/08/1975")
                     );
 
             Estudiante CH =
@@ -64,7 +64,7 @@ public class CargarDatosPrueba {
                             "cgarrido@hotmail.com",
                             "Cecilia",
                             "Garrido",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("12/09/1987")
+                            fecha("12/09/1987")
                     );
 
             Estudiante JW =
@@ -73,7 +73,7 @@ public class CargarDatosPrueba {
                             "jwilliams@gmail.com",
                             "Jeff",
                             "Williams",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("27/11/1964")
+                            fecha("27/11/1964")
                     );
 
             Estudiante WE =
@@ -82,7 +82,7 @@ public class CargarDatosPrueba {
                             "aweiss@hotmail.com",
                             "Adrian",
                             "Weiss",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("23/12/1978")
+                            fecha("23/12/1978")
                     );
 
             Docente WW =
@@ -91,7 +91,7 @@ public class CargarDatosPrueba {
                             "heisenberg@gmail.com",
                             "Walter",
                             "White",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("07/03/1956")
+                            fecha("07/03/1956")
                     );
 
             Docente OK =
@@ -100,7 +100,7 @@ public class CargarDatosPrueba {
                             "benKenobi@gmail.com",
                             "Obi-Wan",
                             "Kenobi",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("02/04/1914")
+                            fecha("02/04/1914")
                     );
 
             Docente EW =
@@ -109,7 +109,7 @@ public class CargarDatosPrueba {
                             "e.watson@gmail.com",
                             "Emma",
                             "Watson",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("15/04/1990")
+                            fecha("15/04/1990")
                     );
 
             Docente GH =
@@ -118,7 +118,7 @@ public class CargarDatosPrueba {
                             "greghouse@gmail.com",
                             "Gregory",
                             "House",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("15/05/1959")
+                            fecha("15/05/1959")
                     );
 
             Docente TC =
@@ -127,7 +127,7 @@ public class CargarDatosPrueba {
                             "tim.cook@apple.com",
                             "Tim",
                             "Cook",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("01/11/1960")
+                            fecha("01/11/1960")
                     );
 
             Docente DR =
@@ -136,7 +136,7 @@ public class CargarDatosPrueba {
                             "dan.riccio@gmail.com",
                             "Daniel",
                             "Riccio",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("05/07/1963")
+                            fecha("05/07/1963")
                     );
 
             Docente PS =
@@ -145,7 +145,7 @@ public class CargarDatosPrueba {
                             "schiller@gmail.com",
                             "Philip",
                             "Schiller",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("07/10/1961")
+                            fecha("07/10/1961")
                     );
 
             Docente BS =
@@ -154,7 +154,7 @@ public class CargarDatosPrueba {
                             "sewell@gmail.com",
                             "Bruce",
                             "Sewell",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("03/12/1959")
+                            fecha("03/12/1959")
                     );
 
             Docente AG =
@@ -163,7 +163,7 @@ public class CargarDatosPrueba {
                             "agarcia@gmail.com",
                             "Adriana",
                             "García",
-                            new SimpleDateFormat("dd/MM/yyyy").parse("28/07/1978")
+                            fecha("28/07/1978")
                     );
 
             // =========================
@@ -201,43 +201,309 @@ public class CargarDatosPrueba {
             // CURSOS
             // =========================
 
-            Curso C1 = new Curso("Talleres plenarios",
+            Curso C1 = new Curso(
+                    "Talleres plenarios",
                     "3 semanas",
                     15,
                     1,
-                    fecha("01-02-2026"), "*Talleres plenarios*: presentados por cuatro reconocidos\n" +
-    "matemáticos uruguayos, plantearán diversos tópicos de matemática\n" +
-    "en el marco de los cuales se realizarán actividades fomentando la\n" +
-    "integración entre\n" +
-    "estudiantes, docentes e investigadores.", "www.tmu.edu.uy");
-            Curso C2 = new Curso("Seminarios de Resolución de\n" +
-"Problemas", "5 semanas", 30, 2, fecha("12-07-2026"), "Seminario, *todos los jueves* en Facultad de Ingeniería a\n" +
-"partir del jueves 25 de Julio, en las áreas en que se desarrollan los\n" +
-"problemas de las Olimpíadas de Matemática.", "www.tmu.edu.uy");
-            Curso C3 = new Curso("Dalavuelta", "10 semanas", 60, 4, fecha("01-02-2026"), "Dalavuelta es un proyecto de extensión que nace en el Instituto de\n" +
-"Ingeniería Mecánica y Producción Industrial (IIMPI) de Fing, que, si\n" +
-"bien inicia su trabajo en el desarrollo de bicicletas accesibles para\n" +
-"personas en situación de discapacidad motriz a partir de bicicletas\n" +
-"abandonadas, se propuso diseñar otras herramientas para fomentar\n" +
-"la accesibilidad.", "https://\n" +
-"eva.fing.edu.uy/\n" +
-"course/view.php?\n" +
-"id=783#section-2");
-            Curso C4 = new Curso("", "", , , fecha(""), "", "");
-            Curso C5 = new Curso("", "", , , fecha(""), "", "");
-            Curso C6 = new Curso("", "", , , fecha(""), "", "");
-            Curso C7 = new Curso("", "", , , fecha(""), "", "");
-            Curso C8 = new Curso("", "", , , fecha(""), "", "");
-            Curso C9 = new Curso("", "", , , fecha(""), "", "");
-            Curso C10 = new Curso("", "", , , fecha(""), "", "");
+                    fecha("01/02/2026"),
+                    "*Talleres plenarios*: presentados por cuatro reconocidos\n" +
+                    "matemáticos uruguayos, plantearán diversos tópicos de matemática\n" +
+                    "en el marco de los cuales se realizarán actividades fomentando la\n" +
+                    "integración entre estudiantes, docentes e investigadores.",
+                    "www.tmu.edu.uy");
+            
+            Curso C2 = new Curso(
+                    "Seminarios de Resolución de Problemas",
+                    "5 semanas",
+                    30,
+                    2,
+                    fecha("12/07/2026"),
+                    "Seminario, *todos los jueves* en Facultad de Ingeniería a\n" +
+                    "partir del jueves 25 de Julio, en las áreas en que se desarrollan los\n" +
+                    "problemas de las Olimpíadas de Matemática.",
+                    "www.tmu.edu.uy");
+            
+            C2.agregoPrevia(C1);
+            
+            Curso C3 = new Curso(
+                    "Dalavuelta",
+                    "10 semanas",
+                    60,
+                    4,
+                    fecha("01/02/2026"),
+                    "Dalavuelta es un proyecto de extensión que nace en el Instituto de\n" +
+                    "Ingeniería Mecánica y Producción Industrial (IIMPI) de Fing, que, si\n" +
+                    "bien inicia su trabajo en el desarrollo de bicicletas accesibles para\n" +
+                    "personas en situación de discapacidad motriz a partir de bicicletas\n" +
+                    "abandonadas, se propuso diseñar otras herramientas para fomentar\n" +
+                    "la accesibilidad.",
+                    "https://eva.fing.edu.uy/course/view.php?id=783#section-2");
+            
+            C3.agregoPrevia(C1);
+            
+            Curso C4 = new Curso(
+                    "Extensionismo Industrial",
+                    "12 semanas",
+                    75,
+                    5,
+                    fecha("16/06/25"),
+                    "El proyecto tiene como objetivo desarrollar intervenciones\n" +
+                    "curriculares en pequeños emprendimientos productivos de\n" +
+                    "diferentes sectores de la industria nacional.La metodologías de\n" +
+                    "trabajo permite articular diversas intervenciones, combinando\n" +
+                    "actividades de enseñanza, extensión e investigación por parte de\n" +
+                    "docentes del IMPII.",
+                    "https://eva.fing.edu.uy/course/view.php?id=783#section-2");
+            
+            C4.agregoPrevia(C1);
+            
+            Curso C5 = new Curso(
+                    "Inclusión Energética",
+                    "6 semanas",
+                    45,
+                    3,
+                    fecha("01/02/26"),
+                    "En el proyecto se conjuga el trabajo de docentes y estudiantes de la\n" +
+                    "carrera Ingeniería Industrial Mecánica a través del Módulo de\n" +
+                    "Extensión, en donde se trabaja en el diseño, construcción y prueba\n" +
+                    "de un prototipo de colector solar adquiriendo conocimientos\n" +
+                    "relevantes para luego poder replicarlos junto a las familias en los\n" +
+                    "talleres. Las premisas fundamentales a la hora de pensar los diseños\n" +
+                    "son: por un lado el bajo costo de los materiales y por otro la fácil\n" +
+                    "construcción de forma de poder construirlos ellos mismos.",
+                    "https://eva.fing.edu.uy/course/view.php?id=783#section-2");
+            
+            Curso C6 = new Curso(
+                    "Flor del Ceibo",
+                    "15 semanas",
+                    150,
+                    10,
+                    fecha("27/07/08"),
+                    "Flor de Ceibo es un proyecto central de la Universidad de la\n" +
+                    "República, que tiene misión por movilizar la participación de\n" +
+                    "estudiantes universitarios en diversas tareas vinculadas con la\n" +
+                    "puesta en funcionamiento del Plan Ceibal en el territorio nacional.",
+                    "http://www.flordeceibo.edu.uy");
+            
+            Curso C7 = new Curso(
+                    "Taller de robótica educativa",
+                    "8 semanas",
+                    90,
+                    6,
+                    fecha("02/02/24"),
+                    "La asignatura se organiza en dos etapas. La primer etapa se dicta a\n" +
+                    "través de clases teóricoprácticas, donde se espera además que cada\n" +
+                    "estudiante le dedique horas de estudio.\n" +
+                    "La segunda etapa consiste en que los estudiantes trabajen en grupo\n" +
+                    "sobre el diseño e implementación de una experiencia didáctica de\n" +
+                    "inclusión del robot Butiá en el aula, utilizando los conocimientos\n" +
+                    "aprendidos en clase.",
+                    "https://eva.fing.edu.uy/course/view.php?id=1187");
+            
+            Curso C8 = new Curso(
+                    "Participación en investigación\n" +
+                    "sobre el empleo del juego\n" +
+                    "Komikan como recurso\n" +
+                    "didáctico en la Escuela",
+                    "9 semanas",
+                    45,
+                    3,
+                    fecha("15/06/26"),
+                    "Se propone desarrollar una aplicación interactiva para tablet\n" +
+                    "Android basada en el juego de tablero Komikan (versión web del\n" +
+                    "juego https://codepen.io/Borborem/full/OvZBvZ/), que incluya los\n" +
+                    "distintos aspectos concernientes al juego, así como a situaciones\n" +
+                    "específicas particulares.",
+                    "https://eva.fing.edu.uy/mod/folder/view.php?id=89398");
+            
+            Curso C9 = new Curso(
+                    "“Herramientas de apoyo a la\n" +
+                    "enseñanza de inglés.\n" +
+                    "Instalación y evaluación”",
+                    "12 semanas",
+                    60,
+                    4,
+                    fecha("24/05/26"),
+                    " Se realizarán visitas a escuelas rurales participantes en un proyecto\n" +
+                    "conjunto del grupo PLN y el Programa de Políticas Lingüísticas de\n" +
+                    "ANEP, en el marco del cual se desarrollaron diferentes herramientas\n" +
+                    "para uso de maestros que enseñan inglés con apoyo remoto de\n" +
+                    "profesores especializados desde Montevideo.",
+                    "https://eva.fing.edu.uy/mod/folder/view.php?id=89398");
+            
+            Curso C10 = new Curso(
+                    "MicroBit",
+                    "15 semanas",
+                    105,
+                    7,
+                    fecha("13/03/26"),
+                    "El Centro Ceibal se encuentra distribuyendo placas micro:bit\n" +
+                    "(https://microbit.ceibal.edu.uy/) para que estudiantes de primaria\n" +
+                    "y secundaria aprendan nociones básicas de robótica, electrónica y\n" +
+                    "programación de forma autónoma y lúdica. Estas placas se basan en\n" +
+                    "un microcontrolador y cuentan con leds, botones, acelerómetro,\n" +
+                    "brújula, bluetooth y otros sensores. Además, las placas se\n" +
+                    "programan fácilmente con lenguaje tipo “scratch” y python, por lo\n" +
+                    "que son muy útiles para un primer acercamiento a la temática.",
+                    "https://www.fing.edu.uy/noticias/extension/modulo-detallerextensionmicrobit");
+            
+            // =========================
+            // EDICIONES DE CURSOS
+            // =========================
+            
+            EdicionCurso E1 = new EdicionCurso(
+                    "Flor del Ceibo - 2010",
+                    fecha("15/03/10"),
+                    fecha("07/07/10"),
+                    -1,
+                    fecha("16/02/10")
+                    );
+            
+            EdicionCurso E2 = new EdicionCurso(
+                    "Flor del Ceibo - 2012",
+                    fecha("01/08/12"),
+                    fecha("20/11/12"),
+                    -1,
+                    fecha("10/07/12")
+                    );
+            
+            EdicionCurso E3 = new EdicionCurso(
+                    "Flor del Ceibo - 2025",
+                    fecha("10/04/25"),
+                    fecha("07/08/25"),
+                    -1,
+                    fecha("06/03/25")
+                    );
+            
+            EdicionCurso E4 = new EdicionCurso(
+                    "Dalavuelta - 2025",
+                    fecha("20/08/24"),
+                    fecha("10/11/24"),
+                    15,
+                    fecha("20/07/24")
+                    );
+            
+            EdicionCurso E5 = new EdicionCurso(
+                    "Extensionismo Industrial - 2025",
+                    fecha("10/08/25"),
+                    fecha("10/11/25"),
+                    15,
+                    fecha("08/07/25")
+                    );
+            
+            EdicionCurso E6 = new EdicionCurso(
+                    "Inclusión Energética - 2026",
+                    fecha("15/03/26"),
+                    fecha("30/04/26"),
+                    30,
+                    fecha("20/02/26")
+                    );
+            
+            EdicionCurso E7 = new EdicionCurso(
+                    "Taller de robótica educativa - 2024",
+                    fecha("10/03/24"),
+                    fecha("10/05/24"),
+                    10,
+                    fecha("15/02/24")
+                    );
+            
+            EdicionCurso E8 = new EdicionCurso(
+                    "Taller de robótica educativa - 2026",
+                    fecha("10/03/26"),
+                    fecha("10/05/26"),
+                    10,
+                    fecha("15/02/26")
+                    );
+            
+            EdicionCurso E9 = new EdicionCurso(
+                    "Taller de robótica educativa - 2026-2",
+                    fecha("10/09/26"),
+                    fecha("08/11/26"),
+                    20,
+                    fecha("15/08/26")
+                    );
+            
+            EdicionCurso E10 = new EdicionCurso(
+                    "Participación en investigación sobre\n" +
+                    "el empleo del juego Komikan como\n" +
+                    "recurso didáctico en la Escuela - 2026",
+                    fecha("29/07/26"),
+                    fecha("07/10/26"),
+                    5,
+                    fecha("10/07/26")
+                    );
+            
+            EdicionCurso E11 = new EdicionCurso(
+                    "Herramientas de apoyo a la\n" +
+                    "enseñanza de inglés. Instalación y\n" +
+                    "evaluación - 26",
+                    fecha("15/09/26"),
+                    fecha("15/12/26"),
+                    5,
+                    fecha("02/06/26")
+                    );
+            
+            EdicionCurso E12 = new EdicionCurso(
+                    "MicroBit - 2026",
+                    fecha("12/08/26"),
+                    fecha("05/12/26"),
+                    30,
+                    fecha("02/07/26")
+                    );
+            
+            EdicionCurso E13 = new EdicionCurso(
+                    "Talleres plenarios - 2026",
+                    fecha("10/03/26"),
+                    fecha("30/03/26"),
+                    -1,
+                    fecha("02/03/26")
+                    );
+            
+            EdicionCurso E14 = new EdicionCurso(
+                    "Seminarios de Resolución de\n" +
+                    "Problemas - 2026",
+                    fecha("10/09/26"),
+                    fecha("20/10/26"),
+                    -1,
+                    fecha("12/07/26")
+                    );
+            
+            C6.agregoEdicion(E1);
+            E1.setCurso(C6);
+            C6.agregoEdicion(E2);
+            E2.setCurso(C6);
+            C6.agregoEdicion(E3);
+            E3.setCurso(C6);
+            C3.agregoEdicion(E4);
+            E4.setCurso(C3);
+            C4.agregoEdicion(E5);
+            E5.setCurso(C4);
+            C5.agregoEdicion(E6);
+            E6.setCurso(C5);
+            C7.agregoEdicion(E7);
+            E7.setCurso(C7);
+            C7.agregoEdicion(E8);
+            E8.setCurso(C7);
+            C7.agregoEdicion(E9);
+            E9.setCurso(C7);
+            C8.agregoEdicion(E10);
+            E10.setCurso(C8);
+            C9.agregoEdicion(E11);
+            E11.setCurso(C9);
+            C10.agregoEdicion(E12);
+            E12.setCurso(C10);
+            C1.agregoEdicion(E13);
+            E13.setCurso(C1);
+            C2.agregoEdicion(E14);
+            E14.setCurso(C2);
+            
 
             //em.persist();
 
 
 
             em.getTransaction().commit();
-
-            System.out.println("ESTUDIANTES GUARDADOS CORRECTAMENTE");
 
         } catch (Exception e) {
 
@@ -256,7 +522,7 @@ public class CargarDatosPrueba {
     
     private static Date fecha(String f) {
     try {
-        return new SimpleDateFormat("dd-MM-yyyy").parse(f);
+        return new SimpleDateFormat("dd/MM/yyyy").parse(f);
     } catch (Exception e) {
         throw new RuntimeException(e);
     }

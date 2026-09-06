@@ -116,4 +116,12 @@ public class Curso implements Serializable {
     public void setEdiciones(Set<EdicionCurso> ediciones){
         this.ediciones = ediciones;
     }
+    
+    public void agregoPrevia(Curso p){
+        previas.add(p);
+    }
+    
+    public void agregoEdicion(EdicionCurso e){
+        ediciones.add(e);
+    }
 }

@@ -33,7 +33,7 @@ public class EdicionCurso {
     @JoinColumn(name = "curso_id")
     private Curso curso;
     
-    public EdicionCurso(String n, Date fi, Date ff, Date fp, int c){
+    public EdicionCurso(String n, Date fi, Date ff, int c, Date fp){
         this.nombre = n;
         this.fechaInicio = fi;
         this.fechaFin = ff;
