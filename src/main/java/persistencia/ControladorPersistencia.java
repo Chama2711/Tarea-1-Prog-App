@@ -202,7 +202,23 @@ import logica.Usuario;
         }
     }
 
+    public List<ProgramaFormacion> obtenerProgramas() {
+        EntityManager em = emf.createEntityManager();
+
+    try {
+
+        return em.createQuery(
+                "SELECT p FROM ProgramaFormacion p",ProgramaFormacion.class).getResultList();
+    } finally {
+        em.close();
+    }
+       
+    }
+
     
+ 
+ 
+ 
 
     public static class ControladoraPersistencia {
 
