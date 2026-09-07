@@ -4,7 +4,9 @@
  */
 package presentacion;
 
-import java.time.LocalDate;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
 import logica.ProgramaFormacion;
 import persistencia.ControladorPersistencia;
@@ -157,16 +159,26 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
         }
 
         try {
+        // Formato de fecha: dd/MM/yyyy
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
 
-            LocalDate fechaInicio =
-                    LocalDate.parse(jTextField3.getText().trim());
+        // Evita que acepte fechas inválidas como 32/15/2026
+        formato.setLenient(false);
 
-            LocalDate fechaFin =
-                    LocalDate.parse(jTextField4.getText().trim());
+        Date fechaInicio = formato.parse(jTextField3.getText().trim());
+        Date fechaFin = formato.parse(jTextField4.getText().trim());
+        Date fechaAlta = formato.parse(jTextField5.getText().trim());
 
-            LocalDate fechaAlta = 
-                    LocalDate.parse(jTextField5.getText().trim());
-            
+        // Validar que la fecha de fin no sea anterior a la de inicio
+        if (fechaFin.before(fechaInicio)) {
+            JOptionPane.showMessageDialog(
+                this,
+                "La fecha de fin no puede ser anterior a la fecha de inicio.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
             ProgramaFormacion programa = new ProgramaFormacion();
 
         programa.setNombre(nombre);

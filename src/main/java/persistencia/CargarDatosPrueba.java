@@ -686,6 +686,42 @@ public class CargarDatosPrueba {
             // =========================
             
             
+            ProgramaFormacion P1 = new ProgramaFormacion(
+                    "EFI Ingeniería Mecánica",
+                    "Programa mecánica",
+                    fecha("01/05/26"),
+                    fecha("31/10/26"),
+                    new Date()
+            );
+            
+            P1.agregarCurso(C3);
+            P1.agregarCurso(C4);
+            P1.agregarCurso(C5);
+            
+            ProgramaFormacion P2 = new ProgramaFormacion(
+                    "Formación integral",
+                    "Programa varios institutos",
+                    fecha("15/07/26"),
+                    fecha("01/01/27"),
+                    new Date()
+            );
+            
+            P2.agregarCurso(C2);
+            P2.agregarCurso(C4);
+            P2.agregarCurso(C6);
+            P2.agregarCurso(C8);
+            
+            
+            ProgramaFormacion P3 = new ProgramaFormacion(
+                    "EFI Robótica",
+                    "Programa robótica",
+                    fecha("03/09/26"),
+                    fecha("18/11/26"),
+                    new Date()
+            );
+            
+            P3.agregarCurso(C7);
+            P3.agregarCurso(C10);
             
             
             

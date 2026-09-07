@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.Column;
@@ -35,9 +35,9 @@ public class ProgramaFormacion implements Serializable {
     private String nombre;
 
     private String descripcion;
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
-    private LocalDate fechaAlta;
+    private Date fechaInicio;
+    private Date fechaFin;
+    private Date fechaAlta;
 
     @ManyToMany
     @JoinTable(
@@ -49,6 +49,15 @@ public class ProgramaFormacion implements Serializable {
     private Map<String, Curso> cursos = new HashMap<>();
 
     public ProgramaFormacion() {}
+    
+    public ProgramaFormacion(String n, String d, Date fi, Date ff, Date fa){
+        this.nombre = n;
+        this.descripcion = d;
+        this.fechaInicio = fi;
+        this.fechaFin = ff;
+        this.fechaAlta = fa;
+               
+    }
 
     // Getters y Setters públicos
     public Long getId() { return id; }
@@ -56,12 +65,12 @@ public class ProgramaFormacion implements Serializable {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public LocalDate getFechaInicio() { return fechaInicio; }
-    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
-    public LocalDate getFechaFin() { return fechaFin; }
-    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
-    public LocalDate getFechaAlta() { return fechaAlta; }
-    public void setFechaAlta(LocalDate fechaAlta) { this.fechaAlta = fechaAlta; }
+    public Date getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(Date fechaInicio) { this.fechaInicio = fechaInicio; }
+    public Date getFechaFin() { return fechaFin; }
+    public void setFechaFin(Date fechaFin) { this.fechaFin = fechaFin; }
+    public Date getFechaAlta() { return fechaAlta; }
+    public void setFechaAlta(Date fechaAlta) { this.fechaAlta = fechaAlta; }
     public Map<String, Curso> getCursos() { return cursos; }
     
     public void agregarCurso(Curso curso) {
