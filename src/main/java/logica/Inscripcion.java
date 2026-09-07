@@ -8,6 +8,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.Id;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 
 /**
  *
@@ -16,7 +18,19 @@ import javax.persistence.Entity;
 @Entity
 public class Inscripcion {
     
+    public Inscripcion(){
+        
+    }
+     //Inscripcion a Edicion de Curso
+    public Inscripcion(Date fi, EdicionCurso ec){
+        this.fechaInscripcion = fi;
+        this.edicion = ec;
+    }
+    
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
     private Date fechaInscripcion;
     
     public Date getFechaInscripcion(){

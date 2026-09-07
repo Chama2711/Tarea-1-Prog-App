@@ -498,6 +498,200 @@ public class CargarDatosPrueba {
             C2.agregoEdicion(E14);
             E14.setCurso(C2);
             
+            E1.agregoDocente(BS);
+            E2.agregoDocente(BS);
+            E2.agregoDocente(AG);
+            E3.agregoDocente(BS);
+            E3.agregoDocente(AG);
+            E4.agregoDocente(PS);
+            E5.agregoDocente(PS);
+            E6.agregoDocente(PS);
+            E7.agregoDocente(WW);
+            E8.agregoDocente(WW);
+            E8.agregoDocente(OK);
+            E9.agregoDocente(OK);
+            E9.agregoDocente(EW);
+            E10.agregoDocente(EW);
+            E11.agregoDocente(WW);
+            E12.agregoDocente(GH);
+            E13.agregoDocente(TC);
+            E13.agregoDocente(DR);
+            E14.agregoDocente(TC);
+            
+            BS.agregoEdicion(E1);
+            BS.agregoEdicion(E2);
+            BS.agregoEdicion(E3);
+            AG.agregoEdicion(E2);
+            AG.agregoEdicion(E3);
+            PS.agregoEdicion(E4);
+            PS.agregoEdicion(E5);
+            PS.agregoEdicion(E6);
+            WW.agregoEdicion(E7);
+            WW.agregoEdicion(E8);
+            OK.agregoEdicion(E8);
+            OK.agregoEdicion(E9);
+            EW.agregoEdicion(E9);
+            EW.agregoEdicion(E10);
+            WW.agregoEdicion(E11);
+            GH.agregoEdicion(E12);
+            TC.agregoEdicion(E13);
+            DR.agregoEdicion(E13);
+            TC.agregoEdicion(E14);
+            
+            // =========================
+            // INSCRIPCIONES A EDICIONES DE CURSOS
+            // =========================
+            
+            Inscripcion I1 = new Inscripcion(fecha("20/02/10"), E1);
+            EL.agregoInscripcion(I1);
+            
+            Inscripcion I2 = new Inscripcion(fecha("25/02/10"), E1);
+            CH.agregoInscripcion(I2);
+            
+            Inscripcion I3 = new Inscripcion(fecha("12/07/12"), E2);
+            CO.agregoInscripcion(I3);
+            
+            Inscripcion I4 = new Inscripcion(fecha("15/07/12"), E2);
+            RO.agregoInscripcion(I4);
+            
+            Inscripcion I5 = new Inscripcion(fecha("30/07/12"), E2);
+            WE.agregoInscripcion(I5);
+            
+            Inscripcion I6 = new Inscripcion(fecha("10/03/25"), E3);
+            RO.agregoInscripcion(I6);
+            
+            Inscripcion I7 = new Inscripcion(fecha("15/03/25"), E3);
+            JW.agregoInscripcion(I7);
+            
+            Inscripcion I8 = new Inscripcion(fecha("25/07/24"), E4);
+            CH.agregoInscripcion(I8);
+            
+            Inscripcion I9 = new Inscripcion(fecha("28/07/24"), E4);
+            EL.agregoInscripcion(I9);
+            
+            Inscripcion I10 = new Inscripcion(fecha("02/08/24"), E4);
+            RO.agregoInscripcion(I10);
+            
+            Inscripcion I11 = new Inscripcion(fecha("10/08/24"), E4);
+            CO.agregoInscripcion(I11);
+            
+            Inscripcion I12 = new Inscripcion(fecha("15/08/24"), E4);
+            JW.agregoInscripcion(I12);
+            
+            Inscripcion I13 = new Inscripcion(fecha("18/07/25"), E5);
+            CO.agregoInscripcion(I13);
+            
+            Inscripcion I14 = new Inscripcion(fecha("20/07/25"), E5);
+            CH.agregoInscripcion(I14);
+            
+            Inscripcion I15 = new Inscripcion(fecha("29/07/25"), E5);
+            EL.agregoInscripcion(I15);
+            
+            Inscripcion I16 = new Inscripcion(fecha("05/08/25"), E5);
+            WE.agregoInscripcion(I16);
+            
+            Inscripcion I17 = new Inscripcion(fecha("23/02/26"), E6);
+            RO.agregoInscripcion(I17);
+            
+            Inscripcion I18 = new Inscripcion(fecha("25/02/26"), E6);
+            WE.agregoInscripcion(I18);
+            
+            Inscripcion I19 = new Inscripcion(fecha("28/02/26"), E6);
+            CH.agregoInscripcion(I19);
+            
+            Inscripcion I20 = new Inscripcion(fecha("03/03/26"), E6);
+            EL.agregoInscripcion(I20);
+            
+            Inscripcion I21 = new Inscripcion(fecha("18/02/17"), E7);
+            WE.agregoInscripcion(I21);
+            
+            Inscripcion I22 = new Inscripcion(fecha("20/02/24"), E7);
+            RO.agregoInscripcion(I22);
+            
+            Inscripcion I23 = new Inscripcion(fecha("03/03/24"), E7);
+            EL.agregoInscripcion(I23);
+            
+            Inscripcion I24 = new Inscripcion(fecha("05/03/24"), E7);
+            CH.agregoInscripcion(I24);
+            
+            Inscripcion I25 = new Inscripcion(fecha("18/02/26"), E8);
+            JW.agregoInscripcion(I25);
+            
+            Inscripcion I26 = new Inscripcion(fecha("22/02/26"), E8);
+            CO.agregoInscripcion(I26);
+            
+            Inscripcion I27 = new Inscripcion(fecha("18/08/26"), E9);
+            WE.agregoInscripcion(I27);
+            
+            Inscripcion I28 = new Inscripcion(fecha("22/08/26"), E9);
+            CH.agregoInscripcion(I28);
+            
+            Inscripcion I29 = new Inscripcion(fecha("03/09/26"), E9);
+            RO.agregoInscripcion(I29);
+            
+            Inscripcion I30 = new Inscripcion(fecha("13/07/26"), E10);
+            CH.agregoInscripcion(I30);
+            
+            Inscripcion I31 = new Inscripcion(fecha("20/07/26"), E10);
+            WE.agregoInscripcion(I31);
+            
+            Inscripcion I32 = new Inscripcion(fecha("22/07/26"), E10);
+            RO.agregoInscripcion(I32);
+            
+            Inscripcion I33 = new Inscripcion(fecha("04/06/26"), E11);
+            WE.agregoInscripcion(I33);
+            
+            Inscripcion I34 = new Inscripcion(fecha("18/07/26"), E11);
+            EL.agregoInscripcion(I34);
+            
+            Inscripcion I35 = new Inscripcion(fecha("20/08/26"), E11);
+            JW.agregoInscripcion(I35);
+            
+            Inscripcion I36 = new Inscripcion(fecha("12/07/26"), E12);
+            CH.agregoInscripcion(I36);
+            
+            Inscripcion I37 = new Inscripcion(fecha("14/07/26"), E12);
+            RO.agregoInscripcion(I37);
+            
+            Inscripcion I38 = new Inscripcion(fecha("25/07/26"), E12);
+            EL.agregoInscripcion(I38);
+            
+            Inscripcion I39 = new Inscripcion(fecha("05/08/26"), E12);
+            JW.agregoInscripcion(I39);
+            
+            Inscripcion I40 = new Inscripcion(fecha("05/03/26"), E13);
+            CO.agregoInscripcion(I40);
+            
+            Inscripcion I41 = new Inscripcion(fecha("04/03/26"), E13);
+            WE.agregoInscripcion(I41);
+            
+            Inscripcion I42 = new Inscripcion(fecha("07/03/26"), E13);
+            RO.agregoInscripcion(I42);
+            
+            Inscripcion I43 = new Inscripcion(fecha("15/07/26"), E14);
+            WE.agregoInscripcion(I43);
+            
+            Inscripcion I44 = new Inscripcion(fecha("20/07/26"), E14);
+            CO.agregoInscripcion(I44);
+            
+            Inscripcion I45 = new Inscripcion(fecha("06/08/26"), E14);
+            RO.agregoInscripcion(I45);
+            
+            Inscripcion I46 = new Inscripcion(fecha("30/08/26"), E14);
+            CH.agregoInscripcion(I46);
+            
+            
+            // =========================
+            // PROGRAMAS DE FORMACION
+            // =========================
+            
+            
+            
+            
+            
+            
+            
+            
 
             //em.persist();
 

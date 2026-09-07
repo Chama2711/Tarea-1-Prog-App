@@ -5,9 +5,12 @@
 package logica;
 
 import java.util.Date;
+import java.util.List;
+import javax.persistence.JoinTable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.JoinColumn;
 
 /**
@@ -32,6 +35,14 @@ public class EdicionCurso {
     @ManyToOne
     @JoinColumn(name = "curso_id")
     private Curso curso;
+    
+    @ManyToMany
+    @JoinTable(
+    name = "edicion_docente",
+    joinColumns = @JoinColumn(name = "edicion_nombre"),
+    inverseJoinColumns = @JoinColumn(name = "docente_nick")
+    )
+    private List<Docente> docentes;
     
     public EdicionCurso(String n, Date fi, Date ff, int c, Date fp){
         this.nombre = n;
@@ -94,4 +105,9 @@ public class EdicionCurso {
             fechaActual.before(fechaFin);
         
     }
+    
+    public void agregoDocente(Docente d){
+        docentes.add(d);
+    }
+    
 }

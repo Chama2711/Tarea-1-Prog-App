@@ -42,4 +42,15 @@ public class Docente extends Usuario{
     @ManyToMany
     private Set<Curso> cursos;
     
+    public void agregoCurso(Curso c){
+        cursos.add(c);
+    }
+    
+    @ManyToMany(mappedBy = "docentes")
+    private List<EdicionCurso> ediciones;
+    
+    public void agregoEdicion(EdicionCurso ec){
+        ediciones.add(ec);
+    }
+    
 }

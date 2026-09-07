@@ -47,4 +47,8 @@ public class Estudiante extends Usuario{
         this.inscripciones = inscripciones;
     }
     
+    public void agregoInscripcion(Inscripcion i){
+        inscripciones.add(i);
+    }
+    
 }
