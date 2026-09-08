@@ -99,12 +99,15 @@ import logica.EdicionCurso;
     }
     
     public List<ProgramaFormacion> obtenerProgramas() {
-        EntityManager em = emf.createEntityManager();
-        try {
-            return em.createQuery("SELECT p FROM ProgramaFormacion p", ProgramaFormacion.class).getResultList();
-        } finally {
-            em.close();
-        }
+    EntityManager em = emf.createEntityManager();
+
+    try {
+
+        return em.createQuery(
+                "SELECT p FROM ProgramaFormacion p",ProgramaFormacion.class).getResultList();
+    } finally {
+        em.close();
+    }
     }
 
     public ProgramaFormacion obtenerDetallePrograma(String nombrePrograma) {
@@ -199,6 +202,7 @@ import logica.EdicionCurso;
             em.close();
         }
     }
+    
     
     
     public void guardarUsuario(Usuario usuario) throws Exception {
