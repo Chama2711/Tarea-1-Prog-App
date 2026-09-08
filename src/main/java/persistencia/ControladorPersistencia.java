@@ -110,7 +110,7 @@ import logica.EdicionCurso;
     public ProgramaFormacion obtenerDetallePrograma(String nombrePrograma) {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.createQuery("SELECT p FROM ProgramaFormacion p LEFT JOIN FETCH p.cursos WHERE p.nombre = :nombre", ProgramaFormacion.class)
+            return em.createQuery("SELECT DISTINCT p FROM ProgramaFormacion p LEFT JOIN FETCH p.cursos WHERE p.nombre = :nombre", ProgramaFormacion.class)
                     .setParameter("nombre", nombrePrograma)
                     .getSingleResult();
         } finally {
