@@ -78,6 +78,15 @@ import logica.EdicionCurso;
             em.close();
         }
     }
+    
+    public List<String> listarNombresCursos() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT c.nombre FROM Curso c", String.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
 
     // Requerimiento: Consulta de Programa de Formación
     public List<String> listarNombresProgramas() {

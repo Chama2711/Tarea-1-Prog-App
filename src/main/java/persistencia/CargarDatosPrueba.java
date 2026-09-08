@@ -213,6 +213,9 @@ public class CargarDatosPrueba {
                     "integración entre estudiantes, docentes e investigadores.",
                     "www.tmu.edu.uy");
             
+            C1.setInstituto(IL);
+            IL.agregoCurso(C1);
+            
             Curso C2 = new Curso(
                     "Seminarios de Resolución de Problemas",
                     "5 semanas",
@@ -225,6 +228,8 @@ public class CargarDatosPrueba {
                     "www.tmu.edu.uy");
             
             C2.agregoPrevia(C1);
+            C2.setInstituto(IL);
+            IL.agregoCurso(C2);
             
             Curso C3 = new Curso(
                     "Dalavuelta",
@@ -241,13 +246,15 @@ public class CargarDatosPrueba {
                     "https://eva.fing.edu.uy/course/view.php?id=783#section-2");
             
             C3.agregoPrevia(C1);
+            C3.setInstituto(IM);
+            IM.agregoCurso(C3);
             
             Curso C4 = new Curso(
                     "Extensionismo Industrial",
                     "12 semanas",
                     75,
                     5,
-                    fecha("16/06/25"),
+                    fecha("16/06/2025"),
                     "El proyecto tiene como objetivo desarrollar intervenciones\n" +
                     "curriculares en pequeños emprendimientos productivos de\n" +
                     "diferentes sectores de la industria nacional.La metodologías de\n" +
@@ -257,13 +264,15 @@ public class CargarDatosPrueba {
                     "https://eva.fing.edu.uy/course/view.php?id=783#section-2");
             
             C4.agregoPrevia(C1);
+            C4.setInstituto(IM);
+            IM.agregoCurso(C4);
             
             Curso C5 = new Curso(
                     "Inclusión Energética",
                     "6 semanas",
                     45,
                     3,
-                    fecha("01/02/26"),
+                    fecha("01/02/2026"),
                     "En el proyecto se conjuga el trabajo de docentes y estudiantes de la\n" +
                     "carrera Ingeniería Industrial Mecánica a través del Módulo de\n" +
                     "Extensión, en donde se trabaja en el diseño, construcción y prueba\n" +
@@ -274,24 +283,30 @@ public class CargarDatosPrueba {
                     "construcción de forma de poder construirlos ellos mismos.",
                     "https://eva.fing.edu.uy/course/view.php?id=783#section-2");
             
+            C5.setInstituto(IM);
+            IM.agregoCurso(C5);
+            
             Curso C6 = new Curso(
                     "Flor del Ceibo",
                     "15 semanas",
                     150,
                     10,
-                    fecha("27/07/08"),
+                    fecha("27/07/2008"),
                     "Flor de Ceibo es un proyecto central de la Universidad de la\n" +
                     "República, que tiene misión por movilizar la participación de\n" +
                     "estudiantes universitarios en diversas tareas vinculadas con la\n" +
                     "puesta en funcionamiento del Plan Ceibal en el territorio nacional.",
                     "http://www.flordeceibo.edu.uy");
             
+            C6.setInstituto(DI);
+            DI.agregoCurso(C6);
+            
             Curso C7 = new Curso(
                     "Taller de robótica educativa",
                     "8 semanas",
                     90,
                     6,
-                    fecha("02/02/24"),
+                    fecha("02/02/2024"),
                     "La asignatura se organiza en dos etapas. La primer etapa se dicta a\n" +
                     "través de clases teóricoprácticas, donde se espera además que cada\n" +
                     "estudiante le dedique horas de estudio.\n" +
@@ -301,6 +316,9 @@ public class CargarDatosPrueba {
                     "aprendidos en clase.",
                     "https://eva.fing.edu.uy/course/view.php?id=1187");
             
+            C7.setInstituto(IN);
+            IN.agregoCurso(C7);
+            
             Curso C8 = new Curso(
                     "Participación en investigación\n" +
                     "sobre el empleo del juego\n" +
@@ -309,13 +327,16 @@ public class CargarDatosPrueba {
                     "9 semanas",
                     45,
                     3,
-                    fecha("15/06/26"),
+                    fecha("15/06/2026"),
                     "Se propone desarrollar una aplicación interactiva para tablet\n" +
                     "Android basada en el juego de tablero Komikan (versión web del\n" +
                     "juego https://codepen.io/Borborem/full/OvZBvZ/), que incluya los\n" +
                     "distintos aspectos concernientes al juego, así como a situaciones\n" +
                     "específicas particulares.",
                     "https://eva.fing.edu.uy/mod/folder/view.php?id=89398");
+            
+            C8.setInstituto(IN);
+            IN.agregoCurso(C8);
             
             Curso C9 = new Curso(
                     "“Herramientas de apoyo a la\n" +
@@ -324,7 +345,7 @@ public class CargarDatosPrueba {
                     "12 semanas",
                     60,
                     4,
-                    fecha("24/05/26"),
+                    fecha("24/05/2026"),
                     " Se realizarán visitas a escuelas rurales participantes en un proyecto\n" +
                     "conjunto del grupo PLN y el Programa de Políticas Lingüísticas de\n" +
                     "ANEP, en el marco del cual se desarrollaron diferentes herramientas\n" +
@@ -332,12 +353,15 @@ public class CargarDatosPrueba {
                     "profesores especializados desde Montevideo.",
                     "https://eva.fing.edu.uy/mod/folder/view.php?id=89398");
             
+            C9.setInstituto(IN);
+            IN.agregoCurso(C9);
+            
             Curso C10 = new Curso(
                     "MicroBit",
                     "15 semanas",
                     105,
                     7,
-                    fecha("13/03/26"),
+                    fecha("13/03/2026"),
                     "El Centro Ceibal se encuentra distribuyendo placas micro:bit\n" +
                     "(https://microbit.ceibal.edu.uy/) para que estudiantes de primaria\n" +
                     "y secundaria aprendan nociones básicas de robótica, electrónica y\n" +
@@ -348,125 +372,128 @@ public class CargarDatosPrueba {
                     "que son muy útiles para un primer acercamiento a la temática.",
                     "https://www.fing.edu.uy/noticias/extension/modulo-detallerextensionmicrobit");
             
+            C10.setInstituto(IE);
+            IE.agregoCurso(C10);
+            
             // =========================
             // EDICIONES DE CURSOS
             // =========================
             
             EdicionCurso E1 = new EdicionCurso(
                     "Flor del Ceibo - 2010",
-                    fecha("15/03/10"),
-                    fecha("07/07/10"),
+                    fecha("15/03/2010"),
+                    fecha("07/07/2010"),
                     -1,
-                    fecha("16/02/10")
+                    fecha("16/02/2010")
                     );
             
             EdicionCurso E2 = new EdicionCurso(
                     "Flor del Ceibo - 2012",
-                    fecha("01/08/12"),
-                    fecha("20/11/12"),
+                    fecha("01/08/2012"),
+                    fecha("20/11/2012"),
                     -1,
-                    fecha("10/07/12")
+                    fecha("10/07/2012")
                     );
             
             EdicionCurso E3 = new EdicionCurso(
                     "Flor del Ceibo - 2025",
-                    fecha("10/04/25"),
-                    fecha("07/08/25"),
+                    fecha("10/04/2025"),
+                    fecha("07/08/2025"),
                     -1,
-                    fecha("06/03/25")
+                    fecha("06/03/2025")
                     );
             
             EdicionCurso E4 = new EdicionCurso(
                     "Dalavuelta - 2025",
-                    fecha("20/08/24"),
-                    fecha("10/11/24"),
+                    fecha("20/08/2024"),
+                    fecha("10/11/2024"),
                     15,
-                    fecha("20/07/24")
+                    fecha("20/07/2024")
                     );
             
             EdicionCurso E5 = new EdicionCurso(
                     "Extensionismo Industrial - 2025",
-                    fecha("10/08/25"),
-                    fecha("10/11/25"),
+                    fecha("10/08/2025"),
+                    fecha("10/11/2025"),
                     15,
-                    fecha("08/07/25")
+                    fecha("08/07/2025")
                     );
             
             EdicionCurso E6 = new EdicionCurso(
                     "Inclusión Energética - 2026",
-                    fecha("15/03/26"),
-                    fecha("30/04/26"),
+                    fecha("15/03/2026"),
+                    fecha("30/04/2026"),
                     30,
-                    fecha("20/02/26")
+                    fecha("20/02/2026")
                     );
             
             EdicionCurso E7 = new EdicionCurso(
                     "Taller de robótica educativa - 2024",
-                    fecha("10/03/24"),
-                    fecha("10/05/24"),
+                    fecha("10/03/2024"),
+                    fecha("10/05/2024"),
                     10,
-                    fecha("15/02/24")
+                    fecha("15/02/2024")
                     );
             
             EdicionCurso E8 = new EdicionCurso(
                     "Taller de robótica educativa - 2026",
-                    fecha("10/03/26"),
-                    fecha("10/05/26"),
+                    fecha("10/03/2026"),
+                    fecha("10/05/2026"),
                     10,
-                    fecha("15/02/26")
+                    fecha("15/02/2026")
                     );
             
             EdicionCurso E9 = new EdicionCurso(
                     "Taller de robótica educativa - 2026-2",
-                    fecha("10/09/26"),
-                    fecha("08/11/26"),
+                    fecha("10/09/2026"),
+                    fecha("08/11/2026"),
                     20,
-                    fecha("15/08/26")
+                    fecha("15/08/2026")
                     );
             
             EdicionCurso E10 = new EdicionCurso(
                     "Participación en investigación sobre\n" +
                     "el empleo del juego Komikan como\n" +
                     "recurso didáctico en la Escuela - 2026",
-                    fecha("29/07/26"),
-                    fecha("07/10/26"),
+                    fecha("29/07/2026"),
+                    fecha("07/10/2026"),
                     5,
-                    fecha("10/07/26")
+                    fecha("10/07/2026")
                     );
             
             EdicionCurso E11 = new EdicionCurso(
                     "Herramientas de apoyo a la\n" +
                     "enseñanza de inglés. Instalación y\n" +
                     "evaluación - 26",
-                    fecha("15/09/26"),
-                    fecha("15/12/26"),
+                    fecha("15/09/2026"),
+                    fecha("15/12/2026"),
                     5,
-                    fecha("02/06/26")
+                    fecha("02/06/2026")
                     );
             
             EdicionCurso E12 = new EdicionCurso(
                     "MicroBit - 2026",
-                    fecha("12/08/26"),
-                    fecha("05/12/26"),
+                    fecha("12/08/2026"),
+                    fecha("05/12/2026"),
                     30,
-                    fecha("02/07/26")
+                    fecha("02/07/2026")
                     );
             
             EdicionCurso E13 = new EdicionCurso(
                     "Talleres plenarios - 2026",
-                    fecha("10/03/26"),
-                    fecha("30/03/26"),
+                    fecha("10/03/2026"),
+                    fecha("30/03/2026"),
                     -1,
-                    fecha("02/03/26")
+                    fecha("02/03/2026")
                     );
             
             EdicionCurso E14 = new EdicionCurso(
                     "Seminarios de Resolución de\n" +
                     "Problemas - 2026",
-                    fecha("10/09/26"),
-                    fecha("20/10/26"),
+                    fecha("10/09/2026"),
+                    fecha("20/10/2026"),
                     -1,
-                    fecha("12/07/26")
+                    fecha("12/07/2026")
                     );
             
             C6.agregoEdicion(E1);
@@ -542,142 +569,142 @@ public class CargarDatosPrueba {
             // INSCRIPCIONES A EDICIONES DE CURSOS
             // =========================
             
-            Inscripcion I1 = new Inscripcion(fecha("20/02/10"), E1);
+            Inscripcion I1 = new Inscripcion(fecha("20/02/2010"), E1);
             EL.agregoInscripcion(I1);
             
-            Inscripcion I2 = new Inscripcion(fecha("25/02/10"), E1);
+            Inscripcion I2 = new Inscripcion(fecha("25/02/2010"), E1);
             CH.agregoInscripcion(I2);
             
-            Inscripcion I3 = new Inscripcion(fecha("12/07/12"), E2);
+            Inscripcion I3 = new Inscripcion(fecha("12/07/2012"), E2);
             CO.agregoInscripcion(I3);
             
-            Inscripcion I4 = new Inscripcion(fecha("15/07/12"), E2);
+            Inscripcion I4 = new Inscripcion(fecha("15/07/2012"), E2);
             RO.agregoInscripcion(I4);
             
-            Inscripcion I5 = new Inscripcion(fecha("30/07/12"), E2);
+            Inscripcion I5 = new Inscripcion(fecha("30/07/2012"), E2);
             WE.agregoInscripcion(I5);
             
-            Inscripcion I6 = new Inscripcion(fecha("10/03/25"), E3);
+            Inscripcion I6 = new Inscripcion(fecha("10/03/2025"), E3);
             RO.agregoInscripcion(I6);
             
-            Inscripcion I7 = new Inscripcion(fecha("15/03/25"), E3);
+            Inscripcion I7 = new Inscripcion(fecha("15/03/2025"), E3);
             JW.agregoInscripcion(I7);
             
-            Inscripcion I8 = new Inscripcion(fecha("25/07/24"), E4);
+            Inscripcion I8 = new Inscripcion(fecha("25/07/2024"), E4);
             CH.agregoInscripcion(I8);
             
-            Inscripcion I9 = new Inscripcion(fecha("28/07/24"), E4);
+            Inscripcion I9 = new Inscripcion(fecha("28/07/2024"), E4);
             EL.agregoInscripcion(I9);
             
-            Inscripcion I10 = new Inscripcion(fecha("02/08/24"), E4);
+            Inscripcion I10 = new Inscripcion(fecha("02/08/2024"), E4);
             RO.agregoInscripcion(I10);
             
-            Inscripcion I11 = new Inscripcion(fecha("10/08/24"), E4);
+            Inscripcion I11 = new Inscripcion(fecha("10/08/2024"), E4);
             CO.agregoInscripcion(I11);
             
-            Inscripcion I12 = new Inscripcion(fecha("15/08/24"), E4);
+            Inscripcion I12 = new Inscripcion(fecha("15/08/2024"), E4);
             JW.agregoInscripcion(I12);
             
-            Inscripcion I13 = new Inscripcion(fecha("18/07/25"), E5);
+            Inscripcion I13 = new Inscripcion(fecha("18/07/2025"), E5);
             CO.agregoInscripcion(I13);
             
-            Inscripcion I14 = new Inscripcion(fecha("20/07/25"), E5);
+            Inscripcion I14 = new Inscripcion(fecha("20/07/2025"), E5);
             CH.agregoInscripcion(I14);
             
-            Inscripcion I15 = new Inscripcion(fecha("29/07/25"), E5);
+            Inscripcion I15 = new Inscripcion(fecha("29/07/2025"), E5);
             EL.agregoInscripcion(I15);
             
-            Inscripcion I16 = new Inscripcion(fecha("05/08/25"), E5);
+            Inscripcion I16 = new Inscripcion(fecha("05/08/2025"), E5);
             WE.agregoInscripcion(I16);
             
-            Inscripcion I17 = new Inscripcion(fecha("23/02/26"), E6);
+            Inscripcion I17 = new Inscripcion(fecha("23/02/2026"), E6);
             RO.agregoInscripcion(I17);
             
-            Inscripcion I18 = new Inscripcion(fecha("25/02/26"), E6);
+            Inscripcion I18 = new Inscripcion(fecha("25/02/2026"), E6);
             WE.agregoInscripcion(I18);
             
-            Inscripcion I19 = new Inscripcion(fecha("28/02/26"), E6);
+            Inscripcion I19 = new Inscripcion(fecha("28/02/2026"), E6);
             CH.agregoInscripcion(I19);
             
-            Inscripcion I20 = new Inscripcion(fecha("03/03/26"), E6);
+            Inscripcion I20 = new Inscripcion(fecha("03/03/2026"), E6);
             EL.agregoInscripcion(I20);
             
-            Inscripcion I21 = new Inscripcion(fecha("18/02/17"), E7);
+            Inscripcion I21 = new Inscripcion(fecha("18/02/2017"), E7);
             WE.agregoInscripcion(I21);
             
-            Inscripcion I22 = new Inscripcion(fecha("20/02/24"), E7);
+            Inscripcion I22 = new Inscripcion(fecha("20/02/2024"), E7);
             RO.agregoInscripcion(I22);
             
-            Inscripcion I23 = new Inscripcion(fecha("03/03/24"), E7);
+            Inscripcion I23 = new Inscripcion(fecha("03/03/2024"), E7);
             EL.agregoInscripcion(I23);
             
-            Inscripcion I24 = new Inscripcion(fecha("05/03/24"), E7);
+            Inscripcion I24 = new Inscripcion(fecha("05/03/2024"), E7);
             CH.agregoInscripcion(I24);
             
-            Inscripcion I25 = new Inscripcion(fecha("18/02/26"), E8);
+            Inscripcion I25 = new Inscripcion(fecha("18/02/2026"), E8);
             JW.agregoInscripcion(I25);
             
-            Inscripcion I26 = new Inscripcion(fecha("22/02/26"), E8);
+            Inscripcion I26 = new Inscripcion(fecha("22/02/2026"), E8);
             CO.agregoInscripcion(I26);
             
-            Inscripcion I27 = new Inscripcion(fecha("18/08/26"), E9);
+            Inscripcion I27 = new Inscripcion(fecha("18/08/2026"), E9);
             WE.agregoInscripcion(I27);
             
-            Inscripcion I28 = new Inscripcion(fecha("22/08/26"), E9);
+            Inscripcion I28 = new Inscripcion(fecha("22/08/2026"), E9);
             CH.agregoInscripcion(I28);
             
-            Inscripcion I29 = new Inscripcion(fecha("03/09/26"), E9);
+            Inscripcion I29 = new Inscripcion(fecha("03/09/2026"), E9);
             RO.agregoInscripcion(I29);
             
-            Inscripcion I30 = new Inscripcion(fecha("13/07/26"), E10);
+            Inscripcion I30 = new Inscripcion(fecha("13/07/2026"), E10);
             CH.agregoInscripcion(I30);
             
-            Inscripcion I31 = new Inscripcion(fecha("20/07/26"), E10);
+            Inscripcion I31 = new Inscripcion(fecha("20/07/2026"), E10);
             WE.agregoInscripcion(I31);
             
-            Inscripcion I32 = new Inscripcion(fecha("22/07/26"), E10);
+            Inscripcion I32 = new Inscripcion(fecha("22/07/2026"), E10);
             RO.agregoInscripcion(I32);
             
-            Inscripcion I33 = new Inscripcion(fecha("04/06/26"), E11);
+            Inscripcion I33 = new Inscripcion(fecha("04/06/2026"), E11);
             WE.agregoInscripcion(I33);
             
-            Inscripcion I34 = new Inscripcion(fecha("18/07/26"), E11);
+            Inscripcion I34 = new Inscripcion(fecha("18/07/2026"), E11);
             EL.agregoInscripcion(I34);
             
-            Inscripcion I35 = new Inscripcion(fecha("20/08/26"), E11);
+            Inscripcion I35 = new Inscripcion(fecha("20/08/2026"), E11);
             JW.agregoInscripcion(I35);
             
-            Inscripcion I36 = new Inscripcion(fecha("12/07/26"), E12);
+            Inscripcion I36 = new Inscripcion(fecha("12/07/2026"), E12);
             CH.agregoInscripcion(I36);
             
-            Inscripcion I37 = new Inscripcion(fecha("14/07/26"), E12);
+            Inscripcion I37 = new Inscripcion(fecha("14/07/2026"), E12);
             RO.agregoInscripcion(I37);
             
-            Inscripcion I38 = new Inscripcion(fecha("25/07/26"), E12);
+            Inscripcion I38 = new Inscripcion(fecha("25/07/2026"), E12);
             EL.agregoInscripcion(I38);
             
-            Inscripcion I39 = new Inscripcion(fecha("05/08/26"), E12);
+            Inscripcion I39 = new Inscripcion(fecha("05/08/2026"), E12);
             JW.agregoInscripcion(I39);
             
-            Inscripcion I40 = new Inscripcion(fecha("05/03/26"), E13);
+            Inscripcion I40 = new Inscripcion(fecha("05/03/2026"), E13);
             CO.agregoInscripcion(I40);
             
-            Inscripcion I41 = new Inscripcion(fecha("04/03/26"), E13);
+            Inscripcion I41 = new Inscripcion(fecha("04/03/2026"), E13);
             WE.agregoInscripcion(I41);
             
-            Inscripcion I42 = new Inscripcion(fecha("07/03/26"), E13);
+            Inscripcion I42 = new Inscripcion(fecha("07/03/2026"), E13);
             RO.agregoInscripcion(I42);
             
-            Inscripcion I43 = new Inscripcion(fecha("15/07/26"), E14);
+            Inscripcion I43 = new Inscripcion(fecha("15/07/2026"), E14);
             WE.agregoInscripcion(I43);
             
-            Inscripcion I44 = new Inscripcion(fecha("20/07/26"), E14);
+            Inscripcion I44 = new Inscripcion(fecha("20/07/2026"), E14);
             CO.agregoInscripcion(I44);
             
-            Inscripcion I45 = new Inscripcion(fecha("06/08/26"), E14);
+            Inscripcion I45 = new Inscripcion(fecha("06/08/2026"), E14);
             RO.agregoInscripcion(I45);
             
-            Inscripcion I46 = new Inscripcion(fecha("30/08/26"), E14);
+            Inscripcion I46 = new Inscripcion(fecha("30/08/2026"), E14);
             CH.agregoInscripcion(I46);
             
             
@@ -689,8 +716,8 @@ public class CargarDatosPrueba {
             ProgramaFormacion P1 = new ProgramaFormacion(
                     "EFI Ingeniería Mecánica",
                     "Programa mecánica",
-                    fecha("01/05/26"),
-                    fecha("31/10/26"),
+                    fecha("01/05/2026"),
+                    fecha("31/10/2026"),
                     new Date()
             );
             
@@ -701,8 +728,8 @@ public class CargarDatosPrueba {
             ProgramaFormacion P2 = new ProgramaFormacion(
                     "Formación integral",
                     "Programa varios institutos",
-                    fecha("15/07/26"),
-                    fecha("01/01/27"),
+                    fecha("15/07/2026"),
+                    fecha("01/01/2027"),
                     new Date()
             );
             
@@ -715,13 +742,126 @@ public class CargarDatosPrueba {
             ProgramaFormacion P3 = new ProgramaFormacion(
                     "EFI Robótica",
                     "Programa robótica",
-                    fecha("03/09/26"),
-                    fecha("18/11/26"),
+                    fecha("03/09/2026"),
+                    fecha("18/11/2026"),
                     new Date()
             );
             
             P3.agregarCurso(C7);
             P3.agregarCurso(C10);
+            
+            // =========================
+// PERSISTIR DATOS
+// =========================
+
+// Estudiantes
+em.persist(EL);
+em.persist(CO);
+em.persist(RO);
+em.persist(CH);
+em.persist(JW);
+em.persist(WE);
+
+// Docentes
+em.persist(WW);
+em.persist(OK);
+em.persist(EW);
+em.persist(GH);
+em.persist(TC);
+em.persist(DR);
+em.persist(PS);
+em.persist(BS);
+em.persist(AG);
+
+// Institutos
+em.persist(IN);
+em.persist(IL);
+em.persist(IF);
+em.persist(IM);
+em.persist(IE);
+em.persist(DI);
+
+// Cursos
+em.persist(C1);
+em.persist(C2);
+em.persist(C3);
+em.persist(C4);
+em.persist(C5);
+em.persist(C6);
+em.persist(C7);
+em.persist(C8);
+em.persist(C9);
+em.persist(C10);
+
+// Ediciones
+em.persist(E1);
+em.persist(E2);
+em.persist(E3);
+em.persist(E4);
+em.persist(E5);
+em.persist(E6);
+em.persist(E7);
+em.persist(E8);
+em.persist(E9);
+em.persist(E10);
+em.persist(E11);
+em.persist(E12);
+em.persist(E13);
+em.persist(E14);
+
+// Inscripciones
+em.persist(I1);
+em.persist(I2);
+em.persist(I3);
+em.persist(I4);
+em.persist(I5);
+em.persist(I6);
+em.persist(I7);
+em.persist(I8);
+em.persist(I9);
+em.persist(I10);
+em.persist(I11);
+em.persist(I12);
+em.persist(I13);
+em.persist(I14);
+em.persist(I15);
+em.persist(I16);
+em.persist(I17);
+em.persist(I18);
+em.persist(I19);
+em.persist(I20);
+em.persist(I21);
+em.persist(I22);
+em.persist(I23);
+em.persist(I24);
+em.persist(I25);
+em.persist(I26);
+em.persist(I27);
+em.persist(I28);
+em.persist(I29);
+em.persist(I30);
+em.persist(I31);
+em.persist(I32);
+em.persist(I33);
+em.persist(I34);
+em.persist(I35);
+em.persist(I36);
+em.persist(I37);
+em.persist(I38);
+em.persist(I39);
+em.persist(I40);
+em.persist(I41);
+em.persist(I42);
+em.persist(I43);
+em.persist(I44);
+em.persist(I45);
+em.persist(I46);
+
+// Programas de formación
+em.persist(P1);
+em.persist(P2);
+em.persist(P3);
+
             
             
             

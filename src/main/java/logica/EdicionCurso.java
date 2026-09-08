@@ -5,7 +5,8 @@
 package logica;
 
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.JoinTable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -42,7 +43,7 @@ public class EdicionCurso {
     joinColumns = @JoinColumn(name = "edicion_nombre"),
     inverseJoinColumns = @JoinColumn(name = "docente_nick")
     )
-    private List<Docente> docentes;
+    private Set<Docente> docentes = new HashSet<>() ;
     
     public EdicionCurso(String n, Date fi, Date ff, int c, Date fp){
         this.nombre = n;

@@ -7,17 +7,7 @@ package logica;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.HashSet;
 import javax.persistence.CascadeType;
 
@@ -37,6 +27,8 @@ public class Curso implements Serializable {
     @Column(unique = true, nullable = false)
     private String nombre; // Único
 
+    @Lob
+    @Column(name = "DESCRIPCION")
     private String descripcion;
     private String duracion;
     private int cantidadHoras;
@@ -45,7 +37,7 @@ public class Curso implements Serializable {
     private String url;
 
     @ManyToMany(mappedBy = "cursos")
-    private Set<ProgramaFormacion> programas;
+    private Set<ProgramaFormacion> programas = new HashSet<>() ;
     
     @ManyToOne
     @JoinColumn(name = "instituto_id")
@@ -57,7 +49,7 @@ public class Curso implements Serializable {
         joinColumns = @JoinColumn(name = "curso_id"),
         inverseJoinColumns = @JoinColumn(name = "previa_id")
     )
-    private Set<Curso> previas;
+    private Set<Curso> previas = new HashSet<>();
     
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
     private Set<EdicionCurso> ediciones = new HashSet<>();
