@@ -6,10 +6,7 @@ package logica;
 
 import java.io.Serializable;
 import java.util.Set;
-<<<<<<< Updated upstream
-import java.util.Date;
 import javax.persistence.*;
-=======
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,7 +19,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Table;
->>>>>>> Stashed changes
 import java.util.HashSet;
 import javax.persistence.CascadeType;
 
@@ -52,12 +48,7 @@ public class Curso implements Serializable {
     private String url;
 
     @ManyToMany(mappedBy = "cursos")
-<<<<<<< Updated upstream
     private Set<ProgramaFormacion> programas = new HashSet<>() ;
-=======
-    private Set<ProgramaFormacion> programas = new HashSet<>();
->>>>>>> Stashed changes
-    
     @ManyToOne
     @JoinColumn(name = "instituto_id")
     private Instituto instituto;

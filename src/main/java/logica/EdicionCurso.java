@@ -4,11 +4,8 @@
  */
 package logica;
 
-<<<<<<< Updated upstream
 import java.util.Date;
-=======
 import java.time.LocalDate;
->>>>>>> Stashed changes
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.JoinTable;
@@ -47,11 +44,7 @@ public class EdicionCurso {
     joinColumns = @JoinColumn(name = "edicion_nombre"),
     inverseJoinColumns = @JoinColumn(name = "docente_nick")
     )
-<<<<<<< Updated upstream
     private Set<Docente> docentes = new HashSet<>() ;
-=======
-    private Set<Docente> docentes = new HashSet<>();
->>>>>>> Stashed changes
     
     public EdicionCurso(String n, LocalDate fi, LocalDate ff, int c, LocalDate fp){
         this.nombre = n;

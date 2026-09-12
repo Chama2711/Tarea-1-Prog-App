@@ -5,6 +5,10 @@
 package presentacion;
 
 import logica.ControladorUsuario;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 
 /**
  *
@@ -178,12 +182,12 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
             txtNombre.setText(u.getNombre());
             txtApellido.setText(u.getApellido());
             if (u.getFechaNacimiento() != null) {
-                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
-                txtFechaNac.setText(sdf.format(u.getFechaNacimiento()));
-            } else {
-                txtFechaNac.setText("");
-            }
-        }
+            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            txtFechaNac.setText(u.getFechaNacimiento().format(formato));
+        } else {
+            txtFechaNac.setText("");
+        }       
+                }
     }//GEN-LAST:event_cmbUsuariosActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
@@ -203,15 +207,15 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
         return;
     }
 
-    java.time.LocalDate fechaNacDate = null;
+    LocalDate fechaNacDate;
 
-    try {
-        java.time.format.DateTimeFormatter formatter =
-                java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        try {
+            DateTimeFormatter formatter =
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        fechaNacDate = java.time.LocalDate.parse(fechaNacStr, formatter);
+            fechaNacDate = LocalDate.parse(fechaNacStr, formatter);
 
-    } catch (java.time.format.DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
         javax.swing.JOptionPane.showMessageDialog(
                 this,
                 "Formato de fecha inválido. Por favor use el formato dd/MM/yyyy",

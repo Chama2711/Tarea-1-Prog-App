@@ -5,15 +5,8 @@
 package logica;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-<<<<<<< Updated upstream
-import java.util.Date;
-import java.util.Set;
-import java.util.ArrayList;
-=======
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
->>>>>>> Stashed changes
 import java.util.HashSet;
 import javax.persistence.OneToMany;
 

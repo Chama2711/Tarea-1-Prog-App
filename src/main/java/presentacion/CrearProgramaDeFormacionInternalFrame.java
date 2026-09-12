@@ -4,7 +4,7 @@
  */
 package presentacion;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
@@ -106,12 +106,9 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel4)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel3)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel3))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                         .addComponent(diaFinSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -163,9 +160,9 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
+                    .addComponent(anioFinSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(diaFinSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(anioFinSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(mesFinSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -204,29 +201,6 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
         }
 
         try {
-<<<<<<< Updated upstream
-        // Formato de fecha: dd/MM/yyyy
-        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-
-        // Evita que acepte fechas inválidas como 32/15/2026
-        formato.setLenient(false);
-
-        Date fechaInicio = formato.parse(jTextField3.getText().trim());
-        Date fechaFin = formato.parse(jTextField4.getText().trim());
-        Date fechaAlta = formato.parse(jTextField5.getText().trim());
-
-        // Validar que la fecha de fin no sea anterior a la de inicio
-        if (fechaFin.before(fechaInicio)) {
-            JOptionPane.showMessageDialog(
-                this,
-                "La fecha de fin no puede ser anterior a la fecha de inicio.",
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-            ProgramaFormacion programa = new ProgramaFormacion();
-=======
             
             LocalDate fechaInicio = LocalDate.of(
                 (Integer) anioInicioSP.getValue(),
@@ -257,7 +231,6 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
         }
             
         ProgramaFormacion programa = new ProgramaFormacion();
->>>>>>> Stashed changes
 
         programa.setNombre(nombre);
         programa.setDescripcion(descripcion);
@@ -283,6 +256,7 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
                 JOptionPane.ERROR_MESSAGE
             );
         }
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

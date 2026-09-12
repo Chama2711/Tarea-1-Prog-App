@@ -717,7 +717,7 @@ public class CargarDatosPrueba {
                     "Programa mecánica",
                     fecha("01/05/2026"),
                     fecha("31/10/2026"),
-                    new Date()
+                    LocalDate.now()
             );
             
             P1.agregarCurso(C3);
@@ -729,7 +729,7 @@ public class CargarDatosPrueba {
                     "Programa varios institutos",
                     fecha("15/07/2026"),
                     fecha("01/01/2027"),
-                    new Date()
+                    LocalDate.now()
             );
             
             P2.agregarCurso(C2);
@@ -743,7 +743,7 @@ public class CargarDatosPrueba {
                     "Programa robótica",
                     fecha("03/09/2026"),
                     fecha("18/11/2026"),
-                    new Date()
+                    LocalDate.now()
             );
             
             P3.agregarCurso(C7);
