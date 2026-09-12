@@ -5,9 +5,15 @@
 package logica;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+<<<<<<< Updated upstream
 import java.util.Date;
 import java.util.Set;
 import java.util.ArrayList;
+=======
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+>>>>>>> Stashed changes
 import java.util.HashSet;
 import javax.persistence.OneToMany;
 
@@ -25,7 +31,7 @@ public class Estudiante extends Usuario{
     private Set<String> edicionesInscriptas;
     private Set<String> programasInscriptos;
     
-    public Estudiante(String ni, String m, String no, String a, Date fn){
+    public Estudiante(String ni, String m, String no, String a, LocalDate fn){
         super(ni, m, no, a, fn);
     }
     

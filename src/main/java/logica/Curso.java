@@ -6,8 +6,23 @@ package logica;
 
 import java.io.Serializable;
 import java.util.Set;
+<<<<<<< Updated upstream
 import java.util.Date;
 import javax.persistence.*;
+=======
+import java.time.LocalDate;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Table;
+>>>>>>> Stashed changes
 import java.util.HashSet;
 import javax.persistence.CascadeType;
 
@@ -33,11 +48,15 @@ public class Curso implements Serializable {
     private String duracion;
     private int cantidadHoras;
     private int creditos;
-    private Date fechaRegistro;
+    private LocalDate fechaRegistro;
     private String url;
 
     @ManyToMany(mappedBy = "cursos")
+<<<<<<< Updated upstream
     private Set<ProgramaFormacion> programas = new HashSet<>() ;
+=======
+    private Set<ProgramaFormacion> programas = new HashSet<>();
+>>>>>>> Stashed changes
     
     @ManyToOne
     @JoinColumn(name = "instituto_id")
@@ -57,7 +76,7 @@ public class Curso implements Serializable {
 
     public Curso() {}
     
-    public Curso(String n, String d, int h, int c, Date fr, String desc, String u){
+    public Curso(String n, String d, int h, int c, LocalDate fr, String desc, String u){
         this.nombre = n;
         this.duracion = d;
         this.cantidadHoras = h;

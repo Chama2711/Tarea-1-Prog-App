@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import java.io.Serializable;
 import javax.persistence.Id;
 import javax.persistence.Column;
-import java.util.Date;
+import java.time.LocalDate;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
@@ -20,13 +20,13 @@ public class Usuario implements Serializable {
     private String mail;
     private String nombre;
     private String apellido;
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
     
     public Usuario(){
         
     }
     
-    public Usuario(String ni, String m, String no, String a, Date fn){
+    public Usuario(String ni, String m, String no, String a, LocalDate fn){
         this.nick = ni;
         this.mail = m;
         this.nombre = no;
@@ -62,10 +62,10 @@ public class Usuario implements Serializable {
         apellido = a;
     }
     
-    public Date getFechaNacimiento(){
+    public LocalDate getFechaNacimiento(){
         return fechaNacimiento;
     }
-    public void setFechaNacimiento(Date fn){
+    public void setFechaNacimiento(LocalDate fn){
         fechaNacimiento = fn;
     }
     

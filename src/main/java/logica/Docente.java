@@ -4,7 +4,11 @@
  */
 package logica;
 
+<<<<<<< Updated upstream
 import java.util.Date;
+=======
+import java.time.LocalDate;
+>>>>>>> Stashed changes
 import java.util.HashSet;
 import java.util.List;
 import javax.persistence.Entity;
@@ -26,7 +30,7 @@ public class Docente extends Usuario{
     private Set<String> edicionesAsignadas;
     private Set<String> programasAsignados;
     
-    public Docente(String ni, String m, String no, String a, Date fn){
+    public Docente(String ni, String m, String no, String a, LocalDate fn){
         super(ni, m, no, a, fn);
     }
     
@@ -34,7 +38,11 @@ public class Docente extends Usuario{
     public Set<String> getEdicionesAsignadas() { return edicionesAsignadas; }
     public Set<String> getProgramasAsignados() { return programasAsignados; }
     @ManyToMany
+<<<<<<< Updated upstream
     private Set<Instituto> institutos = new HashSet<>() ;
+=======
+    private Set<Instituto> institutos = new HashSet<>();
+>>>>>>> Stashed changes
     
     public void agregoInstituto(Instituto i){
         institutos.add(i);

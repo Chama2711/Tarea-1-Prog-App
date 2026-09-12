@@ -57,6 +57,7 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
         txtApellido.setText("Aapellido");
 
         txtFechaNac.setText("Fecha Nacimineto");
+        txtFechaNac.addActionListener(this::txtFechaNacActionPerformed);
 
         btnGuardar.setText("Guardar Cambios");
         btnGuardar.addActionListener(this::btnGuardarActionPerformed);
@@ -202,15 +203,23 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
         return;
     }
 
-    java.util.Date fechaNacDate = null;
-        try {
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
-            sdf.setLenient(false); // Evita fechas inventadas como 32/13/2020
-            fechaNacDate = sdf.parse(fechaNacStr);
-        } catch (java.text.ParseException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Por favor use el formato dd/MM/yyyy", "Error de Fecha", javax.swing.JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    java.time.LocalDate fechaNacDate = null;
+
+    try {
+        java.time.format.DateTimeFormatter formatter =
+                java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        fechaNacDate = java.time.LocalDate.parse(fechaNacStr, formatter);
+
+    } catch (java.time.format.DateTimeParseException e) {
+        javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Formato de fecha inválido. Por favor use el formato dd/MM/yyyy",
+                "Error de Fecha",
+                javax.swing.JOptionPane.ERROR_MESSAGE
+        );
+        return;
+    }
 
         // Guardar cambios en el controlador pasando el objeto Date
         control.modificarUsuario(nick, nombre, apellido, fechaNacDate);
@@ -218,6 +227,10 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
     javax.swing.JOptionPane.showMessageDialog(this, "Usuario modificado con éxito.", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
     this.dispose(); // Cierra la ventana al terminar
     }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void txtFechaNacActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaNacActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFechaNacActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

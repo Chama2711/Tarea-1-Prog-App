@@ -1,8 +1,7 @@
 package persistencia;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -890,13 +889,12 @@ em.persist(P3);
         }
     }
     
-    private static Date fecha(String f) {
-    try {
-        return new SimpleDateFormat("dd/MM/yyyy").parse(f);
-    } catch (Exception e) {
-        throw new RuntimeException(e);
+    private static LocalDate fecha(String f) {
+    return LocalDate.parse(
+            f,
+            DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    );
     }
-}
 
 
 }

@@ -4,7 +4,7 @@
  */
 package persistencia;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.EntityTransaction;
 import javax.persistence.EntityManager;
@@ -314,7 +314,7 @@ import logica.EdicionCurso;
             em.getTransaction().begin();
 
             Inscripcion nueva = new Inscripcion();
-            nueva.setFechaInscripcion(new Date());
+            nueva.setFechaInscripcion(LocalDate.now());
             nueva.setEdicionCurso(ec);
 
             e.getInscripciones().add(nueva);

@@ -12,7 +12,7 @@ package logica;
  */
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import persistencia.ControladorPersistencia;
 
@@ -25,7 +25,7 @@ import persistencia.ControladorPersistencia;
 public class ControladorUsuario {
     private ControladorPersistencia controlPersistencia = new ControladorPersistencia();
     
-   public void modificarDatosUsuario(String nickname, String nuevoNombre, String nuevoApellido, Date nuevaFecha) {
+   public void modificarDatosUsuario(String nickname, String nuevoNombre, String nuevoApellido, LocalDate nuevaFecha) {
         try {
             // 1. Traemos el usuario de la BD
             Usuario usu = controlPersistencia.obtenerUsuario(nickname);
@@ -72,12 +72,12 @@ public boolean existeCorreo(String mail) {
     return false;
 }
 
-    public void registrarEstudiante(String ni, String m, String no, String a, Date fn) {
+    public void registrarEstudiante(String ni, String m, String no, String a, LocalDate fn) {
         Estudiante e = new Estudiante(ni, m, no, a, fn);
         guardar(e);
     }
 
-    public void registrarDocente(String ni, String m, String no, String a, Date fn) {
+    public void registrarDocente(String ni, String m, String no, String a, LocalDate fn) {
         Docente d = new Docente(ni, m, no, a, fn);
         guardar(d);
     }
@@ -110,7 +110,7 @@ public Usuario obtenerUsuarioPorNickname(String nickname) {
     return controlPersistencia.obtenerUsuario(nickname);
 }
 
-public void modificarUsuario(String nickname, String nuevoNombre, String nuevoApellido, Date nuevaFechaNac) {
+public void modificarUsuario(String nickname, String nuevoNombre, String nuevoApellido, LocalDate nuevaFechaNac) {
     try {
         Usuario u = controlPersistencia.obtenerUsuario(nickname);
         

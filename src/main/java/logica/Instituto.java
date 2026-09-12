@@ -5,6 +5,10 @@
 package logica;
 
 import java.io.Serializable;
+<<<<<<< Updated upstream
+=======
+import java.util.ArrayList;
+>>>>>>> Stashed changes
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -35,7 +39,11 @@ public class Instituto implements Serializable {
 
     // Relación con Cursos (Un instituto brinda varios cursos)
     @OneToMany(mappedBy = "instituto", cascade = CascadeType.ALL)
+<<<<<<< Updated upstream
     private Set<Curso> cursos = new HashSet<>() ;
+=======
+    private Set<Curso> cursos = new HashSet<>();
+>>>>>>> Stashed changes
 
     public Instituto() {}
 

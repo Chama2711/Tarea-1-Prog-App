@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package logica;
-import java.util.Date;
+import java.time.LocalDate;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.Id;
@@ -22,7 +22,7 @@ public class Inscripcion {
         
     }
      //Inscripcion a Edicion de Curso
-    public Inscripcion(Date fi, EdicionCurso ec){
+    public Inscripcion(LocalDate fi, EdicionCurso ec){
         this.fechaInscripcion = fi;
         this.edicion = ec;
     }
@@ -31,13 +31,13 @@ public class Inscripcion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    private Date fechaInscripcion;
+    private LocalDate fechaInscripcion;
     
-    public Date getFechaInscripcion(){
+    public LocalDate getFechaInscripcion(){
         return fechaInscripcion;
     }
     
-    public void setFechaInscripcion(Date fechaInscripcion){
+    public void setFechaInscripcion(LocalDate fechaInscripcion){
         this.fechaInscripcion = fechaInscripcion;
     }
     

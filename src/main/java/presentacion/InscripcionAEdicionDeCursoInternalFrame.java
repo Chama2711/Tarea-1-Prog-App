@@ -83,7 +83,6 @@ public class InscripcionAEdicionDeCursoInternalFrame extends javax.swing.JIntern
 
         estudianteSeleccionadoTXT.setText("Estudiante seleccionado");
 
-        jButton2.setBackground(new java.awt.Color(85, 222, 47));
         jButton2.setText("Aceptar");
         jButton2.addActionListener(this::jButton2ActionPerformed);
 
