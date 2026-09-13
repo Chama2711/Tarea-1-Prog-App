@@ -202,11 +202,29 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
             logica.Estudiante est = (logica.Estudiante) u;
             javax.swing.DefaultListModel<String> modeloEdiciones = new javax.swing.DefaultListModel<>();
             javax.swing.DefaultListModel<String> modeloProgramasEst = new javax.swing.DefaultListModel<>();
-            if (est.getEdicionesInscriptas() != null) {
-                    for (String nombreEdicion : est.getEdicionesInscriptas()) {
-                        modeloEdiciones.addElement(nombreEdicion);
+            
+            if (est.getInscripciones() != null) {
+                    for (logica.Inscripcion inscripcion : est.getInscripciones()) {
+                    
+                        // Extraemos la edición
+                        if (inscripcion.getEdicionCurso() != null) {
+                            // Para evitar duplicados en la lista visual (opcional)
+                            String nombreEdicion = inscripcion.getEdicionCurso().getNombre();
+                            if (!modeloEdiciones.contains(nombreEdicion)) {
+                                modeloEdiciones.addElement(nombreEdicion);
+                            }
+                        }
+                    
+                        // Extraemos el programa
+                        if (inscripcion.getProgramaFormacion() != null) {
+                            // Para evitar duplicados en la lista visual (opcional)
+                            String nombrePrograma = inscripcion.getProgramaFormacion().getNombre();
+                            if (!modeloProgramasEst.contains(nombrePrograma)) {
+                                modeloProgramasEst.addElement(nombrePrograma);
+                            }
+                        }
                     }
-                }
+            }
 
             lstCursosEdiciones.setModel(modeloEdiciones);
             lstProgramas.setModel(modeloProgramasEst);
