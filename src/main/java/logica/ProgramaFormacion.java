@@ -49,6 +49,15 @@ public class ProgramaFormacion implements Serializable {
     private Map<String, Curso> cursos = new HashMap<>();
 
     public ProgramaFormacion() {}
+    
+    public ProgramaFormacion(String n, String d, LocalDate fi, LocalDate ff, LocalDate fa){
+        this.nombre = n;
+        this.descripcion = d;
+        this.fechaInicio = fi;
+        this.fechaFin = ff;
+        this.fechaAlta = fa;
+               
+    }
 
     // Getters y Setters públicos
     public Long getId() { return id; }

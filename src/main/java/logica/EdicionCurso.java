@@ -5,9 +5,14 @@
 package logica;
 
 import java.util.Date;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.JoinTable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.JoinColumn;
 
 /**
@@ -20,9 +25,9 @@ public class EdicionCurso {
     
     @Id
     private String nombre;
-    private Date fechaInicio;
-    private Date fechaFin;
-    private Date fechaPublicacion;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
+    private LocalDate fechaPublicacion;
     private int cupo;
     
     public EdicionCurso(){
@@ -33,7 +38,15 @@ public class EdicionCurso {
     @JoinColumn(name = "curso_id")
     private Curso curso;
     
-    public EdicionCurso(String n, Date fi, Date ff, Date fp, int c){
+    @ManyToMany
+    @JoinTable(
+    name = "edicion_docente",
+    joinColumns = @JoinColumn(name = "edicion_nombre"),
+    inverseJoinColumns = @JoinColumn(name = "docente_nick")
+    )
+    private Set<Docente> docentes = new HashSet<>() ;
+    
+    public EdicionCurso(String n, LocalDate fi, LocalDate ff, int c, LocalDate fp){
         this.nombre = n;
         this.fechaInicio = fi;
         this.fechaFin = ff;
@@ -48,24 +61,24 @@ public class EdicionCurso {
         this.nombre = nombre;
     }
     
-    public Date getFechaInicio(){
+    public LocalDate getFechaInicio(){
         return fechaInicio;
     }
-    public void setFechaInicio(Date fechaInicio){
+    public void setFechaInicio(LocalDate fechaInicio){
         this.fechaInicio = fechaInicio;
     }
     
-    public Date getFechaFin(){
+    public LocalDate getFechaFin(){
         return fechaFin;
     }
-    public void setFechaFin(Date fechaFin){
+    public void setFechaFin(LocalDate fechaFin){
         this.fechaFin = fechaFin;
     }
     
-    public Date getFechaPublicacion(){
+    public LocalDate getFechaPublicacion(){
         return fechaPublicacion;
     }
-    public void setFechaPublicacion(Date fechaPublicacion){
+    public void setFechaPublicacion(LocalDate fechaPublicacion){
         this.fechaPublicacion = fechaPublicacion;
     }
     
@@ -88,10 +101,15 @@ public class EdicionCurso {
     return nombre;
 }
     public boolean esVigente() {
-    Date fechaActual = new Date();
+    LocalDate fechaActual = LocalDate.now();
 
-        return fechaActual.after(fechaInicio) &&
-            fechaActual.before(fechaFin);
+        return fechaActual.isAfter(fechaInicio) &&
+            fechaActual.isBefore(fechaFin);
         
     }
+    
+    public void agregoDocente(Docente d){
+        docentes.add(d);
+    }
+    
 }

@@ -248,7 +248,12 @@ public class ConsultaEdicionDeCursoInternalFrame extends javax.swing.JInternalFr
     }
 
     nombreTXT.setText(edicionSeleccionada.getNombre());
-    cupoTXT.setText(String.valueOf(edicionSeleccionada.getCupo()));
+    if (edicionSeleccionada.getCupo() == -1) {
+        cupoTXT.setText("Sin límite de cupo");
+    } else {
+        cupoTXT.setText(String.valueOf(edicionSeleccionada.getCupo()));
+    }
+    
     fechaInicioTXT.setText(edicionSeleccionada.getFechaInicio().toString());
     fechaFinTXT.setText(edicionSeleccionada.getFechaFin().toString());
     fechaPublicacionTXT.setText(

@@ -4,7 +4,7 @@
  */
 package persistencia;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.EntityTransaction;
 import javax.persistence.EntityManager;
@@ -78,6 +78,15 @@ import logica.EdicionCurso;
             em.close();
         }
     }
+    
+    public List<String> listarNombresCursos() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT c.nombre FROM Curso c", String.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
 
     // Requerimiento: Consulta de Programa de Formación
     public List<String> listarNombresProgramas() {
@@ -88,11 +97,23 @@ import logica.EdicionCurso;
             em.close();
         }
     }
+    
+    public List<ProgramaFormacion> obtenerProgramas() {
+    EntityManager em = emf.createEntityManager();
+
+    try {
+
+        return em.createQuery(
+                "SELECT p FROM ProgramaFormacion p",ProgramaFormacion.class).getResultList();
+    } finally {
+        em.close();
+    }
+    }
 
     public ProgramaFormacion obtenerDetallePrograma(String nombrePrograma) {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.createQuery("SELECT p FROM ProgramaFormacion p LEFT JOIN FETCH p.cursos WHERE p.nombre = :nombre", ProgramaFormacion.class)
+            return em.createQuery("SELECT DISTINCT p FROM ProgramaFormacion p LEFT JOIN FETCH p.cursos WHERE p.nombre = :nombre", ProgramaFormacion.class)
                     .setParameter("nombre", nombrePrograma)
                     .getSingleResult();
         } finally {
@@ -181,6 +202,7 @@ import logica.EdicionCurso;
             em.close();
         }
     }
+    
     
     
     public void guardarUsuario(Usuario usuario) throws Exception {
@@ -292,7 +314,7 @@ import logica.EdicionCurso;
             em.getTransaction().begin();
 
             Inscripcion nueva = new Inscripcion();
-            nueva.setFechaInscripcion(new Date());
+            nueva.setFechaInscripcion(LocalDate.now());
             nueva.setEdicionCurso(ec);
 
             e.getInscripciones().add(nueva);

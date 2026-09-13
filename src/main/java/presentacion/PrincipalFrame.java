@@ -145,7 +145,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
         jMenu1.add(menuAgregarCursoProg);
 
         jMenuItem6.setText("Inscripcion a Edicion de Curso");
-        jMenuItem6.addActionListener(this::jMenuItem6ActionPerformed);
+        jMenuItem6.addActionListener(this::InscripcionAEdicionDeCursoActionPerformed);
         jMenu1.add(jMenuItem6);
 
         jMenuItem7.setText("Alta de Programa de Formacion");
@@ -199,12 +199,14 @@ public class PrincipalFrame extends javax.swing.JFrame {
         abrirInternalFrame(new AgregarCursoAProgramaInternalFrame(controlPersistencia));
     }//GEN-LAST:event_menuAgregarCursoProgActionPerformed
 
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {
-    // Lógica para abrir la ventana de Consulta de Edición de Curso
+    private void InscripcionAEdicionDeCursoActionPerformed(java.awt.event.ActionEvent evt) {
+    // Lógica para abrir la ventana Inscripcion a Edicion de Curso
+    abrirInternalFrame(new InscripcionAEdicionDeCursoInternalFrame(controlPersistencia));
 }
 
 private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {
     // Lógica para abrir la ventana de Alta de Programa de Formación
+    abrirInternalFrame(new CrearProgramaDeFormacionInternalFrame(controlPersistencia));
 }
     
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed

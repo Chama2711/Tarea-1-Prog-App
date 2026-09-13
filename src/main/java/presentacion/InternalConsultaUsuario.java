@@ -5,6 +5,7 @@
 package presentacion;
 
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 import logica.ControladorUsuario;
@@ -170,11 +171,11 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         txtApellido.setText(u.getApellido());
         txtMail.setText(u.getMail());
         if (u.getFechaNacimiento() != null) {
-                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
-                txtFechaNac.setText(sdf.format(u.getFechaNacimiento()));
+            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            txtFechaNac.setText(u.getFechaNacimiento().format(formato));
             } else {
                 txtFechaNac.setText("No registrada");
-            } 
+              }
         
         // 2. Diferenciamos si es Docente o Estudiante
         // Para hacer esto, en Java usamos "instanceof"

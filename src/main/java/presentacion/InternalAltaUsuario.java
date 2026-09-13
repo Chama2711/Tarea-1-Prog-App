@@ -96,6 +96,8 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
 
         txtNombre.addActionListener(this::txtNombreActionPerformed);
 
+        txtCorreo.addActionListener(this::txtCorreoActionPerformed);
+
         jLabel7.setText("Fecha de nacimiento");
 
         cmbInstituto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -229,9 +231,7 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
     int mes = (int) spnMes.getValue();
     int ano = (int) spnAno.getValue();
     
-    java.util.Calendar cal = java.util.Calendar.getInstance();
-    cal.set(ano, mes - 1, dia); // Los meses en Java Calendar van de 0 a 11
-    java.util.Date fechaNac = cal.getTime();
+    java.time.LocalDate fechaNac = java.time.LocalDate.of(ano, mes, dia);
 
     // 3. Validar campos de texto requeridos
     if (nickname.isEmpty() || nombre.isEmpty() || apellido.isEmpty() || correo.isEmpty()) {
@@ -306,6 +306,10 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
     private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNombreActionPerformed
+
+    private void txtCorreoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCorreoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCorreoActionPerformed
 
 
     private void limpiarFormulario() {

@@ -6,6 +6,8 @@ package logica;
 
 import java.io.Serializable;
 import java.util.Set;
+import javax.persistence.*;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,15 +38,17 @@ public class Curso implements Serializable {
     @Column(unique = true, nullable = false)
     private String nombre; // Único
 
+    @Lob
+    @Column(name = "DESCRIPCION")
     private String descripcion;
     private String duracion;
     private int cantidadHoras;
     private int creditos;
+    private LocalDate fechaRegistro;
     private String url;
 
     @ManyToMany(mappedBy = "cursos")
-    private Set<ProgramaFormacion> programas;
-    
+    private Set<ProgramaFormacion> programas = new HashSet<>() ;
     @ManyToOne
     @JoinColumn(name = "instituto_id")
     private Instituto instituto;
@@ -55,13 +59,23 @@ public class Curso implements Serializable {
         joinColumns = @JoinColumn(name = "curso_id"),
         inverseJoinColumns = @JoinColumn(name = "previa_id")
     )
-    private Set<Curso> previas;
+    private Set<Curso> previas = new HashSet<>();
     
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
     private Set<EdicionCurso> ediciones = new HashSet<>();
     
 
     public Curso() {}
+    
+    public Curso(String n, String d, int h, int c, LocalDate fr, String desc, String u){
+        this.nombre = n;
+        this.duracion = d;
+        this.cantidadHoras = h;
+        this.creditos = c;
+        this.fechaRegistro = fr;
+        this.descripcion = desc;
+        this.url = u;
+    }
     
     @Override
     public String toString() {
@@ -103,5 +117,13 @@ public class Curso implements Serializable {
     
     public void setEdiciones(Set<EdicionCurso> ediciones){
         this.ediciones = ediciones;
+    }
+    
+    public void agregoPrevia(Curso p){
+        previas.add(p);
+    }
+    
+    public void agregoEdicion(EdicionCurso e){
+        ediciones.add(e);
     }
 }

@@ -3,11 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package logica;
-import java.util.Date;
+import java.time.LocalDate;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.Id;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 
 /**
  *
@@ -16,14 +18,26 @@ import javax.persistence.Entity;
 @Entity
 public class Inscripcion {
     
-    @Id
-    private Date fechaInscripcion;
+    public Inscripcion(){
+        
+    }
+     //Inscripcion a Edicion de Curso
+    public Inscripcion(LocalDate fi, EdicionCurso ec){
+        this.fechaInscripcion = fi;
+        this.edicion = ec;
+    }
     
-    public Date getFechaInscripcion(){
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private LocalDate fechaInscripcion;
+    
+    public LocalDate getFechaInscripcion(){
         return fechaInscripcion;
     }
     
-    public void setFechaInscripcion(Date fechaInscripcion){
+    public void setFechaInscripcion(LocalDate fechaInscripcion){
         this.fechaInscripcion = fechaInscripcion;
     }
     

@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package logica;
-import java.util.Date;
+import java.time.LocalDate;
 /**
  *
  * @author Nicolás
@@ -13,17 +13,13 @@ public class DTUsuario{
     private String mail;
     private String nombre;
     private String apellido;
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
     
     public DTUsuario(){
-        this.setNick(new String());
-        this.setMail(new String());
-        this.setNombre(new String());
-        this.setApellido(new String());
-        this.setFechaNacimiento(new Date());
+        
     }
     
-    public DTUsuario(String ni, String m, String no, String a, Date fn){
+    public DTUsuario(String ni, String m, String no, String a, LocalDate fn){
         this.setNick(ni);
         this.setMail(m);
         this.setNombre(no);
@@ -59,10 +55,10 @@ public class DTUsuario{
         apellido = a;
     }
     
-    public Date getFechaNacimiento(){
+    public LocalDate getFechaNacimiento(){
         return fechaNacimiento;
     }
-    public void setFechaNacimiento(Date fn){
+    public void setFechaNacimiento(LocalDate fn){
         fechaNacimiento = fn;
     }
     
