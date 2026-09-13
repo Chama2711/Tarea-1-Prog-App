@@ -10,5 +10,7 @@ package com.mycompany.tarea_1_prog_app;
  */
 public class Tarea_1_Prog_app {
 
-    
+    public static void main(String[] args) {
+        System.out.println("Hello World!!!!!");
+    }
 }
