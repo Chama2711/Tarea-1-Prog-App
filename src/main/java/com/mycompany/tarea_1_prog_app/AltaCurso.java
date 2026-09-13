@@ -22,12 +22,13 @@ public class AltaCurso extends javax.swing.JInternalFrame {
      * Creates new form AltaCurso
      */
     public AltaCurso(Controlador controlador) {
+        initComponents();
         
         this.controlador = controlador;
-        modeloDisponibles = new DefaultListModel<>();
         
+        modeloDisponibles = new DefaultListModel<>();
         modeloPrevias = new DefaultListModel<>();
-        initComponents();
+        
         
         ArrayList<Curso> cursos = controlador.listarCursos();
         
@@ -36,19 +37,16 @@ public class AltaCurso extends javax.swing.JInternalFrame {
             Curso curso = cursos.get(i);
             modeloDisponibles.addElement(curso.getNombreCurso());
         }
-        
-        ComboInstitutoCurso.addItem("Colegio Capuchinas");
-        ComboInstitutoCurso.addItem("Colegio Saint Jhoseph");
-        ComboInstitutoCurso.addItem("Colegio y Liceo Biarritz");
-        ComboInstitutoCurso.addItem("Colegio Maldonado");
-        
-        
-        
-        
-        
-        
         ListaCursosDisponibles.setModel(modeloDisponibles);
         ListaPreviasSeleccionadas.setModel(modeloPrevias);
+        
+        ComboInstitutoCurso.removeAllItems();
+        ArrayList<Instituto> institutos = controlador.listarInstitutos();
+        
+        for(int i= 0; i < institutos.size(); i++)
+        {
+            ComboInstitutoCurso.addItem(institutos.get(i).getNombreInsti());
+        }
         
     }
 
@@ -169,17 +167,17 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                                 .addComponent(jLabel7))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel8)
-                        .addGap(69, 69, 69))
-                    .addComponent(jLabel5))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel5))
+                        .addGap(69, 69, 69)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(ComboInstitutoCurso, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtNombreCurso)
                     .addComponent(jScrollPane1)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(txtCreditosCurso, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                        .addComponent(txtCantidadHorasCurso, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtDuracionCurso, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(txtCreditosCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+                    .addComponent(txtCantidadHorasCurso)
+                    .addComponent(txtDuracionCurso)
                     .addComponent(txtURLCurso)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -268,6 +266,21 @@ public class AltaCurso extends javax.swing.JInternalFrame {
 
     private void ComboInstitutoCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboInstitutoCursoActionPerformed
         // TODO add your handling code here:
+        
+        String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
+        
+        modeloDisponibles.clear();
+        modeloPrevias.clear();
+        
+        ArrayList<Curso> cursosDelInstituto = controlador.listarCursosPorInstituto(nombreInstituto);
+        
+        for(int i = 0; i < cursosDelInstituto.size(); i++)
+        {
+            Curso curso = cursosDelInstituto.get(i);
+            
+            modeloDisponibles.addElement(curso.getNombreCurso());
+        }
+        
     }//GEN-LAST:event_ComboInstitutoCursoActionPerformed
 
     private void txtCantidadHorasCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadHorasCursoActionPerformed
@@ -277,7 +290,10 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
         // TODO add your handling code here:
         
-        String instituto = (String) ComboInstitutoCurso.getSelectedItem();
+        String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
+
+        Instituto instituto =   controlador.buscarInstituto(nombreInstituto);
+        
         String nombre = txtNombreCurso.getText();
         String descripcion = txtDescripcionCurso.getText();
         String duracion = txtDuracionCurso.getText();
@@ -285,6 +301,13 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         String textoCreditos = txtCreditosCurso.getText();
         String URL = txtURLCurso.getText();
         LocalDate fechaRegistro = LocalDate.now();
+        
+        ArrayList<Instituto> institutos = controlador.listarInstitutos();
+
+        for (int i = 0; i < institutos.size(); i++)
+        {
+            ComboInstitutoCurso.addItem(institutos.get(i).getNombreInsti());
+        }
         
         ArrayList<String> previas = new ArrayList<>();
         
@@ -301,9 +324,9 @@ public class AltaCurso extends javax.swing.JInternalFrame {
             }
             else
             {
-                if(controlador.existeCurso(nombre)) 
+                if(controlador.existeCurso(nombre, instituto)) 
                 {
-                   JOptionPane.showMessageDialog(this,"Ya existe un curso con ese nombre","Error",JOptionPane.ERROR_MESSAGE);
+                   JOptionPane.showMessageDialog(this,"Ya existe un curso con ese nombre para ese instituto","Error",JOptionPane.ERROR_MESSAGE);
                 } 
                 else
                 {
@@ -344,7 +367,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                                         Curso curso = new Curso(instituto, nombre, descripcion, duracion, horas, creditos, fechaRegistro, URL, previas);
                                         controlador.altaCurso(curso);
 
-                                        JOptionPane.showMessageDialog(this,"Producto creado correctamente");
+                                        JOptionPane.showMessageDialog(this,"Curso creado correctamente");
                                         }
                                         catch(NumberFormatException e)
                                         {
