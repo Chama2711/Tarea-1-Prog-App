@@ -84,6 +84,12 @@ public class Curso implements Serializable {
 
     // Getters y Setters
     public Long getId() { return id; }
+    public int getCantidadHoras(){return cantidadHoras;}
+    public int getCreditos(){return creditos;}
+    public LocalDate getFechaRegistro(){return fechaRegistro;}
+    public String getDescripcion(){return descripcion;}
+    public String getDuracion(){return duracion;}
+    public String getUrl(){return url;}
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     

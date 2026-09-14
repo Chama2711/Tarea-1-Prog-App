@@ -2,12 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
-package com.mycompany.tarea_1_prog_app;
+package presentacion;
 
 import javax.swing.DefaultListModel;
-import java.util.ArrayList;
+import java.util.*;
 import java.time.LocalDate;
 import javax.swing.JOptionPane;
+import persistencia.ControladorPersistencia;
+import logica.*;
 
 /**
  *
@@ -15,37 +17,37 @@ import javax.swing.JOptionPane;
  */
 public class AltaCurso extends javax.swing.JInternalFrame {
 
-    private Controlador controlador;
+    private ControladorPersistencia cp;
     private DefaultListModel<String> modeloDisponibles;
     private DefaultListModel<String> modeloPrevias;
     /**
      * Creates new form AltaCurso
      */
-    public AltaCurso(Controlador controlador) {
+    public AltaCurso(ControladorPersistencia cp) {
         initComponents();
         
-        this.controlador = controlador;
+        this.cp = cp;
         
         modeloDisponibles = new DefaultListModel<>();
         modeloPrevias = new DefaultListModel<>();
         
         
-        ArrayList<Curso> cursos = controlador.listarCursos();
+        ArrayList<Curso> cursos = cp.listarCursos();
         
         for(int i = 0; i < cursos.size(); i++)
         {
             Curso curso = cursos.get(i);
-            modeloDisponibles.addElement(curso.getNombreCurso());
+            modeloDisponibles.addElement(curso.getNombre());
         }
         ListaCursosDisponibles.setModel(modeloDisponibles);
         ListaPreviasSeleccionadas.setModel(modeloPrevias);
         
         ComboInstitutoCurso.removeAllItems();
-        ArrayList<Instituto> institutos = controlador.listarInstitutos();
+        ArrayList<Instituto> institutos = cp.listarInstitutos();
         
         for(int i= 0; i < institutos.size(); i++)
         {
-            ComboInstitutoCurso.addItem(institutos.get(i).getNombreInsti());
+            ComboInstitutoCurso.addItem(institutos.get(i).getNombre());
         }
         
     }
@@ -272,13 +274,13 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         modeloDisponibles.clear();
         modeloPrevias.clear();
         
-        ArrayList<Curso> cursosDelInstituto = controlador.listarCursosPorInstituto(nombreInstituto);
+        ArrayList<Curso> cursosDelInstituto = cp.listarCursosPorInstituto(nombreInstituto);
         
         for(int i = 0; i < cursosDelInstituto.size(); i++)
         {
             Curso curso = cursosDelInstituto.get(i);
             
-            modeloDisponibles.addElement(curso.getNombreCurso());
+            modeloDisponibles.addElement(curso.getNombre());
         }
         
     }//GEN-LAST:event_ComboInstitutoCursoActionPerformed
@@ -288,102 +290,133 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtCantidadHorasCursoActionPerformed
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        // TODO add your handling code here:
-        
         String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
 
-        Instituto instituto =   controlador.buscarInstituto(nombreInstituto);
-        
-        String nombre = txtNombreCurso.getText();
-        String descripcion = txtDescripcionCurso.getText();
-        String duracion = txtDuracionCurso.getText();
-        String textoCantHoras = txtCantidadHorasCurso.getText();
-        String textoCreditos = txtCreditosCurso.getText();
-        String URL = txtURLCurso.getText();
-        LocalDate fechaRegistro = LocalDate.now();
-        
-        ArrayList<Instituto> institutos = controlador.listarInstitutos();
+    Instituto instituto = cp.buscarInstituto(nombreInstituto);
 
-        for (int i = 0; i < institutos.size(); i++)
+    String nombre = txtNombreCurso.getText();
+    String descripcion = txtDescripcionCurso.getText();
+    String duracion = txtDuracionCurso.getText();
+    String textoCantHoras = txtCantidadHorasCurso.getText();
+    String textoCreditos = txtCreditosCurso.getText();
+    String URL = txtURLCurso.getText();
+    LocalDate fechaRegistro = LocalDate.now();
+
+    Set<Curso> previas = new HashSet<>();
+
+    for (int i = 0; i < modeloPrevias.getSize(); i++)
+    {
+        String nombrePrevia = modeloPrevias.getElementAt(i);
+
+        Curso previa = cp.buscarCurso(nombrePrevia);
+
+        if (previa != null)
         {
-            ComboInstitutoCurso.addItem(institutos.get(i).getNombreInsti());
+            previas.add(previa);
         }
-        
-        ArrayList<String> previas = new ArrayList<>();
-        
-        for (int i = 0; i < modeloPrevias.getSize(); i++)
+    }
+
+    if(nombre.isEmpty())
+    {
+        JOptionPane.showMessageDialog(this,
+                "Falta ingresar el nombre",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+    }
+    else
+    {
+        if(cp.existeCurso(nombre, instituto))
         {
-           String previa = modeloPrevias.get(i);
-           previas.add(previa);
+            JOptionPane.showMessageDialog(this,
+                    "Ya existe un curso con ese nombre para ese instituto",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-        
-        
-            if(nombre.isEmpty())
+        else
+        {
+            if(descripcion.isEmpty())
             {
-                javax.swing.JOptionPane.showMessageDialog(this,"Falta ingresar el nombre","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Falta ingresar la descripción",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
             else
             {
-                if(controlador.existeCurso(nombre, instituto)) 
+                if(duracion.isEmpty())
                 {
-                   JOptionPane.showMessageDialog(this,"Ya existe un curso con ese nombre para ese instituto","Error",JOptionPane.ERROR_MESSAGE);
-                } 
+                    JOptionPane.showMessageDialog(this,
+                            "Falta ingresar la duración",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
                 else
                 {
-                    if(descripcion.isEmpty())
+                    if(textoCantHoras.isEmpty())
                     {
-                        javax.swing.JOptionPane.showMessageDialog(this,"Falta ingresar la descripcion","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this,
+                                "Falta ingresar las horas",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                     else
                     {
-                        if(duracion.isEmpty())
+                        if(textoCreditos.isEmpty())
                         {
-                            javax.swing.JOptionPane.showMessageDialog(this,"Falta ingresar la duracion","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(this,
+                                    "Falta ingresar los créditos",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE);
                         }
                         else
                         {
-                            if(textoCantHoras.isEmpty())
+                            if(URL.isEmpty())
                             {
-                                javax.swing.JOptionPane.showMessageDialog(this,"Falta ingresar las horas","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(this,
+                                        "Falta ingresar la URL",
+                                        "Error",
+                                        JOptionPane.ERROR_MESSAGE);
                             }
                             else
                             {
-                                if(textoCreditos.isEmpty())
+                                try
                                 {
-                                    javax.swing.JOptionPane.showMessageDialog(this,"Falta ingresar los creditos","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
-                                }
-                                else
-                                {
-                                    if(URL.isEmpty())
-                                    {
-                                        javax.swing.JOptionPane.showMessageDialog(this,"Falta ingresar el URL","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
-                                    }
-                                    else
-                                    {
-                                        try
-                                        {
-                                        int horas = Integer.parseInt(textoCantHoras);
-                                        int creditos = Integer.parseInt(textoCreditos);
-                                        Curso curso = new Curso(instituto, nombre, descripcion, duracion, horas, creditos, fechaRegistro, URL, previas);
-                                        controlador.altaCurso(curso);
+                                    int horas = Integer.parseInt(textoCantHoras);
+                                    int creditos = Integer.parseInt(textoCreditos);
 
-                                        JOptionPane.showMessageDialog(this,"Curso creado correctamente");
-                                        }
-                                        catch(NumberFormatException e)
-                                        {
-                                           JOptionPane.showMessageDialog(this, "Horas y crditos deben contener solo números","ERROR",JOptionPane.ERROR_MESSAGE);
-                                        }
-                                    }
+                                    Curso curso = new Curso(
+                                            nombre,
+                                            duracion,
+                                            horas,
+                                            creditos,
+                                            fechaRegistro,
+                                            descripcion,
+                                            URL
+                                    );
+
+                                    curso.setInstituto(instituto);
+                                    curso.setPrevias(previas);
+
+                                    cp.altaCurso(curso);
+
+                                    JOptionPane.showMessageDialog(this,
+                                            "Curso creado correctamente");
+
+                                }
+                                catch(NumberFormatException e)
+                                {
+                                    JOptionPane.showMessageDialog(this,
+                                            "Horas y créditos deben contener solo números",
+                                            "ERROR",
+                                            JOptionPane.ERROR_MESSAGE);
                                 }
                             }
                         }
                     }
                 }
             }
-        
-        
-        
-        
+        }
+    } 
     }//GEN-LAST:event_btnAceptarActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed

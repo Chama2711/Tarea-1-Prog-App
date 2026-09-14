@@ -2,10 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
-package com.mycompany.tarea_1_prog_app;
+package presentacion;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
+import java.util.Set;
+import persistencia.ControladorPersistencia;
+import logica.*;
 /**
  *
  * @author Chama
@@ -13,23 +16,23 @@ import java.util.ArrayList;
 public class ConsultaCurso extends javax.swing.JInternalFrame {
     
     
-    private Controlador controlador;
+    private ControladorPersistencia cp;
     /**
      * Creates new form ConsultaCurso
      */
-    public ConsultaCurso(Controlador controlador) {
+    public ConsultaCurso(ControladorPersistencia cp) {
         
-        this.controlador = controlador;
+        this.cp = cp;
         initComponents();
         
         ComboInstitutoConsulta.removeAllItems();
         ComboCursoConsulta.removeAllItems();
         
-        ArrayList<Instituto> institutos = controlador.listarInstitutos();
+        ArrayList<Instituto> institutos = cp.listarInstitutos();
         
         for(int i = 0; i < institutos.size(); i++)
         {
-            ComboInstitutoConsulta.addItem(institutos.get(i).getNombreInsti());
+            ComboInstitutoConsulta.addItem(institutos.get(i).getNombre());
         }
         
     }
@@ -250,9 +253,9 @@ public class ConsultaCurso extends javax.swing.JInternalFrame {
             return;
         }
         
-        Instituto instituto = controlador.buscarInstituto(nombreInstituto);
+        Instituto instituto = cp.buscarInstituto(nombreInstituto);
         
-        Curso curso = controlador.buscarCursoInstituto(nombreCurso, instituto);
+        Curso curso = cp.buscarCursoInstituto(nombreCurso, instituto);
         
         if (curso == null)
         {
@@ -261,31 +264,31 @@ public class ConsultaCurso extends javax.swing.JInternalFrame {
         
         DefaultListModel <String> modeloPrevias = new DefaultListModel<>();
         
-        ArrayList<String> previas = curso.getPreviasCurso();
+        Set<Curso> previas = curso.getPrevias();
         
-        for (int i = 0; i < previas.size(); i++)
+        for (Curso c : previas)
         {
-            modeloPrevias.addElement(previas.get(i));
+            modeloPrevias.addElement(c.getNombre());
         }
         
         DefaultListModel <String> modeloEdiciones = new DefaultListModel<>();
         
-        ArrayList<EdicionCurso> ediciones = controlador.listarEdicionesCurso(curso);
+        ArrayList<EdicionCurso> ediciones = cp.listarEdicionesCurso(curso);
         
         for (int i = 0; i < ediciones.size(); i++)
         {
-            modeloEdiciones.addElement(ediciones.get(i).getNombreEdicion());
+            modeloEdiciones.addElement(ediciones.get(i).getNombre());
         }
         
         
         
-            txtNombreInstituto.setText(curso.getInstituto().getNombreInsti());
-            txtDescripcionCurso.setText(curso.getDescripcionCurso());
-            txtDuracionCurso.setText(curso.getDuracionCurso());
-            txtHorasCurso.setText(String.valueOf(curso.getHorasCurso()));
-            txtCreditosCurso.setText(String.valueOf(curso.getCreditosCurso()));
-            txtFechaCurso.setText(curso.getFechaRegistroCurso().toString());
-            txturlCurso.setText(curso.getURLCurso());
+            txtNombreInstituto.setText(curso.getInstituto().getNombre());
+            txtDescripcionCurso.setText(curso.getDescripcion());
+            txtDuracionCurso.setText(curso.getDuracion());
+            txtHorasCurso.setText(String.valueOf(curso.getCantidadHoras()));
+            txtCreditosCurso.setText(String.valueOf(curso.getCreditos()));
+            txtFechaCurso.setText(curso.getFechaRegistro().toString());
+            txturlCurso.setText(curso.getUrl());
             ListaPreviasCurso.setModel(modeloPrevias);
             ListaEdiciones.setModel(modeloEdiciones);
         
@@ -304,11 +307,11 @@ public class ConsultaCurso extends javax.swing.JInternalFrame {
         
         ComboCursoConsulta.removeAllItems();
         
-        ArrayList<Curso> cursos = controlador.listarCursosPorInstituto(nombreInstituto);
+        ArrayList<Curso> cursos = cp.listarCursosPorInstituto(nombreInstituto);
         
         for(int i = 0; i < cursos.size(); i++)
         {
-            ComboCursoConsulta.addItem(cursos.get(i).getNombreCurso());
+            ComboCursoConsulta.addItem(cursos.get(i).getNombre());
         }
     }//GEN-LAST:event_ComboInstitutoConsultaActionPerformed
 

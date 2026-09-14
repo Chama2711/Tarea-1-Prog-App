@@ -2,34 +2,36 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
-package com.mycompany.tarea_1_prog_app;
+package presentacion;
+import persistencia.ControladorPersistencia;
 import javax.swing.DefaultListModel;
-import java.util.ArrayList;
+import java.util.*;
 import java.time.LocalDate;
 import java.time.Month;
 import javax.swing.JOptionPane;
+import logica.*;
 /**
  *
  * @author Chama
  */
 public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     
-    private Controlador controlador;
+    private ControladorPersistencia cp;
     private DefaultListModel<String> modeloDocentesDispo;
     private DefaultListModel<String> modeloDocentesSelec;
     
     /**
      * Creates new form AltaEdicionCurso
      */
-    public AltaEdicionCurso(Controlador controlador) {
+    public AltaEdicionCurso(ControladorPersistencia cp) {
         
-        this.controlador = controlador;
+        this.cp = cp;
         initComponents();
         
         modeloDocentesDispo = new DefaultListModel<>();
         modeloDocentesSelec = new DefaultListModel<>();
         
-        ArrayList<Docente> docentes = controlador.listarDocentes();
+        ArrayList<Docente> docentes = cp.listarDocentes();
         
         for(int i = 0; i < docentes.size(); i++)
         {
@@ -43,12 +45,12 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         
         
         
-        ArrayList<Instituto> institutos = controlador.listarInstitutos();
+        ArrayList<Instituto> institutos = cp.listarInstitutos();
         
         for(int i = 0; i < institutos.size(); i++)
         {
             Instituto instituto = institutos.get(i);
-            ComboInstituto.addItem(instituto.getNombreInsti());
+            ComboInstituto.addItem(instituto.getNombre());
         }
     }
 
@@ -317,13 +319,13 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         
         ComboCurso.removeAllItems();
         
-        ArrayList<Curso> cursosDelInstituto = controlador.listarCursosPorInstituto(institutoSeleccionado);
+        ArrayList<Curso> cursosDelInstituto = cp.listarCursosPorInstituto(institutoSeleccionado);
         
         for(int i=0; i < cursosDelInstituto.size(); i++)
         {
             Curso curso = cursosDelInstituto.get(i);
             
-            ComboCurso.addItem(curso.getNombreCurso());
+            ComboCurso.addItem(curso.getNombre());
         }
     }//GEN-LAST:event_ComboInstitutoActionPerformed
 
@@ -345,121 +347,145 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtCuposActionPerformed
 
     private void btnAceptarEdicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarEdicionActionPerformed
-        
-        
-        
-        String nombreInstituto = (String) ComboInstituto.getSelectedItem();
-        Instituto instituto = controlador.buscarInstituto(nombreInstituto);
+    String nombreInstituto = (String) ComboInstituto.getSelectedItem();
 
-        String nomCurso = (String) ComboCurso.getSelectedItem();
-        String nombre = txtNombreEdicion.getText();
-        String textoCupo = txtCupos.getText();
-        LocalDate fechaPublic = LocalDate.now();
-         
-        int diaInicio = (int) SpinnerDiaInicio.getValue();
-        int mesInicio = (int) SpinnerMesInicio.getValue();
-        int añoInicio = (int) SpinnerAñoInicio.getValue();
-        
-        int diaFin = (int) SpinnerDiaFin.getValue();
-        int mesFin = (int) SpinnerMesFin.getValue();
-        int añoFin = (int) SpinnerAñoFin.getValue();
-        
-        LocalDate fechaInicio;
-        LocalDate fechaFin;
-        
+    if (nombreInstituto == null)
+    {
+        JOptionPane.showMessageDialog(this,
+                "Debe seleccionar un instituto",
+                "ERROR",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    Instituto instituto = cp.buscarInstituto(nombreInstituto);
+
+    String nomCurso = (String) ComboCurso.getSelectedItem();
+
+    if (nomCurso == null)
+    {
+        JOptionPane.showMessageDialog(this,
+                "Debe seleccionar un curso",
+                "ERROR",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    String nombre = txtNombreEdicion.getText();
+    String textoCupo = txtCupos.getText();
+    LocalDate fechaPublic = LocalDate.now();
+
+    int diaInicio = (int) SpinnerDiaInicio.getValue();
+    int mesInicio = (int) SpinnerMesInicio.getValue();
+    int añoInicio = (int) SpinnerAñoInicio.getValue();
+
+    int diaFin = (int) SpinnerDiaFin.getValue();
+    int mesFin = (int) SpinnerMesFin.getValue();
+    int añoFin = (int) SpinnerAñoFin.getValue();
+
+    LocalDate fechaInicio;
+    LocalDate fechaFin;
+
+    try
+    {
+        fechaInicio = LocalDate.of(añoInicio, mesInicio, diaInicio);
+        fechaFin = LocalDate.of(añoFin, mesFin, diaFin);
+    }
+    catch (Exception e)
+    {
+        JOptionPane.showMessageDialog(this,
+                "Alguna de las fechas ingresadas no es válida",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (nombre.isEmpty())
+    {
+        JOptionPane.showMessageDialog(this,
+                "Falta ingresar el nombre de la edición",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (fechaFin.isBefore(fechaInicio))
+    {
+        JOptionPane.showMessageDialog(this,
+                "La fecha de fin no puede ser anterior a la fecha de inicio",
+                "ERROR",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    int cupo = 0;
+
+    if (!textoCupo.isEmpty())
+    {
         try
         {
-            fechaInicio = LocalDate.of(añoInicio, mesInicio, diaInicio);
-            fechaFin = LocalDate.of(añoFin, mesFin , diaFin);
+            cupo = Integer.parseInt(textoCupo);
         }
-        catch(Exception e)
+        catch (NumberFormatException e)
         {
-            JOptionPane.showMessageDialog(this,"Alguna de las fechas ingresadas no es válida","Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "El cupo debe ser un número",
+                    "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        
-        ArrayList<String> docentes = new ArrayList<>();
-        
-        for(int i=0; i < modeloDocentesSelec.getSize(); i++)
-        {
-            docentes.add(modeloDocentesSelec.get(i));
-        }
-        
-        
-        
-        if(nombre.isEmpty())
-        {
-            JOptionPane.showMessageDialog(this,"Falta ingresar el nombre de la edición","Error",JOptionPane.ERROR_MESSAGE);
-        }
-        else
-        {
-            if(fechaFin.isBefore(fechaInicio))
-            {
-                JOptionPane.showMessageDialog(this,"La fecha de fin no puede ser anterior a la fecha de inicio","ERROR",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            else
-            {
-                    int cupo = 0;
-                    
-                    if(!textoCupo.isEmpty())
-                    {
-                        try
-                        {
-                            cupo = Integer.parseInt(textoCupo);
-                        }
-                        catch (NumberFormatException e)
-                        {
-                            JOptionPane.showMessageDialog(this,"El cupo debe ser un numero","ERROR",JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    }
-                    
-                   
-                    
-                    if(controlador.existeEdicion(nombre))
-                    {
-                        JOptionPane.showMessageDialog(this,"Ya existe una edición con ese nombre.","ERROR",JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    else
-                    {
-                         
-                        
-                        Curso curso = controlador.buscarCursoInstituto(nomCurso, instituto);
-                        
-                       
-                        
-                            if (curso == null)
-                            {
-                                JOptionPane.showMessageDialog(this,"ERROR: No se encontró el curso: " + nomCurso);
-                                return;
-                            }
-                            
-                        if (nomCurso == null)
-                        {
-                            JOptionPane.showMessageDialog(this,"Debe seleccionar un curso","ERROR",JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }    
-                        
-                        EdicionCurso edicion = new EdicionCurso(nombre, fechaInicio, fechaFin, cupo, fechaPublic, docentes, curso);
-                        
-                       
-                        
-                        controlador.altaEdicionCurso(curso, edicion);
-                        
-                        JOptionPane.showMessageDialog(this,"Edición de curso creado correctamente");
-                       
-                    }
-                    
-                
-            }
-        }
-        
-        
+    }
 
-    // TODO add your handling code here:
+    if (cp.existeEdicion(nombre))
+    {
+        JOptionPane.showMessageDialog(this,
+                "Ya existe una edición con ese nombre.",
+                "ERROR",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    Curso curso = cp.buscarCursoInstituto(nomCurso, instituto);
+
+    if (curso == null)
+    {
+        JOptionPane.showMessageDialog(this,
+                "ERROR: No se encontró el curso: " + nomCurso,
+                "ERROR",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    Set<Docente> docentes = new HashSet<>();
+
+for(int i = 0; i < modeloDocentesSelec.getSize(); i++)
+{
+    String nombreDocente = modeloDocentesSelec.getElementAt(i);
+
+    // buscar el Docente correspondiente
+    Docente docente = cp.buscarDocente(nombreDocente);
+
+    if(docente != null)
+    {
+        docentes.add(docente);
+    }
+}
+
+    EdicionCurso edicion = new EdicionCurso(
+            nombre,
+            fechaInicio,
+            fechaFin,
+            cupo,
+            fechaPublic
+    );
+
+    edicion.setCurso(curso);
+    edicion.setDocentes(docentes);
+
+    cp.altaEdicionCurso(curso, edicion);
+
+    JOptionPane.showMessageDialog(this,
+            "Edición de curso creada correctamente");
     }//GEN-LAST:event_btnAceptarEdicionActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed

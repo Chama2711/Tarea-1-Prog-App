@@ -5,18 +5,13 @@
 package persistencia;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityTransaction;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import logica.Curso;
-import logica.Inscripcion;
-import logica.Instituto;
-import logica.ProgramaFormacion;
-import logica.Usuario;
-import logica.Estudiante;
-import logica.EdicionCurso;
+import logica.*;
 
 /**
  *
@@ -327,6 +322,255 @@ import logica.EdicionCurso;
             em.close();
         }
     }
+    
+    ////////
+    public ArrayList<Curso> listarCursosPorInstituto(String nombreInstituto)
+    {
+        EntityManager em = emf.createEntityManager();
+        
+        try
+        {
+            ArrayList<Curso> lista = new ArrayList<>(em.createQuery("SELECT c FROM Curso c " + "WHERE LOWER(c.instituto.nombre) = LOWER(:nombre)", Curso.class).setParameter("nombre", nombreInstituto).getResultList());
+            
+            return lista;
+            
+        }
+        finally
+        {
+            em.close();
+        }
+    } 
+    
+    public ArrayList<EdicionCurso> listarEdicionesCurso(Curso curso)
+    {
+        EntityManager em = emf.createEntityManager();
+
+        try
+        {
+            return new ArrayList<>(em.createQuery("SELECT e FROM EdicionCurso e " + "WHERE e.curso.id = :cursoId",EdicionCurso.class).setParameter("cursoId", curso.getId()).getResultList());
+        }
+        finally
+        {
+            em.close();
+        }
+    }
+                
+    
+    //metodos
+    public ArrayList<Instituto> listarInstitutos()
+    {
+        EntityManager em = emf.createEntityManager();
+        
+        try
+        {
+            ArrayList<Instituto> lista = new ArrayList<>(em.createQuery("SELECT i FROM Instituto i", Instituto.class).getResultList());
+            
+            return lista;
+        }
+        
+        finally
+        {
+            em.close();
+        }
+    }
+
+    public ArrayList<Docente> listarDocentes()
+    {
+        EntityManager em = emf.createEntityManager();
+        
+        try 
+        {
+            return new ArrayList<>(em.createQuery("SELECT d  FROM Docente d",Docente.class).getResultList());
+            
+        }
+        finally
+        {
+            em.close();
+        }
+    }
+    
+    public ArrayList<Curso> listarCursos()
+    {
+         EntityManager em = emf.createEntityManager();
+        
+        try
+        {
+            ArrayList<Curso> lista = new ArrayList<>(em.createQuery("SELECT c FROM Curso c", Curso.class).getResultList());
+            
+            return lista;
+        }
+        
+        finally
+        {
+            em.close();
+        }
+    }
+    
+    
+    
+    
+    public void altaCurso(Curso curso)
+{
+    EntityManager em = emf.createEntityManager();
+
+    try
+    {
+        em.getTransaction().begin();
+
+        Instituto institutoBD =
+                em.find(Instituto.class, curso.getInstituto().getId());
+
+        curso.setInstituto(institutoBD);
+
+        em.persist(curso);
+
+        em.getTransaction().commit();
+    }
+    catch (Exception e)
+    {
+        if(em.getTransaction().isActive())
+        {
+            em.getTransaction().rollback();
+        }
+
+        e.printStackTrace();
+    }
+    finally
+    {
+        em.close();
+    }
+}
+    
+    
+    public boolean existeCurso(String nombre, Instituto instituto)
+    {
+        EntityManager em = emf.createEntityManager();
+        
+        try
+        {
+            Long cantidad = em.createQuery("SELECT COUNT(c) FROM Curso c "+ "WHERE LOWER(c.nombre) = LOWER(:nombre) " + "AND c.instituto.id = :institutoId",Long.class).setParameter("nombre", nombre).setParameter("institutoId", instituto.getId()).getSingleResult();
+            
+            return cantidad > 0;
+        }
+        finally
+        {
+            em.close();
+        }
+    }
+    
+    
+    public boolean existeEdicion(String nombre)
+    {
+        EntityManager em = emf.createEntityManager();
+
+        try
+        {
+            Long cantidad = em.createQuery("SELECT COUNT(e) FROM EdicionCurso e " + "WHERE LOWER(e.nombre) = LOWER(:nombre)",Long.class).setParameter("nombre", nombre).getSingleResult();
+
+            return cantidad > 0;
+        }
+        finally
+        {
+            em.close();
+        }
+    }
+    
+    
+    public Instituto buscarInstituto(String nombre)
+{
+    EntityManager em = emf.createEntityManager();
+    
+    try
+    {
+        return em.createQuery("SELECT i FROM Instituto i " + "WHERE LOWER (i.nombre) = LOWER(:nombre)",Instituto.class).setParameter("nombre", nombre).getResultStream().findFirst().orElse(null);
+    }
+    finally
+    {
+        em.close();
+    }
+}
+    
+    public Curso buscarCursoInstituto(String nombre, Instituto instituto)
+{
+    EntityManager em = emf.createEntityManager();
+
+    try
+    {
+        return em.createQuery("SELECT c FROM Curso c " + "WHERE LOWER(c.nombre) = LOWER(:nombre) " + "AND c.instituto.id = :institutoId", Curso.class).setParameter("nombre", nombre).setParameter("institutoId", instituto.getId()).getResultStream().findFirst().orElse(null);
+        
+    }
+    finally
+    {
+        em.close();
+    }
+}  
+    
+    public Curso buscarCurso(String nombre)
+    {
+        EntityManager em = emf.createEntityManager();
+
+        try
+        {
+            return em.createQuery("SELECT c FROM Curso c " + "WHERE LOWER(c.nombre) = LOWER(:nombre)",Curso.class).setParameter("nombre", nombre).getResultStream().findFirst().orElse(null);
+        }
+        finally
+        {
+            em.close();
+        }
+    }
+    
+    
+   public void altaEdicionCurso(Curso curso, EdicionCurso edicion)
+    {
+        EntityManager em = emf.createEntityManager();
+        
+        try
+        {
+            em.getTransaction().begin();
+            
+            Curso cursoBD = em.merge(curso);
+            
+            edicion.setCurso(cursoBD);
+            
+            em.persist(edicion);
+            
+            em.getTransaction().commit();
+        }
+        catch(Exception e)
+        {
+            if(em.getTransaction().isActive())
+            {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            
+        }
+        finally
+        {
+            em.close();
+        }
+    }
+   
+   public Docente buscarDocente(String nombre)
+{
+    EntityManager em = emf.createEntityManager();
+
+    try
+    {
+        return em.createQuery(
+                "SELECT d FROM Docente d WHERE LOWER(d.nombre) = LOWER(:nombre)",
+                Docente.class)
+                .setParameter("nombre", nombre)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+    }
+    finally
+    {
+        em.close();
+    }
+}
+    ////////
     
 
     public static class ControladoraPersistencia {

@@ -50,8 +50,9 @@ public class EdicionCurso {
         this.nombre = n;
         this.fechaInicio = fi;
         this.fechaFin = ff;
-        this.fechaPublicacion = fp;
         this.cupo = c;
+        this.fechaPublicacion = fp;
+        
     }
     
     public String getNombre(){
@@ -107,6 +108,11 @@ public class EdicionCurso {
             fechaActual.isBefore(fechaFin);
         
     }
+    
+    public void setDocentes(Set<Docente> d){
+        this.docentes = d;
+    }
+    
     
     public void agregoDocente(Docente d){
         docentes.add(d);

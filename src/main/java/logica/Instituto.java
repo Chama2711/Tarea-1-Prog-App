@@ -54,4 +54,5 @@ public class Instituto implements Serializable {
     public Set<Curso> getCursos() { return cursos; }
     public void setCursos(Set<Curso> cursos) { this.cursos = cursos; }
     public void agregoCurso(Curso c) { cursos.add(c); }
+    public Long getId(){return id;}
 }
