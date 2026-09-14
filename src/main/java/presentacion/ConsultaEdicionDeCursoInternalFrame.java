@@ -55,6 +55,7 @@ public class ConsultaEdicionDeCursoInternalFrame extends javax.swing.JInternalFr
         fechaInicioTXT = new javax.swing.JTextField();
         fechaFinTXT = new javax.swing.JTextField();
         fechaPublicacionTXT = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
 
         list1.addActionListener(this::list1ActionPerformed);
 
@@ -102,6 +103,9 @@ public class ConsultaEdicionDeCursoInternalFrame extends javax.swing.JInternalFr
 
         fechaPublicacionTXT.setEditable(false);
 
+        jButton1.setText("Cancelar");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -142,6 +146,10 @@ public class ConsultaEdicionDeCursoInternalFrame extends javax.swing.JInternalFr
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(fechaPublicacionTXT, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(39, 39, 39))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -183,7 +191,9 @@ public class ConsultaEdicionDeCursoInternalFrame extends javax.swing.JInternalFr
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(fechaPublicacionTXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(237, 237, 237))
+                .addGap(178, 178, 178)
+                .addComponent(jButton1)
+                .addGap(36, 36, 36))
         );
 
         pack();
@@ -265,6 +275,11 @@ public class ConsultaEdicionDeCursoInternalFrame extends javax.swing.JInternalFr
     private void nombreTXTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nombreTXTActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_nombreTXTActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -272,6 +287,7 @@ public class ConsultaEdicionDeCursoInternalFrame extends javax.swing.JInternalFr
     private javax.swing.JTextField fechaFinTXT;
     private javax.swing.JTextField fechaInicioTXT;
     private javax.swing.JTextField fechaPublicacionTXT;
+    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<Instituto> jComboBox1;
     private javax.swing.JComboBox<Curso> jComboBox2;
     private javax.swing.JComboBox<EdicionCurso> jComboBox3;

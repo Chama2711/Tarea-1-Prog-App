@@ -106,6 +106,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
         menuAgregarCursoProg = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
+        jMenuItem11 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
         menuConsultaProg = new javax.swing.JMenu();
@@ -154,6 +155,10 @@ public class PrincipalFrame extends javax.swing.JFrame {
         jMenuItem7.setText("Alta de Programa de Formacion");
         jMenuItem7.addActionListener(this::jMenuItem7ActionPerformed);
         jMenu1.add(jMenuItem7);
+
+        jMenuItem11.setText("Alta Instituto");
+        jMenuItem11.addActionListener(this::jMenuItem11ActionPerformed);
+        jMenu1.add(jMenuItem11);
 
         jMenuItem8.setText("Alta Curso");
         jMenuItem8.addActionListener(this::jMenuItem8ActionPerformed);
@@ -271,6 +276,11 @@ private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {
         abrirInternalFrame(new AltaEdicionCurso(controlPersistencia));
     }//GEN-LAST:event_jMenuItem9ActionPerformed
 
+    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
+        // TODO add your handling code here:
+        abrirInternalFrame (new AltaInstitutoInternalFrame(controlPersistencia));
+    }//GEN-LAST:event_jMenuItem11ActionPerformed
+
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -281,6 +291,7 @@ private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
