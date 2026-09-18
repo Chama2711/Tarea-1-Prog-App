@@ -3,8 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package logica;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.HashSet;
@@ -35,8 +34,8 @@ public class Estudiante extends Usuario{
     public Set<String> getProgramasInscriptos() {
         return programasInscriptos;
     }
-    @OneToMany
-    @JoinColumn(name = "estudiante_nick")
+    
+    @OneToMany(cascade = CascadeType.PERSIST)
     private Set<Inscripcion> inscripciones = new HashSet<>();
     
     public Set<Inscripcion> getInscripciones() {

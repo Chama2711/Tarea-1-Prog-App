@@ -307,14 +307,16 @@ import logica.*;
 
         try {
             em.getTransaction().begin();
+            
+            e = em.merge(e);
 
             Inscripcion nueva = new Inscripcion();
             nueva.setFechaInscripcion(LocalDate.now());
             nueva.setEdicionCurso(ec);
+            
 
-            e.getInscripciones().add(nueva);
-
-            em.persist(nueva);
+            
+            e.agregoInscripcion(nueva);
 
             em.getTransaction().commit();
 

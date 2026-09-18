@@ -23,18 +23,18 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
         initComponents();
         this.cp = cp;
         
-            //Configuración de rangos para las fechas (Día 1-31, Mes 1-12, Año 1900-2026)
+            //Configuración de rangos para las fechas (Día 1-31, Mes 1-12, Año 1900-9000)
             diaInicioSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
             mesInicioSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 12, 1));
-            anioInicioSP.setModel(new javax.swing.SpinnerNumberModel(2000, 1900, 2026, 1));
+            anioInicioSP.setModel(new javax.swing.SpinnerNumberModel(2000, 1900, 9000, 1));
             
             diaFinSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
             mesFinSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 12, 1));
-            anioFinSP.setModel(new javax.swing.SpinnerNumberModel(2000, 1900, 2026, 1));
+            anioFinSP.setModel(new javax.swing.SpinnerNumberModel(2000, 1900, 9000, 1));
             
             diaAltaSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
             mesAltaSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 12, 1));
-            anioAltaSP.setModel(new javax.swing.SpinnerNumberModel(2000, 1900, 2026, 1));
+            anioAltaSP.setModel(new javax.swing.SpinnerNumberModel(2000, 1900, 9000, 1));
         
     }
 
@@ -251,7 +251,7 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
 
             JOptionPane.showMessageDialog(
                 this,
-                "Complete todos los campos 'fecha'",
+                "Error",
                 "Error",
                 JOptionPane.ERROR_MESSAGE
             );

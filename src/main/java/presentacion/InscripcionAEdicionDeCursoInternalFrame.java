@@ -176,7 +176,7 @@ public class InscripcionAEdicionDeCursoInternalFrame extends javax.swing.JIntern
     }
 
     jComboBox2.removeAllItems();
-    //jComboBox3.removeAllItems();
+    
 
     for (Curso curso : institutoSeleccionado.getCursos()) {
         jComboBox2.addItem(curso);
@@ -190,7 +190,8 @@ public class InscripcionAEdicionDeCursoInternalFrame extends javax.swing.JIntern
     if (cursoSeleccionado == null) {
         return;
     }
-
+    
+    edicionSeleccionada = null;
     EdicionVigenteTXT.setText("No hay edición vigente");
 
     for (EdicionCurso edicion : cursoSeleccionado.getEdiciones()) {
