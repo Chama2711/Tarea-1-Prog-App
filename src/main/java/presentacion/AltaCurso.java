@@ -290,149 +290,54 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtCantidadHorasCursoActionPerformed
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
-
+try {
+    String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
+    if (nombreInstituto == null) throw new IllegalArgumentException("Seleccione un instituto.");
     Instituto instituto = cp.buscarInstituto(nombreInstituto);
-
-    String nombre = txtNombreCurso.getText();
-    String descripcion = txtDescripcionCurso.getText();
-    String duracion = txtDuracionCurso.getText();
-    String textoCantHoras = txtCantidadHorasCurso.getText();
-    String textoCreditos = txtCreditosCurso.getText();
-    String URL = txtURLCurso.getText();
-    LocalDate fechaRegistro = LocalDate.now();
-
+    if (instituto == null) throw new IllegalArgumentException("El instituto ya no existe.");
+    String nombre = txtNombreCurso.getText().trim();
+    String descripcion = txtDescripcionCurso.getText().trim();
+    String duracion = txtDuracionCurso.getText().trim();
+    String url = txtURLCurso.getText().trim();
+    if (nombre.isEmpty() || descripcion.isEmpty() || duracion.isEmpty() || url.isEmpty()) {
+        throw new IllegalArgumentException("Complete nombre, descripción, duración y URL.");
+    }
+    int horas = Integer.parseInt(txtCantidadHorasCurso.getText().trim());
+    int creditos = Integer.parseInt(txtCreditosCurso.getText().trim());
+    if (cp.existeCurso(nombre)) throw new IllegalArgumentException("Ya existe ese nombre de curso en la plataforma.");
     Set<Curso> previas = new HashSet<>();
-
-    for (int i = 0; i < modeloPrevias.getSize(); i++)
-    {
-        String nombrePrevia = modeloPrevias.getElementAt(i);
-
-        Curso previa = cp.buscarCurso(nombrePrevia);
-
-        if (previa != null)
-        {
-            previas.add(previa);
-        }
+    for (int i = 0; i < modeloPrevias.size(); i++) {
+        Curso previa = cp.buscarCurso(modeloPrevias.getElementAt(i));
+        if (previa == null) throw new IllegalArgumentException("Una previa seleccionada ya no existe.");
+        previas.add(previa);
     }
-
-    if(nombre.isEmpty())
-    {
-        JOptionPane.showMessageDialog(this,
-                "Falta ingresar el nombre",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-    }
-    else
-    {
-        if(cp.existeCurso(nombre, instituto))
-        {
-            JOptionPane.showMessageDialog(this,
-                    "Ya existe un curso con ese nombre para ese instituto",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-        else
-        {
-            if(descripcion.isEmpty())
-            {
-                JOptionPane.showMessageDialog(this,
-                        "Falta ingresar la descripción",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-            else
-            {
-                if(duracion.isEmpty())
-                {
-                    JOptionPane.showMessageDialog(this,
-                            "Falta ingresar la duración",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-                else
-                {
-                    if(textoCantHoras.isEmpty())
-                    {
-                        JOptionPane.showMessageDialog(this,
-                                "Falta ingresar las horas",
-                                "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                    }
-                    else
-                    {
-                        if(textoCreditos.isEmpty())
-                        {
-                            JOptionPane.showMessageDialog(this,
-                                    "Falta ingresar los créditos",
-                                    "Error",
-                                    JOptionPane.ERROR_MESSAGE);
-                        }
-                        else
-                        {
-                            if(URL.isEmpty())
-                            {
-                                JOptionPane.showMessageDialog(this,
-                                        "Falta ingresar la URL",
-                                        "Error",
-                                        JOptionPane.ERROR_MESSAGE);
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    int horas = Integer.parseInt(textoCantHoras);
-                                    int creditos = Integer.parseInt(textoCreditos);
-
-                                    Curso curso = new Curso(
-                                            nombre,
-                                            duracion,
-                                            horas,
-                                            creditos,
-                                            fechaRegistro,
-                                            descripcion,
-                                            URL
-                                    );
-
-                                    curso.setInstituto(instituto);
-                                    curso.setPrevias(previas);
-
-                                    cp.altaCurso(curso);
-
-                                    JOptionPane.showMessageDialog(this,
-                                            "Curso creado correctamente");
-
-                                }
-                                catch(NumberFormatException e)
-                                {
-                                    JOptionPane.showMessageDialog(this,
-                                            "Horas y créditos deben contener solo números",
-                                            "ERROR",
-                                            JOptionPane.ERROR_MESSAGE);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    } 
+    Curso curso = new Curso(nombre, duracion, horas, creditos,
+            LocalDate.now(), descripcion, url);
+    curso.setInstituto(instituto);
+    curso.setPrevias(previas);
+    cp.altaCurso(curso);
+    JOptionPane.showMessageDialog(this, "Curso creado correctamente.");
+    dispose();
+} catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, "Horas y créditos deben ser números enteros.");
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    JOptionPane.showMessageDialog(this, e.getMessage(), "No se creó el curso", JOptionPane.ERROR_MESSAGE);
+}
     }//GEN-LAST:event_btnAceptarActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        // TODO add your handling code here:
-        String cursoSeleccionado = ListaCursosDisponibles.getSelectedValue();
-        modeloPrevias.addElement(cursoSeleccionado);
-        modeloDisponibles.removeElement(cursoSeleccionado);
-        
+String seleccionado = ListaCursosDisponibles.getSelectedValue();
+if (seleccionado == null) return;
+if (!modeloPrevias.contains(seleccionado)) modeloPrevias.addElement(seleccionado);
+modeloDisponibles.removeElement(seleccionado);
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnQuitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarActionPerformed
-        // TODO add your handling code here:
-        
-        String cursoSeleccionado = ListaPreviasSeleccionadas.getSelectedValue();
-        modeloDisponibles.addElement(cursoSeleccionado);
-        modeloPrevias.removeElement(cursoSeleccionado);
+String seleccionado = ListaPreviasSeleccionadas.getSelectedValue();
+if (seleccionado == null) return;
+if (!modeloDisponibles.contains(seleccionado)) modeloDisponibles.addElement(seleccionado);
+modeloPrevias.removeElement(seleccionado);
     }//GEN-LAST:event_btnQuitarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed

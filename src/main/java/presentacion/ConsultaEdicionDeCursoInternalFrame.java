@@ -15,7 +15,42 @@ import persistencia.ControladorPersistencia;
  */
 public class ConsultaEdicionDeCursoInternalFrame extends javax.swing.JInternalFrame {
 
-    private ControladorPersistencia cp;
+private ControladorPersistencia cp;
+
+private void limpiarDetalleEdicion() {
+    nombreTXT.setText("");
+    cupoTXT.setText("");
+    fechaInicioTXT.setText("");
+    fechaFinTXT.setText("");
+    fechaPublicacionTXT.setText("");
+}
+
+public void seleccionarEdicion(String nombre) {
+    EdicionCurso edicion = cp.buscarEdicion(nombre);
+    if (edicion == null || edicion.getCurso() == null || edicion.getCurso().getInstituto() == null) {
+        throw new IllegalArgumentException("La edición ya no está disponible.");
+    }
+    Long institutoId = edicion.getCurso().getInstituto().getId();
+    for (int i = 0; i < jComboBox1.getItemCount(); i++) {
+        if (institutoId.equals(jComboBox1.getItemAt(i).getId())) {
+            jComboBox1.setSelectedIndex(i);
+            break;
+        }
+    }
+    for (int i = 0; i < jComboBox2.getItemCount(); i++) {
+        if (edicion.getCurso().getId().equals(jComboBox2.getItemAt(i).getId())) {
+            jComboBox2.setSelectedIndex(i);
+            break;
+        }
+    }
+    for (int i = 0; i < jComboBox3.getItemCount(); i++) {
+        if (nombre.equals(jComboBox3.getItemAt(i).getNombre())) {
+            jComboBox3.setSelectedIndex(i);
+            return;
+        }
+    }
+    throw new IllegalArgumentException("No se pudo seleccionar la edición.");
+}
     
     public ConsultaEdicionDeCursoInternalFrame(ControladorPersistencia cp) {
     initComponents();
@@ -215,37 +250,30 @@ public class ConsultaEdicionDeCursoInternalFrame extends javax.swing.JInternalFr
     }//GEN-LAST:event_list1ActionPerformed
 
     private void jComboBox1SeleccionoInstituto(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1SeleccionoInstituto
-        // TODO add your handling code here:
-
-    Instituto institutoSeleccionado =
-            (Instituto) jComboBox1.getSelectedItem();
-
-    if (institutoSeleccionado == null) {
-        return;
-    }
-
-    jComboBox2.removeAllItems();
-    jComboBox3.removeAllItems();
-
-    for (Curso curso : institutoSeleccionado.getCursos()) {
-        jComboBox2.addItem(curso);
-    }
+limpiarDetalleEdicion();
+jComboBox2.removeAllItems();
+jComboBox3.removeAllItems();
+Instituto instituto = (Instituto) jComboBox1.getSelectedItem();
+if (instituto == null) return;
+try {
+    for (Curso curso : cp.obtenerCursosDeInstituto(instituto.getId())) jComboBox2.addItem(curso);
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    javax.swing.JOptionPane.showMessageDialog(this, "No se pudieron cargar los cursos.");
+}
     }//GEN-LAST:event_jComboBox1SeleccionoInstituto
 
     private void jComboBox2SeleccionoCursoDeInstituto(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2SeleccionoCursoDeInstituto
-        // TODO add your handling code here:
-        Curso cursoSeleccionado =
-            (Curso) jComboBox2.getSelectedItem();
-
-    if (cursoSeleccionado == null) {
-        return;
-    }
-
-    jComboBox3.removeAllItems();
-
-    for (EdicionCurso edicion : cursoSeleccionado.getEdiciones()) {
-        jComboBox3.addItem(edicion);
-    }
+limpiarDetalleEdicion();
+jComboBox3.removeAllItems();
+Curso curso = (Curso) jComboBox2.getSelectedItem();
+if (curso == null) return;
+try {
+    for (EdicionCurso edicion : cp.listarEdicionesCurso(curso)) jComboBox3.addItem(edicion);
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    javax.swing.JOptionPane.showMessageDialog(this, "No se pudieron cargar las ediciones.");
+}
     }//GEN-LAST:event_jComboBox2SeleccionoCursoDeInstituto
 
     private void jComboBox3SeleccionoEdicionDeCurso(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3SeleccionoEdicionDeCurso

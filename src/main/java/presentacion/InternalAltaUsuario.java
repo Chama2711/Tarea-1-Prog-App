@@ -272,11 +272,8 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
 
     // 7. Registro en el sistema
     if (esDocente) {
-        String nombreInst = cmbInstituto.getSelectedItem().toString();
-        // Cuidado: Si el instituto ya existe en la BD, crear uno "new" puede fallar en JPA. 
-        // Idealmente, pasar solo el 'nombreInst' al controlador y que este lo busque en la BD.
-        logica.Instituto inst = new logica.Instituto(nombreInst);
-        control.registrarDocente(nickname, correo, nombre, apellido, fechaNac);
+String nombreInst = cmbInstituto.getSelectedItem().toString();
+control.registrarDocente(nickname, correo, nombre, apellido, fechaNac, nombreInst);
     } else {
         control.registrarEstudiante(nickname, correo, nombre, apellido, fechaNac);
     }

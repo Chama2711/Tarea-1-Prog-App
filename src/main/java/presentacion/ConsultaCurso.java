@@ -16,7 +16,28 @@ import logica.*;
 public class ConsultaCurso extends javax.swing.JInternalFrame {
     
     
-    private ControladorPersistencia cp;
+private ControladorPersistencia cp;
+
+public void seleccionarCurso(String nombre) {
+    Curso curso = cp.buscarCurso(nombre);
+    if (curso == null || curso.getInstituto() == null) {
+        throw new IllegalArgumentException("El curso ya no está disponible.");
+    }
+    ComboInstitutoConsulta.setSelectedItem(curso.getInstituto().getNombre());
+    ComboCursoConsulta.setSelectedItem(nombre);
+}
+
+private void limpiarDetalleCurso() {
+    txtNombreInstituto.setText("");
+    txtDescripcionCurso.setText("");
+    txtDuracionCurso.setText("");
+    txtHorasCurso.setText("");
+    txtCreditosCurso.setText("");
+    txtFechaCurso.setText("");
+    txturlCurso.setText("");
+    ListaPreviasCurso.setModel(new DefaultListModel<>());
+    ListaEdiciones.setModel(new DefaultListModel<>());
+}
     /**
      * Creates new form ConsultaCurso
      */
@@ -242,57 +263,32 @@ public class ConsultaCurso extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnSalirActionPerformed
 
     private void ComboCursoConsultaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboCursoConsultaActionPerformed
-        // TODO add your handling code here:
-        
-        String nombreInstituto = (String) ComboInstitutoConsulta.getSelectedItem();
-        
-        String nombreCurso = (String) ComboCursoConsulta.getSelectedItem();
-        
-        if(nombreInstituto == null || nombreCurso == null)
-        {
-            return;
-        }
-        
-        Instituto instituto = cp.buscarInstituto(nombreInstituto);
-        
-        Curso curso = cp.buscarCursoInstituto(nombreCurso, instituto);
-        
-        if (curso == null)
-        {
-            return;
-        }
-        
-        DefaultListModel <String> modeloPrevias = new DefaultListModel<>();
-        
-        Set<Curso> previas = curso.getPrevias();
-        
-        for (Curso c : previas)
-        {
-            modeloPrevias.addElement(c.getNombre());
-        }
-        
-        DefaultListModel <String> modeloEdiciones = new DefaultListModel<>();
-        
-        ArrayList<EdicionCurso> ediciones = cp.listarEdicionesCurso(curso);
-        
-        for (int i = 0; i < ediciones.size(); i++)
-        {
-            modeloEdiciones.addElement(ediciones.get(i).getNombre());
-        }
-        
-        
-        
-            txtNombreInstituto.setText(curso.getInstituto().getNombre());
-            txtDescripcionCurso.setText(curso.getDescripcion());
-            txtDuracionCurso.setText(curso.getDuracion());
-            txtHorasCurso.setText(String.valueOf(curso.getCantidadHoras()));
-            txtCreditosCurso.setText(String.valueOf(curso.getCreditos()));
-            txtFechaCurso.setText(curso.getFechaRegistro().toString());
-            txturlCurso.setText(curso.getUrl());
-            ListaPreviasCurso.setModel(modeloPrevias);
-            ListaEdiciones.setModel(modeloEdiciones);
-        
-        
+limpiarDetalleCurso();
+String nombreInstituto = (String) ComboInstitutoConsulta.getSelectedItem();
+String nombreCurso = (String) ComboCursoConsulta.getSelectedItem();
+if (nombreInstituto == null || nombreCurso == null) return;
+try {
+    Instituto instituto = cp.buscarInstituto(nombreInstituto);
+    if (instituto == null) throw new IllegalArgumentException("El instituto ya no existe.");
+    Curso curso = cp.buscarCursoInstituto(nombreCurso, instituto);
+    if (curso == null) throw new IllegalArgumentException("El curso ya no existe.");
+    DefaultListModel<String> previas = new DefaultListModel<>();
+    for (Curso previa : curso.getPrevias()) previas.addElement(previa.getNombre());
+    DefaultListModel<String> ediciones = new DefaultListModel<>();
+    for (EdicionCurso edicion : cp.listarEdicionesCurso(curso)) ediciones.addElement(edicion.getNombre());
+    txtNombreInstituto.setText(instituto.getNombre());
+    txtDescripcionCurso.setText(curso.getDescripcion());
+    txtDuracionCurso.setText(curso.getDuracion());
+    txtHorasCurso.setText(String.valueOf(curso.getCantidadHoras()));
+    txtCreditosCurso.setText(String.valueOf(curso.getCreditos()));
+    txtFechaCurso.setText(curso.getFechaRegistro() == null ? "" : curso.getFechaRegistro().toString());
+    txturlCurso.setText(curso.getUrl());
+    ListaPreviasCurso.setModel(previas);
+    ListaEdiciones.setModel(ediciones);
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    JOptionPane.showMessageDialog(this, "No se pudo consultar el curso: " + e.getMessage());
+}
     }//GEN-LAST:event_ComboCursoConsultaActionPerformed
 
     private void ComboInstitutoConsultaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboInstitutoConsultaActionPerformed

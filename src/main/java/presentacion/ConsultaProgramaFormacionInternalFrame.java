@@ -58,7 +58,17 @@ public class ConsultaProgramaFormacionInternalFrame extends javax.swing.JInterna
 
 
 
-    private void cargarProgramas() {
+public void seleccionarPrograma(String nombre) {
+    for (int i = 0; i < cbProgramas.getItemCount(); i++) {
+        if (nombre.equals(cbProgramas.getItemAt(i))) {
+            cbProgramas.setSelectedIndex(i);
+            return;
+        }
+    }
+    throw new IllegalArgumentException("El programa ya no está disponible.");
+}
+
+private void cargarProgramas() {
         if (cbProgramas == null) return; // Validación anti-NullPointerException
 
     cbProgramas.removeAllItems();

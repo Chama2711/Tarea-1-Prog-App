@@ -155,124 +155,78 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cmbUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbUsuariosActionPerformed
-        // Evitamos errores si el combo está vacío (por ejemplo al borrar los items)
-    if (cmbUsuarios.getSelectedItem() == null) {
-        return; 
-    }
-
-    String nicknameSeleccionado = cmbUsuarios.getSelectedItem().toString();
-    
-    // Le pedimos al controlador el usuario
-   logica.Usuario u = control.obtenerUsuarioPorNickname(nicknameSeleccionado);
-    
-    if (u != null) {
-        // 1. Llenamos los datos básicos (Tus JTextFields)
-        txtNombre.setText(u.getNombre());
-        txtApellido.setText(u.getApellido());
-        txtMail.setText(u.getMail());
-        if (u.getFechaNacimiento() != null) {
-            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            txtFechaNac.setText(u.getFechaNacimiento().format(formato));
-            } else {
-                txtFechaNac.setText("No registrada");
-              }
-        
-        // 2. Diferenciamos si es Docente o Estudiante
-        // Para hacer esto, en Java usamos "instanceof"
-        if (u instanceof logica.Docente) {
-            logica.Docente doc = (logica.Docente) u;
-            javax.swing.DefaultListModel<String> modeloCursos = new javax.swing.DefaultListModel<>();
-            javax.swing.DefaultListModel<String> modeloProgramas = new javax.swing.DefaultListModel<>();
-
-            if (doc.getCursosAsignados() != null) {
-                    for (String nombreCurso : doc.getCursosAsignados()) {
-                        modeloCursos.addElement(nombreCurso);
-                    }
-                }
-                
-                if (doc.getProgramasAsignados() != null) {
-                    for (String nombrePrograma : doc.getProgramasAsignados()) {
-                        modeloProgramas.addElement(nombrePrograma);
-                    }
-                }
-
-            lstCursosEdiciones.setModel(modeloCursos);
-            lstProgramas.setModel(modeloProgramas);
-        }else if (u instanceof logica.Estudiante){
-            logica.Estudiante est = (logica.Estudiante) u;
-            javax.swing.DefaultListModel<String> modeloEdiciones = new javax.swing.DefaultListModel<>();
-            javax.swing.DefaultListModel<String> modeloProgramasEst = new javax.swing.DefaultListModel<>();
-            
-            if (est.getInscripciones() != null) {
-                    for (logica.Inscripcion inscripcion : est.getInscripciones()) {
-                    
-                        // Extraemos la edición
-                        if (inscripcion.getEdicionCurso() != null) {
-                            // Para evitar duplicados en la lista visual (opcional)
-                            String nombreEdicion = inscripcion.getEdicionCurso().getNombre();
-                            if (!modeloEdiciones.contains(nombreEdicion)) {
-                                modeloEdiciones.addElement(nombreEdicion);
-                            }
-                        }
-                    
-                        // Extraemos el programa
-                        if (inscripcion.getProgramaFormacion() != null) {
-                            // Para evitar duplicados en la lista visual (opcional)
-                            String nombrePrograma = inscripcion.getProgramaFormacion().getNombre();
-                            if (!modeloProgramasEst.contains(nombrePrograma)) {
-                                modeloProgramasEst.addElement(nombrePrograma);
-                            }
-                        }
-                    }
-            }
-
-            lstCursosEdiciones.setModel(modeloEdiciones);
-            lstProgramas.setModel(modeloProgramasEst);
-        }
-        
-    }
+txtNombre.setText("");
+txtApellido.setText("");
+txtMail.setText("");
+txtFechaNac.setText("");
+javax.swing.DefaultListModel<String> academico = new javax.swing.DefaultListModel<>();
+javax.swing.DefaultListModel<String> programas = new javax.swing.DefaultListModel<>();
+lstCursosEdiciones.setModel(academico);
+lstProgramas.setModel(programas);
+if (cmbUsuarios.getSelectedItem() == null) return;
+try {
+    String nick = cmbUsuarios.getSelectedItem().toString();
+    logica.Usuario usuario = control.obtenerUsuarioPorNickname(nick);
+    if (usuario == null) throw new IllegalArgumentException("El usuario ya no existe.");
+    txtNombre.setText(usuario.getNombre());
+    txtApellido.setText(usuario.getApellido());
+    txtMail.setText(usuario.getMail());
+    txtFechaNac.setText(usuario.getFechaNacimiento() == null ? "No registrada"
+            : usuario.getFechaNacimiento().format(DateTimeFormatter.ofPattern("dd/MM/uuuu")));
+    boolean docente = usuario instanceof logica.Docente;
+    lstCursosEdiciones.setBorder(javax.swing.BorderFactory.createTitledBorder(
+            docente ? "Cursos del docente" : "Ediciones inscriptas"));
+    lstProgramas.setBorder(javax.swing.BorderFactory.createTitledBorder(
+            docente ? "Programas relacionados con sus cursos" : "Programas inscriptos"));
+    for (String nombre : control.listarCursosOEdicionesUsuario(nick)) academico.addElement(nombre);
+    for (String nombre : control.listarProgramasUsuario(nick)) programas.addElement(nombre);
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    javax.swing.JOptionPane.showMessageDialog(this, "No se pudo completar la consulta: "
+            + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+}
     }//GEN-LAST:event_cmbUsuariosActionPerformed
 
     private void lstCursosEdicionesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstCursosEdicionesMouseClicked
-        // Verificamos que sea un doble clic
-    if (evt.getClickCount() == 2) {
-        // Obtenemos el texto del elemento al que le hicieron clic
-        String seleccionado = lstCursosEdiciones.getSelectedValue();
-        
-        if (seleccionado != null) {
-            // Instanciamos el controlador que pide la ventana
-                persistencia.ControladorPersistencia cp = new persistencia.ControladorPersistencia();
-                
-                // Creamos la ventana con la clase
-                ConsultaEdicionDeCursoInternalFrame ventanaCurso = new ConsultaEdicionDeCursoInternalFrame(cp);
-                
-                // La agregamos al escritorio principal y la mostramos
-                this.getDesktopPane().add(ventanaCurso); 
-                ventanaCurso.setVisible(true);
-                ventanaCurso.toFront(); // Trae la ventana al frente
-            }
+if (evt.getClickCount() != 2 || lstCursosEdiciones.getSelectedValue() == null
+        || cmbUsuarios.getSelectedItem() == null || getDesktopPane() == null) return;
+try {
+    String nombre = lstCursosEdiciones.getSelectedValue();
+    logica.Usuario usuario = control.obtenerUsuarioPorNickname(cmbUsuarios.getSelectedItem().toString());
+    if (usuario == null) throw new IllegalArgumentException("El usuario ya no existe.");
+    persistencia.ControladorPersistencia cp = new persistencia.ControladorPersistencia();
+    javax.swing.JInternalFrame ventana;
+    if (usuario instanceof logica.Docente) {
+        ConsultaCurso consulta = new ConsultaCurso(cp);
+        consulta.seleccionarCurso(nombre);
+        ventana = consulta;
+    } else {
+        ConsultaEdicionDeCursoInternalFrame consulta = new ConsultaEdicionDeCursoInternalFrame(cp);
+        consulta.seleccionarEdicion(nombre);
+        ventana = consulta;
     }
+    getDesktopPane().add(ventana);
+    ventana.setVisible(true);
+    ventana.toFront();
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    javax.swing.JOptionPane.showMessageDialog(this, "No se pudo abrir la consulta: " + e.getMessage());
+}
     }//GEN-LAST:event_lstCursosEdicionesMouseClicked
 
     private void lstProgramasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstProgramasMouseClicked
-        // Verificamos que sea un doble clic
-    if (evt.getClickCount() == 2) {
-        // Obtenemos el texto del elemento al que le hicieron clic
-        String seleccionado = lstProgramas.getSelectedValue();
-        
-        if (seleccionado != null) {
-            // Instanciamos el controlador
-                persistencia.ControladorPersistencia cp = new persistencia.ControladorPersistencia();
-                
-                // Creamos la ventana de Programa de Formación
-                ConsultaProgramaFormacionInternalFrame ventanaPrograma = new ConsultaProgramaFormacionInternalFrame(cp);
-                
-                // La agregamos al escritorio principal y la mostramos
-                this.getDesktopPane().add(ventanaPrograma);
-                ventanaPrograma.setVisible(true);
-                ventanaPrograma.toFront(); // Trae la ventana al frente
-            }
-    }
+if (evt.getClickCount() != 2 || lstProgramas.getSelectedValue() == null || getDesktopPane() == null) return;
+try {
+    persistencia.ControladorPersistencia cp = new persistencia.ControladorPersistencia();
+    ConsultaProgramaFormacionInternalFrame ventana = new ConsultaProgramaFormacionInternalFrame(cp);
+    ventana.seleccionarPrograma(lstProgramas.getSelectedValue());
+    getDesktopPane().add(ventana);
+    ventana.setVisible(true);
+    ventana.toFront();
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    javax.swing.JOptionPane.showMessageDialog(this, "No se pudo abrir el programa: " + e.getMessage());
+}
     }//GEN-LAST:event_lstProgramasMouseClicked
 
 

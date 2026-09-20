@@ -37,7 +37,7 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         {
             Docente docente = docentes.get(i);
             
-            modeloDocentesDispo.addElement(docente.getNombre());
+modeloDocentesDispo.addElement(docente.getNick());
         }
         
         ListaDocentesDisponibles.setModel(modeloDocentesDispo);
@@ -334,12 +334,10 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_ComboCursoActionPerformed
 
     private void btnAgregarDocenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarDocenteActionPerformed
-        
-        String docenteSeleccionado = ListaDocentesDisponibles.getSelectedValue();
-        modeloDocentesSelec.addElement(docenteSeleccionado);
-        modeloDocentesDispo.removeElement(docenteSeleccionado);
-
-        // TODO add your handling code here:
+String seleccionado = ListaDocentesDisponibles.getSelectedValue();
+if (seleccionado == null) return;
+if (!modeloDocentesSelec.contains(seleccionado)) modeloDocentesSelec.addElement(seleccionado);
+modeloDocentesDispo.removeElement(seleccionado);
     }//GEN-LAST:event_btnAgregarDocenteActionPerformed
 
     private void txtCuposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCuposActionPerformed
@@ -347,145 +345,43 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtCuposActionPerformed
 
     private void btnAceptarEdicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarEdicionActionPerformed
+try {
     String nombreInstituto = (String) ComboInstituto.getSelectedItem();
-
-    if (nombreInstituto == null)
-    {
-        JOptionPane.showMessageDialog(this,
-                "Debe seleccionar un instituto",
-                "ERROR",
-                JOptionPane.ERROR_MESSAGE);
-        return;
+    String nombreCurso = (String) ComboCurso.getSelectedItem();
+    if (nombreInstituto == null || nombreCurso == null) {
+        throw new IllegalArgumentException("Seleccione instituto y curso.");
     }
-
     Instituto instituto = cp.buscarInstituto(nombreInstituto);
-
-    String nomCurso = (String) ComboCurso.getSelectedItem();
-
-    if (nomCurso == null)
-    {
-        JOptionPane.showMessageDialog(this,
-                "Debe seleccionar un curso",
-                "ERROR",
-                JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    String nombre = txtNombreEdicion.getText();
-    String textoCupo = txtCupos.getText();
-    LocalDate fechaPublic = LocalDate.now();
-
-    int diaInicio = (int) SpinnerDiaInicio.getValue();
-    int mesInicio = (int) SpinnerMesInicio.getValue();
-    int añoInicio = (int) SpinnerAñoInicio.getValue();
-
-    int diaFin = (int) SpinnerDiaFin.getValue();
-    int mesFin = (int) SpinnerMesFin.getValue();
-    int añoFin = (int) SpinnerAñoFin.getValue();
-
-    LocalDate fechaInicio;
-    LocalDate fechaFin;
-
-    try
-    {
-        fechaInicio = LocalDate.of(añoInicio, mesInicio, diaInicio);
-        fechaFin = LocalDate.of(añoFin, mesFin, diaFin);
-    }
-    catch (Exception e)
-    {
-        JOptionPane.showMessageDialog(this,
-                "Alguna de las fechas ingresadas no es válida",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    if (nombre.isEmpty())
-    {
-        JOptionPane.showMessageDialog(this,
-                "Falta ingresar el nombre de la edición",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    if (fechaFin.isBefore(fechaInicio))
-    {
-        JOptionPane.showMessageDialog(this,
-                "La fecha de fin no puede ser anterior a la fecha de inicio",
-                "ERROR",
-                JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    int cupo = 0;
-
-    if (!textoCupo.isEmpty())
-    {
-        try
-        {
-            cupo = Integer.parseInt(textoCupo);
-        }
-        catch (NumberFormatException e)
-        {
-            JOptionPane.showMessageDialog(this,
-                    "El cupo debe ser un número",
-                    "ERROR",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-    }
-
-    if (cp.existeEdicion(nombre))
-    {
-        JOptionPane.showMessageDialog(this,
-                "Ya existe una edición con ese nombre.",
-                "ERROR",
-                JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    Curso curso = cp.buscarCursoInstituto(nomCurso, instituto);
-
-    if (curso == null)
-    {
-        JOptionPane.showMessageDialog(this,
-                "ERROR: No se encontró el curso: " + nomCurso,
-                "ERROR",
-                JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
+    if (instituto == null) throw new IllegalArgumentException("El instituto ya no existe.");
+    Curso curso = cp.buscarCursoInstituto(nombreCurso, instituto);
+    if (curso == null) throw new IllegalArgumentException("El curso ya no existe.");
+    String nombre = txtNombreEdicion.getText().trim();
+    LocalDate inicio = LocalDate.of((Integer) SpinnerAñoInicio.getValue(),
+            (Integer) SpinnerMesInicio.getValue(), (Integer) SpinnerDiaInicio.getValue());
+    LocalDate fin = LocalDate.of((Integer) SpinnerAñoFin.getValue(),
+            (Integer) SpinnerMesFin.getValue(), (Integer) SpinnerDiaFin.getValue());
+    String textoCupo = txtCupos.getText().trim();
+    int cupo = textoCupo.isEmpty() ? -1 : Integer.parseInt(textoCupo);
     Set<Docente> docentes = new HashSet<>();
-
-for(int i = 0; i < modeloDocentesSelec.getSize(); i++)
-{
-    String nombreDocente = modeloDocentesSelec.getElementAt(i);
-
-    // buscar el Docente correspondiente
-    Docente docente = cp.buscarDocente(nombreDocente);
-
-    if(docente != null)
-    {
+    for (int i = 0; i < modeloDocentesSelec.size(); i++) {
+        String nick = modeloDocentesSelec.getElementAt(i);
+        Docente docente = cp.buscarDocentePorNick(nick);
+        if (docente == null) throw new IllegalArgumentException("El docente " + nick + " ya no existe.");
         docentes.add(docente);
     }
-}
-
-    EdicionCurso edicion = new EdicionCurso(
-            nombre,
-            fechaInicio,
-            fechaFin,
-            cupo,
-            fechaPublic
-    );
-
-    edicion.setCurso(curso);
+    EdicionCurso edicion = new EdicionCurso(nombre, inicio, fin, cupo, LocalDate.now());
     edicion.setDocentes(docentes);
-
     cp.altaEdicionCurso(curso, edicion);
-
-    JOptionPane.showMessageDialog(this,
-            "Edición de curso creada correctamente");
+    JOptionPane.showMessageDialog(this, "Edición de curso creada correctamente.");
+    dispose();
+} catch (java.time.DateTimeException e) {
+    JOptionPane.showMessageDialog(this, "Ingrese fechas reales de inicio y fin.");
+} catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, "El cupo debe ser entero; deje vacío para no limitarlo.");
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    JOptionPane.showMessageDialog(this, e.getMessage(), "No se creó la edición", JOptionPane.ERROR_MESSAGE);
+}
     }//GEN-LAST:event_btnAceptarEdicionActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
@@ -495,12 +391,10 @@ for(int i = 0; i < modeloDocentesSelec.getSize(); i++)
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnQuitarDocenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarDocenteActionPerformed
-        // TODO add your handling code here:
-        
-        String docenteDisponible = ListaDocentesSeleccionados.getSelectedValue();
-        modeloDocentesDispo.addElement(docenteDisponible);
-        modeloDocentesSelec.removeElement(docenteDisponible);
-        
+String seleccionado = ListaDocentesSeleccionados.getSelectedValue();
+if (seleccionado == null) return;
+if (!modeloDocentesDispo.contains(seleccionado)) modeloDocentesDispo.addElement(seleccionado);
+modeloDocentesSelec.removeElement(seleccionado);
     }//GEN-LAST:event_btnQuitarDocenteActionPerformed
 
 

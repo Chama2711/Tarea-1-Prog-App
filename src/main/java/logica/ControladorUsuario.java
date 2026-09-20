@@ -29,24 +29,10 @@ import java.time.format.DateTimeParseException;
 public class ControladorUsuario {
     private ControladorPersistencia controlPersistencia = new ControladorPersistencia();
     
-   public void modificarDatosUsuario(String nickname, String nuevoNombre, String nuevoApellido, LocalDate nuevaFecha) {
-        try {
-            // 1. Traemos el usuario de la BD
-            Usuario usu = controlPersistencia.obtenerUsuario(nickname);
-            
-            if (usu != null) {
-                // 2. Actualizamos los datos (el nickname y email no cambian)
-                usu.setNombre(nuevoNombre);
-                usu.setApellido(nuevoApellido);
-                usu.setFechaNacimiento(nuevaFecha);
-                
-                // 3. Mandamos a guardar los cambios a la BD
-                controlPersistencia.editarUsuario(usu);
-            }
-        } catch (Exception ex) {
-            System.out.println("Error al modificar usuario: " + ex.getMessage());
-        }
-    }
+public void modificarDatosUsuario(String nickname, String nuevoNombre,
+        String nuevoApellido, LocalDate nuevaFecha) {
+    modificarUsuario(nickname, nuevoNombre, nuevoApellido, nuevaFecha);
+}
     
     // Ejemplo de listar para tus JList:
     public List<String> obtenerNicknamesUsuarios() {
@@ -81,17 +67,23 @@ public boolean existeCorreo(String mail) {
         guardar(e);
     }
 
-    public void registrarDocente(String ni, String m, String no, String a, LocalDate fn) {
-        Docente d = new Docente(ni, m, no, a, fn);
-        guardar(d);
-    }
+public void registrarDocente(String ni, String m, String no, String a,
+        LocalDate fn, String nombreInstituto) {
+    Docente d = new Docente(ni, m, no, a, fn);
+    guardar(d, nombreInstituto);
+}
 
-    private void guardar(Usuario u) {
+private void guardar(Usuario u) {
+    guardar(u, null);
+}
+
+private void guardar(Usuario u, String nombreInstituto) {
     try {
-        // En vez de guardarlo en un mapa, lo mandamos a la base de datos
-        controlPersistencia.crearUsuario(u);
-    } catch (Exception ex) {
-        System.out.println("Error al guardar en BD: " + ex.getMessage());
+        controlPersistencia.crearUsuario(u, nombreInstituto);
+    } catch (IllegalArgumentException e) {
+        throw e;
+    } catch (Exception e) {
+        throw new IllegalStateException("No se pudo guardar el usuario.", e);
     }
 }
     
@@ -114,22 +106,34 @@ public Usuario obtenerUsuarioPorNickname(String nickname) {
     return controlPersistencia.obtenerUsuario(nickname);
 }
 
-public void modificarUsuario(String nickname, String nuevoNombre, String nuevoApellido, LocalDate nuevaFechaNac) {
+public void modificarUsuario(String nickname, String nuevoNombre,
+        String nuevoApellido, LocalDate nuevaFechaNac) {
+    if (nuevoNombre == null || nuevoNombre.isBlank() || nuevoApellido == null
+            || nuevoApellido.isBlank() || nuevaFechaNac == null
+            || nuevaFechaNac.isAfter(LocalDate.now())) {
+        throw new IllegalArgumentException("Revise nombre, apellido y fecha de nacimiento.");
+    }
     try {
         Usuario u = controlPersistencia.obtenerUsuario(nickname);
-        
-        if (u != null) {
-            u.setNombre(nuevoNombre);
-            u.setApellido(nuevoApellido);
-            u.setFechaNacimiento(nuevaFechaNac);
-            
-            // Esta es la línea clave: le avisa a la BD que guarde los nuevos cambios
-            controlPersistencia.editarUsuario(u);
-        }
-    } catch (Exception ex) {
-        System.out.println("Error al modificar en BD: " + ex.getMessage());
+        if (u == null) throw new IllegalArgumentException("El usuario ya no existe.");
+        u.setNombre(nuevoNombre.trim());
+        u.setApellido(nuevoApellido.trim());
+        u.setFechaNacimiento(nuevaFechaNac);
+        controlPersistencia.editarUsuario(u);
+    } catch (IllegalArgumentException e) {
+        throw e;
+    } catch (Exception e) {
+        throw new IllegalStateException("No se pudo modificar el usuario.", e);
     }
 }
+
+    public List<String> listarCursosOEdicionesUsuario(String nick) {
+        return controlPersistencia.listarCursosOEdicionesUsuario(nick);
+    }
+
+    public List<String> listarProgramasUsuario(String nick) {
+        return controlPersistencia.listarProgramasUsuario(nick);
+    }
 
 public List<String> obtenerNombresInstitutos() {
         // Le pedimos los objetos completos a la persistencia

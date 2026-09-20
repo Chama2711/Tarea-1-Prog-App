@@ -25,7 +25,8 @@ public class InscripcionAEdicionDeCursoInternalFrame extends javax.swing.JIntern
     
     public InscripcionAEdicionDeCursoInternalFrame(ControladorPersistencia cp) {
         initComponents();
-        estudianteSeleccionadoTXT.setVisible(false);
+estudianteSeleccionadoTXT.setVisible(false);
+jButton2.setEnabled(false);
         this.cp = cp;
         
         setSize(750, 500);
@@ -156,7 +157,12 @@ public class InscripcionAEdicionDeCursoInternalFrame extends javax.swing.JIntern
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    private void cargarInstitutos() {
+private void actualizarBotonInscripcion() {
+    jButton2.setEnabled(estudianteSeleccionado != null
+            && jComboBox2.getSelectedItem() != null && edicionSeleccionada != null);
+}
+
+private void cargarInstitutos() {
         jComboBox1.removeAllItems();
 
         List<Instituto> institutos = cp.obtenerInstitutos();
@@ -167,42 +173,44 @@ public class InscripcionAEdicionDeCursoInternalFrame extends javax.swing.JIntern
     }
     
     private void jComboBox1SeleccionoInstituto(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1SeleccionoInstituto
-        // TODO add your handling code here:
-        Instituto institutoSeleccionado =
-            (Instituto) jComboBox1.getSelectedItem();
-
-    if (institutoSeleccionado == null) {
-        return;
-    }
-
-    jComboBox2.removeAllItems();
-    
-
-    for (Curso curso : institutoSeleccionado.getCursos()) {
+edicionSeleccionada = null;
+EdicionVigenteTXT.setText("No hay edición vigente");
+jComboBox2.removeAllItems();
+actualizarBotonInscripcion();
+Instituto instituto = (Instituto) jComboBox1.getSelectedItem();
+if (instituto == null) return;
+try {
+    for (Curso curso : cp.obtenerCursosDeInstituto(instituto.getId())) {
         jComboBox2.addItem(curso);
     }
+} catch (RuntimeException e) {
+    JOptionPane.showMessageDialog(this, "No se pudieron cargar los cursos.");
+    e.printStackTrace();
+}
     }//GEN-LAST:event_jComboBox1SeleccionoInstituto
 
     private void jComboBox2SeleccionoCursoDeInstituto(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2SeleccionoCursoDeInstituto
-        // TODO add your handling code here:
-        Curso cursoSeleccionado = (Curso) jComboBox2.getSelectedItem();
-
-    if (cursoSeleccionado == null) {
-        return;
+edicionSeleccionada = null;
+EdicionVigenteTXT.setText("No hay edición vigente");
+actualizarBotonInscripcion();
+Curso curso = (Curso) jComboBox2.getSelectedItem();
+if (curso == null) return;
+try {
+    java.util.List<EdicionCurso> vigentes = new java.util.ArrayList<>();
+    for (EdicionCurso edicion : cp.listarEdicionesCurso(curso)) {
+        if (edicion.esVigente()) vigentes.add(edicion);
     }
-    
-    edicionSeleccionada = null;
-    EdicionVigenteTXT.setText("No hay edición vigente");
-
-    for (EdicionCurso edicion : cursoSeleccionado.getEdiciones()) {
-        if (edicion.esVigente()) {
-            edicionSeleccionada = edicion;
-            EdicionVigenteTXT.setText(edicion.getNombre());
-            break;
+    if (vigentes.size() == 1) {
+        edicionSeleccionada = vigentes.get(0);
+        EdicionVigenteTXT.setText(edicionSeleccionada.getNombre());
+    } else if (vigentes.size() > 1) {
+        EdicionVigenteTXT.setText("Hay varias ediciones vigentes; revise sus fechas");
     }
+} catch (RuntimeException e) {
+    JOptionPane.showMessageDialog(this, "No se pudieron cargar las ediciones.");
+    e.printStackTrace();
 }
-        
-    
+actualizarBotonInscripcion();
     }//GEN-LAST:event_jComboBox2SeleccionoCursoDeInstituto
 
     private void EdicionVigenteTXTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EdicionVigenteTXTActionPerformed
@@ -235,36 +243,42 @@ public class InscripcionAEdicionDeCursoInternalFrame extends javax.swing.JIntern
         if (seleccionado != null) {
             estudianteSeleccionado = seleccionado;
             estudianteSeleccionadoTXT.setText(seleccionado.getNombre());
-            estudianteSeleccionadoTXT.setVisible(true);
+estudianteSeleccionadoTXT.setVisible(true);
+actualizarBotonInscripcion();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-                // TODO add your handling code here:
-                Estudiante e = estudianteSeleccionado;
-                Curso c = (Curso) jComboBox2.getSelectedItem();
-                EdicionCurso ec = edicionSeleccionada;
-                String msg = "Se va a inscribir al estudiante " + e.getNombre() + " en la edicion " + ec.getNombre() + " del curso " + c.getNombre();
-                
-                 Object[] opciones = {"Confirmar", "Cancelar"};
-                
-                int opcion = JOptionPane.showOptionDialog(
-                this,
-                msg,
-                "Confirmar inscripción",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opciones,
-                opciones[0]);
-                
-                if (opcion == 0){
-                    cp.inscriboAEdicionCurso(e, ec);
-                    JOptionPane.showMessageDialog(
-                this,
-                "Inscripción realizada correctamente.");
-                }
-                
+Estudiante estudiante = estudianteSeleccionado;
+Curso curso = (Curso) jComboBox2.getSelectedItem();
+EdicionCurso edicion = edicionSeleccionada;
+if (estudiante == null || curso == null || edicion == null) {
+    JOptionPane.showMessageDialog(this, "Seleccione estudiante y un curso con edición vigente.");
+    return;
+}
+java.time.format.DateTimeFormatter formato = java.time.format.DateTimeFormatter
+        .ofPattern("dd/MM/uuuu").withResolverStyle(java.time.format.ResolverStyle.STRICT);
+String texto = JOptionPane.showInputDialog(this,
+        "Fecha de inscripción (dd/MM/aaaa):", java.time.LocalDate.now().format(formato));
+if (texto == null) return;
+try {
+    java.time.LocalDate fecha = java.time.LocalDate.parse(texto.trim(), formato);
+    String mensaje = "Inscribir a " + estudiante.getNick() + " en " + edicion.getNombre()
+            + " del curso " + curso.getNombre() + ", con fecha " + fecha.format(formato) + ".";
+    if (JOptionPane.showConfirmDialog(this, mensaje, "Confirmar inscripción",
+            JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+    cp.inscriboAEdicionCurso(estudiante, edicion, fecha);
+    JOptionPane.showMessageDialog(this, "Inscripción realizada correctamente.");
+    estudianteSeleccionado = null;
+    estudianteSeleccionadoTXT.setText("");
+    estudianteSeleccionadoTXT.setVisible(false);
+    actualizarBotonInscripcion();
+} catch (java.time.format.DateTimeParseException e) {
+    JOptionPane.showMessageDialog(this, "Ingrese una fecha real con formato dd/MM/aaaa.");
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    JOptionPane.showMessageDialog(this, e.getMessage(), "No se realizó la inscripción", JOptionPane.ERROR_MESSAGE);
+}
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed

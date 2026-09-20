@@ -109,7 +109,11 @@ public class EdicionCurso {
         
     }
     
-    public void setDocentes(Set<Docente> d){
+public Set<Docente> getDocentes() {
+    return docentes;
+}
+
+public void setDocentes(Set<Docente> d){
         this.docentes = d;
     }
     

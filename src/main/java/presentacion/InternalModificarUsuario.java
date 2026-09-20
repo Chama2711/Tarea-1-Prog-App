@@ -191,45 +191,29 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_cmbUsuariosActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        if (cmbUsuarios.getSelectedItem() == null) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Seleccione un usuario primero.", "Atención", javax.swing.JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    String nick = txtNickname.getText();
+if (cmbUsuarios.getSelectedItem() == null) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Seleccione un usuario primero.");
+    return;
+}
+try {
+    String nick = cmbUsuarios.getSelectedItem().toString();
     String nombre = txtNombre.getText().trim();
     String apellido = txtApellido.getText().trim();
-    String fechaNacStr = txtFechaNac.getText().trim();
-
-    // Validar campos obligatorios
-    if (nombre.isEmpty() || apellido.isEmpty() || fechaNacStr.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "No puede dejar campos editables vacíos.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    LocalDate fechaNacDate;
-
-        try {
-            DateTimeFormatter formatter =
-                    DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-            fechaNacDate = LocalDate.parse(fechaNacStr, formatter);
-
-        } catch (DateTimeParseException e) {
-        javax.swing.JOptionPane.showMessageDialog(
-                this,
-                "Formato de fecha inválido. Por favor use el formato dd/MM/yyyy",
-                "Error de Fecha",
-                javax.swing.JOptionPane.ERROR_MESSAGE
-        );
-        return;
-    }
-
-        // Guardar cambios en el controlador pasando el objeto Date
-        control.modificarUsuario(nick, nombre, apellido, fechaNacDate);
-
-    javax.swing.JOptionPane.showMessageDialog(this, "Usuario modificado con éxito.", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-    this.dispose(); // Cierra la ventana al terminar
+    DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/uuuu")
+            .withResolverStyle(java.time.format.ResolverStyle.STRICT);
+    LocalDate fecha = LocalDate.parse(txtFechaNac.getText().trim(), formato);
+    control.modificarUsuario(nick, nombre, apellido, fecha);
+    javax.swing.JOptionPane.showMessageDialog(this, "Usuario modificado con éxito.");
+    dispose();
+} catch (DateTimeParseException e) {
+    javax.swing.JOptionPane.showMessageDialog(this,
+            "Ingrese una fecha real con formato dd/MM/aaaa.",
+            "Fecha inválida", javax.swing.JOptionPane.ERROR_MESSAGE);
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(),
+            "No se guardaron los cambios", javax.swing.JOptionPane.ERROR_MESSAGE);
+}
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void txtFechaNacActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaNacActionPerformed
