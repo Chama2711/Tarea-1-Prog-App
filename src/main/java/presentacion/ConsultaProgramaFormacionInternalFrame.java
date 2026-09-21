@@ -208,7 +208,7 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
 
         jLabel6.setText("Cursos:");
 
-        btCerrar.setText("Cerrar");
+        btCerrar.setText("Salir");
         btCerrar.addActionListener(this::btCerrarActionPerformed);
 
         jScrollPane3.setViewportView(jtreeProgramasCursos);
@@ -268,9 +268,7 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
                     .addComponent(jLabel5)
                     .addComponent(scrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, 0)
-                        .addComponent(jLabel6))
+                    .addComponent(jLabel6)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(17, 17, 17)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)))

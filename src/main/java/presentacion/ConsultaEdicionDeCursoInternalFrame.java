@@ -229,7 +229,7 @@ public void seleccionarEdicion(String nombre) {
 
         fechaPublicacionTXT.setEditable(false);
 
-        jButton1.setText("Cancelar");
+        jButton1.setText("Salir");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
         jScrollPane1.setViewportView(arbolEdiciones);
@@ -268,7 +268,7 @@ public void seleccionarEdicion(String nombre) {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton1)
-                .addGap(39, 39, 39))
+                .addGap(36, 36, 36))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -300,9 +300,9 @@ public void seleccionarEdicion(String nombre) {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(fechaPublicacionTXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(178, 178, 178)
+                .addGap(56, 56, 56)
                 .addComponent(jButton1)
-                .addGap(36, 36, 36))
+                .addGap(33, 33, 33))
         );
 
         pack();

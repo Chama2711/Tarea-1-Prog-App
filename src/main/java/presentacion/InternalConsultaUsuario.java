@@ -70,6 +70,7 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         lstCursosEdiciones = new javax.swing.JList<>();
         jScrollPane2 = new javax.swing.JScrollPane();
         lstProgramas = new javax.swing.JList<>();
+        btnSalir = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -113,6 +114,9 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         });
         jScrollPane2.setViewportView(lstProgramas);
 
+        btnSalir.setText("Salir");
+        btnSalir.addActionListener(this::btnSalirActionPerformed);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -137,6 +141,10 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(117, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnSalir)
+                .addGap(38, 38, 38))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -157,7 +165,9 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addGap(9, 9, 9)
+                .addComponent(btnSalir)
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
@@ -238,6 +248,12 @@ try {
 }
     }//GEN-LAST:event_lstProgramasMouseClicked
 
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+        // TODO add your handling code here:
+
+        dispose();
+    }//GEN-LAST:event_btnSalirActionPerformed
+
 
     
     
@@ -254,6 +270,7 @@ try {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnSalir;
     private javax.swing.JComboBox<String> cmbUsuarios;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
