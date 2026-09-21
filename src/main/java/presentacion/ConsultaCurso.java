@@ -94,6 +94,11 @@ private void limpiarDetalleCurso() {
         ListaEdiciones = new javax.swing.JList<>();
         jLabel13 = new javax.swing.JLabel();
 
+        setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
+
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("CONSULTA DE CURSO");
 

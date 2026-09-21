@@ -8,6 +8,11 @@ import logica.Instituto;
 import logica.Curso;
 import logica.EdicionCurso;
 import persistencia.ControladorPersistencia;
+import javax.swing.JOptionPane;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 /**
  *
@@ -26,40 +31,142 @@ private void limpiarDetalleEdicion() {
 }
 
 public void seleccionarEdicion(String nombre) {
-    EdicionCurso edicion = cp.buscarEdicion(nombre);
-    if (edicion == null || edicion.getCurso() == null || edicion.getCurso().getInstituto() == null) {
-        throw new IllegalArgumentException("La edición ya no está disponible.");
-    }
-    Long institutoId = edicion.getCurso().getInstituto().getId();
-    for (int i = 0; i < jComboBox1.getItemCount(); i++) {
-        if (institutoId.equals(jComboBox1.getItemAt(i).getId())) {
-            jComboBox1.setSelectedIndex(i);
-            break;
+    DefaultMutableTreeNode raiz =
+            (DefaultMutableTreeNode) arbolEdiciones.getModel().getRoot();
+
+    java.util.Enumeration<?> nodos = raiz.depthFirstEnumeration();
+
+    while (nodos.hasMoreElements()) {
+        DefaultMutableTreeNode nodo =
+                (DefaultMutableTreeNode) nodos.nextElement();
+
+        Object dato = nodo.getUserObject();
+
+        if (dato instanceof EdicionCurso) {
+            EdicionCurso edicion = (EdicionCurso) dato;
+
+            if (edicion.getNombre().equals(nombre)) {
+                TreePath ruta = new TreePath(nodo.getPath());
+
+                arbolEdiciones.setSelectionPath(ruta);
+                arbolEdiciones.scrollPathToVisible(ruta);
+                mostrarEdicionSeleccionada();
+                return;
+            }
         }
     }
-    for (int i = 0; i < jComboBox2.getItemCount(); i++) {
-        if (edicion.getCurso().getId().equals(jComboBox2.getItemAt(i).getId())) {
-            jComboBox2.setSelectedIndex(i);
-            break;
-        }
-    }
-    for (int i = 0; i < jComboBox3.getItemCount(); i++) {
-        if (nombre.equals(jComboBox3.getItemAt(i).getNombre())) {
-            jComboBox3.setSelectedIndex(i);
-            return;
-        }
-    }
-    throw new IllegalArgumentException("No se pudo seleccionar la edición.");
+
+    throw new IllegalArgumentException(
+            "La edición ya no está disponible."
+    );
 }
     
     public ConsultaEdicionDeCursoInternalFrame(ControladorPersistencia cp) {
-    initComponents();
+        initComponents();
+        this.cp = cp;
 
-    this.cp = cp;
+        arbolEdiciones.getSelectionModel().setSelectionMode(
+                TreeSelectionModel.SINGLE_TREE_SELECTION
+        );
 
-    setSize(750, 500);
-    cargarInstitutos();
+        arbolEdiciones.addTreeSelectionListener(evt -> mostrarEdicionSeleccionada());
+
+        cargarArbolEdiciones();
+        limpiarDetalleEdicion();
+
+        setSize(750, 650);
+    }
+    
+    private void cargarArbolEdiciones() {
+    DefaultMutableTreeNode raiz =
+            new DefaultMutableTreeNode("Institutos");
+
+    try {
+        for (Instituto instituto : cp.obtenerInstitutos()) {
+            DefaultMutableTreeNode nodoInstituto =
+                    new DefaultMutableTreeNode(instituto.getNombre());
+
+            raiz.add(nodoInstituto);
+
+            for (Curso curso : cp.obtenerCursosDeInstituto(instituto.getId())) {
+                DefaultMutableTreeNode nodoCurso =
+                        new DefaultMutableTreeNode(curso.getNombre());
+
+                nodoInstituto.add(nodoCurso);
+
+                for (EdicionCurso edicion : cp.listarEdicionesCurso(curso)) {
+                    DefaultMutableTreeNode nodoEdicion =
+                            new DefaultMutableTreeNode(edicion);
+
+                    nodoCurso.add(nodoEdicion);
+                }
+            }
+        }
+
+        arbolEdiciones.setModel(new DefaultTreeModel(raiz));
+
+        for (int i = arbolEdiciones.getRowCount() - 1; i >= 0; i--) {
+            arbolEdiciones.collapseRow(i);
+        }
+
+    } catch (RuntimeException e) {
+        arbolEdiciones.setModel(new DefaultTreeModel(
+                new DefaultMutableTreeNode("No se pudieron cargar las ediciones")
+        ));
+
+        JOptionPane.showMessageDialog(
+                this,
+                "No se pudieron cargar las ediciones: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+        );
+    }
 }
+    
+    private void mostrarEdicionSeleccionada() {
+        limpiarDetalleEdicion();
+
+        DefaultMutableTreeNode nodo =
+                (DefaultMutableTreeNode) arbolEdiciones.getLastSelectedPathComponent();
+
+        if (nodo == null) {
+            return;
+        }
+
+        Object dato = nodo.getUserObject();
+
+        if (!(dato instanceof EdicionCurso)) {
+            return;
+        }
+
+        EdicionCurso edicion = (EdicionCurso) dato;
+
+        nombreTXT.setText(edicion.getNombre());
+
+        cupoTXT.setText(
+                edicion.getCupo() == -1
+                        ? "Sin límite de cupo"
+                        : String.valueOf(edicion.getCupo())
+        );
+
+        fechaInicioTXT.setText(
+                edicion.getFechaInicio() == null
+                        ? ""
+                        : edicion.getFechaInicio().toString()
+        );
+
+        fechaFinTXT.setText(
+                edicion.getFechaFin() == null
+                        ? ""
+                        : edicion.getFechaFin().toString()
+        );
+
+        fechaPublicacionTXT.setText(
+                edicion.getFechaPublicacion() == null
+                        ? ""
+                        : edicion.getFechaPublicacion().toString()
+        );
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -74,12 +181,6 @@ public void seleccionarEdicion(String nombre) {
         jMenuItem1 = new javax.swing.JMenuItem();
         jRadioButtonMenuItem1 = new javax.swing.JRadioButtonMenuItem();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jLabel3 = new javax.swing.JLabel();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jComboBox3 = new javax.swing.JComboBox<>();
-        jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
@@ -91,6 +192,8 @@ public void seleccionarEdicion(String nombre) {
         fechaFinTXT = new javax.swing.JTextField();
         fechaPublicacionTXT = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        arbolEdiciones = new javax.swing.JTree();
 
         list1.addActionListener(this::list1ActionPerformed);
 
@@ -104,18 +207,6 @@ public void seleccionarEdicion(String nombre) {
         setMaximizable(true);
         setResizable(true);
         setTitle("Consulta de Edicion de Curso");
-
-        jLabel2.setText("Instituto:");
-
-        jComboBox1.addActionListener(this::jComboBox1SeleccionoInstituto);
-
-        jLabel3.setText("Curso:");
-
-        jComboBox2.addActionListener(this::jComboBox2SeleccionoCursoDeInstituto);
-
-        jComboBox3.addActionListener(this::jComboBox3SeleccionoEdicionDeCurso);
-
-        jLabel4.setText("Edición:");
 
         jLabel5.setText("Nombre: ");
 
@@ -141,6 +232,8 @@ public void seleccionarEdicion(String nombre) {
         jButton1.setText("Cancelar");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
+        jScrollPane1.setViewportView(arbolEdiciones);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -148,38 +241,29 @@ public void seleccionarEdicion(String nombre) {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jComboBox3, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5)
+                        .addComponent(jLabel9)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nombreTXT))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cupoTXT))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fechaInicioTXT))
+                        .addComponent(fechaPublicacionTXT, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(fechaFinTXT))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel1))
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel9)
+                        .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fechaPublicacionTXT, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)))
+                        .addComponent(fechaInicioTXT))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cupoTXT))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(nombreTXT))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -195,18 +279,8 @@ public void seleccionarEdicion(String nombre) {
                         .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addGap(2, 2, 2)
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(nombreTXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -234,71 +308,11 @@ public void seleccionarEdicion(String nombre) {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    private void cargarInstitutos() {
-        jComboBox1.removeAllItems();
-
-        List<Instituto> institutos = cp.obtenerInstitutos();
-
-        for (Instituto instituto : institutos) {
-        jComboBox1.addItem(instituto);
-        }
-    }
     
     
     private void list1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_list1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_list1ActionPerformed
-
-    private void jComboBox1SeleccionoInstituto(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1SeleccionoInstituto
-limpiarDetalleEdicion();
-jComboBox2.removeAllItems();
-jComboBox3.removeAllItems();
-Instituto instituto = (Instituto) jComboBox1.getSelectedItem();
-if (instituto == null) return;
-try {
-    for (Curso curso : cp.obtenerCursosDeInstituto(instituto.getId())) jComboBox2.addItem(curso);
-} catch (RuntimeException e) {
-    e.printStackTrace();
-    javax.swing.JOptionPane.showMessageDialog(this, "No se pudieron cargar los cursos.");
-}
-    }//GEN-LAST:event_jComboBox1SeleccionoInstituto
-
-    private void jComboBox2SeleccionoCursoDeInstituto(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2SeleccionoCursoDeInstituto
-limpiarDetalleEdicion();
-jComboBox3.removeAllItems();
-Curso curso = (Curso) jComboBox2.getSelectedItem();
-if (curso == null) return;
-try {
-    for (EdicionCurso edicion : cp.listarEdicionesCurso(curso)) jComboBox3.addItem(edicion);
-} catch (RuntimeException e) {
-    e.printStackTrace();
-    javax.swing.JOptionPane.showMessageDialog(this, "No se pudieron cargar las ediciones.");
-}
-    }//GEN-LAST:event_jComboBox2SeleccionoCursoDeInstituto
-
-    private void jComboBox3SeleccionoEdicionDeCurso(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3SeleccionoEdicionDeCurso
-        // TODO add your handling code here:
-       EdicionCurso edicionSeleccionada =
-            (EdicionCurso) jComboBox3.getSelectedItem();
-
-    if (edicionSeleccionada == null) {
-        return;
-    }
-
-    nombreTXT.setText(edicionSeleccionada.getNombre());
-    if (edicionSeleccionada.getCupo() == -1) {
-        cupoTXT.setText("Sin límite de cupo");
-    } else {
-        cupoTXT.setText(String.valueOf(edicionSeleccionada.getCupo()));
-    }
-    
-    fechaInicioTXT.setText(edicionSeleccionada.getFechaInicio().toString());
-    fechaFinTXT.setText(edicionSeleccionada.getFechaFin().toString());
-    fechaPublicacionTXT.setText(
-            edicionSeleccionada.getFechaPublicacion().toString()
-    );
-
-    }//GEN-LAST:event_jComboBox3SeleccionoEdicionDeCurso
 
     private void nombreTXTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nombreTXTActionPerformed
         // TODO add your handling code here:
@@ -311,18 +325,13 @@ try {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTree arbolEdiciones;
     private javax.swing.JTextField cupoTXT;
     private javax.swing.JTextField fechaFinTXT;
     private javax.swing.JTextField fechaInicioTXT;
     private javax.swing.JTextField fechaPublicacionTXT;
     private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox<Instituto> jComboBox1;
-    private javax.swing.JComboBox<Curso> jComboBox2;
-    private javax.swing.JComboBox<EdicionCurso> jComboBox3;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -330,6 +339,7 @@ try {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem1;
+    private javax.swing.JScrollPane jScrollPane1;
     private java.awt.List list1;
     private javax.swing.JTextField nombreTXT;
     // End of variables declaration//GEN-END:variables

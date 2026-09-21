@@ -27,6 +27,8 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         
         this.cp = cp;
         initComponents();
+        FechasFormulario.configurar(dcInicio);
+        FechasFormulario.configurar(dcFin);
         
         modeloDocentesDispo = new DefaultListModel<>();
         modeloDocentesSelec = new DefaultListModel<>();
@@ -84,18 +86,13 @@ modeloDocentesDispo.addElement(docente.getNick());
         txtCupos = new javax.swing.JTextField();
         btnAceptarEdicion = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
-        SpinnerDiaInicio = new javax.swing.JSpinner();
-        jLabel6 = new javax.swing.JLabel();
-        SpinnerMesInicio = new javax.swing.JSpinner();
-        jLabel11 = new javax.swing.JLabel();
-        SpinnerAñoInicio = new javax.swing.JSpinner();
-        jLabel12 = new javax.swing.JLabel();
-        SpinnerDiaFin = new javax.swing.JSpinner();
-        jLabel13 = new javax.swing.JLabel();
-        SpinnerMesFin = new javax.swing.JSpinner();
-        jLabel14 = new javax.swing.JLabel();
-        SpinnerAñoFin = new javax.swing.JSpinner();
-        jLabel15 = new javax.swing.JLabel();
+        dcInicio = new com.toedter.calendar.JDateChooser();
+        dcFin = new com.toedter.calendar.JDateChooser();
+
+        setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("ALTA EDICION CURSO");
@@ -144,30 +141,6 @@ modeloDocentesDispo.addElement(docente.getNick());
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(this::btnCancelarActionPerformed);
 
-        SpinnerDiaInicio.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
-
-        jLabel6.setText("Día");
-
-        SpinnerMesInicio.setModel(new javax.swing.SpinnerNumberModel(1, 1, 12, 1));
-
-        jLabel11.setText("Mes");
-
-        SpinnerAñoInicio.setModel(new javax.swing.SpinnerNumberModel(2026, 2026, 2100, 1));
-
-        jLabel12.setText("Año");
-
-        SpinnerDiaFin.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
-
-        jLabel13.setText("Día");
-
-        SpinnerMesFin.setModel(new javax.swing.SpinnerNumberModel(1, 1, 12, 1));
-
-        jLabel14.setText("Mes");
-
-        SpinnerAñoFin.setModel(new javax.swing.SpinnerNumberModel(2026, 2026, 2100, 1));
-
-        jLabel15.setText("Año");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -197,34 +170,11 @@ modeloDocentesDispo.addElement(docente.getNick());
                                             .addComponent(jLabel4)
                                             .addComponent(jLabel5))
                                         .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                .addComponent(txtNombreEdicion, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
-                                                .addComponent(txtCupos))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(SpinnerDiaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jLabel6)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(SpinnerMesInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jLabel11)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(SpinnerAñoInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jLabel12))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(SpinnerDiaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jLabel13)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(SpinnerMesFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jLabel14)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(SpinnerAñoFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jLabel15))))))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(txtNombreEdicion, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                                            .addComponent(txtCupos)
+                                            .addComponent(dcInicio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(dcFin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(96, 96, 96)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -266,23 +216,13 @@ modeloDocentesDispo.addElement(docente.getNick());
                     .addComponent(jLabel2)
                     .addComponent(txtNombreEdicion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
-                    .addComponent(SpinnerDiaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addComponent(SpinnerMesInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11)
-                    .addComponent(SpinnerAñoInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12))
+                    .addComponent(dcInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
-                    .addComponent(SpinnerDiaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel13)
-                    .addComponent(SpinnerMesFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel14)
-                    .addComponent(SpinnerAñoFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel15))
+                    .addComponent(dcFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
@@ -356,10 +296,12 @@ try {
     Curso curso = cp.buscarCursoInstituto(nombreCurso, instituto);
     if (curso == null) throw new IllegalArgumentException("El curso ya no existe.");
     String nombre = txtNombreEdicion.getText().trim();
-    LocalDate inicio = LocalDate.of((Integer) SpinnerAñoInicio.getValue(),
-            (Integer) SpinnerMesInicio.getValue(), (Integer) SpinnerDiaInicio.getValue());
-    LocalDate fin = LocalDate.of((Integer) SpinnerAñoFin.getValue(),
-            (Integer) SpinnerMesFin.getValue(), (Integer) SpinnerDiaFin.getValue());
+    LocalDate inicio = FechasFormulario.leer(
+        dcInicio, "la fecha de inicio"
+    );
+    LocalDate fin = FechasFormulario.leer(
+        dcFin, "la fecha de finalización"
+    );
     String textoCupo = txtCupos.getText().trim();
     int cupo = textoCupo.isEmpty() ? -1 : Integer.parseInt(textoCupo);
     Set<Docente> docentes = new HashSet<>();
@@ -403,28 +345,18 @@ modeloDocentesSelec.removeElement(seleccionado);
     private javax.swing.JComboBox<String> ComboInstituto;
     private javax.swing.JList<String> ListaDocentesDisponibles;
     private javax.swing.JList<String> ListaDocentesSeleccionados;
-    private javax.swing.JSpinner SpinnerAñoFin;
-    private javax.swing.JSpinner SpinnerAñoInicio;
-    private javax.swing.JSpinner SpinnerDiaFin;
-    private javax.swing.JSpinner SpinnerDiaInicio;
-    private javax.swing.JSpinner SpinnerMesFin;
-    private javax.swing.JSpinner SpinnerMesInicio;
     private javax.swing.JButton btnAceptarEdicion;
     private javax.swing.JButton btnAgregarDocente;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnQuitarDocente;
+    private com.toedter.calendar.JDateChooser dcFin;
+    private com.toedter.calendar.JDateChooser dcInicio;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;

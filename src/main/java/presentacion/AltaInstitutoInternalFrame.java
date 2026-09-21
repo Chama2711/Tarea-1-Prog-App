@@ -31,6 +31,11 @@ public class AltaInstitutoInternalFrame extends javax.swing.JInternalFrame {
         btnAlta = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
 
+        setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
+
         lblNombreInstituto.setText("Nombre del Instituto:");
 
         btnAlta.setText("Dar de Alta");

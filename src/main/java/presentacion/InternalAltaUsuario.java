@@ -22,12 +22,8 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
     
     public InternalAltaUsuario(ControladorUsuario control) {
     initComponents();
+    FechasFormulario.configurar(dcNacimiento);
     this.control = control;
-
-    // Configuración de rangos para la Fecha de Nacimiento (Día 1-31, Mes 1-12, Año 1900-2026)
-    spnDia.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
-    spnMes.setModel(new javax.swing.SpinnerNumberModel(1, 1, 12, 1));
-    spnAno.setModel(new javax.swing.SpinnerNumberModel(2000, 1900, 2026, 1));
 
     // Estado inicial de selección de Instituto
     cmbInstituto.setEnabled(false);
@@ -67,18 +63,17 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
         txtApellido = new javax.swing.JTextField();
         txtCorreo = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        spnDia = new javax.swing.JSpinner();
-        spnMes = new javax.swing.JSpinner();
-        spnAno = new javax.swing.JSpinner();
         cmbInstituto = new javax.swing.JComboBox<>();
         jLabel8 = new javax.swing.JLabel();
         chkDocente = new javax.swing.JCheckBox();
         btnAceptar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
+        dcNacimiento = new com.toedter.calendar.JDateChooser();
 
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
+        setResizable(true);
         setTitle("Alta de Usuario");
         setToolTipText("");
 
@@ -134,23 +129,17 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
                             .addComponent(jLabel7)
                             .addComponent(jLabel8))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(cmbInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(spnDia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(spnMes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(spnAno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtCorreo, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
-                                .addComponent(txtApellido)
-                                .addComponent(txtNombre)
-                                .addComponent(txtNickname)))
-                        .addContainerGap())
+                            .addComponent(txtCorreo, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
+                            .addComponent(txtApellido)
+                            .addComponent(txtNombre)
+                            .addComponent(txtNickname)
+                            .addComponent(dcNacimiento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(22, 22, 22))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(chkDocente)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 132, Short.MAX_VALUE)
                         .addComponent(btnAceptar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnCancelar)
@@ -178,14 +167,11 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel5))
                     .addComponent(txtCorreo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel7)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(spnDia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(spnMes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(spnAno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel7)
+                    .addComponent(dcNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cmbInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8))
@@ -226,12 +212,10 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
     String apellido = txtApellido.getText().trim();
     String correo = txtCorreo.getText().trim();
 
-    // 2. Obtención de fecha desde los 3 JSpinner
-    int dia = (int) spnDia.getValue();
-    int mes = (int) spnMes.getValue();
-    int ano = (int) spnAno.getValue();
     
-    java.time.LocalDate fechaNac = java.time.LocalDate.of(ano, mes, dia);
+    java.time.LocalDate fechaNac = FechasFormulario.leer(
+        dcNacimiento, "la fecha de nacimiento"
+    );
 
     // 3. Validar campos de texto requeridos
     if (nickname.isEmpty() || nombre.isEmpty() || apellido.isEmpty() || correo.isEmpty()) {
@@ -314,9 +298,7 @@ control.registrarDocente(nickname, correo, nombre, apellido, fechaNac, nombreIns
     txtNombre.setText("");
     txtApellido.setText("");
     txtCorreo.setText("");
-    spnDia.setValue(1);
-    spnMes.setValue(1);
-    spnAno.setValue(2000);
+    dcNacimiento.setDate(null);
     chkDocente.setSelected(false);
     cmbInstituto.setSelectedIndex(0);
     cmbInstituto.setEnabled(false);
@@ -327,6 +309,7 @@ control.registrarDocente(nickname, correo, nombre, apellido, fechaNac, nombreIns
     private javax.swing.JButton btnCancelar;
     private javax.swing.JCheckBox chkDocente;
     private javax.swing.JComboBox<String> cmbInstituto;
+    private com.toedter.calendar.JDateChooser dcNacimiento;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -334,9 +317,6 @@ control.registrarDocente(nickname, correo, nombre, apellido, fechaNac, nombreIns
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JSpinner spnAno;
-    private javax.swing.JSpinner spnDia;
-    private javax.swing.JSpinner spnMes;
     private javax.swing.JTextField txtApellido;
     private javax.swing.JTextField txtCorreo;
     private javax.swing.JTextField txtNickname;

@@ -21,20 +21,11 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
     
     public CrearProgramaDeFormacionInternalFrame(ControladorPersistencia cp) { 
         initComponents();
+        FechasFormulario.configurar(dcInicio);
+        FechasFormulario.configurar(dcFin);
+        FechasFormulario.configurar(dcAlta);
         this.cp = cp;
         
-            //Configuración de rangos para las fechas (Día 1-31, Mes 1-12, Año 1900-9000)
-            diaInicioSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
-            mesInicioSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 12, 1));
-            anioInicioSP.setModel(new javax.swing.SpinnerNumberModel(2000, 1900, 9000, 1));
-            
-            diaFinSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
-            mesFinSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 12, 1));
-            anioFinSP.setModel(new javax.swing.SpinnerNumberModel(2000, 1900, 9000, 1));
-            
-            diaAltaSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
-            mesAltaSP.setModel(new javax.swing.SpinnerNumberModel(1, 1, 12, 1));
-            anioAltaSP.setModel(new javax.swing.SpinnerNumberModel(2000, 1900, 9000, 1));
         
     }
 
@@ -56,15 +47,9 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        diaInicioSP = new javax.swing.JSpinner();
-        mesInicioSP = new javax.swing.JSpinner();
-        anioInicioSP = new javax.swing.JSpinner();
-        diaFinSP = new javax.swing.JSpinner();
-        mesFinSP = new javax.swing.JSpinner();
-        anioFinSP = new javax.swing.JSpinner();
-        diaAltaSP = new javax.swing.JSpinner();
-        mesAltaSP = new javax.swing.JSpinner();
-        anioAltaSP = new javax.swing.JSpinner();
+        dcInicio = new com.toedter.calendar.JDateChooser();
+        dcFin = new com.toedter.calendar.JDateChooser();
+        dcAlta = new com.toedter.calendar.JDateChooser();
 
         setClosable(true);
         setIconifiable(true);
@@ -102,41 +87,24 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
                         .addComponent(jButton2)
                         .addGap(18, 18, 18)
                         .addComponent(jButton1))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(diaFinSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(mesFinSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(diaInicioSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(mesInicioSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(diaAltaSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(mesAltaSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(anioInicioSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(anioFinSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(anioAltaSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
                         .addGap(86, 86, 86)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField1)
-                            .addComponent(jTextField2))))
+                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
+                            .addComponent(jTextField2)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(dcInicio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(dcFin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(dcAlta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -153,24 +121,15 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(diaInicioSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(mesInicioSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(anioInicioSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(dcInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
-                    .addComponent(anioFinSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(diaFinSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(mesFinSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(dcFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(anioAltaSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(mesAltaSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(diaAltaSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(dcAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
@@ -202,22 +161,16 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
 
         try {
             
-            LocalDate fechaInicio = LocalDate.of(
-                (Integer) anioInicioSP.getValue(),
-                (Integer) mesInicioSP.getValue(),
-                (Integer) diaInicioSP.getValue()
+            LocalDate fechaInicio = FechasFormulario.leer(
+                dcInicio, "la fecha de inicio"
             );
 
-            LocalDate fechaFin = LocalDate.of(
-                (Integer) anioFinSP.getValue(),
-                (Integer) mesFinSP.getValue(),
-                (Integer) diaFinSP.getValue()
+            LocalDate fechaFin = FechasFormulario.leer(
+                    dcFin, "la fecha de finalización"
             );
 
-            LocalDate fechaAlta = LocalDate.of(
-                (Integer) anioAltaSP.getValue(),
-                (Integer) mesAltaSP.getValue(),
-                (Integer) diaAltaSP.getValue()
+            LocalDate fechaAlta = FechasFormulario.leer(
+                    dcAlta, "la fecha de alta"
             );
 
         if (fechaFin.isBefore(fechaInicio)) {
@@ -249,11 +202,11 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
 
         } catch (Exception e) {
 
-            JOptionPane.showMessageDialog(
-                this,
-                "Error",
-                "Error",
-                JOptionPane.ERROR_MESSAGE
+                JOptionPane.showMessageDialog(
+            this,
+            e.getMessage(),
+            "No se pudo crear el programa",
+            JOptionPane.ERROR_MESSAGE
             );
         }
 
@@ -266,12 +219,9 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JSpinner anioAltaSP;
-    private javax.swing.JSpinner anioFinSP;
-    private javax.swing.JSpinner anioInicioSP;
-    private javax.swing.JSpinner diaAltaSP;
-    private javax.swing.JSpinner diaFinSP;
-    private javax.swing.JSpinner diaInicioSP;
+    private com.toedter.calendar.JDateChooser dcAlta;
+    private com.toedter.calendar.JDateChooser dcFin;
+    private com.toedter.calendar.JDateChooser dcInicio;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
@@ -281,8 +231,5 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
     private javax.swing.JLabel jLabel5;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
-    private javax.swing.JSpinner mesAltaSP;
-    private javax.swing.JSpinner mesFinSP;
-    private javax.swing.JSpinner mesInicioSP;
     // End of variables declaration//GEN-END:variables
 }

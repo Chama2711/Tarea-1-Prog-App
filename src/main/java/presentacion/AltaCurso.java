@@ -94,6 +94,11 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         btnAgregar = new javax.swing.JButton();
         btnQuitar = new javax.swing.JButton();
 
+        setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
+
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("ALTA DE CURSO");
 

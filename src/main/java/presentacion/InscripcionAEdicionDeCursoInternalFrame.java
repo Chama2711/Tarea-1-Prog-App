@@ -25,8 +25,10 @@ public class InscripcionAEdicionDeCursoInternalFrame extends javax.swing.JIntern
     
     public InscripcionAEdicionDeCursoInternalFrame(ControladorPersistencia cp) {
         initComponents();
-estudianteSeleccionadoTXT.setVisible(false);
-jButton2.setEnabled(false);
+        FechasFormulario.configurar(dcInscripcion);
+        FechasFormulario.mostrar(dcInscripcion, java.time.LocalDate.now());
+        estudianteSeleccionadoTXT.setVisible(false);
+        jButton2.setEnabled(false);
         this.cp = cp;
         
         setSize(750, 500);
@@ -55,6 +57,8 @@ jButton2.setEnabled(false);
         estudianteSeleccionadoTXT = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        dcInscripcion = new com.toedter.calendar.JDateChooser();
 
         jLabel3.setText("jLabel3");
 
@@ -90,24 +94,36 @@ jButton2.setEnabled(false);
         jButton3.setText("Cancelar");
         jButton3.addActionListener(this::jButton3ActionPerformed);
 
+        jLabel7.setText("Fecha Inscripción:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton3)
+                .addGap(18, 18, 18)
+                .addComponent(jButton2)
+                .addGap(26, 26, 26))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addGap(18, 18, 18)
+                        .addComponent(dcInscripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE))
                     .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(EdicionVigenteTXT, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE))
+                        .addComponent(EdicionVigenteTXT))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2)
-                            .addComponent(jLabel5)
                             .addComponent(jButton1)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel6)
@@ -115,12 +131,6 @@ jButton2.setEnabled(false);
                                 .addComponent(estudianteSeleccionadoTXT)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3)
-                .addGap(18, 18, 18)
-                .addComponent(jButton2)
-                .addGap(26, 26, 26))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -137,6 +147,10 @@ jButton2.setEnabled(false);
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(EdicionVigenteTXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7)
+                    .addComponent(dcInscripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -145,7 +159,7 @@ jButton2.setEnabled(false);
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(estudianteSeleccionadoTXT))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 146, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
                     .addComponent(jButton3))
@@ -258,11 +272,10 @@ if (estudiante == null || curso == null || edicion == null) {
 }
 java.time.format.DateTimeFormatter formato = java.time.format.DateTimeFormatter
         .ofPattern("dd/MM/uuuu").withResolverStyle(java.time.format.ResolverStyle.STRICT);
-String texto = JOptionPane.showInputDialog(this,
-        "Fecha de inscripción (dd/MM/aaaa):", java.time.LocalDate.now().format(formato));
-if (texto == null) return;
 try {
-    java.time.LocalDate fecha = java.time.LocalDate.parse(texto.trim(), formato);
+    java.time.LocalDate fecha = FechasFormulario.leer(
+        dcInscripcion, "la fecha de inscripción"
+    );
     String mensaje = "Inscribir a " + estudiante.getNick() + " en " + edicion.getNombre()
             + " del curso " + curso.getNombre() + ", con fecha " + fecha.format(formato) + ".";
     if (JOptionPane.showConfirmDialog(this, mensaje, "Confirmar inscripción",
@@ -273,8 +286,6 @@ try {
     estudianteSeleccionadoTXT.setText("");
     estudianteSeleccionadoTXT.setVisible(false);
     actualizarBotonInscripcion();
-} catch (java.time.format.DateTimeParseException e) {
-    JOptionPane.showMessageDialog(this, "Ingrese una fecha real con formato dd/MM/aaaa.");
 } catch (RuntimeException e) {
     e.printStackTrace();
     JOptionPane.showMessageDialog(this, e.getMessage(), "No se realizó la inscripción", JOptionPane.ERROR_MESSAGE);
@@ -289,6 +300,7 @@ try {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField EdicionVigenteTXT;
+    private com.toedter.calendar.JDateChooser dcInscripcion;
     private javax.swing.JLabel estudianteSeleccionadoTXT;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -301,5 +313,6 @@ try {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     // End of variables declaration//GEN-END:variables
 }

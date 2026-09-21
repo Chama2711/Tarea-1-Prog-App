@@ -22,7 +22,15 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         initComponents();
         this.control = control;
         
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(280, 160));
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(280, 160));
+
         cargarUsuariosEnCombo();
+
+        setTitle("Consulta de usuario");
+        setSize(700, 500);
+        setMinimumSize(new java.awt.Dimension(700, 500));
+        setResizable(true);
     }
 
     
@@ -66,6 +74,7 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
+        setResizable(true);
 
         jLabel1.setText("Seleccionar Usuario");
 

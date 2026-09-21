@@ -35,42 +35,6 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="diaFinSP" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="mesFinSP" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="diaInicioSP" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="mesInicioSP" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Component id="diaAltaSP" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="mesAltaSP" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="anioInicioSP" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Component id="anioFinSP" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Component id="anioAltaSP" alignment="1" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -78,8 +42,21 @@
                       </Group>
                       <EmptySpace min="-2" pref="86" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jTextField1" max="32767" attributes="0"/>
+                          <Component id="jTextField1" pref="149" max="32767" attributes="0"/>
                           <Component id="jTextField2" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="dcInicio" max="32767" attributes="0"/>
+                          <Component id="dcFin" max="32767" attributes="0"/>
+                          <Component id="dcAlta" alignment="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -103,29 +80,17 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="diaInicioSP" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="mesInicioSP" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="anioInicioSP" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="dcInicio" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                  <Component id="anioFinSP" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="diaFinSP" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="mesFinSP" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="dcFin" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                      <Component id="anioAltaSP" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="mesAltaSP" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="diaAltaSP" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="dcAlta" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="78" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -186,23 +151,11 @@
         <Property name="text" type="java.lang.String" value="Fecha alta: "/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JSpinner" name="diaInicioSP">
+    <Component class="com.toedter.calendar.JDateChooser" name="dcInicio">
     </Component>
-    <Component class="javax.swing.JSpinner" name="mesInicioSP">
+    <Component class="com.toedter.calendar.JDateChooser" name="dcFin">
     </Component>
-    <Component class="javax.swing.JSpinner" name="anioInicioSP">
-    </Component>
-    <Component class="javax.swing.JSpinner" name="diaFinSP">
-    </Component>
-    <Component class="javax.swing.JSpinner" name="mesFinSP">
-    </Component>
-    <Component class="javax.swing.JSpinner" name="anioFinSP">
-    </Component>
-    <Component class="javax.swing.JSpinner" name="diaAltaSP">
-    </Component>
-    <Component class="javax.swing.JSpinner" name="mesAltaSP">
-    </Component>
-    <Component class="javax.swing.JSpinner" name="anioAltaSP">
+    <Component class="com.toedter.calendar.JDateChooser" name="dcAlta">
     </Component>
   </SubComponents>
 </Form>

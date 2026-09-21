@@ -191,6 +191,11 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
         jScrollPane3 = new javax.swing.JScrollPane();
         jtreeProgramasCursos = new javax.swing.JTree();
 
+        setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
+
         jLabel1.setText("Seleccione Programa:");
 
         jLabel2.setText("Fecha Inicio:");

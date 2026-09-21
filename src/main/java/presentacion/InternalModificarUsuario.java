@@ -20,6 +20,7 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
     
     public InternalModificarUsuario(ControladorUsuario control) {
         initComponents();
+        FechasFormulario.configurar(dcNacimiento);
         this.control = control;
         
         cargarUsuariosEnCombo();
@@ -38,7 +39,6 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
         cmbUsuarios = new javax.swing.JComboBox<>();
         txtNombre = new javax.swing.JTextField();
         txtApellido = new javax.swing.JTextField();
-        txtFechaNac = new javax.swing.JTextField();
         btnGuardar = new javax.swing.JButton();
         txtCorreo = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -47,9 +47,12 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         txtNickname = new javax.swing.JTextField();
+        dcNacimiento = new com.toedter.calendar.JDateChooser();
 
         setClosable(true);
         setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
 
         jLabel1.setText("Usuario a modificar");
 
@@ -59,9 +62,6 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
         txtNombre.setText("Nombre");
 
         txtApellido.setText("Aapellido");
-
-        txtFechaNac.setText("Fecha Nacimineto");
-        txtFechaNac.addActionListener(this::txtFechaNacActionPerformed);
 
         btnGuardar.setText("Guardar Cambios");
         btnGuardar.addActionListener(this::btnGuardarActionPerformed);
@@ -110,13 +110,13 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
                                 .addComponent(jLabel6))
                             .addComponent(jLabel5))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtFechaNac, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cmbUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtNickname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtCorreo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(cmbUsuarios, 0, 138, Short.MAX_VALUE)
+                            .addComponent(txtNickname)
+                            .addComponent(txtNombre)
+                            .addComponent(txtApellido)
+                            .addComponent(txtCorreo)
+                            .addComponent(dcNacimiento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(115, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -126,7 +126,7 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(cmbUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtNickname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
@@ -143,10 +143,10 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
                     .addComponent(txtCorreo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
-                    .addComponent(txtFechaNac, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(24, 24, 24)
+                    .addComponent(dcNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(21, 21, 21)
                 .addComponent(btnGuardar)
                 .addGap(15, 15, 15))
         );
@@ -183,9 +183,11 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
             txtApellido.setText(u.getApellido());
             if (u.getFechaNacimiento() != null) {
             DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            txtFechaNac.setText(u.getFechaNacimiento().format(formato));
+            FechasFormulario.mostrar(
+            dcNacimiento, u.getFechaNacimiento()
+            );
         } else {
-            txtFechaNac.setText("");
+            dcNacimiento.setDate(null);
         }       
                 }
     }//GEN-LAST:event_cmbUsuariosActionPerformed
@@ -199,16 +201,12 @@ try {
     String nick = cmbUsuarios.getSelectedItem().toString();
     String nombre = txtNombre.getText().trim();
     String apellido = txtApellido.getText().trim();
-    DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/uuuu")
-            .withResolverStyle(java.time.format.ResolverStyle.STRICT);
-    LocalDate fecha = LocalDate.parse(txtFechaNac.getText().trim(), formato);
+    LocalDate fecha = FechasFormulario.leer(
+        dcNacimiento, "la fecha de nacimiento"
+    );
     control.modificarUsuario(nick, nombre, apellido, fecha);
     javax.swing.JOptionPane.showMessageDialog(this, "Usuario modificado con éxito.");
     dispose();
-} catch (DateTimeParseException e) {
-    javax.swing.JOptionPane.showMessageDialog(this,
-            "Ingrese una fecha real con formato dd/MM/aaaa.",
-            "Fecha inválida", javax.swing.JOptionPane.ERROR_MESSAGE);
 } catch (RuntimeException e) {
     e.printStackTrace();
     javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(),
@@ -216,14 +214,11 @@ try {
 }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
-    private void txtFechaNacActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaNacActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtFechaNacActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGuardar;
     private javax.swing.JComboBox<String> cmbUsuarios;
+    private com.toedter.calendar.JDateChooser dcNacimiento;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -232,7 +227,6 @@ try {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JTextField txtApellido;
     private javax.swing.JTextField txtCorreo;
-    private javax.swing.JTextField txtFechaNac;
     private javax.swing.JTextField txtNickname;
     private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
