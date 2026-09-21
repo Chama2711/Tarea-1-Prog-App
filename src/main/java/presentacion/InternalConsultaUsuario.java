@@ -76,6 +76,7 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
+        setTitle("Consulta Usuario");
 
         jLabel1.setText("Seleccionar Usuario");
 

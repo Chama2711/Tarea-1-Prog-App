@@ -35,10 +35,11 @@ public class AltaInstitutoInternalFrame extends javax.swing.JInternalFrame {
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
+        setTitle("Alta Instituto");
 
         lblNombreInstituto.setText("Nombre del Instituto:");
 
-        btnAlta.setText("Dar de Alta");
+        btnAlta.setText("Aceptar");
         btnAlta.addActionListener(this::btnAltaActionPerformed);
 
         btnCancelar.setText("Cancelar");
@@ -51,7 +52,7 @@ public class AltaInstitutoInternalFrame extends javax.swing.JInternalFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lblNombreInstituto)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnAlta)

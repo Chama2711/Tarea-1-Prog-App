@@ -195,6 +195,7 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
+        setTitle("Consulta Programa de Formacion");
 
         jLabel1.setText("Seleccione Programa:");
 

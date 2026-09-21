@@ -53,6 +53,7 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
+        setTitle("Modificar Usuario");
 
         jLabel1.setText("Usuario a modificar");
 

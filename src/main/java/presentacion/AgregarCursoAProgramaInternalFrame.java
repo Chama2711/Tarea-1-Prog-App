@@ -80,6 +80,7 @@ public class AgregarCursoAProgramaInternalFrame extends javax.swing.JInternalFra
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
+        setTitle("Agregar Curso a Programa de Formacion");
 
         jLabel1.setText("Programa de Formacion:");
 
