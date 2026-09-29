@@ -8,7 +8,7 @@ import javax.swing.DefaultListModel;
 import java.util.*;
 import java.time.LocalDate;
 import javax.swing.JOptionPane;
-import persistencia.ControladorPersistencia;
+import logica.IServidorCentral;
 import logica.*;
 
 /**
@@ -17,22 +17,22 @@ import logica.*;
  */
 public class AltaCurso extends javax.swing.JInternalFrame {
 
-    private ControladorPersistencia cp;
+    private IServidorCentral servidorCentral;
     private DefaultListModel<String> modeloDisponibles;
     private DefaultListModel<String> modeloPrevias;
     private DefaultListModel<String> modeloCategorias;
     
-    public AltaCurso(ControladorPersistencia cp) {
+    public AltaCurso(IServidorCentral servidorCentral) {
         initComponents();
         
-        this.cp = cp;
+        this.servidorCentral = servidorCentral;
         
         modeloDisponibles = new DefaultListModel<>();
         modeloPrevias = new DefaultListModel<>();
         modeloCategorias = new DefaultListModel<>();
         
         
-        ArrayList<Curso> cursos = cp.listarCursos();
+        ArrayList<Curso> cursos = servidorCentral.listarCursos();
         
         for(int i = 0; i < cursos.size(); i++)
         {
@@ -43,7 +43,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         ListaPreviasSeleccionadas.setModel(modeloPrevias);
         
         ComboInstitutoCurso.removeAllItems();
-        ArrayList<Instituto> institutos = cp.listarInstitutos();
+        ArrayList<Instituto> institutos = servidorCentral.listarInstitutos();
         
         for(int i= 0; i < institutos.size(); i++)
         {
@@ -51,7 +51,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         }
         
         // Cargar categorías
-       List<Categoria> categorias = cp.listarCategorias();
+       List<Categoria> categorias = servidorCentral.listarCategorias();
 
        for (Categoria categoria : categorias) {
            modeloCategorias.addElement( categoria.getNombre());
@@ -220,14 +220,13 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                                             .addComponent(jLabel10)
                                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(btnAceptar)
                                         .addGap(52, 52, 52)
                                         .addComponent(btnCancelar)
                                         .addGap(32, 32, 32))
                                     .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING))
                                 .addGap(17, 17, 17)))))
-                .addContainerGap(159, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -294,7 +293,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         modeloDisponibles.clear();
         modeloPrevias.clear();
         
-        ArrayList<Curso> cursosDelInstituto = cp.listarCursosPorInstituto(nombreInstituto);
+        ArrayList<Curso> cursosDelInstituto = servidorCentral.listarCursosPorInstituto(nombreInstituto);
         
         for(int i = 0; i < cursosDelInstituto.size(); i++)
         {
@@ -313,7 +312,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
 try {
     String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
     if (nombreInstituto == null) throw new IllegalArgumentException("Seleccione un instituto.");
-    Instituto instituto = cp.buscarInstituto(nombreInstituto);
+    Instituto instituto = servidorCentral.buscarInstituto(nombreInstituto);
     if (instituto == null) throw new IllegalArgumentException("El instituto ya no existe.");
     String nombre = txtNombreCurso.getText().trim();
     String descripcion = txtDescripcionCurso.getText().trim();
@@ -324,10 +323,10 @@ try {
     }
     int horas = Integer.parseInt(txtCantidadHorasCurso.getText().trim());
     int creditos = Integer.parseInt(txtCreditosCurso.getText().trim());
-    if (cp.existeCurso(nombre)) throw new IllegalArgumentException("Ya existe ese nombre de curso en la plataforma.");
+    if (servidorCentral.existeCurso(nombre)) throw new IllegalArgumentException("Ya existe ese nombre de curso en la plataforma.");
     Set<Curso> previas = new HashSet<>();
     for (int i = 0; i < modeloPrevias.size(); i++) {
-        Curso previa = cp.buscarCurso(modeloPrevias.getElementAt(i));
+        Curso previa = servidorCentral.buscarCurso(modeloPrevias.getElementAt(i));
         if (previa == null) throw new IllegalArgumentException("Una previa seleccionada ya no existe.");
         previas.add(previa);
     }
@@ -343,7 +342,7 @@ try {
     curso.setPrevias(previas);
     for (String nombreCategoria : categoriasSeleccionadas) {
 
-    Categoria categoria = cp.buscarCategoria(nombreCategoria);
+    Categoria categoria = servidorCentral.buscarCategoria(nombreCategoria);
 
     if (categoria == null) {
         throw new IllegalArgumentException(
@@ -354,7 +353,7 @@ try {
     curso.agregarCategoria(categoria);
 }
 
-    cp.altaCurso(curso);
+    servidorCentral.altaCurso(curso);
     
     JOptionPane.showMessageDialog(this, "Curso creado correctamente.");
     dispose();

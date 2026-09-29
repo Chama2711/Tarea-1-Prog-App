@@ -1,0 +1,183 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package logica;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import persistencia.ControladorPersistencia;
+
+public class ServidorCentral implements IServidorCentral {
+
+    private final ControladorPersistencia persistencia;
+
+    public ServidorCentral() {
+        this.persistencia = new ControladorPersistencia();
+    }
+
+    // =========================
+    // CATEGORÍAS
+    // =========================
+
+    @Override
+    public void altaCategoria(String nombreCategoria)
+            throws Exception {
+
+        persistencia.altaCategoria(nombreCategoria);
+    }
+
+    @Override
+    public List<Categoria> listarCategorias() {
+        return persistencia.listarCategorias();
+    }
+
+    @Override
+    public Categoria buscarCategoria(String nombre) {
+        return persistencia.buscarCategoria(nombre);
+    }
+
+    @Override
+    public void agregarCategoriaACurso(
+            String nombreCurso,
+            String nombreCategoria)
+            throws Exception {
+
+        persistencia.agregarCategoriaACurso(
+                nombreCurso,
+                nombreCategoria
+        );
+    }
+
+    @Override
+    public List<Categoria> listarCategoriasCurso(
+            String nombreCurso)
+            throws Exception {
+
+        return persistencia.listarCategoriasCurso(
+                nombreCurso
+        );
+    }
+
+    // =========================
+    // CURSOS
+    // =========================
+
+    @Override
+    public ArrayList<Curso> listarCursos() {
+        return persistencia.listarCursos();
+    }
+
+    @Override
+    public ArrayList<Curso> listarCursosPorInstituto(
+            String nombreInstituto) {
+
+        return persistencia.listarCursosPorInstituto(
+                nombreInstituto
+        );
+    }
+
+    @Override
+    public Curso buscarCurso(String nombre) {
+        return persistencia.buscarCurso(nombre);
+    }
+
+    @Override
+    public Curso buscarCursoInstituto(
+            String nombre,
+            Instituto instituto) {
+
+        return persistencia.buscarCursoInstituto(
+                nombre,
+                instituto
+        );
+    }
+
+    @Override
+    public boolean existeCurso(String nombre) {
+        return persistencia.existeCurso(nombre);
+    }
+
+    @Override
+    public void altaCurso(Curso curso) {
+        persistencia.altaCurso(curso);
+    }
+
+    // =========================
+    // INSTITUTOS
+    // =========================
+
+    @Override
+    public ArrayList<Instituto> listarInstitutos() {
+        return persistencia.listarInstitutos();
+    }
+
+    @Override
+    public Instituto buscarInstituto(String nombre) {
+        return persistencia.buscarInstituto(nombre);
+    }
+
+    // =========================
+    // EDICIONES
+    // =========================
+
+    @Override
+    public ArrayList<EdicionCurso> listarEdicionesCurso(
+            Curso curso) {
+
+        return persistencia.listarEdicionesCurso(curso);
+    }
+    
+    
+    @Override
+    public ArrayList<Docente> listarDocentes() {
+       return persistencia.listarDocentes();
+    }
+
+    @Override
+    public Docente buscarDocentePorNick(String nick) {
+       return persistencia.buscarDocentePorNick(nick);
+    }   
+
+    @Override
+    public List<Instituto> obtenerInstitutos() {
+       return persistencia.obtenerInstitutos();
+    }
+
+   @Override
+   public List<Curso> obtenerCursosDeInstituto(Long idInstituto) {
+      return persistencia.obtenerCursosDeInstituto(idInstituto);
+    }
+
+    @Override
+    public List<Estudiante> obtenerEstudiantes() {
+       return persistencia.obtenerEstudiantes();
+    }
+
+   @Override
+    public void altaEdicionCurso(
+        Curso curso,
+        EdicionCurso edicion) {
+
+    persistencia.altaEdicionCurso(curso, edicion);
+    }
+
+   @Override
+   public void inscriboAEdicionCurso(
+        Estudiante estudiante,
+        EdicionCurso edicion,
+        LocalDate fechaInscripcion) {
+
+    persistencia.inscriboAEdicionCurso(
+            estudiante,
+            edicion,
+            fechaInscripcion
+    );
+    } 
+    
+    
+    
+    
+    
+}

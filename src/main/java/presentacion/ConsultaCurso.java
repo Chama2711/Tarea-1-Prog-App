@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.Set;
 import persistencia.ControladorPersistencia;
+import logica.IServidorCentral;
 import logica.*;
 /**
  *
@@ -15,11 +16,10 @@ import logica.*;
  */
 public class ConsultaCurso extends javax.swing.JInternalFrame {
     
-    
-private ControladorPersistencia cp;
+   private IServidorCentral servidorCentral;
 
 public void seleccionarCurso(String nombre) {
-    Curso curso = cp.buscarCurso(nombre);
+    Curso curso = servidorCentral.buscarCurso(nombre);
     if (curso == null || curso.getInstituto() == null) {
         throw new IllegalArgumentException("El curso ya no está disponible.");
     }
@@ -43,15 +43,15 @@ private void limpiarDetalleCurso() {
     /**
      * Creates new form ConsultaCurso
      */
-    public ConsultaCurso(ControladorPersistencia cp) {
+    public ConsultaCurso(IServidorCentral servidorCentral) {
         
-        this.cp = cp;
+        this.servidorCentral = servidorCentral;
         initComponents();
         
         ComboInstitutoConsulta.removeAllItems();
         ComboCursoConsulta.removeAllItems();
         
-        ArrayList<Instituto> institutos = cp.listarInstitutos();
+        ArrayList<Instituto> institutos = servidorCentral.listarInstitutos();
         
         for(int i = 0; i < institutos.size(); i++)
         {
@@ -274,14 +274,14 @@ String nombreInstituto = (String) ComboInstitutoConsulta.getSelectedItem();
 String nombreCurso = (String) ComboCursoConsulta.getSelectedItem();
 if (nombreInstituto == null || nombreCurso == null) return;
 try {
-    Instituto instituto = cp.buscarInstituto(nombreInstituto);
+    Instituto instituto = servidorCentral.buscarInstituto(nombreInstituto);
     if (instituto == null) throw new IllegalArgumentException("El instituto ya no existe.");
-    Curso curso = cp.buscarCursoInstituto(nombreCurso, instituto);
+    Curso curso = servidorCentral.buscarCursoInstituto(nombreCurso, instituto);
     if (curso == null) throw new IllegalArgumentException("El curso ya no existe.");
     DefaultListModel<String> previas = new DefaultListModel<>();
     for (Curso previa : curso.getPrevias()) previas.addElement(previa.getNombre());
     DefaultListModel<String> ediciones = new DefaultListModel<>();
-    for (EdicionCurso edicion : cp.listarEdicionesCurso(curso)) ediciones.addElement(edicion.getNombre());
+    for (EdicionCurso edicion : servidorCentral.listarEdicionesCurso(curso)) ediciones.addElement(edicion.getNombre());
     DefaultListModel<String> categorias = new DefaultListModel<>();
     for (Categoria categoria : curso.getCategorias()) {
     categorias.addElement(categoria.getNombre());
@@ -314,7 +314,7 @@ try {
         
         ComboCursoConsulta.removeAllItems();
         
-        ArrayList<Curso> cursos = cp.listarCursosPorInstituto(nombreInstituto);
+        ArrayList<Curso> cursos = servidorCentral.listarCursosPorInstituto(nombreInstituto);
         
         for(int i = 0; i < cursos.size(); i++)
         {

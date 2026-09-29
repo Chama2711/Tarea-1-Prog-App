@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 import logica.ControladorUsuario;
+import logica.IServidorCentral;
 
 /**
  *
@@ -17,10 +18,12 @@ import logica.ControladorUsuario;
 public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
 
     private ControladorUsuario control;
+    private IServidorCentral servidorCentral;
     
-    public InternalConsultaUsuario(ControladorUsuario control) {
+    public InternalConsultaUsuario(ControladorUsuario control, IServidorCentral servidorCentral) {
         initComponents();
         this.control = control;
+        this.servidorCentral = servidorCentral;
         
         jScrollPane1.setPreferredSize(new java.awt.Dimension(280, 160));
         jScrollPane2.setPreferredSize(new java.awt.Dimension(280, 160));
@@ -214,13 +217,14 @@ try {
     String nombre = lstCursosEdiciones.getSelectedValue();
     logica.Usuario usuario = control.obtenerUsuarioPorNickname(cmbUsuarios.getSelectedItem().toString());
     if (usuario == null) throw new IllegalArgumentException("El usuario ya no existe.");
-    persistencia.ControladorPersistencia cp = new persistencia.ControladorPersistencia();
+
     javax.swing.JInternalFrame ventana;
     if (usuario instanceof logica.Docente) {
-        ConsultaCurso consulta = new ConsultaCurso(cp);
+        ConsultaCurso consulta = new ConsultaCurso(servidorCentral);
         consulta.seleccionarCurso(nombre);
         ventana = consulta;
     } else {
+        persistencia.ControladorPersistencia cp = new persistencia.ControladorPersistencia();
         ConsultaEdicionDeCursoInternalFrame consulta = new ConsultaEdicionDeCursoInternalFrame(cp);
         consulta.seleccionarEdicion(nombre);
         ventana = consulta;
@@ -255,20 +259,6 @@ try {
         dispose();
     }//GEN-LAST:event_btnSalirActionPerformed
 
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSalir;

@@ -4,19 +4,20 @@
  */
 package presentacion;
 
-import persistencia.ControladorPersistencia;
+
+import logica.IServidorCentral;
 import javax.swing.JOptionPane;
 
 public class AltaCategoriaInternalFrame extends javax.swing.JInternalFrame {
 
-    private ControladorPersistencia controlPersistencia;                                                            
+    private IServidorCentral servidorCentral;                                                           
     
-    public AltaCategoriaInternalFrame(ControladorPersistencia controlPersistencia) {
+    public AltaCategoriaInternalFrame(IServidorCentral servidorCentral) {
         initComponents();
         
         setTitle("Alta de Categoría");
-        this.controlPersistencia = controlPersistencia;
-        this.controlPersistencia = controlPersistencia;
+        this.servidorCentral = servidorCentral;
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -98,7 +99,7 @@ public class AltaCategoriaInternalFrame extends javax.swing.JInternalFrame {
 
     try {
 
-        controlPersistencia.altaCategoria(nombre);
+        servidorCentral.altaCategoria(nombre);
 
         JOptionPane.showMessageDialog(
                 this,

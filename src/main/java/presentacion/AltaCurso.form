@@ -86,7 +86,6 @@
                                       </Group>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <EmptySpace min="306" max="32767" attributes="0"/>
                                       <Component id="btnAceptar" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
                                       <Component id="btnCancelar" min="-2" max="-2" attributes="0"/>
@@ -99,7 +98,7 @@
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace pref="159" max="32767" attributes="0"/>
+              <EmptySpace pref="56" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
