@@ -749,6 +749,49 @@ public class CargarDatosPrueba {
             P3.agregarCurso(C7);
             P3.agregarCurso(C10);
             
+            // ========================
+            // PRUEBAS CATEGORIAS
+            // ========================
+           
+            Categoria CAT1 = new Categoria("Tecnología");
+            Categoria CAT2 = new Categoria("Matemática");
+            Categoria CAT3 = new Categoria("Robótica");
+            Categoria CAT4 = new Categoria("Industrial");
+            Categoria CAT5 = new Categoria("Educación");
+            Categoria CAT6 = new Categoria("Interdisciplinario");
+            
+            // =========================
+// CATEGORIAS DE LOS CURSOS
+// =========================
+
+C1.agregarCategoria(CAT1);
+C2.agregarCategoria(CAT1);
+
+C3.agregarCategoria(CAT4);
+C3.agregarCategoria(CAT6);
+
+C4.agregarCategoria(CAT4);
+
+C5.agregarCategoria(CAT4);
+C5.agregarCategoria(CAT2);
+
+C6.agregarCategoria(CAT5);
+C6.agregarCategoria(CAT6);
+
+C7.agregarCategoria(CAT2);
+C7.agregarCategoria(CAT3);
+C7.agregarCategoria(CAT5);
+
+C8.agregarCategoria(CAT2);
+C8.agregarCategoria(CAT5);
+
+C9.agregarCategoria(CAT2);
+C9.agregarCategoria(CAT5);
+
+C10.agregarCategoria(CAT2);
+C10.agregarCategoria(CAT3);
+            
+            
             // =========================
 // PERSISTIR DATOS
 // =========================
@@ -791,6 +834,15 @@ em.persist(C7);
 em.persist(C8);
 em.persist(C9);
 em.persist(C10);
+
+// Categorías
+em.persist(CAT1);
+em.persist(CAT2);
+em.persist(CAT3);
+em.persist(CAT4);
+em.persist(CAT5);
+em.persist(CAT6);
+
 
 // Ediciones
 em.persist(E1);
@@ -861,12 +913,6 @@ em.persist(P1);
 em.persist(P2);
 em.persist(P3);
 
-            
-            
-            
-            
-            
-            
 
             //em.persist();
 

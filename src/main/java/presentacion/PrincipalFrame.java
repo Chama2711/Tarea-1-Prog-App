@@ -37,6 +37,8 @@ public class PrincipalFrame extends javax.swing.JFrame {
 
         // Agregar la ventana
         jDesktopPane1.add(frame);
+        
+       
 
         // Ajustar tamaño
         frame.pack();
@@ -109,6 +111,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
         jMenuItem11 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
+        menuAltaCategoria = new javax.swing.JMenuItem();
         menuConsultaProg = new javax.swing.JMenu();
         menuConsultaUsuario = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
@@ -167,6 +170,10 @@ public class PrincipalFrame extends javax.swing.JFrame {
         jMenuItem9.setText("Alta Edicion de Curso");
         jMenuItem9.addActionListener(this::jMenuItem9ActionPerformed);
         jMenu1.add(jMenuItem9);
+
+        menuAltaCategoria.setText("Alta Categoria");
+        menuAltaCategoria.addActionListener(this::menuAltaCategoriaActionPerformed);
+        jMenu1.add(menuAltaCategoria);
 
         jMenuBar1.add(jMenu1);
 
@@ -281,6 +288,13 @@ private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {
         abrirInternalFrame (new AltaInstitutoInternalFrame(controlPersistencia));
     }//GEN-LAST:event_jMenuItem11ActionPerformed
 
+    private void menuAltaCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAltaCategoriaActionPerformed
+        // TODO add your handling code here:
+        AltaCategoriaInternalFrame ventana = new AltaCategoriaInternalFrame(controlPersistencia);
+        jDesktopPane1.add(ventana);
+        ventana.setVisible(true);
+    }//GEN-LAST:event_menuAltaCategoriaActionPerformed
+
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -302,6 +316,7 @@ private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JMenuItem menuAgregarCursoProg;
+    private javax.swing.JMenuItem menuAltaCategoria;
     private javax.swing.JMenuItem menuAltaUsuario;
     private javax.swing.JMenu menuConsultaProg;
     private javax.swing.JMenuItem menuConsultaUsuario;

@@ -61,6 +61,14 @@ public class Curso implements Serializable {
     )
     private Set<Curso> previas = new HashSet<>();
     
+    @ManyToMany
+    @JoinTable(
+        name = "curso_categoria",
+        joinColumns = @JoinColumn(name = "curso_id"),
+        inverseJoinColumns = @JoinColumn(name = "categoria_id")
+    )
+    private Set<Categoria> categorias = new HashSet<>();
+    
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
     private Set<EdicionCurso> ediciones = new HashSet<>();
     
@@ -132,4 +140,18 @@ public class Curso implements Serializable {
     public void agregoEdicion(EdicionCurso e){
         ediciones.add(e);
     }
+    
+    public Set<Categoria> getCategorias() {
+    return categorias;
+    }
+
+    public void setCategorias(Set<Categoria> categorias) {
+    this.categorias = categorias;
+    }
+
+    public void agregarCategoria(Categoria categoria) {
+    categorias.add(categoria);
+    }
+   
+    
 }
