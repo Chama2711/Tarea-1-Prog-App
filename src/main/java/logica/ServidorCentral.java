@@ -225,4 +225,47 @@ public class ServidorCentral implements IServidorCentral {
     
     
     
+    
+    
+    // ==================== 
+    //     USUARIOS 
+    //=====================
+
+    @Override
+    public List<Usuario> obtenerUsuarios() {
+    return persistencia.obtenerUsuarios();
+    }
+
+    @Override
+    public Usuario obtenerUsuario(String nick) {
+    return persistencia.obtenerUsuario(nick);
+    }
+
+    @Override
+    public void crearUsuario(
+        Usuario usuario,
+        String nombreInstituto) throws Exception {
+
+    persistencia.crearUsuario(usuario, nombreInstituto);
+    }
+
+    @Override
+    public void editarUsuario(Usuario usuario) throws Exception {
+    persistencia.editarUsuario(usuario);
+    }
+
+    @Override
+    public List<String> listarCursosOEdicionesUsuario(String nick) {
+    return persistencia.listarCursosOEdicionesUsuario(nick);
+    }
+
+    @Override
+    public List<String> listarProgramasUsuario(String nick) {
+    return persistencia.listarProgramasUsuario(nick);
+    }
+    
+    
+    
+
+    
 }

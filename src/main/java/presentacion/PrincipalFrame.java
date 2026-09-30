@@ -59,14 +59,15 @@ public class PrincipalFrame extends javax.swing.JFrame {
         }
     }
     // 2. La instancia de la lógica/persistencia
-    private logica.ControladorUsuario controlUsuario;
     private IServidorCentral servidorCentral;
+    private logica.ControladorUsuario controlUsuario;
 
     public PrincipalFrame() {
         initComponents();
-
-    controlUsuario = new logica.ControladorUsuario();
+        
     servidorCentral = new ServidorCentral();
+    controlUsuario = new logica.ControladorUsuario(servidorCentral);
+  
 
         setTitle("edEXT - Plataforma Educativa");
         setLocationRelativeTo(null);

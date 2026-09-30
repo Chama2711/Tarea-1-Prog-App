@@ -89,7 +89,9 @@ public interface IServidorCentral {
         LocalDate fecha
     );
     
-    // ==================== PROGRAMAS DE FORMACIÓN ====================
+    // ========================
+    //  PROGRAMAS DE FORMACIÓN 
+    //=========================
 
     void altaProgramaFormacion(ProgramaFormacion programa);
 
@@ -106,8 +108,24 @@ public interface IServidorCentral {
 
     ProgramaFormacion obtenerDetallePrograma(String nombrePrograma);
     
-    
-    
+   // ==================== 
+   //    USUARIOS
+   //====================
+ 
+    List<Usuario> obtenerUsuarios();
+
+    Usuario obtenerUsuario(String nickname);
+
+    void crearUsuario(
+        Usuario usuario,
+        String nombreInstituto
+    ) throws Exception;
+
+    void editarUsuario(Usuario usuario) throws Exception;
+
+    List<String> listarCursosOEdicionesUsuario(String nick);
+
+    List<String> listarProgramasUsuario(String nick);
     
     
     

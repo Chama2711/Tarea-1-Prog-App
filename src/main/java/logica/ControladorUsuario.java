@@ -14,8 +14,7 @@ package logica;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
-import persistencia.ControladorPersistencia;
-
+import logica.IServidorCentral;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -27,8 +26,11 @@ import java.time.format.DateTimeParseException;
 
 
 public class ControladorUsuario {
-    private ControladorPersistencia controlPersistencia = new ControladorPersistencia();
-    
+    private final IServidorCentral servidorCentral;
+
+public ControladorUsuario(IServidorCentral servidorCentral) {
+    this.servidorCentral = servidorCentral;
+}
 public void modificarDatosUsuario(String nickname, String nuevoNombre,
         String nuevoApellido, LocalDate nuevaFecha) {
     modificarUsuario(nickname, nuevoNombre, nuevoApellido, nuevaFecha);
@@ -36,7 +38,7 @@ public void modificarDatosUsuario(String nickname, String nuevoNombre,
     
     // Ejemplo de listar para tus JList:
     public List<String> obtenerNicknamesUsuarios() {
-        List<Usuario> listaUsuarios = controlPersistencia.obtenerUsuarios();
+        List<Usuario> listaUsuarios = servidorCentral.obtenerUsuarios();
         List<String> nicknames = new ArrayList<>();
         
         for (Usuario u : listaUsuarios) {
@@ -48,12 +50,12 @@ public void modificarDatosUsuario(String nickname, String nuevoNombre,
 
     public boolean existeNickname(String nick) {
     // Si la BD devuelve un usuario, significa que el nick ya existe
-    return controlPersistencia.obtenerUsuario(nick) != null;
+    return servidorCentral.obtenerUsuario(nick) != null;
 }
 
 public boolean existeCorreo(String mail) {
     // Buscamos en la lista de la BD si el correo ya está en uso
-    List<Usuario> usuarios = controlPersistencia.obtenerUsuarios();
+    List<Usuario> usuarios = servidorCentral.obtenerUsuarios();
     for (Usuario u : usuarios) {
         if (u.getMail().equalsIgnoreCase(mail)) {
             return true;
@@ -79,7 +81,7 @@ private void guardar(Usuario u) {
 
 private void guardar(Usuario u, String nombreInstituto) {
     try {
-        controlPersistencia.crearUsuario(u, nombreInstituto);
+        servidorCentral.crearUsuario(u, nombreInstituto);
     } catch (IllegalArgumentException e) {
         throw e;
     } catch (Exception e) {
@@ -92,7 +94,7 @@ private void guardar(Usuario u, String nombreInstituto) {
     
 public List<String> listarNicknamesUsuarios() {
     List<String> nicks = new ArrayList<>();
-    List<Usuario> usuarios = controlPersistencia.obtenerUsuarios();
+    List<Usuario> usuarios = servidorCentral.obtenerUsuarios();
     
     // Recorremos los usuarios de la BD y sacamos solo los nicknames
     for (Usuario u : usuarios) {
@@ -103,7 +105,7 @@ public List<String> listarNicknamesUsuarios() {
 
 public Usuario obtenerUsuarioPorNickname(String nickname) {
     // Le pedimos el usuario directamente a la base de datos
-    return controlPersistencia.obtenerUsuario(nickname);
+    return servidorCentral.obtenerUsuario(nickname);
 }
 
 public void modificarUsuario(String nickname, String nuevoNombre,
@@ -114,12 +116,12 @@ public void modificarUsuario(String nickname, String nuevoNombre,
         throw new IllegalArgumentException("Revise nombre, apellido y fecha de nacimiento.");
     }
     try {
-        Usuario u = controlPersistencia.obtenerUsuario(nickname);
+        Usuario u = servidorCentral.obtenerUsuario(nickname);
         if (u == null) throw new IllegalArgumentException("El usuario ya no existe.");
         u.setNombre(nuevoNombre.trim());
         u.setApellido(nuevoApellido.trim());
         u.setFechaNacimiento(nuevaFechaNac);
-        controlPersistencia.editarUsuario(u);
+        servidorCentral.editarUsuario(u);
     } catch (IllegalArgumentException e) {
         throw e;
     } catch (Exception e) {
@@ -128,16 +130,16 @@ public void modificarUsuario(String nickname, String nuevoNombre,
 }
 
     public List<String> listarCursosOEdicionesUsuario(String nick) {
-        return controlPersistencia.listarCursosOEdicionesUsuario(nick);
+        return servidorCentral.listarCursosOEdicionesUsuario(nick);
     }
 
     public List<String> listarProgramasUsuario(String nick) {
-        return controlPersistencia.listarProgramasUsuario(nick);
+        return servidorCentral.listarProgramasUsuario(nick);
     }
 
 public List<String> obtenerNombresInstitutos() {
         // Le pedimos los objetos completos a la persistencia
-        List<Instituto> institutos = controlPersistencia.obtenerInstitutos();
+        List<Instituto> institutos = servidorCentral.obtenerInstitutos();
         List<String> nombres = new ArrayList<>();
         
         // Extraemos solo los nombres para mandarlos a la ventana (ComboBox)
