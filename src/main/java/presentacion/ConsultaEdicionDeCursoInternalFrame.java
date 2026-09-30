@@ -7,7 +7,7 @@ import java.util.List;
 import logica.Instituto;
 import logica.Curso;
 import logica.EdicionCurso;
-import persistencia.ControladorPersistencia;
+import logica.IServidorCentral;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -20,7 +20,7 @@ import javax.swing.tree.TreeSelectionModel;
  */
 public class ConsultaEdicionDeCursoInternalFrame extends javax.swing.JInternalFrame {
 
-private ControladorPersistencia cp;
+private IServidorCentral servidorCentral;
 
 private void limpiarDetalleEdicion() {
     nombreTXT.setText("");
@@ -61,9 +61,9 @@ public void seleccionarEdicion(String nombre) {
     );
 }
     
-    public ConsultaEdicionDeCursoInternalFrame(ControladorPersistencia cp) {
+    public ConsultaEdicionDeCursoInternalFrame(IServidorCentral servidorCentral) {
         initComponents();
-        this.cp = cp;
+        this.servidorCentral = servidorCentral;
 
         arbolEdiciones.getSelectionModel().setSelectionMode(
                 TreeSelectionModel.SINGLE_TREE_SELECTION
@@ -82,19 +82,19 @@ public void seleccionarEdicion(String nombre) {
             new DefaultMutableTreeNode("Institutos");
 
     try {
-        for (Instituto instituto : cp.obtenerInstitutos()) {
+        for (Instituto instituto : servidorCentral.obtenerInstitutos()) {
             DefaultMutableTreeNode nodoInstituto =
                     new DefaultMutableTreeNode(instituto.getNombre());
 
             raiz.add(nodoInstituto);
 
-            for (Curso curso : cp.obtenerCursosDeInstituto(instituto.getId())) {
+            for (Curso curso : servidorCentral.obtenerCursosDeInstituto(instituto.getId())) {
                 DefaultMutableTreeNode nodoCurso =
                         new DefaultMutableTreeNode(curso.getNombre());
 
                 nodoInstituto.add(nodoCurso);
 
-                for (EdicionCurso edicion : cp.listarEdicionesCurso(curso)) {
+                for (EdicionCurso edicion : servidorCentral.listarEdicionesCurso(curso)) {
                     DefaultMutableTreeNode nodoEdicion =
                             new DefaultMutableTreeNode(edicion);
 

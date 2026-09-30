@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 import logica.ControladorUsuario;
+import logica.IServidorCentral;
 
 /**
  *
@@ -17,10 +18,12 @@ import logica.ControladorUsuario;
 public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
 
     private ControladorUsuario control;
+    private IServidorCentral servidorCentral;
     
-    public InternalConsultaUsuario(ControladorUsuario control) {
+    public InternalConsultaUsuario(IServidorCentral servidorCentral) {
         initComponents();
         this.control = control;
+        this.servidorCentral = servidorCentral;
         
         jScrollPane1.setPreferredSize(new java.awt.Dimension(280, 160));
         jScrollPane2.setPreferredSize(new java.awt.Dimension(280, 160));
@@ -214,14 +217,14 @@ try {
     String nombre = lstCursosEdiciones.getSelectedValue();
     logica.Usuario usuario = control.obtenerUsuarioPorNickname(cmbUsuarios.getSelectedItem().toString());
     if (usuario == null) throw new IllegalArgumentException("El usuario ya no existe.");
-    persistencia.ControladorPersistencia cp = new persistencia.ControladorPersistencia();
+
     javax.swing.JInternalFrame ventana;
     if (usuario instanceof logica.Docente) {
-        ConsultaCurso consulta = new ConsultaCurso(cp);
+        ConsultaCurso consulta = new ConsultaCurso(servidorCentral);
         consulta.seleccionarCurso(nombre);
         ventana = consulta;
     } else {
-        ConsultaEdicionDeCursoInternalFrame consulta = new ConsultaEdicionDeCursoInternalFrame(cp);
+        ConsultaEdicionDeCursoInternalFrame consulta = new ConsultaEdicionDeCursoInternalFrame(servidorCentral);
         consulta.seleccionarEdicion(nombre);
         ventana = consulta;
     }
@@ -237,8 +240,7 @@ try {
     private void lstProgramasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstProgramasMouseClicked
 if (evt.getClickCount() != 2 || lstProgramas.getSelectedValue() == null || getDesktopPane() == null) return;
 try {
-    persistencia.ControladorPersistencia cp = new persistencia.ControladorPersistencia();
-    ConsultaProgramaFormacionInternalFrame ventana = new ConsultaProgramaFormacionInternalFrame(cp);
+    ConsultaProgramaFormacionInternalFrame ventana = new ConsultaProgramaFormacionInternalFrame(servidorCentral);
     ventana.seleccionarPrograma(lstProgramas.getSelectedValue());
     getDesktopPane().add(ventana);
     ventana.setVisible(true);
@@ -255,20 +257,6 @@ try {
         dispose();
     }//GEN-LAST:event_btnSalirActionPerformed
 
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSalir;

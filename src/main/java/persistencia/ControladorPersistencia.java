@@ -686,6 +686,172 @@ public static class ControladoraPersistencia {
         public ControladoraPersistencia() {
         }
     }
+
+//Requerimientos  Categorias
+public void altaCategoria(String nombreCategoria) throws Exception {
+
+    if (nombreCategoria == null || nombreCategoria.trim().isEmpty()) {
+        throw new Exception("El nombre de la categoría no puede estar vacío.");
+    }
+
+    nombreCategoria = nombreCategoria.trim();
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        Long existe = em.createQuery(
+                "SELECT COUNT(c) FROM Categoria c WHERE c.nombre = :nombre",
+                Long.class)
+                .setParameter("nombre", nombreCategoria)
+                .getSingleResult();
+
+        if (existe > 0) {
+            throw new Exception(
+                    "Ya existe una categoría registrada con el nombre: "
+                    + nombreCategoria
+            );
+        }
+
+        em.getTransaction().begin();
+
+        Categoria categoria = new Categoria(nombreCategoria);
+
+        em.persist(categoria);
+
+        em.getTransaction().commit();
+
+    } catch (Exception e) {
+
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+
+        throw e;
+
+    } finally {
+        em.close();
+    }
+}
+public List<Categoria> listarCategorias() {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        return em.createQuery(
+                "SELECT c FROM Categoria c ORDER BY c.nombre",
+                Categoria.class
+        ).getResultList();
+
+    } finally {
+        em.close();
+    }
+}
+public void agregarCategoriaACurso(String nombreCurso, String nombreCategoria)
+        throws Exception {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        em.getTransaction().begin();
+
+        Curso curso = em.createQuery(
+                "SELECT c FROM Curso c WHERE c.nombre = :nombre",
+                Curso.class)
+                .setParameter("nombre", nombreCurso)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+
+        if (curso == null) {
+            throw new Exception(
+                    "No existe un curso con el nombre: " + nombreCurso
+            );
+        }
+
+        Categoria categoria = em.createQuery(
+                "SELECT c FROM Categoria c WHERE c.nombre = :nombre",
+                Categoria.class)
+                .setParameter("nombre", nombreCategoria)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+
+        if (categoria == null) {
+            throw new Exception(
+                    "No existe una categoría con el nombre: " + nombreCategoria
+            );
+        }
+
+        if (curso.getCategorias().contains(categoria)) {
+            throw new Exception(
+                    "El curso ya tiene asociada la categoría: "
+                    + nombreCategoria
+            );
+        }
+
+        curso.agregarCategoria(categoria);
+
+        em.getTransaction().commit();
+
+    } catch (Exception e) {
+
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+
+        throw e;
+
+    } finally {
+        em.close();
+    }
+}
+public List<Categoria> listarCategoriasCurso(String nombreCurso)
+        throws Exception {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        Curso curso = em.createQuery(
+                "SELECT c FROM Curso c WHERE c.nombre = :nombre",
+                Curso.class)
+                .setParameter("nombre", nombreCurso)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+
+        if (curso == null) {
+            throw new Exception(
+                    "No existe un curso con el nombre: " + nombreCurso
+            );
+        }
+
+        // Inicializamos la colección mientras el EntityManager sigue abierto.
+        return new java.util.ArrayList<>(curso.getCategorias());
+
+    } finally {
+        em.close();
+    }
+}
+public Categoria buscarCategoria(String nombre) {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+
+        return em.createQuery(
+                "SELECT c FROM Categoria c WHERE c.nombre = :nombre",
+                Categoria.class
+        )
+        .setParameter("nombre", nombre)
+        .getResultStream()
+        .findFirst()
+        .orElse(null);
+
+    } finally {
+        em.close();
+    }
+}
+
 }
 
 

@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
 package presentacion;
-import persistencia.ControladorPersistencia;
+import logica.IServidorCentral;
 import javax.swing.DefaultListModel;
 import java.util.*;
 import java.time.LocalDate;
@@ -13,7 +13,7 @@ import logica.*;
 
 public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     
-    private ControladorPersistencia cp;
+    private IServidorCentral servidorCentral;
     private DefaultListModel<String> modeloDocentesDispo;
     private DefaultListModel<String> modeloDocentesSelec;
     private ArrayList<Curso> cursosActuales = new ArrayList<>();
@@ -21,9 +21,9 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     /**
      * Creates new form AltaEdicionCurso
      */
-    public AltaEdicionCurso(ControladorPersistencia cp) {
+    public AltaEdicionCurso(IServidorCentral servidorCentral) {
         
-        this.cp = cp;
+        this.servidorCentral = servidorCentral;
         initComponents();
         FechasFormulario.configurar(dcInicio);
         FechasFormulario.configurar(dcFin);
@@ -31,7 +31,7 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         modeloDocentesDispo = new DefaultListModel<>();
         modeloDocentesSelec = new DefaultListModel<>();
         
-        ArrayList<Docente> docentes = cp.listarDocentes();
+        ArrayList<Docente> docentes = servidorCentral.listarDocentes();
         
         for(int i = 0; i < docentes.size(); i++)
         {
@@ -44,7 +44,7 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         
         
         
-        ArrayList<Instituto> institutos = cp.listarInstitutos();
+        ArrayList<Instituto> institutos = servidorCentral.listarInstitutos();
         
         for(int i = 0; i < institutos.size(); i++)
         {
@@ -247,8 +247,7 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
 
     ComboCurso.removeAllItems();
 
-    cursosActuales =
-            cp.listarCursosPorInstituto(institutoSeleccionado);
+    cursosActuales = servidorCentral.listarCursosPorInstituto(institutoSeleccionado);
 
     for (Curso curso : cursosActuales) {
 
@@ -292,8 +291,7 @@ if (nombreInstituto == null || indiceCurso < 0) {
     );
 }
 
-Instituto instituto =
-        cp.buscarInstituto(nombreInstituto);
+Instituto instituto = servidorCentral.buscarInstituto(nombreInstituto);
 
 if (instituto == null) {
     throw new IllegalArgumentException(
@@ -320,13 +318,13 @@ Curso curso = cursosActuales.get(indiceCurso);
     Set<Docente> docentes = new HashSet<>();
     for (int i = 0; i < modeloDocentesSelec.size(); i++) {
         String nick = modeloDocentesSelec.getElementAt(i);
-        Docente docente = cp.buscarDocentePorNick(nick);
+        Docente docente = servidorCentral.buscarDocentePorNick(nick);
         if (docente == null) throw new IllegalArgumentException("El docente " + nick + " ya no existe.");
         docentes.add(docente);
     }
     EdicionCurso edicion = new EdicionCurso(nombre, inicio, fin, cupo, LocalDate.now());
     edicion.setDocentes(docentes);
-    cp.altaEdicionCurso(curso, edicion);
+    servidorCentral.altaEdicionCurso(curso, edicion);
     JOptionPane.showMessageDialog(this, "Edición de curso creada correctamente.");
     dispose();
 } catch (java.time.DateTimeException e) {

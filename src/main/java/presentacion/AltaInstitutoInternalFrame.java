@@ -9,16 +9,17 @@ package presentacion;
  * @author elizeth
  */
 import javax.swing.JOptionPane;
-import persistencia.ControladorPersistencia;
+import logica.IServidorCentral;
 
 
 public class AltaInstitutoInternalFrame extends javax.swing.JInternalFrame {
-   private ControladorPersistencia controlPersistencia;
+    
+   private IServidorCentral servidorCentral;
     
     
-    public AltaInstitutoInternalFrame(ControladorPersistencia controlPersistencia) {
+    public AltaInstitutoInternalFrame(IServidorCentral servidorCentral) {
         initComponents();
-       this.controlPersistencia = controlPersistencia;
+       this.servidorCentral = servidorCentral;
         
     }
 
@@ -52,11 +53,11 @@ public class AltaInstitutoInternalFrame extends javax.swing.JInternalFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lblNombreInstituto)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnAlta)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
                         .addComponent(btnCancelar))
                     .addComponent(txtNombreInstituto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(26, 26, 26))
@@ -87,7 +88,7 @@ public class AltaInstitutoInternalFrame extends javax.swing.JInternalFrame {
     return;
        }
     try {
-    controlPersistencia.altaInstituto(nombre);
+    servidorCentral.altaInstituto(nombre);
 
     JOptionPane.showMessageDialog(this,"Instituto registrado correctamente.","Alta de Instituto",JOptionPane.INFORMATION_MESSAGE);
 

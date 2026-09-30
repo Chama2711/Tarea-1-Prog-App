@@ -10,6 +10,7 @@
     <class>logica.Docente</class>
     <class>logica.Inscripcion</class>
     <class>logica.EdicionCurso</class>
+    <class>logica.Categoria</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/edEXT?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
       <property name="javax.persistence.jdbc.user" value="root"/>

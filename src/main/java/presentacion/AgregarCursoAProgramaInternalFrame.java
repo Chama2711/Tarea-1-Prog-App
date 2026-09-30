@@ -6,16 +6,16 @@ package presentacion;
 
 import javax.swing.*;
 import java.util.List;
-import persistencia.ControladorPersistencia;
+import logica.IServidorCentral;
 
 public class AgregarCursoAProgramaInternalFrame extends javax.swing.JInternalFrame {
 
-    private ControladorPersistencia controlPersistencia;
+    private IServidorCentral servidorCentral;
 
-    public AgregarCursoAProgramaInternalFrame(ControladorPersistencia controlPersistencia) {
+    public AgregarCursoAProgramaInternalFrame(IServidorCentral servidorCentral) {
       
 
-    this.controlPersistencia = controlPersistencia;
+    this.servidorCentral = servidorCentral;
 
     initComponents();
 
@@ -38,8 +38,7 @@ public class AgregarCursoAProgramaInternalFrame extends javax.swing.JInternalFra
     try {
         jComboBox1.removeAllItems();
 
-        List<String> programas =
-                controlPersistencia.listarNombresProgramas();
+        List<String> programas = servidorCentral.listarNombresProgramas();
 
         for (String prog : programas) {
             jComboBox1.addItem(prog);
@@ -47,8 +46,7 @@ public class AgregarCursoAProgramaInternalFrame extends javax.swing.JInternalFra
 
         jComboBox2.removeAllItems();
 
-        List<String> cursos =
-                controlPersistencia.listarNombresCursos();
+        List<String> cursos = servidorCentral.listarNombresCursos();
 
         for (String curso : cursos) {
             jComboBox2.addItem(curso);
@@ -167,7 +165,7 @@ public class AgregarCursoAProgramaInternalFrame extends javax.swing.JInternalFra
 
     try {
 
-        controlPersistencia.agregarCursoAPrograma(
+        servidorCentral.agregarCursoAPrograma(
                 prog,
                 curso
         );
