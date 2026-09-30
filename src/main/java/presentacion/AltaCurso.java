@@ -11,6 +11,10 @@ import javax.swing.JOptionPane;
 import persistencia.ControladorPersistencia;
 import logica.*;
 
+import logica.IControladorCurso;
+import logica.ControladorCurso;
+
+
 /**
  *
  * @author Chama
@@ -18,12 +22,14 @@ import logica.*;
 public class AltaCurso extends javax.swing.JInternalFrame {
 
     private ControladorPersistencia cp;
+    private final IControladorCurso controladorCurso;
     private DefaultListModel<String> modeloDisponibles;
     private DefaultListModel<String> modeloPrevias;
     /**
      * Creates new form AltaCurso
      */
     public AltaCurso(ControladorPersistencia cp) {
+        this.controladorCurso = new ControladorCurso(cp);
         initComponents();
         
         this.cp = cp;
@@ -290,38 +296,56 @@ public class AltaCurso extends javax.swing.JInternalFrame {
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
 try {
-    String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
-    if (nombreInstituto == null) throw new IllegalArgumentException("Seleccione un instituto.");
-    Instituto instituto = cp.buscarInstituto(nombreInstituto);
-    if (instituto == null) throw new IllegalArgumentException("El instituto ya no existe.");
+    String nombreInstituto =
+            (String) ComboInstitutoCurso.getSelectedItem();
+
     String nombre = txtNombreCurso.getText().trim();
     String descripcion = txtDescripcionCurso.getText().trim();
     String duracion = txtDuracionCurso.getText().trim();
     String url = txtURLCurso.getText().trim();
-    if (nombre.isEmpty() || descripcion.isEmpty() || duracion.isEmpty() || url.isEmpty()) {
-        throw new IllegalArgumentException("Complete nombre, descripción, duración y URL.");
-    }
-    int horas = Integer.parseInt(txtCantidadHorasCurso.getText().trim());
-    int creditos = Integer.parseInt(txtCreditosCurso.getText().trim());
-    if (cp.existeCurso(nombre)) throw new IllegalArgumentException("Ya existe ese nombre de curso en la plataforma.");
-    Set<Curso> previas = new HashSet<>();
+
+    int horas = Integer.parseInt(
+            txtCantidadHorasCurso.getText().trim());
+
+    int creditos = Integer.parseInt(
+            txtCreditosCurso.getText().trim());
+
+    java.util.List<String> nombresPrevias =
+            new java.util.ArrayList<>();
+
     for (int i = 0; i < modeloPrevias.size(); i++) {
-        Curso previa = cp.buscarCurso(modeloPrevias.getElementAt(i));
-        if (previa == null) throw new IllegalArgumentException("Una previa seleccionada ya no existe.");
-        previas.add(previa);
+        nombresPrevias.add(modeloPrevias.getElementAt(i));
     }
-    Curso curso = new Curso(nombre, duracion, horas, creditos,
-            LocalDate.now(), descripcion, url);
-    curso.setInstituto(instituto);
-    curso.setPrevias(previas);
-    cp.altaCurso(curso);
-    JOptionPane.showMessageDialog(this, "Curso creado correctamente.");
+
+    controladorCurso.altaCurso(
+            nombreInstituto,
+            nombre,
+            descripcion,
+            duracion,
+            horas,
+            creditos,
+            url,
+            nombresPrevias
+    );
+
+    JOptionPane.showMessageDialog(
+            this, "Curso creado correctamente.");
+
     dispose();
+
 } catch (NumberFormatException e) {
-    JOptionPane.showMessageDialog(this, "Horas y créditos deben ser números enteros.");
+    JOptionPane.showMessageDialog(
+            this, "Horas y créditos deben ser números enteros.");
+
 } catch (RuntimeException e) {
     e.printStackTrace();
-    JOptionPane.showMessageDialog(this, e.getMessage(), "No se creó el curso", JOptionPane.ERROR_MESSAGE);
+
+    JOptionPane.showMessageDialog(
+            this,
+            e.getMessage(),
+            "No se creó el curso",
+            JOptionPane.ERROR_MESSAGE
+    );
 }
     }//GEN-LAST:event_btnAceptarActionPerformed
 
