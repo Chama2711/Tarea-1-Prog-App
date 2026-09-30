@@ -251,7 +251,7 @@ private void menuAltaProgFormacionActionPerformed(java.awt.event.ActionEvent evt
     }//GEN-LAST:event_menuAltaUsuarioActionPerformed
 
     private void menuConsultaUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuConsultaUsuarioActionPerformed
-        presentacion.InternalConsultaUsuario ventanaConsulta = new presentacion.InternalConsultaUsuario(servidorCentral);
+        presentacion.InternalConsultaUsuario ventanaConsulta = new presentacion.InternalConsultaUsuario(controlUsuario,servidorCentral);
         jDesktopPane1.add(ventanaConsulta);
         ventanaConsulta.setVisible(true);
     }//GEN-LAST:event_menuConsultaUsuarioActionPerformed
