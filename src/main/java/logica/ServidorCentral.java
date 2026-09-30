@@ -117,6 +117,13 @@ public class ServidorCentral implements IServidorCentral {
     public Instituto buscarInstituto(String nombre) {
         return persistencia.buscarInstituto(nombre);
     }
+    
+    @Override
+    public void altaInstituto(String nombreInstituto) throws Exception {
+    persistencia.altaInstituto(nombreInstituto);
+    }
+    
+    
 
     // =========================
     // EDICIONES
@@ -176,7 +183,45 @@ public class ServidorCentral implements IServidorCentral {
     );
     } 
     
-    
+    // ==================== PROGRAMAS DE FORMACIÓN ====================
+
+    @Override
+    public void altaProgramaFormacion(ProgramaFormacion programa) {
+    persistencia.altaProgramaFormacion(programa);
+    }
+
+    @Override
+    public void agregarCursoAPrograma(
+        String nombrePrograma,
+        String nombreCurso) throws Exception {
+
+    persistencia.agregarCursoAPrograma(
+            nombrePrograma,
+            nombreCurso
+    );
+    }
+
+    @Override
+    public List<String> listarNombresCursos() {
+    return persistencia.listarNombresCursos();
+    }
+
+    @Override
+    public List<String> listarNombresProgramas() {
+    return persistencia.listarNombresProgramas();
+    }
+
+    @Override
+    public List<ProgramaFormacion> obtenerProgramas() {
+    return persistencia.obtenerProgramas();
+    }
+
+    @Override
+    public ProgramaFormacion obtenerDetallePrograma(
+        String nombrePrograma) {
+
+    return persistencia.obtenerDetallePrograma(nombrePrograma);
+    }
     
     
     

@@ -24,7 +24,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import logica.Curso;
 import logica.ProgramaFormacion;
-import persistencia.ControladorPersistencia;
+import logica.IServidorCentral;
 
 /**
  *
@@ -35,11 +35,11 @@ public class ConsultaProgramaFormacionInternalFrame extends javax.swing.JInterna
     private DefaultTreeModel treeModel;
     private DefaultMutableTreeNode rootNode; //Nodo raiz
 
-    private ControladorPersistencia controlPersistencia;
+    private IServidorCentral servidorCentral;
 
-    public ConsultaProgramaFormacionInternalFrame(ControladorPersistencia controlPersistencia) {
+    public ConsultaProgramaFormacionInternalFrame(IServidorCentral servidorCentral) {
     initComponents();
-    this.controlPersistencia = controlPersistencia;
+    this.servidorCentral = servidorCentral;
     txtFechaInicio.setEditable(false);
     txtFechaFin.setEditable(false); 
     txtDescripcion.setEditable(false);
@@ -75,7 +75,7 @@ private void cargarProgramas() {
         if (cbProgramas == null) return; // Validación anti-NullPointerException
 
     cbProgramas.removeAllItems();
-    List<ProgramaFormacion> programas = controlPersistencia.obtenerProgramas();
+    List<ProgramaFormacion> programas = servidorCentral.obtenerProgramas();
     
     if (programas != null) {
         for (ProgramaFormacion p : programas) {
@@ -134,7 +134,7 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
     if (seleccionado == null || seleccionado.isEmpty()) return;
 
     try {
-        ProgramaFormacion pf = controlPersistencia.obtenerDetallePrograma(seleccionado);
+        ProgramaFormacion pf = servidorCentral.obtenerDetallePrograma(seleccionado);
 
         if (pf != null) {
             // Reemplaza por el nombre exacto de tus campos (ej. jTextField1 / txtFechaInicio)

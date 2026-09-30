@@ -9,16 +9,17 @@ package presentacion;
  * @author elizeth
  */
 import javax.swing.JOptionPane;
-import persistencia.ControladorPersistencia;
+import logica.IServidorCentral;
 
 
 public class AltaInstitutoInternalFrame extends javax.swing.JInternalFrame {
-   private ControladorPersistencia controlPersistencia;
+    
+   private IServidorCentral servidorCentral;
     
     
-    public AltaInstitutoInternalFrame(ControladorPersistencia controlPersistencia) {
+    public AltaInstitutoInternalFrame(IServidorCentral servidorCentral) {
         initComponents();
-       this.controlPersistencia = controlPersistencia;
+       this.servidorCentral = servidorCentral;
         
     }
 
@@ -87,7 +88,7 @@ public class AltaInstitutoInternalFrame extends javax.swing.JInternalFrame {
     return;
        }
     try {
-    controlPersistencia.altaInstituto(nombre);
+    servidorCentral.altaInstituto(nombre);
 
     JOptionPane.showMessageDialog(this,"Instituto registrado correctamente.","Alta de Instituto",JOptionPane.INFORMATION_MESSAGE);
 

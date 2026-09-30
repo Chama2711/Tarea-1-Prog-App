@@ -6,7 +6,6 @@ package presentacion;
 
 
 import javax.swing.*;
-import persistencia.ControladorPersistencia;
 import logica.IServidorCentral;
 import logica.ServidorCentral;
 
@@ -60,14 +59,12 @@ public class PrincipalFrame extends javax.swing.JFrame {
         }
     }
     // 2. La instancia de la lógica/persistencia
-    private ControladorPersistencia controlPersistencia;
     private logica.ControladorUsuario controlUsuario;
     private IServidorCentral servidorCentral;
 
     public PrincipalFrame() {
         initComponents();
 
-    controlPersistencia = new ControladorPersistencia();
     controlUsuario = new logica.ControladorUsuario();
     servidorCentral = new ServidorCentral();
 
@@ -221,29 +218,29 @@ public class PrincipalFrame extends javax.swing.JFrame {
 
     private void menuAgregarCursoProgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAgregarCursoProgActionPerformed
         // TODO add your handling code here:
-        abrirInternalFrame(new AgregarCursoAProgramaInternalFrame(controlPersistencia));
+        abrirInternalFrame(new AgregarCursoAProgramaInternalFrame(servidorCentral));
     }//GEN-LAST:event_menuAgregarCursoProgActionPerformed
 
     private void InscripcionAEdicionDeCursoActionPerformed(java.awt.event.ActionEvent evt) {
     // Lógica para abrir la ventana Inscripcion a Edicion de Curso
-    abrirInternalFrame(new InscripcionAEdicionDeCursoInternalFrame(controlPersistencia));
+    abrirInternalFrame(new InscripcionAEdicionDeCursoInternalFrame(servidorCentral));
 }
 
 private void menuAltaProgFormacionActionPerformed(java.awt.event.ActionEvent evt) {
     // Lógica para abrir la ventana de Alta de Programa de Formación
-    abrirInternalFrame(new CrearProgramaDeFormacionInternalFrame(controlPersistencia));
+    abrirInternalFrame(new CrearProgramaDeFormacionInternalFrame(servidorCentral));
 }
     
     private void menuConsultaProgFormacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuConsultaProgFormacionActionPerformed
         // TODO add your handling code here:
-        abrirInternalFrame(new ConsultaProgramaFormacionInternalFrame(controlPersistencia));
+        abrirInternalFrame(new ConsultaProgramaFormacionInternalFrame(servidorCentral));
         
     }//GEN-LAST:event_menuConsultaProgFormacionActionPerformed
 
     private void menuConsultaEdicionCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuConsultaEdicionCursoActionPerformed
         // TODO add your handling code here:
 
-        abrirInternalFrame(new ConsultaEdicionDeCursoInternalFrame(controlPersistencia));
+        abrirInternalFrame(new ConsultaEdicionDeCursoInternalFrame(servidorCentral));
 
     }//GEN-LAST:event_menuConsultaEdicionCursoActionPerformed
 
@@ -254,7 +251,7 @@ private void menuAltaProgFormacionActionPerformed(java.awt.event.ActionEvent evt
     }//GEN-LAST:event_menuAltaUsuarioActionPerformed
 
     private void menuConsultaUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuConsultaUsuarioActionPerformed
-        presentacion.InternalConsultaUsuario ventanaConsulta = new presentacion.InternalConsultaUsuario(controlUsuario,servidorCentral);
+        presentacion.InternalConsultaUsuario ventanaConsulta = new presentacion.InternalConsultaUsuario(servidorCentral);
         jDesktopPane1.add(ventanaConsulta);
         ventanaConsulta.setVisible(true);
     }//GEN-LAST:event_menuConsultaUsuarioActionPerformed
@@ -282,7 +279,7 @@ private void menuAltaProgFormacionActionPerformed(java.awt.event.ActionEvent evt
 
     private void menuAltaInstitutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAltaInstitutoActionPerformed
         // TODO add your handling code here:
-        abrirInternalFrame (new AltaInstitutoInternalFrame(controlPersistencia));
+        abrirInternalFrame (new AltaInstitutoInternalFrame(servidorCentral));
     }//GEN-LAST:event_menuAltaInstitutoActionPerformed
 
     private void menuAltaCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAltaCategoriaActionPerformed

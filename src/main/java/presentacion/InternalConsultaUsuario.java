@@ -20,7 +20,7 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
     private ControladorUsuario control;
     private IServidorCentral servidorCentral;
     
-    public InternalConsultaUsuario(ControladorUsuario control, IServidorCentral servidorCentral) {
+    public InternalConsultaUsuario(IServidorCentral servidorCentral) {
         initComponents();
         this.control = control;
         this.servidorCentral = servidorCentral;
@@ -224,8 +224,7 @@ try {
         consulta.seleccionarCurso(nombre);
         ventana = consulta;
     } else {
-        persistencia.ControladorPersistencia cp = new persistencia.ControladorPersistencia();
-        ConsultaEdicionDeCursoInternalFrame consulta = new ConsultaEdicionDeCursoInternalFrame(cp);
+        ConsultaEdicionDeCursoInternalFrame consulta = new ConsultaEdicionDeCursoInternalFrame(servidorCentral);
         consulta.seleccionarEdicion(nombre);
         ventana = consulta;
     }
@@ -241,8 +240,7 @@ try {
     private void lstProgramasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstProgramasMouseClicked
 if (evt.getClickCount() != 2 || lstProgramas.getSelectedValue() == null || getDesktopPane() == null) return;
 try {
-    persistencia.ControladorPersistencia cp = new persistencia.ControladorPersistencia();
-    ConsultaProgramaFormacionInternalFrame ventana = new ConsultaProgramaFormacionInternalFrame(cp);
+    ConsultaProgramaFormacionInternalFrame ventana = new ConsultaProgramaFormacionInternalFrame(servidorCentral);
     ventana.seleccionarPrograma(lstProgramas.getSelectedValue());
     getDesktopPane().add(ventana);
     ventana.setVisible(true);

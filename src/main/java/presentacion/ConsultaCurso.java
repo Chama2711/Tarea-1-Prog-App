@@ -7,7 +7,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.Set;
-import persistencia.ControladorPersistencia;
 import logica.IServidorCentral;
 import logica.*;
 /**

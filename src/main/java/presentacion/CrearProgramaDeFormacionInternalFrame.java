@@ -9,7 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
 import logica.ProgramaFormacion;
-import persistencia.ControladorPersistencia;
+import logica.IServidorCentral;
 
 /**
  *
@@ -17,14 +17,14 @@ import persistencia.ControladorPersistencia;
  */
 public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternalFrame {
 
-    private ControladorPersistencia cp;
+    private IServidorCentral servidorCentral;
     
-    public CrearProgramaDeFormacionInternalFrame(ControladorPersistencia cp) { 
+    public CrearProgramaDeFormacionInternalFrame(IServidorCentral servidorCentral) { 
         initComponents();
         FechasFormulario.configurar(dcInicio);
         FechasFormulario.configurar(dcFin);
         FechasFormulario.configurar(dcAlta);
-        this.cp = cp;
+        this.servidorCentral = servidorCentral;
         
         
     }
@@ -192,7 +192,7 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
         programa.setFechaFin(fechaFin);
         programa.setFechaAlta(fechaAlta);
 
-        cp.altaProgramaFormacion(programa);
+        servidorCentral.altaProgramaFormacion(programa);
 
         JOptionPane.showMessageDialog(
                 this,

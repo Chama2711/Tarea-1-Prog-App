@@ -59,6 +59,8 @@ public interface IServidorCentral {
     ArrayList<Instituto> listarInstitutos();
 
     Instituto buscarInstituto(String nombre);
+    
+    void altaInstituto(String nombreInstituto) throws Exception;
 
 
     // =========================
@@ -87,7 +89,22 @@ public interface IServidorCentral {
         LocalDate fecha
     );
     
-    
+    // ==================== PROGRAMAS DE FORMACIÓN ====================
+
+    void altaProgramaFormacion(ProgramaFormacion programa);
+
+    void agregarCursoAPrograma(
+        String nombrePrograma,
+        String nombreCurso
+    ) throws Exception;
+
+    List<String> listarNombresCursos();
+
+    List<String> listarNombresProgramas();
+
+    List<ProgramaFormacion> obtenerProgramas();
+
+    ProgramaFormacion obtenerDetallePrograma(String nombrePrograma);
     
     
     
