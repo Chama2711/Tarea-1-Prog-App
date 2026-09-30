@@ -267,8 +267,10 @@ private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        // TODO add your handling code here:
-        abrirInternalFrame(new AltaCurso(controlPersistencia));
+        logica.IControladorCurso controladorCurso =
+            new logica.ControladorCurso(controlPersistencia);
+
+        abrirInternalFrame(new AltaCurso(controladorCurso));
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
     private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed

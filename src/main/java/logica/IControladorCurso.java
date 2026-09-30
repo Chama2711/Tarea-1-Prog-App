@@ -22,4 +22,9 @@ public interface IControladorCurso {
             String url,
             List<String> nombresPrevias
     );
+    
+    List<String> listarNombresInstitutos();
+
+    List<String> listarNombresCursosPorInstituto(String nombreInstituto);
+    
 }

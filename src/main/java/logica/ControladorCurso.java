@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import persistencia.ControladorPersistencia;
+import java.util.ArrayList;
 
 /**
  *
@@ -86,4 +87,33 @@ public class ControladorCurso implements IControladorCurso {
 
         persistencia.altaCurso(curso);
     }
+    
+    @Override
+    public List<String> listarNombresInstitutos() {
+        List<String> nombres = new ArrayList<>();
+
+        for (Instituto instituto : persistencia.listarInstitutos()) {
+            nombres.add(instituto.getNombre());
+        }
+
+        return nombres;
+    }
+
+    @Override
+    public List<String> listarNombresCursosPorInstituto(String nombreInstituto) {
+        List<String> nombres = new ArrayList<>();
+
+        if (nombreInstituto == null || nombreInstituto.isBlank()) {
+            return nombres;
+        }
+
+        for (Curso curso :
+                persistencia.listarCursosPorInstituto(nombreInstituto)) {
+            nombres.add(curso.getNombre());
+        }
+
+        return nombres;
+    }
+    
+    
 }
