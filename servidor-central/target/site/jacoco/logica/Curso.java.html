@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Curso.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">edEXT - Servidor Central</a> &gt; <a href="index.source.html" class="el_package">logica</a> &gt; <span class="el_source">Curso.java</span></div><h1>Curso.java</h1><pre class="source lang-java linenums">/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package logica;
+
+import java.io.Serializable;
+import java.util.Set;
+import javax.persistence.*;
+import java.time.LocalDate;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Table;
+import java.util.HashSet;
+import javax.persistence.CascadeType;
+
+/**
+ *
+ * @author elizeth
+ */
+@Entity
+@Table(name = &quot;cursos&quot;)
+public class Curso implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    
+    @Column(unique = true, nullable = false)
+    private String nombre; // Único
+
+    @Lob
+    @Column(name = &quot;DESCRIPCION&quot;)
+    private String descripcion;
+    private String duracion;
+    private int cantidadHoras;
+    private int creditos;
+    private LocalDate fechaRegistro;
+    private String url;
+
+<span class="nc" id="L50">    @ManyToMany(mappedBy = &quot;cursos&quot;)</span>
+    private Set&lt;ProgramaFormacion&gt; programas = new HashSet&lt;&gt;() ;
+    @ManyToOne
+    @JoinColumn(name = &quot;instituto_id&quot;)
+    private Instituto instituto;
+    
+<span class="nc" id="L56">    @ManyToMany</span>
+    @JoinTable(
+        name = &quot;previas_curso&quot;,
+        joinColumns = @JoinColumn(name = &quot;curso_id&quot;),
+        inverseJoinColumns = @JoinColumn(name = &quot;previa_id&quot;)
+    )
+    private Set&lt;Curso&gt; previas = new HashSet&lt;&gt;();
+    
+<span class="nc" id="L64">    @ManyToMany</span>
+    @JoinTable(
+        name = &quot;curso_categoria&quot;,
+        joinColumns = @JoinColumn(name = &quot;curso_id&quot;),
+        inverseJoinColumns = @JoinColumn(name = &quot;categoria_id&quot;)
+    )
+    private Set&lt;Categoria&gt; categorias = new HashSet&lt;&gt;();
+    
+<span class="nc" id="L72">    @OneToMany(mappedBy = &quot;curso&quot;, cascade = CascadeType.ALL)</span>
+    private Set&lt;EdicionCurso&gt; ediciones = new HashSet&lt;&gt;();
+    
+
+<span class="nc" id="L76">    public Curso() {}</span>
+    
+<span class="nc" id="L78">    public Curso(String n, String d, int h, int c, LocalDate fr, String desc, String u){</span>
+<span class="nc" id="L79">        this.nombre = n;</span>
+<span class="nc" id="L80">        this.duracion = d;</span>
+<span class="nc" id="L81">        this.cantidadHoras = h;</span>
+<span class="nc" id="L82">        this.creditos = c;</span>
+<span class="nc" id="L83">        this.fechaRegistro = fr;</span>
+<span class="nc" id="L84">        this.descripcion = desc;</span>
+<span class="nc" id="L85">        this.url = u;</span>
+<span class="nc" id="L86">    }</span>
+    
+    @Override
+    public String toString() {
+<span class="nc" id="L90">        return nombre;</span>
+    }
+
+    // Getters y Setters
+<span class="nc" id="L94">    public Long getId() { return id; }</span>
+<span class="nc" id="L95">    public int getCantidadHoras(){return cantidadHoras;}</span>
+<span class="nc" id="L96">    public int getCreditos(){return creditos;}</span>
+<span class="nc" id="L97">    public LocalDate getFechaRegistro(){return fechaRegistro;}</span>
+<span class="nc" id="L98">    public String getDescripcion(){return descripcion;}</span>
+<span class="nc" id="L99">    public String getDuracion(){return duracion;}</span>
+<span class="nc" id="L100">    public String getUrl(){return url;}</span>
+<span class="nc" id="L101">    public String getNombre() { return nombre; }</span>
+<span class="nc" id="L102">    public void setNombre(String nombre) { this.nombre = nombre; }</span>
+    
+    public Set&lt;ProgramaFormacion&gt; getProgramasFormacion() {
+<span class="nc" id="L105">        return programas;</span>
+    }
+    
+    public void setProgramaFormacion(Set&lt;ProgramaFormacion&gt; programas){
+<span class="nc" id="L109">        this.programas = programas;</span>
+<span class="nc" id="L110">    }</span>
+
+    public void setInstituto(Instituto instituto) {
+<span class="nc" id="L113">        this.instituto = instituto;</span>
+<span class="nc" id="L114">    }</span>
+    
+    public Instituto getInstituto() {
+<span class="nc" id="L117">    return instituto;</span>
+    }
+
+    public Set&lt;Curso&gt; getPrevias() {
+<span class="nc" id="L121">        return previas;</span>
+    }
+    
+    public void setPrevias(Set&lt;Curso&gt; previas){
+<span class="nc" id="L125">        this.previas = previas;</span>
+<span class="nc" id="L126">    }</span>
+    
+    public Set&lt;EdicionCurso&gt; getEdiciones() {
+<span class="nc" id="L129">        return ediciones;</span>
+    }
+    
+    public void setEdiciones(Set&lt;EdicionCurso&gt; ediciones){
+<span class="nc" id="L133">        this.ediciones = ediciones;</span>
+<span class="nc" id="L134">    }</span>
+    
+    public void agregoPrevia(Curso p){
+<span class="nc" id="L137">        previas.add(p);</span>
+<span class="nc" id="L138">    }</span>
+    
+    public void agregoEdicion(EdicionCurso e){
+<span class="nc" id="L141">        ediciones.add(e);</span>
+<span class="nc" id="L142">    }</span>
+    
+    public Set&lt;Categoria&gt; getCategorias() {
+<span class="nc" id="L145">    return categorias;</span>
+    }
+
+    public void setCategorias(Set&lt;Categoria&gt; categorias) {
+<span class="nc" id="L149">    this.categorias = categorias;</span>
+<span class="nc" id="L150">    }</span>
+
+    public void agregarCategoria(Categoria categoria) {
+<span class="nc" id="L153">    categorias.add(categoria);</span>
+<span class="nc" id="L154">    }</span>
+   
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

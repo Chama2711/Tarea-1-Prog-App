@@ -215,6 +215,7 @@ public void editarUsuario(Usuario usuario) throws Exception {
         actual.setNombre(usuario.getNombre());
         actual.setApellido(usuario.getApellido());
         actual.setFechaNacimiento(usuario.getFechaNacimiento());
+        actual.setHashContrasena(usuario.getHashContrasena());
         em.getTransaction().commit();
     } catch (Exception e) {
         if (em.getTransaction().isActive()) em.getTransaction().rollback();
@@ -268,6 +269,21 @@ public void editarUsuario(Usuario usuario) throws Exception {
     }
 }
     
+    public Usuario obtenerUsuarioPorIdentificador(String identificador) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            List<Usuario> usuarios = em.createQuery(
+                    "SELECT u FROM Usuario u WHERE u.nick = :identificador "
+                            + "OR LOWER(u.mail) = LOWER(:identificador)", Usuario.class)
+                    .setParameter("identificador", identificador)
+                    .setMaxResults(2).getResultList();
+            // Si un nickname coincide con el correo de otro usuario, no elegir una cuenta arbitraria.
+            return usuarios.size() == 1 ? usuarios.get(0) : null;
+        } finally {
+            em.close();
+        }
+    }
+
     public List<Usuario> obtenerUsuarios() {
         EntityManager em = emf.createEntityManager();
 

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DTUsuario.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">edEXT - Servidor Central</a> &gt; <a href="index.source.html" class="el_package">logica</a> &gt; <span class="el_source">DTUsuario.java</span></div><h1>DTUsuario.java</h1><pre class="source lang-java linenums">/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package logica;
+import java.time.LocalDate;
+/**
+ *
+ * @author Nicolás
+ */
+public class DTUsuario{
+    private String nick;
+    private String mail;
+    private String nombre;
+    private String apellido;
+    private LocalDate fechaNacimiento;
+    
+<span class="nc" id="L18">    public DTUsuario(){</span>
+        
+<span class="nc" id="L20">    }</span>
+    
+<span class="nc" id="L22">    public DTUsuario(String ni, String m, String no, String a, LocalDate fn){</span>
+<span class="nc" id="L23">        this.setNick(ni);</span>
+<span class="nc" id="L24">        this.setMail(m);</span>
+<span class="nc" id="L25">        this.setNombre(no);</span>
+<span class="nc" id="L26">        this.setApellido(a);</span>
+<span class="nc" id="L27">        this.setFechaNacimiento(fn);</span>
+<span class="nc" id="L28">    }</span>
+    
+    public String getNick(){
+<span class="nc" id="L31">        return nick;</span>
+    }
+    public void setNick(String ni){
+<span class="nc" id="L34">        nick = ni;</span>
+<span class="nc" id="L35">    }</span>
+    
+    public String getMail(){
+<span class="nc" id="L38">        return mail;</span>
+    }
+    public void setMail(String ni){
+<span class="nc" id="L41">        mail = ni;</span>
+<span class="nc" id="L42">    }</span>
+    
+    public String getNombre(){
+<span class="nc" id="L45">        return nombre;</span>
+    }
+    public void setNombre(String no){
+<span class="nc" id="L48">        nombre = no;</span>
+<span class="nc" id="L49">    }</span>
+    
+    public String getApellido(){
+<span class="nc" id="L52">        return apellido;</span>
+    }
+    public void setApellido(String a){
+<span class="nc" id="L55">        apellido = a;</span>
+<span class="nc" id="L56">    }</span>
+    
+    public LocalDate getFechaNacimiento(){
+<span class="nc" id="L59">        return fechaNacimiento;</span>
+    }
+    public void setFechaNacimiento(LocalDate fn){
+<span class="nc" id="L62">        fechaNacimiento = fn;</span>
+<span class="nc" id="L63">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

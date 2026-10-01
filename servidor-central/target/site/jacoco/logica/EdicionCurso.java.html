@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EdicionCurso.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">edEXT - Servidor Central</a> &gt; <a href="index.source.html" class="el_package">logica</a> &gt; <span class="el_source">EdicionCurso.java</span></div><h1>EdicionCurso.java</h1><pre class="source lang-java linenums">/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package logica;
+
+import java.util.Date;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.JoinTable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+
+/**
+ *
+ * @author Nicolás
+ */
+
+@Entity
+public class EdicionCurso {
+    
+    @Id
+    private String nombre;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
+    private LocalDate fechaPublicacion;
+    private int cupo;
+    
+<span class="nc" id="L33">    public EdicionCurso(){</span>
+        
+<span class="nc" id="L35">    }</span>
+    
+    @ManyToOne
+    @JoinColumn(name = &quot;curso_id&quot;)
+    private Curso curso;
+    
+<span class="nc" id="L41">    @ManyToMany</span>
+    @JoinTable(
+    name = &quot;edicion_docente&quot;,
+    joinColumns = @JoinColumn(name = &quot;edicion_nombre&quot;),
+    inverseJoinColumns = @JoinColumn(name = &quot;docente_nick&quot;)
+    )
+    private Set&lt;Docente&gt; docentes = new HashSet&lt;&gt;() ;
+    
+<span class="nc" id="L49">    public EdicionCurso(String n, LocalDate fi, LocalDate ff, int c, LocalDate fp){</span>
+<span class="nc" id="L50">        this.nombre = n;</span>
+<span class="nc" id="L51">        this.fechaInicio = fi;</span>
+<span class="nc" id="L52">        this.fechaFin = ff;</span>
+<span class="nc" id="L53">        this.cupo = c;</span>
+<span class="nc" id="L54">        this.fechaPublicacion = fp;</span>
+        
+<span class="nc" id="L56">    }</span>
+    
+    public String getNombre(){
+<span class="nc" id="L59">        return nombre;</span>
+    }
+    public void setNombre(String nombre){
+<span class="nc" id="L62">        this.nombre = nombre;</span>
+<span class="nc" id="L63">    }</span>
+    
+    public LocalDate getFechaInicio(){
+<span class="nc" id="L66">        return fechaInicio;</span>
+    }
+    public void setFechaInicio(LocalDate fechaInicio){
+<span class="nc" id="L69">        this.fechaInicio = fechaInicio;</span>
+<span class="nc" id="L70">    }</span>
+    
+    public LocalDate getFechaFin(){
+<span class="nc" id="L73">        return fechaFin;</span>
+    }
+    public void setFechaFin(LocalDate fechaFin){
+<span class="nc" id="L76">        this.fechaFin = fechaFin;</span>
+<span class="nc" id="L77">    }</span>
+    
+    public LocalDate getFechaPublicacion(){
+<span class="nc" id="L80">        return fechaPublicacion;</span>
+    }
+    public void setFechaPublicacion(LocalDate fechaPublicacion){
+<span class="nc" id="L83">        this.fechaPublicacion = fechaPublicacion;</span>
+<span class="nc" id="L84">    }</span>
+    
+    public int getCupo(){
+<span class="nc" id="L87">        return cupo;</span>
+    }
+    public void setCupo(int cupo){
+<span class="nc" id="L90">        this.cupo = cupo;</span>
+<span class="nc" id="L91">    }</span>
+    
+    public Curso getCurso() {
+<span class="nc" id="L94">    return curso;</span>
+}
+
+    public void setCurso(Curso curso) {
+<span class="nc" id="L98">    this.curso = curso;</span>
+<span class="nc" id="L99">}</span>
+    @Override
+    public String toString() {
+<span class="nc" id="L102">    return nombre;</span>
+}
+    public boolean esVigente() {
+<span class="nc" id="L105">    LocalDate fechaActual = LocalDate.now();</span>
+
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        return fechaActual.isAfter(fechaInicio) &amp;&amp;</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">            fechaActual.isBefore(fechaFin);</span>
+        
+    }
+    
+public Set&lt;Docente&gt; getDocentes() {
+<span class="nc" id="L113">    return docentes;</span>
+}
+
+public void setDocentes(Set&lt;Docente&gt; d){
+<span class="nc" id="L117">        this.docentes = d;</span>
+<span class="nc" id="L118">    }</span>
+    
+    
+    public void agregoDocente(Docente d){
+<span class="nc" id="L122">        docentes.add(d);</span>
+<span class="nc" id="L123">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

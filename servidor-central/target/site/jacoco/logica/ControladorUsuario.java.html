@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ControladorUsuario.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">edEXT - Servidor Central</a> &gt; <a href="index.source.html" class="el_package">logica</a> &gt; <span class="el_source">ControladorUsuario.java</span></div><h1>ControladorUsuario.java</h1><pre class="source lang-java linenums">package logica;
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
+
+/**
+ *
+ * @author adrie
+ */
+
+import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.List;
+
+
+
+public class ControladorUsuario {
+    private final IServidorCentral servidorCentral;
+
+<span class="fc" id="L23">public ControladorUsuario(IServidorCentral servidorCentral) {</span>
+<span class="fc" id="L24">    this.servidorCentral = servidorCentral;</span>
+<span class="fc" id="L25">}</span>
+public void modificarDatosUsuario(String nickname, String nuevoNombre,
+        String nuevoApellido, LocalDate nuevaFecha) {
+<span class="nc" id="L28">    modificarUsuario(nickname, nuevoNombre, nuevoApellido, nuevaFecha);</span>
+<span class="nc" id="L29">}</span>
+    
+    // Ejemplo de listar para tus JList:
+    public List&lt;String&gt; obtenerNicknamesUsuarios() {
+<span class="nc" id="L33">        List&lt;Usuario&gt; listaUsuarios = servidorCentral.obtenerUsuarios();</span>
+<span class="nc" id="L34">        List&lt;String&gt; nicknames = new ArrayList&lt;&gt;();</span>
+        
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        for (Usuario u : listaUsuarios) {</span>
+<span class="nc" id="L37">            nicknames.add(u.getNick());</span>
+<span class="nc" id="L38">        }</span>
+<span class="nc" id="L39">        return nicknames;</span>
+    }
+
+
+    public boolean existeNickname(String nick) {
+    // Si la BD devuelve un usuario, significa que el nick ya existe
+<span class="nc bnc" id="L45" title="All 2 branches missed.">    return servidorCentral.obtenerUsuario(nick) != null;</span>
+}
+
+public boolean existeCorreo(String mail) {
+    // Buscamos en la lista de la BD si el correo ya está en uso
+<span class="nc" id="L50">    List&lt;Usuario&gt; usuarios = servidorCentral.obtenerUsuarios();</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">    for (Usuario u : usuarios) {</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (u.getMail().equalsIgnoreCase(mail)) {</span>
+<span class="nc" id="L53">            return true;</span>
+        }
+<span class="nc" id="L55">    }</span>
+<span class="nc" id="L56">    return false;</span>
+}
+
+    public void registrarEstudiante(String ni, String m, String no, String a,
+            LocalDate fn, char[] clave, char[] confirmacion) {
+<span class="fc" id="L61">        validarDatosAlta(ni, m, no, a, fn, clave, confirmacion);</span>
+<span class="fc" id="L62">        Estudiante e = new Estudiante(ni.trim(), m.trim(), no.trim(), a.trim(), fn);</span>
+<span class="fc" id="L63">        e.setHashContrasena(Contrasenas.generarHash(clave));</span>
+<span class="fc" id="L64">        guardar(e);</span>
+<span class="fc" id="L65">    }</span>
+
+public void registrarDocente(String ni, String m, String no, String a,
+        LocalDate fn, String nombreInstituto, char[] clave, char[] confirmacion) {
+<span class="fc" id="L69">    validarDatosAlta(ni, m, no, a, fn, clave, confirmacion);</span>
+<span class="pc bpc" id="L70" title="1 of 4 branches missed.">    if (nombreInstituto == null || nombreInstituto.isBlank()) {</span>
+<span class="fc" id="L71">        throw new IllegalArgumentException(&quot;Seleccione el instituto del docente.&quot;);</span>
+    }
+<span class="fc" id="L73">    Docente d = new Docente(ni.trim(), m.trim(), no.trim(), a.trim(), fn);</span>
+<span class="fc" id="L74">    d.setHashContrasena(Contrasenas.generarHash(clave));</span>
+<span class="fc" id="L75">    guardar(d, nombreInstituto);</span>
+<span class="fc" id="L76">}</span>
+
+private void validarDatosAlta(String nick, String mail, String nombre,
+        String apellido, LocalDate fecha, char[] clave, char[] confirmacion) {
+<span class="pc bpc" id="L80" title="5 of 10 branches missed.">    if (nick == null || nick.isBlank() || mail == null || mail.isBlank()</span>
+<span class="pc bpc" id="L81" title="4 of 8 branches missed.">            || nombre == null || nombre.isBlank() || apellido == null || apellido.isBlank()</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">            || fecha == null || fecha.isAfter(LocalDate.now())) {</span>
+<span class="fc" id="L83">        throw new IllegalArgumentException(&quot;Revise los datos obligatorios y la fecha de nacimiento.&quot;);</span>
+    }
+<span class="fc" id="L85">    Contrasenas.validar(clave, confirmacion);</span>
+<span class="fc" id="L86">}</span>
+
+public DTAutenticacion autenticarUsuario(String identificador, char[] clave) {
+<span class="pc bpc" id="L89" title="2 of 8 branches missed.">    if (identificador == null || identificador.isBlank() || clave == null || clave.length == 0) {</span>
+<span class="fc" id="L90">        throw new IllegalArgumentException(&quot;Nickname, correo o contraseña incorrectos.&quot;);</span>
+    }
+<span class="fc" id="L92">    Usuario usuario = servidorCentral.obtenerUsuarioPorIdentificador(identificador.trim());</span>
+<span class="fc bfc" id="L93" title="All 4 branches covered.">    if (usuario == null || !Contrasenas.verificar(clave, usuario.getHashContrasena())) {</span>
+<span class="fc" id="L94">        throw new IllegalArgumentException(&quot;Nickname, correo o contraseña incorrectos.&quot;);</span>
+    }
+    DTAutenticacion.Rol rol;
+<span class="fc bfc" id="L97" title="All 2 branches covered.">    if (usuario instanceof Docente) {</span>
+<span class="fc" id="L98">        rol = DTAutenticacion.Rol.DOCENTE;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    } else if (usuario instanceof Estudiante) {</span>
+<span class="fc" id="L100">        rol = DTAutenticacion.Rol.ESTUDIANTE;</span>
+    } else {
+<span class="fc" id="L102">        throw new IllegalArgumentException(&quot;Nickname, correo o contraseña incorrectos.&quot;);</span>
+    }
+<span class="fc" id="L104">    return new DTAutenticacion(usuario.getNick(), usuario.getNombre(), rol);</span>
+}
+
+private void guardar(Usuario u) {
+<span class="fc" id="L108">    guardar(u, null);</span>
+<span class="fc" id="L109">}</span>
+
+private void guardar(Usuario u, String nombreInstituto) {
+    try {
+<span class="fc" id="L113">        servidorCentral.crearUsuario(u, nombreInstituto);</span>
+<span class="nc" id="L114">    } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L115">        throw e;</span>
+<span class="nc" id="L116">    } catch (Exception e) {</span>
+<span class="nc" id="L117">        throw new IllegalStateException(&quot;No se pudo guardar el usuario.&quot;, e);</span>
+<span class="fc" id="L118">    }</span>
+<span class="fc" id="L119">}</span>
+    
+    
+    
+    
+public List&lt;String&gt; listarNicknamesUsuarios() {
+<span class="nc" id="L125">    List&lt;String&gt; nicks = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L126">    List&lt;Usuario&gt; usuarios = servidorCentral.obtenerUsuarios();</span>
+    
+    // Recorremos los usuarios de la BD y sacamos solo los nicknames
+<span class="nc bnc" id="L129" title="All 2 branches missed.">    for (Usuario u : usuarios) {</span>
+<span class="nc" id="L130">        nicks.add(u.getNick()); </span>
+<span class="nc" id="L131">    }</span>
+<span class="nc" id="L132">    return nicks;</span>
+}
+
+public Usuario obtenerUsuarioPorNickname(String nickname) {
+    // Le pedimos el usuario directamente a la base de datos
+<span class="nc" id="L137">    return servidorCentral.obtenerUsuario(nickname);</span>
+}
+
+public void modificarUsuario(String nickname, String nuevoNombre,
+        String nuevoApellido, LocalDate nuevaFechaNac) {
+<span class="nc" id="L142">    modificarUsuario(nickname, nuevoNombre, nuevoApellido, nuevaFechaNac, null, null);</span>
+<span class="nc" id="L143">}</span>
+
+public void modificarUsuario(String nickname, String nuevoNombre,
+        String nuevoApellido, LocalDate nuevaFechaNac,
+        char[] nuevaClave, char[] confirmacion) {
+<span class="pc bpc" id="L148" title="3 of 6 branches missed.">    if (nuevoNombre == null || nuevoNombre.isBlank() || nuevoApellido == null</span>
+<span class="pc bpc" id="L149" title="2 of 4 branches missed.">            || nuevoApellido.isBlank() || nuevaFechaNac == null</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">            || nuevaFechaNac.isAfter(LocalDate.now())) {</span>
+<span class="nc" id="L151">        throw new IllegalArgumentException(&quot;Revise nombre, apellido y fecha de nacimiento.&quot;);</span>
+    }
+<span class="pc bpc" id="L153" title="3 of 8 branches missed.">    boolean cambiarClave = (nuevaClave != null &amp;&amp; nuevaClave.length &gt; 0)</span>
+            || (confirmacion != null &amp;&amp; confirmacion.length &gt; 0);
+<span class="fc bfc" id="L155" title="All 2 branches covered.">    if (cambiarClave) {</span>
+<span class="fc" id="L156">        Contrasenas.validar(nuevaClave, confirmacion);</span>
+    }
+    try {
+<span class="fc" id="L159">        Usuario u = servidorCentral.obtenerUsuario(nickname);</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        if (u == null) throw new IllegalArgumentException(&quot;El usuario ya no existe.&quot;);</span>
+<span class="fc" id="L161">        u.setNombre(nuevoNombre.trim());</span>
+<span class="fc" id="L162">        u.setApellido(nuevoApellido.trim());</span>
+<span class="fc" id="L163">        u.setFechaNacimiento(nuevaFechaNac);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        if (cambiarClave) {</span>
+<span class="fc" id="L165">            u.setHashContrasena(Contrasenas.generarHash(nuevaClave));</span>
+        }
+<span class="fc" id="L167">        servidorCentral.editarUsuario(u);</span>
+<span class="nc" id="L168">    } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L169">        throw e;</span>
+<span class="nc" id="L170">    } catch (Exception e) {</span>
+<span class="nc" id="L171">        throw new IllegalStateException(&quot;No se pudo modificar el usuario.&quot;, e);</span>
+<span class="fc" id="L172">    }</span>
+<span class="fc" id="L173">}</span>
+
+    public List&lt;String&gt; listarCursosOEdicionesUsuario(String nick) {
+<span class="nc" id="L176">        return servidorCentral.listarCursosOEdicionesUsuario(nick);</span>
+    }
+
+    public List&lt;String&gt; listarProgramasUsuario(String nick) {
+<span class="nc" id="L180">        return servidorCentral.listarProgramasUsuario(nick);</span>
+    }
+
+public List&lt;String&gt; obtenerNombresInstitutos() {
+        // Le pedimos los objetos completos a la persistencia
+<span class="nc" id="L185">        List&lt;Instituto&gt; institutos = servidorCentral.obtenerInstitutos();</span>
+<span class="nc" id="L186">        List&lt;String&gt; nombres = new ArrayList&lt;&gt;();</span>
+        
+        // Extraemos solo los nombres para mandarlos a la ventana (ComboBox)
+<span class="nc bnc" id="L189" title="All 2 branches missed.">        if (institutos != null) {</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">            for (Instituto inst : institutos) {</span>
+<span class="nc" id="L191">                nombres.add(inst.getNombre());</span>
+<span class="nc" id="L192">            }</span>
+        }
+<span class="nc" id="L194">        return nombres;</span>
+    }
+
+
+}
+
+
+    
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

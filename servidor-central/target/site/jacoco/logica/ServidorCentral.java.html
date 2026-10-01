@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServidorCentral.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">edEXT - Servidor Central</a> &gt; <a href="index.source.html" class="el_package">logica</a> &gt; <span class="el_source">ServidorCentral.java</span></div><h1>ServidorCentral.java</h1><pre class="source lang-java linenums">/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package logica;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import persistencia.ControladorPersistencia;
+
+public class ServidorCentral implements IServidorCentral {
+
+    private final ControladorPersistencia persistencia;
+    private final ControladorCurso controladorCurso;
+    private final ControladorUsuario controladorUsuario;
+
+<span class="nc" id="L18">    public ServidorCentral() {</span>
+<span class="nc" id="L19">        this.persistencia = new ControladorPersistencia();</span>
+<span class="nc" id="L20">        this.controladorCurso = new ControladorCurso(persistencia);</span>
+<span class="nc" id="L21">        this.controladorUsuario = new ControladorUsuario(this);</span>
+<span class="nc" id="L22">    }</span>
+
+    // =========================
+    // CATEGORÍAS
+    // =========================
+
+    @Override
+    public void altaCategoria(String nombreCategoria)
+            throws Exception {
+
+<span class="nc" id="L32">        persistencia.altaCategoria(nombreCategoria);</span>
+<span class="nc" id="L33">    }</span>
+
+    @Override
+    public List&lt;Categoria&gt; listarCategorias() {
+<span class="nc" id="L37">        return persistencia.listarCategorias();</span>
+    }
+
+    @Override
+    public Categoria buscarCategoria(String nombre) {
+<span class="nc" id="L42">        return persistencia.buscarCategoria(nombre);</span>
+    }
+
+    @Override
+    public void agregarCategoriaACurso(
+            String nombreCurso,
+            String nombreCategoria)
+            throws Exception {
+
+<span class="nc" id="L51">        persistencia.agregarCategoriaACurso(</span>
+                nombreCurso,
+                nombreCategoria
+        );
+<span class="nc" id="L55">    }</span>
+
+    @Override
+    public List&lt;Categoria&gt; listarCategoriasCurso(
+            String nombreCurso)
+            throws Exception {
+
+<span class="nc" id="L62">        return persistencia.listarCategoriasCurso(</span>
+                nombreCurso
+        );
+    }
+
+    // =========================
+    // CURSOS
+    // =========================
+
+    @Override
+    public ArrayList&lt;Curso&gt; listarCursos() {
+<span class="nc" id="L73">        return persistencia.listarCursos();</span>
+    }
+
+    @Override
+    public ArrayList&lt;Curso&gt; listarCursosPorInstituto(
+            String nombreInstituto) {
+
+<span class="nc" id="L80">        return persistencia.listarCursosPorInstituto(</span>
+                nombreInstituto
+        );
+    }
+
+    @Override
+    public Curso buscarCurso(String nombre) {
+<span class="nc" id="L87">        return persistencia.buscarCurso(nombre);</span>
+    }
+
+    @Override
+    public Curso buscarCursoInstituto(
+            String nombre,
+            Instituto instituto) {
+
+<span class="nc" id="L95">        return persistencia.buscarCursoInstituto(</span>
+                nombre,
+                instituto
+        );
+    }
+
+    @Override
+    public boolean existeCurso(String nombre) {
+<span class="nc" id="L103">        return persistencia.existeCurso(nombre);</span>
+    }
+
+    @Override
+    public List&lt;String&gt; listarNombresInstitutos() {
+<span class="nc" id="L108">        return controladorCurso.listarNombresInstitutos();</span>
+    }
+
+    @Override
+    public List&lt;String&gt; listarNombresCursosPorInstituto(String nombreInstituto) {
+<span class="nc" id="L113">        return controladorCurso.listarNombresCursosPorInstituto(nombreInstituto);</span>
+    }
+
+    @Override
+    public List&lt;String&gt; listarNombresCategorias() {
+<span class="nc" id="L118">        return controladorCurso.listarNombresCategorias();</span>
+    }
+
+    @Override
+    public void altaCurso(
+            String nombreInstituto,
+            String nombre,
+            String descripcion,
+            String duracion,
+            int horas,
+            int creditos,
+            String url,
+            List&lt;String&gt; nombresPrevias,
+            List&lt;String&gt; nombresCategorias) {
+<span class="nc" id="L132">        controladorCurso.altaCurso(nombreInstituto, nombre, descripcion,</span>
+                duracion, horas, creditos, url, nombresPrevias, nombresCategorias);
+<span class="nc" id="L134">    }</span>
+
+    // =========================
+    // INSTITUTOS
+    // =========================
+
+    @Override
+    public ArrayList&lt;Instituto&gt; listarInstitutos() {
+<span class="nc" id="L142">        return persistencia.listarInstitutos();</span>
+    }
+
+    @Override
+    public Instituto buscarInstituto(String nombre) {
+<span class="nc" id="L147">        return persistencia.buscarInstituto(nombre);</span>
+    }
+    
+    @Override
+    public void altaInstituto(String nombreInstituto) throws Exception {
+<span class="nc" id="L152">    persistencia.altaInstituto(nombreInstituto);</span>
+<span class="nc" id="L153">    }</span>
+    
+    
+
+    // =========================
+    // EDICIONES
+    // =========================
+
+    @Override
+    public ArrayList&lt;EdicionCurso&gt; listarEdicionesCurso(
+            Curso curso) {
+
+<span class="nc" id="L165">        return persistencia.listarEdicionesCurso(curso);</span>
+    }
+    
+    
+    @Override
+    public ArrayList&lt;Docente&gt; listarDocentes() {
+<span class="nc" id="L171">       return persistencia.listarDocentes();</span>
+    }
+
+    @Override
+    public Docente buscarDocentePorNick(String nick) {
+<span class="nc" id="L176">       return persistencia.buscarDocentePorNick(nick);</span>
+    }   
+
+    @Override
+    public List&lt;Instituto&gt; obtenerInstitutos() {
+<span class="nc" id="L181">       return persistencia.obtenerInstitutos();</span>
+    }
+
+   @Override
+   public List&lt;Curso&gt; obtenerCursosDeInstituto(Long idInstituto) {
+<span class="nc" id="L186">      return persistencia.obtenerCursosDeInstituto(idInstituto);</span>
+    }
+
+    @Override
+    public List&lt;Estudiante&gt; obtenerEstudiantes() {
+<span class="nc" id="L191">       return persistencia.obtenerEstudiantes();</span>
+    }
+
+   @Override
+    public void altaEdicionCurso(
+            String nombreInstituto,
+            String nombreCurso,
+            String nombreEdicion,
+            LocalDate inicio,
+            LocalDate fin,
+            int cupo,
+            List&lt;String&gt; nicknamesDocentes) {
+<span class="nc" id="L203">        controladorCurso.altaEdicionCurso(nombreInstituto, nombreCurso,</span>
+                nombreEdicion, inicio, fin, cupo, nicknamesDocentes);
+<span class="nc" id="L205">    }</span>
+
+    @Override
+    public List&lt;String&gt; listarNicknamesDocentes() {
+<span class="nc" id="L209">        return controladorCurso.listarNicknamesDocentes();</span>
+    }
+
+   @Override
+   public void inscriboAEdicionCurso(
+        Estudiante estudiante,
+        EdicionCurso edicion,
+        LocalDate fechaInscripcion) {
+
+<span class="nc" id="L218">    persistencia.inscriboAEdicionCurso(</span>
+            estudiante,
+            edicion,
+            fechaInscripcion
+    );
+<span class="nc" id="L223">    } </span>
+    
+    // ==================== PROGRAMAS DE FORMACIÓN ====================
+
+    @Override
+    public void altaProgramaFormacion(ProgramaFormacion programa) {
+<span class="nc" id="L229">    persistencia.altaProgramaFormacion(programa);</span>
+<span class="nc" id="L230">    }</span>
+
+    @Override
+    public void agregarCursoAPrograma(
+        String nombrePrograma,
+        String nombreCurso) throws Exception {
+
+<span class="nc" id="L237">    persistencia.agregarCursoAPrograma(</span>
+            nombrePrograma,
+            nombreCurso
+    );
+<span class="nc" id="L241">    }</span>
+
+    @Override
+    public List&lt;String&gt; listarNombresCursos() {
+<span class="nc" id="L245">    return persistencia.listarNombresCursos();</span>
+    }
+
+    @Override
+    public List&lt;String&gt; listarNombresProgramas() {
+<span class="nc" id="L250">    return persistencia.listarNombresProgramas();</span>
+    }
+
+    @Override
+    public List&lt;ProgramaFormacion&gt; obtenerProgramas() {
+<span class="nc" id="L255">    return persistencia.obtenerProgramas();</span>
+    }
+
+    @Override
+    public ProgramaFormacion obtenerDetallePrograma(
+        String nombrePrograma) {
+
+<span class="nc" id="L262">    return persistencia.obtenerDetallePrograma(nombrePrograma);</span>
+    }
+    
+    
+    
+    
+    
+    // ==================== 
+    //     USUARIOS 
+    //=====================
+
+    @Override
+    public List&lt;Usuario&gt; obtenerUsuarios() {
+<span class="nc" id="L275">    return persistencia.obtenerUsuarios();</span>
+    }
+
+    @Override
+    public Usuario obtenerUsuario(String nick) {
+<span class="nc" id="L280">    return persistencia.obtenerUsuario(nick);</span>
+    }
+
+    @Override
+    public Usuario obtenerUsuarioPorIdentificador(String identificador) {
+<span class="nc" id="L285">        return persistencia.obtenerUsuarioPorIdentificador(identificador);</span>
+    }
+
+    @Override
+    public DTAutenticacion autenticarUsuario(String identificador, char[] clave) {
+<span class="nc" id="L290">        return controladorUsuario.autenticarUsuario(identificador, clave);</span>
+    }
+
+    @Override
+    public void registrarEstudiante(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, char[] clave, char[] confirmacion) {
+<span class="nc" id="L296">        controladorUsuario.registrarEstudiante(nick, mail, nombre, apellido,</span>
+                fechaNacimiento, clave, confirmacion);
+<span class="nc" id="L298">    }</span>
+
+    @Override
+    public void registrarDocente(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String instituto, char[] clave, char[] confirmacion) {
+<span class="nc" id="L303">        controladorUsuario.registrarDocente(nick, mail, nombre, apellido,</span>
+                fechaNacimiento, instituto, clave, confirmacion);
+<span class="nc" id="L305">    }</span>
+
+    @Override
+    public void crearUsuario(
+        Usuario usuario,
+        String nombreInstituto) throws Exception {
+
+<span class="nc" id="L312">    persistencia.crearUsuario(usuario, nombreInstituto);</span>
+<span class="nc" id="L313">    }</span>
+
+    @Override
+    public void editarUsuario(Usuario usuario) throws Exception {
+<span class="nc" id="L317">    persistencia.editarUsuario(usuario);</span>
+<span class="nc" id="L318">    }</span>
+
+    @Override
+    public List&lt;String&gt; listarCursosOEdicionesUsuario(String nick) {
+<span class="nc" id="L322">    return persistencia.listarCursosOEdicionesUsuario(nick);</span>
+    }
+
+    @Override
+    public List&lt;String&gt; listarProgramasUsuario(String nick) {
+<span class="nc" id="L327">    return persistencia.listarProgramasUsuario(nick);</span>
+    }
+    
+    
+    
+
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

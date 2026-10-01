@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ControladorCurso.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">edEXT - Servidor Central</a> &gt; <a href="index.source.html" class="el_package">logica</a> &gt; <span class="el_source">ControladorCurso.java</span></div><h1>ControladorCurso.java</h1><pre class="source lang-java linenums">package logica;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import persistencia.ControladorPersistencia;
+
+public class ControladorCurso {
+
+    private final ControladorPersistencia persistencia;
+
+<span class="nc" id="L14">    public ControladorCurso(ControladorPersistencia persistencia) {</span>
+<span class="nc" id="L15">        this.persistencia = persistencia;</span>
+<span class="nc" id="L16">    }</span>
+
+    public List&lt;String&gt; listarNombresInstitutos() {
+<span class="nc" id="L19">        List&lt;String&gt; nombres = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L20" title="All 2 branches missed.">        for (Instituto instituto : persistencia.listarInstitutos()) {</span>
+<span class="nc" id="L21">            nombres.add(instituto.getNombre());</span>
+<span class="nc" id="L22">        }</span>
+<span class="nc" id="L23">        return nombres;</span>
+    }
+
+    public List&lt;String&gt; listarNombresCursosPorInstituto(String nombreInstituto) {
+<span class="nc" id="L27">        List&lt;String&gt; nombres = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L28" title="All 4 branches missed.">        if (nombreInstituto == null || nombreInstituto.isBlank()) {</span>
+<span class="nc" id="L29">            return nombres;</span>
+        }
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        for (Curso curso : persistencia.listarCursosPorInstituto(nombreInstituto)) {</span>
+<span class="nc" id="L32">            nombres.add(curso.getNombre());</span>
+<span class="nc" id="L33">        }</span>
+<span class="nc" id="L34">        return nombres;</span>
+    }
+
+    public List&lt;String&gt; listarNombresCategorias() {
+<span class="nc" id="L38">        List&lt;String&gt; nombres = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        for (Categoria categoria : persistencia.listarCategorias()) {</span>
+<span class="nc" id="L40">            nombres.add(categoria.getNombre());</span>
+<span class="nc" id="L41">        }</span>
+<span class="nc" id="L42">        return nombres;</span>
+    }
+
+    public List&lt;String&gt; listarNicknamesDocentes() {
+<span class="nc" id="L46">        List&lt;String&gt; nicknames = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        for (Docente docente : persistencia.listarDocentes()) {</span>
+<span class="nc" id="L48">            nicknames.add(docente.getNick());</span>
+<span class="nc" id="L49">        }</span>
+<span class="nc" id="L50">        return nicknames;</span>
+    }
+
+    public void altaEdicionCurso(
+            String nombreInstituto,
+            String nombreCurso,
+            String nombreEdicion,
+            LocalDate inicio,
+            LocalDate fin,
+            int cupo,
+            List&lt;String&gt; nicknamesDocentes) {
+<span class="nc bnc" id="L61" title="All 6 branches missed.">        if (nombreInstituto == null || nombreInstituto.isBlank()</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                || nombreCurso == null || nombreCurso.isBlank()) {</span>
+<span class="nc" id="L63">            throw new IllegalArgumentException(&quot;Seleccione instituto y curso.&quot;);</span>
+        }
+<span class="nc bnc" id="L65" title="All 4 branches missed.">        if (nombreEdicion == null || nombreEdicion.isBlank()) {</span>
+<span class="nc" id="L66">            throw new IllegalArgumentException(&quot;Indique el nombre de la edición.&quot;);</span>
+        }
+<span class="nc bnc" id="L68" title="All 6 branches missed.">        if (inicio == null || fin == null || fin.isBefore(inicio)) {</span>
+<span class="nc" id="L69">            throw new IllegalArgumentException(&quot;Revise las fechas de inicio y fin.&quot;);</span>
+        }
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (cupo &lt; -1) {</span>
+<span class="nc" id="L72">            throw new IllegalArgumentException(</span>
+                    &quot;Cupo inválido: use -1 para sin límite o un entero no negativo.&quot;);
+        }
+
+<span class="nc" id="L76">        Instituto instituto = persistencia.buscarInstituto(nombreInstituto);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (instituto == null) {</span>
+<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;El instituto ya no existe.&quot;);</span>
+        }
+<span class="nc" id="L80">        Curso curso = persistencia.buscarCursoInstituto(nombreCurso, instituto);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (curso == null) {</span>
+<span class="nc" id="L82">            throw new IllegalArgumentException(&quot;El curso ya no existe en ese instituto.&quot;);</span>
+        }
+
+<span class="nc" id="L85">        Set&lt;Docente&gt; docentes = new HashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (nicknamesDocentes != null) {</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            for (String nick : nicknamesDocentes) {</span>
+<span class="nc" id="L88">                Docente docente = persistencia.buscarDocentePorNick(nick);</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                if (docente == null) {</span>
+<span class="nc" id="L90">                    throw new IllegalArgumentException(</span>
+                            &quot;El docente &quot; + nick + &quot; ya no existe.&quot;);
+                }
+<span class="nc" id="L93">                docentes.add(docente);</span>
+<span class="nc" id="L94">            }</span>
+        }
+
+<span class="nc" id="L97">        EdicionCurso edicion = new EdicionCurso(</span>
+<span class="nc" id="L98">                nombreEdicion.trim(), inicio, fin, cupo, LocalDate.now());</span>
+<span class="nc" id="L99">        edicion.setDocentes(docentes);</span>
+<span class="nc" id="L100">        persistencia.altaEdicionCurso(curso, edicion);</span>
+<span class="nc" id="L101">    }</span>
+
+    public void altaCurso(
+            String nombreInstituto,
+            String nombre,
+            String descripcion,
+            String duracion,
+            int horas,
+            int creditos,
+            String url,
+            List&lt;String&gt; nombresPrevias,
+            List&lt;String&gt; nombresCategorias) {
+
+<span class="nc bnc" id="L114" title="All 4 branches missed.">        if (nombreInstituto == null || nombreInstituto.isBlank()) {</span>
+<span class="nc" id="L115">            throw new IllegalArgumentException(&quot;Seleccione un instituto.&quot;);</span>
+        }
+<span class="nc bnc" id="L117" title="All 6 branches missed.">        if (nombre == null || nombre.isBlank()</span>
+<span class="nc bnc" id="L118" title="All 4 branches missed.">                || descripcion == null || descripcion.isBlank()</span>
+<span class="nc bnc" id="L119" title="All 4 branches missed.">                || duracion == null || duracion.isBlank()</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">                || url == null || url.isBlank()) {</span>
+<span class="nc" id="L121">            throw new IllegalArgumentException(</span>
+                    &quot;Complete nombre, descripción, duración y URL.&quot;);
+        }
+<span class="nc bnc" id="L124" title="All 4 branches missed.">        if (nombresCategorias == null || nombresCategorias.isEmpty()) {</span>
+<span class="nc" id="L125">            throw new IllegalArgumentException(&quot;Seleccione al menos una categoría.&quot;);</span>
+        }
+
+<span class="nc" id="L128">        Instituto instituto = persistencia.buscarInstituto(nombreInstituto);</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (instituto == null) {</span>
+<span class="nc" id="L130">            throw new IllegalArgumentException(&quot;El instituto ya no existe.&quot;);</span>
+        }
+
+<span class="nc" id="L133">        Set&lt;Curso&gt; previas = new HashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        if (nombresPrevias != null) {</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            for (String nombrePrevia : nombresPrevias) {</span>
+<span class="nc" id="L136">                Curso previa = persistencia.buscarCurso(nombrePrevia);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                if (previa == null) {</span>
+<span class="nc" id="L138">                    throw new IllegalArgumentException(</span>
+                            &quot;Una previa seleccionada ya no existe.&quot;);
+                }
+<span class="nc" id="L141">                previas.add(previa);</span>
+<span class="nc" id="L142">            }</span>
+        }
+
+<span class="nc" id="L145">        Set&lt;Categoria&gt; categorias = new HashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        for (String nombreCategoria : nombresCategorias) {</span>
+<span class="nc" id="L147">            Categoria categoria = persistencia.buscarCategoria(nombreCategoria);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">            if (categoria == null) {</span>
+<span class="nc" id="L149">                throw new IllegalArgumentException(</span>
+                        &quot;La categoría &quot; + nombreCategoria + &quot; ya no existe.&quot;);
+            }
+<span class="nc" id="L152">            categorias.add(categoria);</span>
+<span class="nc" id="L153">        }</span>
+
+<span class="nc" id="L155">        Curso curso = new Curso(nombre.trim(), duracion.trim(), horas, creditos,</span>
+<span class="nc" id="L156">                LocalDate.now(), descripcion.trim(), url.trim());</span>
+<span class="nc" id="L157">        curso.setInstituto(instituto);</span>
+<span class="nc" id="L158">        curso.setPrevias(previas);</span>
+<span class="nc" id="L159">        curso.setCategorias(categorias);</span>
+<span class="nc" id="L160">        persistencia.altaCurso(curso);</span>
+<span class="nc" id="L161">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

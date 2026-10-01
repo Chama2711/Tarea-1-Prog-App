@@ -70,6 +70,13 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
         btnCancelar = new javax.swing.JButton();
         dcNacimiento = new com.toedter.calendar.JDateChooser();
 
+        lblContrasena = new javax.swing.JLabel();
+        lblConfirmacion = new javax.swing.JLabel();
+        txtContrasena = new javax.swing.JPasswordField();
+        txtConfirmacion = new javax.swing.JPasswordField();
+        lblContrasena.setText("Contraseña:");
+        lblConfirmacion.setText("Confirmar contraseña:");
+
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
@@ -113,79 +120,81 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jLabel2)
-                .addGap(115, 115, 115))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel8))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(cmbInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtCorreo, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
-                            .addComponent(txtApellido)
-                            .addComponent(txtNombre)
-                            .addComponent(txtNickname)
-                            .addComponent(dcNacimiento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(22, 22, 22))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(chkDocente)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 132, Short.MAX_VALUE)
-                        .addComponent(btnAceptar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCancelar)
-                        .addGap(19, 19, 19))))
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel1)
+                        .addComponent(jLabel3)
+                        .addComponent(jLabel4)
+                        .addComponent(jLabel5)
+                        .addComponent(lblContrasena)
+                        .addComponent(lblConfirmacion)
+                        .addComponent(jLabel7)
+                        .addComponent(jLabel8))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(txtNickname, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                        .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                        .addComponent(txtApellido, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                        .addComponent(txtCorreo, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                        .addComponent(txtContrasena, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                        .addComponent(txtConfirmacion, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                        .addComponent(dcNacimiento, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                        .addComponent(cmbInstituto, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE))
+                    .addContainerGap())
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(chkDocente)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(btnAceptar)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(btnCancelar)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(txtNickname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(6, 6, 6)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel5))
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtNickname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
                     .addComponent(txtCorreo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblContrasena)
+                    .addComponent(txtContrasena, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblConfirmacion)
+                    .addComponent(txtConfirmacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(dcNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmbInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(chkDocente)
-                        .addContainerGap(16, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnAceptar)
-                            .addComponent(btnCancelar))
-                        .addContainerGap())))
+                    .addComponent(jLabel8)
+                    .addComponent(cmbInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(chkDocente)
+                    .addComponent(btnAceptar)
+                    .addComponent(btnCancelar))
+                .addContainerGap()
         );
 
         pack();
@@ -205,73 +214,37 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
         
-    try{
-    // 1. Obtención de datos de texto
-    String nickname = txtNickname.getText().trim();
-    String nombre = txtNombre.getText().trim();
-    String apellido = txtApellido.getText().trim();
-    String correo = txtCorreo.getText().trim();
-
-    
-    java.time.LocalDate fechaNac = FechasFormulario.leer(
-        dcNacimiento, "la fecha de nacimiento"
-    );
-
-    // 3. Validar campos de texto requeridos
-    if (nickname.isEmpty() || nombre.isEmpty() || apellido.isEmpty() || correo.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, 
-            "Debe completar todos los campos obligatorios.", 
-            "Error de Validación", 
-            javax.swing.JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    // 4. Validar Instituto si es Docente
-    boolean esDocente = chkDocente.isSelected();
-    if (esDocente && cmbInstituto.getSelectedIndex() <= 0) {
-        javax.swing.JOptionPane.showMessageDialog(this, 
-            "Debe seleccionar un Instituto para el docente.", 
-            "Error de Selección", 
-            javax.swing.JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    // 5. Validar Nickname único
-    if (control.existeNickname(nickname)) {
-        javax.swing.JOptionPane.showMessageDialog(this, 
-            "El nickname '" + nickname + "' ya existe. Por favor modifíquelo o cancele.", 
-            "Nickname Duplicado", 
-            javax.swing.JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    // 6. Validar Correo único
-    if (control.existeCorreo(correo)) {
-        javax.swing.JOptionPane.showMessageDialog(this, 
-            "El correo '" + correo + "' ya se encuentra registrado.", 
-            "Correo Duplicado", 
-            javax.swing.JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    // 7. Registro en el sistema
-    if (esDocente) {
-String nombreInst = cmbInstituto.getSelectedItem().toString();
-control.registrarDocente(nickname, correo, nombre, apellido, fechaNac, nombreInst);
-    } else {
-        control.registrarEstudiante(nickname, correo, nombre, apellido, fechaNac);
-    }
-
-    javax.swing.JOptionPane.showMessageDialog(this, 
-        "Usuario registrado exitosamente.", 
-        "Éxito", 
-        javax.swing.JOptionPane.INFORMATION_MESSAGE);
-
-    limpiarFormulario();
-    }catch (Exception e) {
-        // Esto obligará a mostrar el error exacto en la consola de NetBeans
-        e.printStackTrace(); 
-        javax.swing.JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+    char[] clave = txtContrasena.getPassword();
+    char[] confirmacion = txtConfirmacion.getPassword();
+    try {
+        String nickname = txtNickname.getText().trim();
+        String nombre = txtNombre.getText().trim();
+        String apellido = txtApellido.getText().trim();
+        String correo = txtCorreo.getText().trim();
+        java.time.LocalDate fechaNac = FechasFormulario.leer(dcNacimiento, "la fecha de nacimiento");
+        if (chkDocente.isSelected()) {
+            String instituto = cmbInstituto.getSelectedIndex() > 0
+                    ? (String) cmbInstituto.getSelectedItem() : null;
+            control.registrarDocente(nickname, correo, nombre, apellido, fechaNac,
+                    instituto, clave, confirmacion);
+        } else {
+            control.registrarEstudiante(nickname, correo, nombre, apellido, fechaNac,
+                    clave, confirmacion);
+        }
+        javax.swing.JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente.");
+        limpiarFormulario();
+    } catch (IllegalArgumentException e) {
+        javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(),
+                "Revise los datos", javax.swing.JOptionPane.WARNING_MESSAGE);
+    } catch (RuntimeException e) {
+        e.printStackTrace();
+        javax.swing.JOptionPane.showMessageDialog(this, "No se pudo registrar el usuario.",
+                "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+    } finally {
+        java.util.Arrays.fill(clave, '\0');
+        java.util.Arrays.fill(confirmacion, '\0');
+        txtContrasena.setText("");
+        txtConfirmacion.setText("");
     }
 
     }//GEN-LAST:event_btnAceptarActionPerformed
@@ -305,6 +278,10 @@ control.registrarDocente(nickname, correo, nombre, apellido, fechaNac, nombreIns
 }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel lblContrasena;
+    private javax.swing.JLabel lblConfirmacion;
+    private javax.swing.JPasswordField txtContrasena;
+    private javax.swing.JPasswordField txtConfirmacion;
     private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JCheckBox chkDocente;

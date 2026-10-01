@@ -21,6 +21,16 @@ public class Usuario implements Serializable {
     private String nombre;
     private String apellido;
     private LocalDate fechaNacimiento;
+    @Column(name = "PASSWORD_HASH", length = 255)
+    private String hashContrasena;
+
+    public String getHashContrasena() {
+        return hashContrasena;
+    }
+
+    public void setHashContrasena(String hashContrasena) {
+        this.hashContrasena = hashContrasena;
+    }
     
     public Usuario(){
         
