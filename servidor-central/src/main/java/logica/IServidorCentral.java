@@ -142,6 +142,17 @@ public interface IServidorCentral {
 
     Usuario obtenerUsuario(String nickname);
 
+    Usuario obtenerUsuarioPorIdentificador(String nicknameOCorreo);
+
+    DTAutenticacion autenticarUsuario(String nicknameOCorreo, char[] clave);
+
+    void registrarEstudiante(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, char[] clave, char[] confirmacion);
+
+    void registrarDocente(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String nombreInstituto,
+            char[] clave, char[] confirmacion);
+
     void crearUsuario(
         Usuario usuario,
         String nombreInstituto

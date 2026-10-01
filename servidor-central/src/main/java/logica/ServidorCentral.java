@@ -13,10 +13,12 @@ public class ServidorCentral implements IServidorCentral {
 
     private final ControladorPersistencia persistencia;
     private final ControladorCurso controladorCurso;
+    private final ControladorUsuario controladorUsuario;
 
     public ServidorCentral() {
         this.persistencia = new ControladorPersistencia();
         this.controladorCurso = new ControladorCurso(persistencia);
+        this.controladorUsuario = new ControladorUsuario(this);
     }
 
     // =========================
@@ -276,6 +278,30 @@ public class ServidorCentral implements IServidorCentral {
     @Override
     public Usuario obtenerUsuario(String nick) {
     return persistencia.obtenerUsuario(nick);
+    }
+
+    @Override
+    public Usuario obtenerUsuarioPorIdentificador(String identificador) {
+        return persistencia.obtenerUsuarioPorIdentificador(identificador);
+    }
+
+    @Override
+    public DTAutenticacion autenticarUsuario(String identificador, char[] clave) {
+        return controladorUsuario.autenticarUsuario(identificador, clave);
+    }
+
+    @Override
+    public void registrarEstudiante(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, char[] clave, char[] confirmacion) {
+        controladorUsuario.registrarEstudiante(nick, mail, nombre, apellido,
+                fechaNacimiento, clave, confirmacion);
+    }
+
+    @Override
+    public void registrarDocente(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String instituto, char[] clave, char[] confirmacion) {
+        controladorUsuario.registrarDocente(nick, mail, nombre, apellido,
+                fechaNacimiento, instituto, clave, confirmacion);
     }
 
     @Override
