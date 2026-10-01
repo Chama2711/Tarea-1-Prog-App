@@ -1,1 +1,5 @@
 /target/
+/estacion-trabajo/target/
+/servidor-central/target/
+pom.xml.backup
+respaldo-migracion/

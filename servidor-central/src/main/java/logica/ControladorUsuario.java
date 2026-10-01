@@ -21,10 +21,6 @@ import java.time.format.DateTimeParseException;
 
 
 
-
-
-
-
 public class ControladorUsuario {
     private final IServidorCentral servidorCentral;
 
