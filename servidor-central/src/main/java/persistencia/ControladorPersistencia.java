@@ -19,8 +19,30 @@ import logica.*;
  */
     public class ControladorPersistencia {
 
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("edEXTPU");
+    private final EntityManagerFactory emf;
+
+    public ControladorPersistencia() {
+        this(Persistence.createEntityManagerFactory("edEXTPU"));
+    }
+
+    public ControladorPersistencia(EntityManagerFactory emf) {
+        this.emf = java.util.Objects.requireNonNull(emf);
+    }
     
+    public boolean existeProgramaFormacion(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return contarProgramas(em, nombre) > 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    private long contarProgramas(EntityManager em, String nombre) {
+        return em.createQuery("SELECT COUNT(p) FROM ProgramaFormacion p WHERE p.nombre = :nombre", Long.class)
+                .setParameter("nombre", nombre).getSingleResult();
+    }
+
     public void altaProgramaFormacion(ProgramaFormacion programa) {
 
     EntityManager em = emf.createEntityManager();
@@ -29,6 +51,9 @@ import logica.*;
     try {
         tx.begin();
 
+        if (contarProgramas(em, programa.getNombre()) > 0) {
+            throw new IllegalArgumentException("Ya existe un programa con ese nombre.");
+        }
         em.persist(programa);
 
         tx.commit();

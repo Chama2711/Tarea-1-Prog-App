@@ -14,11 +14,13 @@ public class ServidorCentral implements IServidorCentral {
     private final ControladorPersistencia persistencia;
     private final ControladorCurso controladorCurso;
     private final ControladorUsuario controladorUsuario;
+    private final ControladorProgramaFormacion controladorProgramaFormacion;
 
     public ServidorCentral() {
         this.persistencia = new ControladorPersistencia();
         this.controladorCurso = new ControladorCurso(persistencia);
         this.controladorUsuario = new ControladorUsuario(this);
+        this.controladorProgramaFormacion = new ControladorProgramaFormacion(persistencia);
     }
 
     // =========================
@@ -225,8 +227,10 @@ public class ServidorCentral implements IServidorCentral {
     // ==================== PROGRAMAS DE FORMACIÓN ====================
 
     @Override
-    public void altaProgramaFormacion(ProgramaFormacion programa) {
-    persistencia.altaProgramaFormacion(programa);
+    public void altaProgramaFormacion(String nombre, String descripcion,
+            LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta) {
+        controladorProgramaFormacion.altaProgramaFormacion(
+                nombre, descripcion, fechaInicio, fechaFin, fechaAlta);
     }
 
     @Override

@@ -119,7 +119,8 @@ public interface IServidorCentral {
     //  PROGRAMAS DE FORMACIÓN 
     //=========================
 
-    void altaProgramaFormacion(ProgramaFormacion programa);
+    void altaProgramaFormacion(String nombre, String descripcion,
+            LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta);
 
     void agregarCursoAPrograma(
         String nombrePrograma,

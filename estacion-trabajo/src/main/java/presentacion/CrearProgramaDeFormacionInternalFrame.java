@@ -5,10 +5,7 @@
 package presentacion;
 
 import java.time.LocalDate;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
-import logica.ProgramaFormacion;
 import logica.IServidorCentral;
 
 /**
@@ -150,16 +147,6 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
         String nombre = jTextField1.getText().trim();
         String descripcion = jTextField2.getText().trim();
 
-        if (nombre.isEmpty() || descripcion.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                this,
-                "Debe completar todos los campos.",
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-
         try {
             
             LocalDate fechaInicio = FechasFormulario.leer(
@@ -174,25 +161,8 @@ public class CrearProgramaDeFormacionInternalFrame extends javax.swing.JInternal
                     dcAlta, "la fecha de alta"
             );
 
-        if (fechaFin.isBefore(fechaInicio)) {
-            JOptionPane.showMessageDialog(
-            this,
-            "La fecha de fin debe ser posterior a la fecha de inicio.",
-            "Error",
-            JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-            
-        ProgramaFormacion programa = new ProgramaFormacion();
-
-        programa.setNombre(nombre);
-        programa.setDescripcion(descripcion);
-        programa.setFechaInicio(fechaInicio);
-        programa.setFechaFin(fechaFin);
-        programa.setFechaAlta(fechaAlta);
-
-        servidorCentral.altaProgramaFormacion(programa);
+        servidorCentral.altaProgramaFormacion(
+                nombre, descripcion, fechaInicio, fechaFin, fechaAlta);
 
         JOptionPane.showMessageDialog(
                 this,
