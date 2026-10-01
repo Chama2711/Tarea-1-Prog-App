@@ -49,7 +49,23 @@ public interface IServidorCentral {
 
     boolean existeCurso(String nombre);
 
-    void altaCurso(Curso curso);
+    List<String> listarNombresInstitutos();
+
+    List<String> listarNombresCursosPorInstituto(String nombreInstituto);
+
+    List<String> listarNombresCategorias();
+
+    void altaCurso(
+            String nombreInstituto,
+            String nombre,
+            String descripcion,
+            String duracion,
+            int horas,
+            int creditos,
+            String url,
+            List<String> nombresPrevias,
+            List<String> nombresCategorias
+    );
 
 
     // =========================
@@ -79,7 +95,17 @@ public interface IServidorCentral {
 
     List<Curso> obtenerCursosDeInstituto(Long institutoId);
 
-    void altaEdicionCurso(Curso curso, EdicionCurso edicion);
+    List<String> listarNicknamesDocentes();
+
+    void altaEdicionCurso(
+            String nombreInstituto,
+            String nombreCurso,
+            String nombreEdicion,
+            LocalDate inicio,
+            LocalDate fin,
+            int cupo,
+            List<String> nicknamesDocentes
+    );
 
     List<Estudiante> obtenerEstudiantes();
 

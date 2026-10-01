@@ -5,11 +5,10 @@
 package presentacion;
 
 import javax.swing.DefaultListModel;
-import java.util.*;
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 import logica.IServidorCentral;
-import logica.*;
 
 /**
  *
@@ -17,58 +16,57 @@ import logica.*;
  */
 public class AltaCurso extends javax.swing.JInternalFrame {
 
-    private IServidorCentral servidorCentral;
+    private final IServidorCentral servidorCentral;
     private DefaultListModel<String> modeloDisponibles;
     private DefaultListModel<String> modeloPrevias;
     private DefaultListModel<String> modeloCategorias;
+    private boolean cargandoInstitutos = true;
     
     public AltaCurso(IServidorCentral servidorCentral) {
-        initComponents();
-        
         this.servidorCentral = servidorCentral;
         
         modeloDisponibles = new DefaultListModel<>();
         modeloPrevias = new DefaultListModel<>();
         modeloCategorias = new DefaultListModel<>();
-        
-        
-        ArrayList<Curso> cursos = servidorCentral.listarCursos();
-        
-        for(int i = 0; i < cursos.size(); i++)
-        {
-            Curso curso = cursos.get(i);
-            modeloDisponibles.addElement(curso.getNombre());
-        }
+        initComponents();
+
         ListaCursosDisponibles.setModel(modeloDisponibles);
         ListaPreviasSeleccionadas.setModel(modeloPrevias);
         
         ComboInstitutoCurso.removeAllItems();
-        ArrayList<Instituto> institutos = servidorCentral.listarInstitutos();
-        
-        for(int i= 0; i < institutos.size(); i++)
-        {
-            ComboInstitutoCurso.addItem(institutos.get(i).getNombre());
-        }
-        
-        // Cargar categorías
-       List<Categoria> categorias = servidorCentral.listarCategorias();
-
-       for (Categoria categoria : categorias) {
-           modeloCategorias.addElement( categoria.getNombre());
+        for (String nombre : servidorCentral.listarNombresInstitutos()) {
+            ComboInstitutoCurso.addItem(nombre);
         }
 
-      ListaCategorias.setModel(modeloCategorias);
-      ListaCategorias.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION); 
-      
-}
+        for (String nombre : servidorCentral.listarNombresCategorias()) {
+            modeloCategorias.addElement(nombre);
+        }
+        ListaCategorias.setModel(modeloCategorias);
+        ListaCategorias.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        cargandoInstitutos = false;
+        cargarCursosDelInstituto();
+    }
+
+    private void cargarCursosDelInstituto() {
+        modeloDisponibles.clear();
+        modeloPrevias.clear();
+        String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
+        if (nombreInstituto == null) {
+            return;
+        }
+        try {
+            for (String nombre : servidorCentral.listarNombresCursosPorInstituto(nombreInstituto)) {
+                modeloDisponibles.addElement(nombre);
+            }
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "No se pudieron cargar los cursos del instituto.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     @SuppressWarnings("unchecked")
-    
-    
-    private ArrayList<Curso> cursos = new ArrayList<>();
-    
-    
-    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -286,22 +284,9 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void ComboInstitutoCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboInstitutoCursoActionPerformed
-        // TODO add your handling code here:
-        
-        String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
-        
-        modeloDisponibles.clear();
-        modeloPrevias.clear();
-        
-        ArrayList<Curso> cursosDelInstituto = servidorCentral.listarCursosPorInstituto(nombreInstituto);
-        
-        for(int i = 0; i < cursosDelInstituto.size(); i++)
-        {
-            Curso curso = cursosDelInstituto.get(i);
-            
-            modeloDisponibles.addElement(curso.getNombre());
+        if (!cargandoInstitutos) {
+            cargarCursosDelInstituto();
         }
-        
     }//GEN-LAST:event_ComboInstitutoCursoActionPerformed
 
     private void txtCantidadHorasCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadHorasCursoActionPerformed
@@ -311,57 +296,31 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
 try {
     String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
-    if (nombreInstituto == null) throw new IllegalArgumentException("Seleccione un instituto.");
-    Instituto instituto = servidorCentral.buscarInstituto(nombreInstituto);
-    if (instituto == null) throw new IllegalArgumentException("El instituto ya no existe.");
     String nombre = txtNombreCurso.getText().trim();
     String descripcion = txtDescripcionCurso.getText().trim();
     String duracion = txtDuracionCurso.getText().trim();
     String url = txtURLCurso.getText().trim();
-    if (nombre.isEmpty() || descripcion.isEmpty() || duracion.isEmpty() || url.isEmpty()) {
-        throw new IllegalArgumentException("Complete nombre, descripción, duración y URL.");
-    }
     int horas = Integer.parseInt(txtCantidadHorasCurso.getText().trim());
     int creditos = Integer.parseInt(txtCreditosCurso.getText().trim());
-    if (servidorCentral.existeCurso(nombre)) throw new IllegalArgumentException("Ya existe ese nombre de curso en la plataforma.");
-    Set<Curso> previas = new HashSet<>();
+    List<String> nombresPrevias = new ArrayList<>();
     for (int i = 0; i < modeloPrevias.size(); i++) {
-        Curso previa = servidorCentral.buscarCurso(modeloPrevias.getElementAt(i));
-        if (previa == null) throw new IllegalArgumentException("Una previa seleccionada ya no existe.");
-        previas.add(previa);
+        nombresPrevias.add(modeloPrevias.getElementAt(i));
     }
     List<String> categoriasSeleccionadas =
         ListaCategorias.getSelectedValuesList();
 
-    if (categoriasSeleccionadas.isEmpty()) {
-    throw new IllegalArgumentException("Seleccione al menos una categoría.");
-    }
-    Curso curso = new Curso(nombre, duracion, horas, creditos,
-            LocalDate.now(), descripcion, url);
-    curso.setInstituto(instituto);
-    curso.setPrevias(previas);
-    for (String nombreCategoria : categoriasSeleccionadas) {
-
-    Categoria categoria = servidorCentral.buscarCategoria(nombreCategoria);
-
-    if (categoria == null) {
-        throw new IllegalArgumentException(
-            "La categoría " + nombreCategoria + " ya no existe."
-        );
-    }
-
-    curso.agregarCategoria(categoria);
-}
-
-    servidorCentral.altaCurso(curso);
+    servidorCentral.altaCurso(nombreInstituto, nombre, descripcion, duracion,
+            horas, creditos, url, nombresPrevias, categoriasSeleccionadas);
     
     JOptionPane.showMessageDialog(this, "Curso creado correctamente.");
     dispose();
 } catch (NumberFormatException e) {
     JOptionPane.showMessageDialog(this, "Horas y créditos deben ser números enteros.");
+} catch (IllegalArgumentException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(), "Revise los datos", JOptionPane.WARNING_MESSAGE);
 } catch (RuntimeException e) {
     e.printStackTrace();
-    JOptionPane.showMessageDialog(this, e.getMessage(), "No se creó el curso", JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(this, "No se pudo crear el curso.", "Error", JOptionPane.ERROR_MESSAGE);
 }
     }//GEN-LAST:event_btnAceptarActionPerformed
 

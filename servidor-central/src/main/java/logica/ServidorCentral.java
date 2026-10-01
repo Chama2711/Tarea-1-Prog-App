@@ -12,9 +12,11 @@ import persistencia.ControladorPersistencia;
 public class ServidorCentral implements IServidorCentral {
 
     private final ControladorPersistencia persistencia;
+    private final ControladorCurso controladorCurso;
 
     public ServidorCentral() {
         this.persistencia = new ControladorPersistencia();
+        this.controladorCurso = new ControladorCurso(persistencia);
     }
 
     // =========================
@@ -100,8 +102,33 @@ public class ServidorCentral implements IServidorCentral {
     }
 
     @Override
-    public void altaCurso(Curso curso) {
-        persistencia.altaCurso(curso);
+    public List<String> listarNombresInstitutos() {
+        return controladorCurso.listarNombresInstitutos();
+    }
+
+    @Override
+    public List<String> listarNombresCursosPorInstituto(String nombreInstituto) {
+        return controladorCurso.listarNombresCursosPorInstituto(nombreInstituto);
+    }
+
+    @Override
+    public List<String> listarNombresCategorias() {
+        return controladorCurso.listarNombresCategorias();
+    }
+
+    @Override
+    public void altaCurso(
+            String nombreInstituto,
+            String nombre,
+            String descripcion,
+            String duracion,
+            int horas,
+            int creditos,
+            String url,
+            List<String> nombresPrevias,
+            List<String> nombresCategorias) {
+        controladorCurso.altaCurso(nombreInstituto, nombre, descripcion,
+                duracion, horas, creditos, url, nombresPrevias, nombresCategorias);
     }
 
     // =========================
@@ -164,10 +191,20 @@ public class ServidorCentral implements IServidorCentral {
 
    @Override
     public void altaEdicionCurso(
-        Curso curso,
-        EdicionCurso edicion) {
+            String nombreInstituto,
+            String nombreCurso,
+            String nombreEdicion,
+            LocalDate inicio,
+            LocalDate fin,
+            int cupo,
+            List<String> nicknamesDocentes) {
+        controladorCurso.altaEdicionCurso(nombreInstituto, nombreCurso,
+                nombreEdicion, inicio, fin, cupo, nicknamesDocentes);
+    }
 
-    persistencia.altaEdicionCurso(curso, edicion);
+    @Override
+    public List<String> listarNicknamesDocentes() {
+        return controladorCurso.listarNicknamesDocentes();
     }
 
    @Override

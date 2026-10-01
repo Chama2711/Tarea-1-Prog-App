@@ -5,18 +5,18 @@
 package presentacion;
 import logica.IServidorCentral;
 import javax.swing.DefaultListModel;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDate;
-import java.time.Month;
 import javax.swing.JOptionPane;
-import logica.*;
 
 public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     
-    private IServidorCentral servidorCentral;
+    private final IServidorCentral servidorCentral;
     private DefaultListModel<String> modeloDocentesDispo;
     private DefaultListModel<String> modeloDocentesSelec;
-    private ArrayList<Curso> cursosActuales = new ArrayList<>();
+    private List<String> nombresCursosActuales = new ArrayList<>();
+    private boolean cargandoInstitutos = true;
     
     /**
      * Creates new form AltaEdicionCurso
@@ -24,19 +24,14 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     public AltaEdicionCurso(IServidorCentral servidorCentral) {
         
         this.servidorCentral = servidorCentral;
+        modeloDocentesDispo = new DefaultListModel<>();
+        modeloDocentesSelec = new DefaultListModel<>();
         initComponents();
         FechasFormulario.configurar(dcInicio);
         FechasFormulario.configurar(dcFin);
         
-        modeloDocentesDispo = new DefaultListModel<>();
-        modeloDocentesSelec = new DefaultListModel<>();
-        
-        ArrayList<Docente> docentes = servidorCentral.listarDocentes();
-        
-        for(int i = 0; i < docentes.size(); i++)
-        {
-            Docente docente = docentes.get(i);
-            modeloDocentesDispo.addElement(docente.getNick());
+        for (String nick : servidorCentral.listarNicknamesDocentes()) {
+            modeloDocentesDispo.addElement(nick);
         }
         
         ListaDocentesDisponibles.setModel(modeloDocentesDispo);
@@ -44,15 +39,34 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         
         
         
-        ArrayList<Instituto> institutos = servidorCentral.listarInstitutos();
-        
-        for(int i = 0; i < institutos.size(); i++)
-        {
-            Instituto instituto = institutos.get(i);
-            ComboInstituto.addItem(instituto.getNombre());
+        ComboInstituto.removeAllItems();
+        for (String nombre : servidorCentral.listarNombresInstitutos()) {
+            ComboInstituto.addItem(nombre);
         }
-        
-  
+        cargandoInstitutos = false;
+        cargarCursosDelInstituto();
+    }
+
+    private void cargarCursosDelInstituto() {
+        ComboCurso.removeAllItems();
+        nombresCursosActuales = new ArrayList<>();
+        String nombreInstituto = (String) ComboInstituto.getSelectedItem();
+        if (nombreInstituto == null) {
+            return;
+        }
+        try {
+            nombresCursosActuales = servidorCentral.listarNombresCursosPorInstituto(nombreInstituto);
+            for (String nombre : nombresCursosActuales) {
+                String nombreVisible = nombre.length() > 35
+                        ? nombre.substring(0, 32) + "..." : nombre;
+                ComboCurso.addItem(nombreVisible);
+            }
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "No se pudieron cargar los cursos del instituto.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -238,29 +252,9 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
 
     
     private void ComboInstitutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboInstitutoActionPerformed
-      String institutoSeleccionado =
-            (String) ComboInstituto.getSelectedItem();
-
-    if (institutoSeleccionado == null) {
-        return;
-    }
-
-    ComboCurso.removeAllItems();
-
-    cursosActuales = servidorCentral.listarCursosPorInstituto(institutoSeleccionado);
-
-    for (Curso curso : cursosActuales) {
-
-        String nombre = curso.getNombre();
-        String nombreVisible = nombre;
-
-        if (nombre.length() > 35) {
-            nombreVisible = nombre.substring(0, 32) + "...";
+        if (!cargandoInstitutos) {
+            cargarCursosDelInstituto();
         }
-
-        ComboCurso.addItem(nombreVisible);
-    }
-    
     }//GEN-LAST:event_ComboInstitutoActionPerformed
 
     private void ComboCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboCursoActionPerformed
@@ -285,27 +279,8 @@ try {
 
 int indiceCurso = ComboCurso.getSelectedIndex();
 
-if (nombreInstituto == null || indiceCurso < 0) {
-    throw new IllegalArgumentException(
-        "Seleccione instituto y curso."
-    );
-}
-
-Instituto instituto = servidorCentral.buscarInstituto(nombreInstituto);
-
-if (instituto == null) {
-    throw new IllegalArgumentException(
-        "El instituto ya no existe."
-    );
-}
-
-if (indiceCurso >= cursosActuales.size()) {
-    throw new IllegalArgumentException(
-        "El curso ya no está disponible."
-    );
-}
-
-Curso curso = cursosActuales.get(indiceCurso);
+String nombreCurso = indiceCurso >= 0 && indiceCurso < nombresCursosActuales.size()
+        ? nombresCursosActuales.get(indiceCurso) : null;
     String nombre = txtNombreEdicion.getText().trim();
     LocalDate inicio = FechasFormulario.leer(
         dcInicio, "la fecha de inicio"
@@ -315,25 +290,23 @@ Curso curso = cursosActuales.get(indiceCurso);
     );
     String textoCupo = txtCupos.getText().trim();
     int cupo = textoCupo.isEmpty() ? -1 : Integer.parseInt(textoCupo);
-    Set<Docente> docentes = new HashSet<>();
+    List<String> nicknamesDocentes = new ArrayList<>();
     for (int i = 0; i < modeloDocentesSelec.size(); i++) {
-        String nick = modeloDocentesSelec.getElementAt(i);
-        Docente docente = servidorCentral.buscarDocentePorNick(nick);
-        if (docente == null) throw new IllegalArgumentException("El docente " + nick + " ya no existe.");
-        docentes.add(docente);
+        nicknamesDocentes.add(modeloDocentesSelec.getElementAt(i));
     }
-    EdicionCurso edicion = new EdicionCurso(nombre, inicio, fin, cupo, LocalDate.now());
-    edicion.setDocentes(docentes);
-    servidorCentral.altaEdicionCurso(curso, edicion);
+    servidorCentral.altaEdicionCurso(nombreInstituto, nombreCurso, nombre,
+            inicio, fin, cupo, nicknamesDocentes);
     JOptionPane.showMessageDialog(this, "Edición de curso creada correctamente.");
     dispose();
 } catch (java.time.DateTimeException e) {
     JOptionPane.showMessageDialog(this, "Ingrese fechas reales de inicio y fin.");
 } catch (NumberFormatException e) {
     JOptionPane.showMessageDialog(this, "El cupo debe ser entero; deje vacío para no limitarlo.");
+} catch (IllegalArgumentException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(), "Revise los datos", JOptionPane.WARNING_MESSAGE);
 } catch (RuntimeException e) {
     e.printStackTrace();
-    JOptionPane.showMessageDialog(this, e.getMessage(), "No se creó la edición", JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(this, "No se pudo crear la edición.", "Error", JOptionPane.ERROR_MESSAGE);
 }
     }//GEN-LAST:event_btnAceptarEdicionActionPerformed
 
