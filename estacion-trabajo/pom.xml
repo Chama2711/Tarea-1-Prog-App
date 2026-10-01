@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.mycompany</groupId>
+        <artifactId>edext</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>estacion-trabajo</artifactId>
+    <packaging>jar</packaging>
+
+    <name>edEXT - Estacion de Trabajo</name>
+
+    <dependencies>
+
+        <!-- Servidor Central -->
+        <dependency>
+            <groupId>com.mycompany</groupId>
+            <artifactId>servidor-central</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Componentes Swing utilizados por los formularios -->
+        <dependency>
+            <groupId>com.toedter</groupId>
+            <artifactId>jcalendar</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+    </dependencies>
+
+    <properties>
+        <exec.mainClass>presentacion.PrincipalFrame</exec.mainClass>
+    </properties>
+
+</project>

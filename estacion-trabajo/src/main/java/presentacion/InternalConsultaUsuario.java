@@ -20,7 +20,7 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
     private ControladorUsuario control;
     private IServidorCentral servidorCentral;
     
-    public InternalConsultaUsuario(IServidorCentral servidorCentral) {
+    public InternalConsultaUsuario(ControladorUsuario control,IServidorCentral servidorCentral) {
         initComponents();
         this.control = control;
         this.servidorCentral = servidorCentral;

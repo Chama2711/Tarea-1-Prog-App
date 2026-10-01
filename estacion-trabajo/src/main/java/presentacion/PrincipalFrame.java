@@ -59,14 +59,15 @@ public class PrincipalFrame extends javax.swing.JFrame {
         }
     }
     // 2. La instancia de la lógica/persistencia
-    private logica.ControladorUsuario controlUsuario;
     private IServidorCentral servidorCentral;
+    private logica.ControladorUsuario controlUsuario;
 
     public PrincipalFrame() {
         initComponents();
-
-    controlUsuario = new logica.ControladorUsuario();
+        
     servidorCentral = new ServidorCentral();
+    controlUsuario = new logica.ControladorUsuario(servidorCentral);
+  
 
         setTitle("edEXT - Plataforma Educativa");
         setLocationRelativeTo(null);
@@ -251,7 +252,7 @@ private void menuAltaProgFormacionActionPerformed(java.awt.event.ActionEvent evt
     }//GEN-LAST:event_menuAltaUsuarioActionPerformed
 
     private void menuConsultaUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuConsultaUsuarioActionPerformed
-        presentacion.InternalConsultaUsuario ventanaConsulta = new presentacion.InternalConsultaUsuario(servidorCentral);
+        presentacion.InternalConsultaUsuario ventanaConsulta = new presentacion.InternalConsultaUsuario(controlUsuario,servidorCentral);
         jDesktopPane1.add(ventanaConsulta);
         ventanaConsulta.setVisible(true);
     }//GEN-LAST:event_menuConsultaUsuarioActionPerformed
