@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import persistencia.ControladorPersistencia;
 
-public class ServidorCentral implements IServidorCentral {
+public class ServidorCentral implements IServidorCentral, AutoCloseable {
 
     private final ControladorPersistencia persistencia;
     private final ControladorCurso controladorCurso;
@@ -18,11 +18,29 @@ public class ServidorCentral implements IServidorCentral {
     private final ControladorInscripcion controladorInscripcion;
 
     public ServidorCentral() {
-        this.persistencia = new ControladorPersistencia();
+        this(new ControladorPersistencia());
+    }
+
+    /** El servidor se hace responsable de cerrar la persistencia recibida. */
+    public ServidorCentral(ControladorPersistencia persistencia) {
+        this.persistencia = java.util.Objects.requireNonNull(persistencia);
         this.controladorCurso = new ControladorCurso(persistencia);
         this.controladorUsuario = new ControladorUsuario(this);
         this.controladorProgramaFormacion = new ControladorProgramaFormacion(persistencia);
         this.controladorInscripcion = new ControladorInscripcion(persistencia);
+    }
+
+    /** Permite que cada aplicación elija su base sin cambiar persistence.xml. */
+    public static ServidorCentral conectarBaseExistente(
+            String url, String usuario, String contrasena) {
+        return new ServidorCentral(
+                ControladorPersistencia.conectarBaseExistente(url, usuario, contrasena));
+    }
+
+    /** Llamar al detener la aplicación, cuando ya no haya operaciones en curso. */
+    @Override
+    public void close() {
+        persistencia.close();
     }
 
     // =========================

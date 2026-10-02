@@ -17,7 +17,7 @@ import logica.*;
  *
  * @author elizeth
  */
-    public class ControladorPersistencia {
+    public class ControladorPersistencia implements AutoCloseable {
 
     private final EntityManagerFactory emf;
 
@@ -27,6 +27,32 @@ import logica.*;
 
     public ControladorPersistencia(EntityManagerFactory emf) {
         this.emf = java.util.Objects.requireNonNull(emf);
+    }
+
+    /** Conecta con una base ya preparada, sin crear ni modificar su esquema. */
+    public static ControladorPersistencia conectarBaseExistente(
+            String url, String usuario, String contrasena) {
+        if (url == null || url.isBlank() || !url.startsWith("jdbc:")) {
+            throw new IllegalArgumentException("Indique una URL JDBC válida para la base de datos.");
+        }
+        if (usuario == null || usuario.isBlank() || contrasena == null) {
+            throw new IllegalArgumentException("Indique el usuario y la contraseña de la base de datos.");
+        }
+        java.util.Map<String, Object> propiedades = java.util.Map.of(
+                "javax.persistence.jdbc.url", url,
+                "javax.persistence.jdbc.user", usuario,
+                "javax.persistence.jdbc.password", contrasena,
+                "javax.persistence.schema-generation.database.action", "none");
+        return new ControladorPersistencia(
+                Persistence.createEntityManagerFactory("edEXTPU", propiedades));
+    }
+
+    /** Libera la fábrica recibida al construir este controlador. */
+    @Override
+    public void close() {
+        if (emf.isOpen()) {
+            emf.close();
+        }
     }
     
     public boolean existeProgramaFormacion(String nombre) {
