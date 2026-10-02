@@ -24,6 +24,17 @@ public class Usuario implements Serializable {
     @Column(name = "CONTRASENA", length = 255)
     private String contrasena;
 
+    @Column(name = "IMAGEN", length = 255)
+    private String imagen;
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
+
     public String getContrasena() {
         return contrasena;
     }

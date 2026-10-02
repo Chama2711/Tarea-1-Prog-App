@@ -55,6 +55,15 @@
       </Group>
       <Group type="102" attributes="0">
         <EmptySpace max="-2" attributes="0" />
+        <Component id="btnImagen" min="-2" max="-2" attributes="0" />
+        <EmptySpace max="-2" attributes="0" />
+        <Component id="lblImagenSeleccionada" min="100" pref="140" max="180" attributes="0" />
+        <EmptySpace max="-2" attributes="0" />
+        <Component id="btnQuitarImagen" min="-2" max="-2" attributes="0" />
+        <EmptySpace max="-2" attributes="0" />
+      </Group>
+      <Group type="102" attributes="0">
+        <EmptySpace max="-2" attributes="0" />
         <Component id="chkDocente" min="-2" max="-2" attributes="0" />
         <EmptySpace max="-2" attributes="0" />
         <Component id="btnAceptar" min="-2" max="-2" attributes="0" />
@@ -112,6 +121,12 @@
         </Group>
         <EmptySpace type="unrelated" max="-2" attributes="0" />
         <Group type="103" groupAlignment="3" attributes="0">
+          <Component id="btnImagen" alignment="3" min="-2" max="-2" attributes="0" />
+          <Component id="lblImagenSeleccionada" alignment="3" min="-2" max="-2" attributes="0" />
+          <Component id="btnQuitarImagen" alignment="3" min="-2" max="-2" attributes="0" />
+        </Group>
+        <EmptySpace type="unrelated" max="-2" attributes="0" />
+        <Group type="103" groupAlignment="3" attributes="0">
           <Component id="chkDocente" alignment="3" min="-2" max="-2" attributes="0" />
           <Component id="btnAceptar" alignment="3" min="-2" max="-2" attributes="0" />
           <Component id="btnCancelar" alignment="3" min="-2" max="-2" attributes="0" />
@@ -122,6 +137,18 @@
   </DimensionLayout>
 </Layout>
   <SubComponents>
+    <Component class="javax.swing.JButton" name="btnImagen">
+      <Properties><Property name="text" type="java.lang.String" value="Elegir imagen (opcional)"/></Properties>
+      <Events><EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnImagenActionPerformed"/></Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnQuitarImagen">
+      <Properties><Property name="text" type="java.lang.String" value="Quitar"/></Properties>
+      <Events><EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnQuitarImagenActionPerformed"/></Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblImagenSeleccionada">
+      <Properties><Property name="text" type="java.lang.String" value="Sin imagen"/></Properties>
+    </Component>
+
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="text" type="java.lang.String" value="Nickname:"/>

@@ -16,6 +16,7 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
      * Creates new form InternalAltaUsuario
      */
     private ControladorUsuario control;
+    private byte[] imagenSeleccionada;
     
     
     
@@ -69,6 +70,14 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
         btnAceptar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         dcNacimiento = new com.toedter.calendar.JDateChooser();
+        btnImagen = new javax.swing.JButton();
+        btnQuitarImagen = new javax.swing.JButton();
+        lblImagenSeleccionada = new javax.swing.JLabel();
+        btnImagen.setText("Elegir imagen (opcional)");
+        btnImagen.addActionListener(this::btnImagenActionPerformed);
+        btnQuitarImagen.setText("Quitar");
+        btnQuitarImagen.addActionListener(this::btnQuitarImagenActionPerformed);
+        lblImagenSeleccionada.setText("Sin imagen");
 
         lblContrasena = new javax.swing.JLabel();
         lblConfirmacion = new javax.swing.JLabel();
@@ -145,6 +154,14 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
                     .addContainerGap())
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
+                    .addComponent(btnImagen)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(lblImagenSeleccionada, 100, 140, 180)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(btnQuitarImagen)
+                    .addContainerGap())
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
                     .addComponent(chkDocente)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(btnAceptar)
@@ -191,6 +208,11 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
                     .addComponent(cmbInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnImagen)
+                    .addComponent(lblImagenSeleccionada)
+                    .addComponent(btnQuitarImagen))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(chkDocente)
                     .addComponent(btnAceptar)
                     .addComponent(btnCancelar))
@@ -199,6 +221,32 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnImagenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImagenActionPerformed
+        javax.swing.JFileChooser selector = new javax.swing.JFileChooser();
+        selector.setDialogTitle("Seleccionar imagen del usuario");
+        selector.setAcceptAllFileFilterUsed(false);
+        selector.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Imágenes JPG y PNG", "jpg", "jpeg", "png"));
+        if (selector.showOpenDialog(this) != javax.swing.JFileChooser.APPROVE_OPTION) return;
+        try {
+            byte[] datos = java.nio.file.Files.readAllBytes(selector.getSelectedFile().toPath());
+            if (javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(datos)) == null) {
+                throw new java.io.IOException("El archivo no es una imagen válida.");
+            }
+            imagenSeleccionada = datos;
+            lblImagenSeleccionada.setText(selector.getSelectedFile().getName());
+            lblImagenSeleccionada.setToolTipText(selector.getSelectedFile().getName());
+        } catch (java.io.IOException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No se pudo leer la imagen: " + e.getMessage(),
+                    "Imagen", javax.swing.JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_btnImagenActionPerformed
+
+    private void btnQuitarImagenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarImagenActionPerformed
+        imagenSeleccionada = null;
+        lblImagenSeleccionada.setText("Sin imagen");
+        lblImagenSeleccionada.setToolTipText(null);
+    }//GEN-LAST:event_btnQuitarImagenActionPerformed
 
     private void cmbInstitutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbInstitutoActionPerformed
         // TODO add your handling code here:
@@ -226,10 +274,10 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
             String instituto = cmbInstituto.getSelectedIndex() > 0
                     ? (String) cmbInstituto.getSelectedItem() : null;
             control.registrarDocente(nickname, correo, nombre, apellido, fechaNac,
-                    instituto, clave, confirmacion);
+                    instituto, clave, confirmacion, imagenSeleccionada);
         } else {
             control.registrarEstudiante(nickname, correo, nombre, apellido, fechaNac,
-                    clave, confirmacion);
+                    clave, confirmacion, imagenSeleccionada);
         }
         javax.swing.JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente.");
         limpiarFormulario();
@@ -265,6 +313,7 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
 
 
     private void limpiarFormulario() {
+    btnQuitarImagenActionPerformed(null);
     txtNickname.setText("");
     txtNombre.setText("");
     txtApellido.setText("");
@@ -280,6 +329,9 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblConfirmacion;
     private javax.swing.JPasswordField txtContrasena;
     private javax.swing.JPasswordField txtConfirmacion;
+    private javax.swing.JButton btnImagen;
+    private javax.swing.JButton btnQuitarImagen;
+    private javax.swing.JLabel lblImagenSeleccionada;
     private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JCheckBox chkDocente;

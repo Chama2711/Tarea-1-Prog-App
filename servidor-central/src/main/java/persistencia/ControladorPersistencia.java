@@ -754,6 +754,33 @@ public List<String> listarEdicionesDocente(String nick) {
     }
 }
 
+public void crearUsuario(Usuario usuario, String nombreInstituto, byte[] imagen) throws Exception {
+    if (imagen == null) {
+        crearUsuario(usuario, nombreInstituto);
+        return;
+    }
+    if (usuario == null) throw new IllegalArgumentException("Faltan los datos del usuario.");
+    ImagenesUsuario archivos = new ImagenesUsuario();
+    String nombre = archivos.guardar(imagen);
+    usuario.setImagen(nombre);
+    try {
+        crearUsuario(usuario, nombreInstituto);
+    } catch (Exception e) {
+        usuario.setImagen(null);
+        try {
+            archivos.eliminar(nombre);
+        } catch (Exception limpieza) {
+            e.addSuppressed(limpieza);
+        }
+        throw e;
+    }
+}
+
+public byte[] obtenerImagenUsuario(String nick) throws java.io.IOException {
+    Usuario usuario = obtenerUsuario(nick);
+    return usuario == null ? null : new ImagenesUsuario().leer(usuario.getImagen());
+}
+
 public List<String> listarProgramasUsuario(String nick) {
     EntityManager em = emf.createEntityManager();
     try {

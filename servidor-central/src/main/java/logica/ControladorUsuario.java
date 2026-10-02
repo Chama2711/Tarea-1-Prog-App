@@ -58,21 +58,31 @@ public boolean existeCorreo(String mail) {
 
     public void registrarEstudiante(String ni, String m, String no, String a,
             LocalDate fn, String clave, String confirmacion) {
+        registrarEstudiante(ni, m, no, a, fn, clave, confirmacion, null);
+    }
+
+    public void registrarEstudiante(String ni, String m, String no, String a,
+            LocalDate fn, String clave, String confirmacion, byte[] imagen) {
         validarDatosAlta(ni, m, no, a, fn, clave, confirmacion);
         Estudiante e = new Estudiante(ni.trim(), m.trim(), no.trim(), a.trim(), fn);
         e.setContrasena(clave);
-        guardar(e);
+        guardar(e, null, imagen);
     }
 
 public void registrarDocente(String ni, String m, String no, String a,
         LocalDate fn, String nombreInstituto, String clave, String confirmacion) {
+    registrarDocente(ni, m, no, a, fn, nombreInstituto, clave, confirmacion, null);
+}
+
+public void registrarDocente(String ni, String m, String no, String a,
+        LocalDate fn, String nombreInstituto, String clave, String confirmacion, byte[] imagen) {
     validarDatosAlta(ni, m, no, a, fn, clave, confirmacion);
     if (nombreInstituto == null || nombreInstituto.isBlank()) {
         throw new IllegalArgumentException("Seleccione el instituto del docente.");
     }
     Docente d = new Docente(ni.trim(), m.trim(), no.trim(), a.trim(), fn);
     d.setContrasena(clave);
-    guardar(d, nombreInstituto);
+    guardar(d, nombreInstituto, imagen);
 }
 
 private void validarContrasena(String clave, String confirmacion) {
@@ -114,12 +124,13 @@ public DTAutenticacion autenticarUsuario(String identificador, String clave) {
 }
 
 private void guardar(Usuario u) {
-    guardar(u, null);
+    guardar(u, null, null);
 }
 
-private void guardar(Usuario u, String nombreInstituto) {
+private void guardar(Usuario u, String nombreInstituto, byte[] imagen) {
     try {
-        servidorCentral.crearUsuario(u, nombreInstituto);
+        if (imagen == null) servidorCentral.crearUsuario(u, nombreInstituto);
+        else servidorCentral.crearUsuario(u, nombreInstituto, imagen);
     } catch (IllegalArgumentException e) {
         throw e;
     } catch (Exception e) {

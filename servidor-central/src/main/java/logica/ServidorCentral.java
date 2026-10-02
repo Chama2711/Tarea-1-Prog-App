@@ -350,6 +350,16 @@ public class ServidorCentral implements IServidorCentral {
     }
 
     @Override
+    public void crearUsuario(Usuario usuario, String nombreInstituto, byte[] imagen) throws Exception {
+        persistencia.crearUsuario(usuario, nombreInstituto, imagen);
+    }
+
+    @Override
+    public byte[] obtenerImagenUsuario(String nick) throws Exception {
+        return persistencia.obtenerImagenUsuario(nick);
+    }
+
+    @Override
     public List<String> listarEdicionesDocente(String nick) {
         return persistencia.listarEdicionesDocente(nick);
     }

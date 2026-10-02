@@ -24,9 +24,6 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         this.control = control;
         this.servidorCentral = servidorCentral;
         
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(280, 160));
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(280, 160));
-        jScrollPaneEdiciones.setPreferredSize(new java.awt.Dimension(280, 160));
 
         cargarUsuariosEnCombo();
 
@@ -64,16 +61,21 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
+        lblImagen = new javax.swing.JLabel("Sin imagen", javax.swing.SwingConstants.CENTER);
+        lblImagen.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         cmbUsuarios = new javax.swing.JComboBox<>();
         txtNombre = new javax.swing.JTextField();
         txtApellido = new javax.swing.JTextField();
         txtMail = new javax.swing.JTextField();
         txtFechaNac = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(280, 160));
         lstCursosEdiciones = new javax.swing.JList<>();
         jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(280, 160));
         lstProgramas = new javax.swing.JList<>();
         jScrollPaneEdiciones = new javax.swing.JScrollPane();
+        jScrollPaneEdiciones.setPreferredSize(new java.awt.Dimension(280, 160));
         lstEdicionesDocente = new javax.swing.JList<>();
         btnSalir = new javax.swing.JButton();
 
@@ -138,6 +140,7 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lblImagen, javax.swing.GroupLayout.Alignment.TRAILING, 120, 120, 120)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -167,6 +170,7 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup().addGap(80).addComponent(lblImagen, 120, 120, 120))
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -194,6 +198,8 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cmbUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbUsuariosActionPerformed
+lblImagen.setIcon(null);
+lblImagen.setText("Sin imagen");
 txtNombre.setText("");
 txtApellido.setText("");
 txtMail.setText("");
@@ -210,6 +216,7 @@ try {
     String nick = cmbUsuarios.getSelectedItem().toString();
     logica.Usuario usuario = control.obtenerUsuarioPorNickname(nick);
     if (usuario == null) throw new IllegalArgumentException("El usuario ya no existe.");
+    mostrarImagen(nick);
     txtNombre.setText(usuario.getNombre());
     txtApellido.setText(usuario.getApellido());
     txtMail.setText(usuario.getMail());
@@ -274,6 +281,22 @@ try {
 }
     }//GEN-LAST:event_lstProgramasMouseClicked
 
+    private void mostrarImagen(String nick) {
+        try {
+            byte[] datos = servidorCentral.obtenerImagenUsuario(nick);
+            if (datos == null) return;
+            java.awt.image.BufferedImage imagen = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(datos));
+            if (imagen == null) throw new java.io.IOException("Imagen no válida");
+            double escala = Math.min(116.0 / imagen.getWidth(), 116.0 / imagen.getHeight());
+            lblImagen.setIcon(new javax.swing.ImageIcon(imagen.getScaledInstance(
+                    Math.max(1, (int) (imagen.getWidth() * escala)),
+                    Math.max(1, (int) (imagen.getHeight() * escala)), java.awt.Image.SCALE_SMOOTH)));
+            lblImagen.setText("");
+        } catch (Exception e) {
+            lblImagen.setText("Imagen no disponible");
+        }
+    }
+
     private void lstEdicionesDocenteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstEdicionesDocenteMouseClicked
         if (evt.getClickCount() != 2 || !jScrollPaneEdiciones.isVisible()
                 || getDesktopPane() == null) return;
@@ -302,6 +325,7 @@ try {
     private javax.swing.JButton btnSalir;
     private javax.swing.JComboBox<String> cmbUsuarios;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel lblImagen;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JList<String> lstCursosEdiciones;
