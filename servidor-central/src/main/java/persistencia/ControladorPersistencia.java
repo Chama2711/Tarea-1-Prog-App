@@ -117,6 +117,18 @@ import logica.*;
             em.close();
         }
     }
+
+    public List<String> listarNombresProgramasCurso(String nombreCurso) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT DISTINCT p.nombre FROM ProgramaFormacion p JOIN p.cursos c "
+                    + "WHERE c.nombre = :nombreCurso ORDER BY p.nombre", String.class)
+                    .setParameter("nombreCurso", nombreCurso).getResultList();
+        } finally {
+            em.close();
+        }
+    }
     
     public List<ProgramaFormacion> obtenerProgramas() {
     EntityManager em = emf.createEntityManager();

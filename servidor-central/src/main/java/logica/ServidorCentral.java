@@ -135,6 +135,14 @@ public class ServidorCentral implements IServidorCentral {
                 duracion, horas, creditos, url, nombresPrevias, nombresCategorias);
     }
 
+    @Override
+    public void altaCurso(String nombreInstituto, String nombre, String descripcion,
+            String duracion, int horas, int creditos, String url, LocalDate fechaAlta,
+            List<String> nombresPrevias, List<String> nombresCategorias) {
+        controladorCurso.altaCurso(nombreInstituto, nombre, descripcion,
+                duracion, horas, creditos, url, fechaAlta, nombresPrevias, nombresCategorias);
+    }
+
     // =========================
     // INSTITUTOS
     // =========================
@@ -257,6 +265,11 @@ public class ServidorCentral implements IServidorCentral {
     @Override
     public List<String> listarNombresProgramas() {
     return persistencia.listarNombresProgramas();
+    }
+
+    @Override
+    public List<String> listarNombresProgramasCurso(String nombreCurso) {
+        return persistencia.listarNombresProgramasCurso(nombreCurso);
     }
 
     @Override

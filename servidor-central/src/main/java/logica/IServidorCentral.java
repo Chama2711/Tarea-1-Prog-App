@@ -68,6 +68,10 @@ public interface IServidorCentral {
     );
 
 
+    void altaCurso(String nombreInstituto, String nombre, String descripcion,
+            String duracion, int horas, int creditos, String url, LocalDate fechaAlta,
+            List<String> nombresPrevias, List<String> nombresCategorias);
+
     // =========================
     // INSTITUTOS
     // =========================
@@ -131,6 +135,7 @@ public interface IServidorCentral {
     List<String> listarNombresCursos();
 
     List<String> listarNombresProgramas();
+    List<String> listarNombresProgramasCurso(String nombreCurso);
 
     List<ProgramaFormacion> obtenerProgramas();
 

@@ -29,6 +29,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         modeloPrevias = new DefaultListModel<>();
         modeloCategorias = new DefaultListModel<>();
         initComponents();
+        FechasFormulario.configurar(dcFechaAlta);
 
         ListaCursosDisponibles.setModel(modeloDisponibles);
         ListaPreviasSeleccionadas.setModel(modeloPrevias);
@@ -85,6 +86,8 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         txtCreditosCurso = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         txtURLCurso = new javax.swing.JTextField();
+        lblFechaAlta = new javax.swing.JLabel();
+        dcFechaAlta = new com.toedter.calendar.JDateChooser();
         jLabel9 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         ListaCursosDisponibles = new javax.swing.JList<>();
@@ -126,6 +129,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         jLabel8.setText("Créditos:");
 
         jLabel5.setText("URL:");
+        lblFechaAlta.setText("Fecha de alta:");
 
         jLabel9.setText("Cursos disponibles");
 
@@ -195,6 +199,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel8)
                                     .addComponent(jLabel5)
+                                    .addComponent(lblFechaAlta)
                                     .addComponent(txtCategorias))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -205,6 +210,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                             .addComponent(txtCantidadHorasCurso)
                             .addComponent(txtDuracionCurso)
                             .addComponent(txtURLCurso)
+                            .addComponent(dcFechaAlta)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(layout.createSequentialGroup()
@@ -258,6 +264,10 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                     .addComponent(jLabel5)
                     .addComponent(txtURLCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblFechaAlta)
+                    .addComponent(dcFechaAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(jLabel10))
@@ -302,6 +312,7 @@ try {
     String url = txtURLCurso.getText().trim();
     int horas = Integer.parseInt(txtCantidadHorasCurso.getText().trim());
     int creditos = Integer.parseInt(txtCreditosCurso.getText().trim());
+    java.time.LocalDate fechaAlta = FechasFormulario.leer(dcFechaAlta, "la fecha de alta");
     List<String> nombresPrevias = new ArrayList<>();
     for (int i = 0; i < modeloPrevias.size(); i++) {
         nombresPrevias.add(modeloPrevias.getElementAt(i));
@@ -310,7 +321,7 @@ try {
         ListaCategorias.getSelectedValuesList();
 
     servidorCentral.altaCurso(nombreInstituto, nombre, descripcion, duracion,
-            horas, creditos, url, nombresPrevias, categoriasSeleccionadas);
+            horas, creditos, url, fechaAlta, nombresPrevias, categoriasSeleccionadas);
     
     JOptionPane.showMessageDialog(this, "Curso creado correctamente.");
     dispose();
@@ -345,6 +356,8 @@ modeloPrevias.removeElement(seleccionado);
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private com.toedter.calendar.JDateChooser dcFechaAlta;
+    private javax.swing.JLabel lblFechaAlta;
     private javax.swing.JComboBox<String> ComboInstitutoCurso;
     private javax.swing.JList<String> ListaCategorias;
     private javax.swing.JList<String> ListaCursosDisponibles;
