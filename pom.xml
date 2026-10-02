@@ -20,6 +20,7 @@
     <modules>
         <module>servidor-central</module>
         <module>estacion-trabajo</module>
+        <module>servidor-web</module>
     </modules>
 
 </project>
