@@ -166,21 +166,21 @@ public class CargarDatosPrueba {
                     );
 
             // =========================
-            EL.setContrasena("123");
-            CO.setContrasena("123");
-            RO.setContrasena("123");
-            CH.setContrasena("123");
-            JW.setContrasena("123");
-            WE.setContrasena("123");
-            WW.setContrasena("123");
-            OK.setContrasena("123");
-            EW.setContrasena("123");
-            GH.setContrasena("123");
-            TC.setContrasena("123");
-            DR.setContrasena("123");
-            PS.setContrasena("123");
-            BS.setContrasena("123");
-            AG.setContrasena("123");
+            EL.setContrasena("eleven11123");
+            CO.setContrasena("costas123");
+            RO.setContrasena("roro123");
+            CH.setContrasena("chechi123");
+            JW.setContrasena("jeffw123");
+            WE.setContrasena("weiss123");
+            WW.setContrasena("heisenberg123");
+            OK.setContrasena("benkenobi123");
+            EW.setContrasena("waston123");
+            GH.setContrasena("house123");
+            TC.setContrasena("timmy123");
+            DR.setContrasena("danny123");
+            PS.setContrasena("phils123");
+            BS.setContrasena("bruces123");
+            AG.setContrasena("adri123");
 
             // INSTITUTOS
             // =========================

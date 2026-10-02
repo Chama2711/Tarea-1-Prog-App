@@ -30,10 +30,6 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         FechasFormulario.configurar(dcInicio);
         FechasFormulario.configurar(dcFin);
         
-        for (String nick : servidorCentral.listarNicknamesDocentes()) {
-            modeloDocentesDispo.addElement(nick);
-        }
-        
         ListaDocentesDisponibles.setModel(modeloDocentesDispo);
         ListaDocentesSeleccionados.setModel(modeloDocentesSelec);
         
@@ -49,12 +45,17 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
 
     private void cargarCursosDelInstituto() {
         ComboCurso.removeAllItems();
+        modeloDocentesDispo.clear();
+        modeloDocentesSelec.clear();
         nombresCursosActuales = new ArrayList<>();
         String nombreInstituto = (String) ComboInstituto.getSelectedItem();
         if (nombreInstituto == null) {
             return;
         }
         try {
+            for (String nick : servidorCentral.listarNicknamesDocentesPorInstituto(nombreInstituto)) {
+                modeloDocentesDispo.addElement(nick);
+            }
             nombresCursosActuales = servidorCentral.listarNombresCursosPorInstituto(nombreInstituto);
             for (String nombre : nombresCursosActuales) {
                 String nombreVisible = nombre.length() > 35
@@ -64,7 +65,7 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         } catch (RuntimeException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this,
-                    "No se pudieron cargar los cursos del instituto.",
+                    "No se pudieron cargar los cursos o docentes del instituto.",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }

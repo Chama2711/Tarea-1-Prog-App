@@ -211,6 +211,11 @@ public class ServidorCentral implements IServidorCentral {
         return controladorCurso.listarNicknamesDocentes();
     }
 
+    @Override
+    public List<String> listarNicknamesDocentesPorInstituto(String nombreInstituto) {
+        return persistencia.listarNicknamesDocentesPorInstituto(nombreInstituto);
+    }
+
    @Override
    public void inscriboAEdicionCurso(
         Estudiante estudiante,

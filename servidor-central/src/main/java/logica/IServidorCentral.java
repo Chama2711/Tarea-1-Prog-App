@@ -96,6 +96,7 @@ public interface IServidorCentral {
     List<Curso> obtenerCursosDeInstituto(Long institutoId);
 
     List<String> listarNicknamesDocentes();
+    List<String> listarNicknamesDocentesPorInstituto(String nombreInstituto);
 
     void altaEdicionCurso(
             String nombreInstituto,

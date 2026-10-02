@@ -121,6 +121,9 @@ public class ControladorCurso {
             throw new IllegalArgumentException(
                     "Complete nombre, descripción, duración y URL.");
         }
+        if (horas < 0 || creditos < 0) {
+            throw new IllegalArgumentException("Horas y créditos no pueden ser negativos.");
+        }
         if (nombresCategorias == null || nombresCategorias.isEmpty()) {
             throw new IllegalArgumentException("Seleccione al menos una categoría.");
         }

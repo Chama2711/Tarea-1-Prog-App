@@ -375,6 +375,9 @@ public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
             || edicion.getNombre() == null || fechaInscripcion == null) {
         throw new IllegalArgumentException("Seleccione estudiante, edición y fecha.");
     }
+    if (fechaInscripcion.isAfter(LocalDate.now())) {
+        throw new IllegalArgumentException("La fecha de inscripción no puede ser futura.");
+    }
     EntityManager em = emf.createEntityManager();
     try {
         em.getTransaction().begin();
@@ -386,6 +389,11 @@ public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
             throw new IllegalArgumentException("El estudiante o la edición ya no existen.");
         }
         if (!edicionBD.esVigente()) throw new IllegalArgumentException("La edición ya no está vigente.");
+        if (fechaInscripcion.isBefore(edicionBD.getFechaInicio())
+                || fechaInscripcion.isAfter(edicionBD.getFechaFin())) {
+            throw new IllegalArgumentException(
+                    "La fecha de inscripción debe estar entre el inicio y el fin de la edición, inclusive.");
+        }
         Long repetidas = em.createQuery(
                 "SELECT COUNT(i) FROM Estudiante e JOIN e.inscripciones i "
                 + "WHERE e.nick = :nick AND i.edicion.nombre = :edicion", Long.class)
@@ -629,14 +637,35 @@ public void altaEdicionCurso(Curso curso, EdicionCurso edicion) {
                 "SELECT COUNT(e) FROM EdicionCurso e WHERE LOWER(e.nombre) = LOWER(:nombre)",
                 Long.class).setParameter("nombre", edicion.getNombre()).getSingleResult();
         if (cantidad > 0) throw new IllegalArgumentException("Ya existe ese nombre de edición.");
-        Curso cursoBD = em.find(Curso.class, curso.getId());
+        Curso cursoBD = em.find(Curso.class, curso.getId(),
+                javax.persistence.LockModeType.PESSIMISTIC_WRITE);
         if (cursoBD == null) throw new IllegalArgumentException("El curso ya no existe.");
+        Long superpuestas = em.createQuery(
+                "SELECT COUNT(e) FROM EdicionCurso e WHERE e.curso.id = :cursoId "
+                + "AND e.fechaInicio <= :fin AND e.fechaFin >= :inicio", Long.class)
+                .setParameter("cursoId", cursoBD.getId())
+                .setParameter("inicio", edicion.getFechaInicio())
+                .setParameter("fin", edicion.getFechaFin()).getSingleResult();
+        if (superpuestas > 0) {
+            throw new IllegalArgumentException(
+                    "Las fechas se superponen con otra edición del mismo curso. "
+                    + "Elija un período sin días en común.");
+        }
         java.util.Set<Docente> docentes = new java.util.HashSet<>();
         if (edicion.getDocentes() == null) throw new IllegalArgumentException("La colección de docentes no puede ser nula.");
         for (Docente docente : edicion.getDocentes()) {
             Docente existente = docente == null || docente.getNick() == null
                     ? null : em.find(Docente.class, docente.getNick());
             if (existente == null) throw new IllegalArgumentException("Un docente seleccionado ya no existe.");
+            Long pertenece = em.createQuery(
+                    "SELECT COUNT(d) FROM Docente d JOIN d.institutos i "
+                    + "WHERE d.nick = :nick AND i.id = :institutoId", Long.class)
+                    .setParameter("nick", existente.getNick())
+                    .setParameter("institutoId", cursoBD.getInstituto().getId()).getSingleResult();
+            if (pertenece == 0) {
+                throw new IllegalArgumentException("El docente " + existente.getNick()
+                        + " no pertenece al instituto del curso.");
+            }
             docentes.add(existente);
         }
         edicion.setCurso(cursoBD);
@@ -652,6 +681,18 @@ public void altaEdicionCurso(Curso curso, EdicionCurso edicion) {
     }
 }
    
+public List<String> listarNicknamesDocentesPorInstituto(String nombreInstituto) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        return em.createQuery(
+                "SELECT DISTINCT d.nick FROM Docente d JOIN d.institutos i "
+                + "WHERE i.nombre = :nombre ORDER BY d.nick", String.class)
+                .setParameter("nombre", nombreInstituto).getResultList();
+    } finally {
+        em.close();
+    }
+}
+
 public Docente buscarDocentePorNick(String nick) {
     EntityManager em = emf.createEntityManager();
     try {
