@@ -109,7 +109,7 @@ private void cargarProgramas() {
             
        for (Curso c : programa.getCursos().values()) {
        // Se agrega cada curso como hoja/nodo del árbol
-        nodoCursos.add(new DefaultMutableTreeNode(c.getNombre()));
+        nodoCursos.add(new DefaultMutableTreeNode(c));
         }
        
         } else {
@@ -149,7 +149,7 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
 
             if (pf.getCursos() != null && !pf.getCursos().isEmpty()) {
                 for (Curso c : pf.getCursos().values()) {
-                    nodoCursos.add(new DefaultMutableTreeNode(c.getNombre()));
+                    nodoCursos.add(new DefaultMutableTreeNode(c));
                 }
             } else {
                 nodoCursos.add(new DefaultMutableTreeNode("Sin cursos asignados"));
@@ -213,6 +213,12 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
         btCerrar.addActionListener(this::btCerrarActionPerformed);
 
         jScrollPane3.setViewportView(jtreeProgramasCursos);
+        jtreeProgramasCursos.setToolTipText("Doble clic en un curso para consultar sus datos");
+        jtreeProgramasCursos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jtreeProgramasCursosMouseClicked(evt);
+            }
+        });
 
         txtDescripcion.setColumns(20);
         txtDescripcion.setRows(5);
@@ -280,6 +286,24 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jtreeProgramasCursosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtreeProgramasCursosMouseClicked
+        if (evt.getClickCount() != 2 || getDesktopPane() == null) return;
+        javax.swing.tree.TreePath ruta = jtreeProgramasCursos.getPathForLocation(evt.getX(), evt.getY());
+        if (ruta == null) return;
+        DefaultMutableTreeNode nodo = (DefaultMutableTreeNode) ruta.getLastPathComponent();
+        if (!(nodo.getUserObject() instanceof Curso curso)) return;
+        try {
+            ConsultaCurso ventana = new ConsultaCurso(servidorCentral);
+            ventana.seleccionarCurso(curso.getNombre());
+            getDesktopPane().add(ventana);
+            ventana.setVisible(true);
+            ventana.toFront();
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo abrir el curso: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jtreeProgramasCursosMouseClicked
 
     private void btCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCerrarActionPerformed
         this.dispose(); 
