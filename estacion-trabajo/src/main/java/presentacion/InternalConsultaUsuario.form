@@ -105,6 +105,9 @@
           <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo"><EtchedBorder/></Border>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="lblImagenMouseClicked"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>

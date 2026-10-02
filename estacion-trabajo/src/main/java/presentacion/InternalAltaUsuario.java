@@ -17,12 +17,16 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
      */
     private ControladorUsuario control;
     private byte[] imagenSeleccionada;
+    private char caracterContrasena;
+    private char caracterConfirmacion;
     
     
     
     
     public InternalAltaUsuario(ControladorUsuario control) {
     initComponents();
+    caracterContrasena = txtContrasena.getEchoChar();
+    caracterConfirmacion = txtConfirmacion.getEchoChar();
     FechasFormulario.configurar(dcNacimiento);
     this.control = control;
 
@@ -83,6 +87,8 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
         lblConfirmacion = new javax.swing.JLabel();
         txtContrasena = new javax.swing.JPasswordField();
         txtConfirmacion = new javax.swing.JPasswordField();
+        chkMostrarContrasena = new javax.swing.JCheckBox("Mostrar contraseñas");
+        chkMostrarContrasena.addActionListener(this::chkMostrarContrasenaActionPerformed);
         lblContrasena.setText("Contraseña:");
         lblConfirmacion.setText("Confirmar contraseña:");
 
@@ -130,6 +136,10 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(jLabel2)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(chkMostrarContrasena)
+                    .addContainerGap())
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -199,6 +209,8 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
                     .addComponent(lblConfirmacion)
                     .addComponent(txtConfirmacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(chkMostrarContrasena)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(dcNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -221,6 +233,11 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void chkMostrarContrasenaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkMostrarContrasenaActionPerformed
+        txtContrasena.setEchoChar(chkMostrarContrasena.isSelected() ? (char) 0 : caracterContrasena);
+        txtConfirmacion.setEchoChar(chkMostrarContrasena.isSelected() ? (char) 0 : caracterConfirmacion);
+    }//GEN-LAST:event_chkMostrarContrasenaActionPerformed
 
     private void btnImagenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImagenActionPerformed
         javax.swing.JFileChooser selector = new javax.swing.JFileChooser();
@@ -313,6 +330,8 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
 
 
     private void limpiarFormulario() {
+    chkMostrarContrasena.setSelected(false);
+    chkMostrarContrasenaActionPerformed(null);
     btnQuitarImagenActionPerformed(null);
     txtNickname.setText("");
     txtNombre.setText("");
@@ -329,6 +348,7 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblConfirmacion;
     private javax.swing.JPasswordField txtContrasena;
     private javax.swing.JPasswordField txtConfirmacion;
+    private javax.swing.JCheckBox chkMostrarContrasena;
     private javax.swing.JButton btnImagen;
     private javax.swing.JButton btnQuitarImagen;
     private javax.swing.JLabel lblImagenSeleccionada;

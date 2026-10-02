@@ -18,6 +18,7 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
 
     private ControladorUsuario control;
     private IServidorCentral servidorCentral;
+    private java.awt.image.BufferedImage imagenUsuario;
     
     public InternalConsultaUsuario(ControladorUsuario control,IServidorCentral servidorCentral) {
         initComponents();
@@ -63,6 +64,11 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         jLabel1 = new javax.swing.JLabel();
         lblImagen = new javax.swing.JLabel("Sin imagen", javax.swing.SwingConstants.CENTER);
         lblImagen.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        lblImagen.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblImagenMouseClicked(evt);
+            }
+        });
         cmbUsuarios = new javax.swing.JComboBox<>();
         txtNombre = new javax.swing.JTextField();
         txtApellido = new javax.swing.JTextField();
@@ -198,6 +204,9 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cmbUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbUsuariosActionPerformed
+imagenUsuario = null;
+lblImagen.setToolTipText(null);
+lblImagen.setCursor(java.awt.Cursor.getDefaultCursor());
 lblImagen.setIcon(null);
 lblImagen.setText("Sin imagen");
 txtNombre.setText("");
@@ -292,10 +301,28 @@ try {
                     Math.max(1, (int) (imagen.getWidth() * escala)),
                     Math.max(1, (int) (imagen.getHeight() * escala)), java.awt.Image.SCALE_SMOOTH)));
             lblImagen.setText("");
+            imagenUsuario = imagen;
+            lblImagen.setToolTipText("Doble clic para ver la imagen más grande");
+            lblImagen.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
         } catch (Exception e) {
             lblImagen.setText("Imagen no disponible");
         }
     }
+
+    private void lblImagenMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblImagenMouseClicked
+        if (evt.getClickCount() != 2 || imagenUsuario == null
+                || cmbUsuarios.getSelectedItem() == null || getDesktopPane() == null) return;
+        javax.swing.JInternalFrame ventana = new javax.swing.JInternalFrame(
+                "Imagen de " + cmbUsuarios.getSelectedItem(), true, true, true, true);
+        javax.swing.JLabel imagen = new javax.swing.JLabel(new javax.swing.ImageIcon(imagenUsuario));
+        imagen.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ventana.add(new javax.swing.JScrollPane(imagen));
+        ventana.setSize(Math.min(750, Math.max(300, imagenUsuario.getWidth() + 40)),
+                Math.min(600, Math.max(250, imagenUsuario.getHeight() + 60)));
+        getDesktopPane().add(ventana);
+        ventana.setVisible(true);
+        ventana.toFront();
+    }//GEN-LAST:event_lblImagenMouseClicked
 
     private void lstEdicionesDocenteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstEdicionesDocenteMouseClicked
         if (evt.getClickCount() != 2 || !jScrollPaneEdiciones.isVisible()
