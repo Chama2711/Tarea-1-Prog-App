@@ -189,6 +189,10 @@ public void modificarUsuario(String nickname, String nuevoNombre,
         return servidorCentral.listarProgramasUsuario(nick);
     }
 
+    public List<String> listarEdicionesDocente(String nick) {
+        return servidorCentral.listarEdicionesDocente(nick);
+    }
+
 public List<String> obtenerNombresInstitutos() {
         // Le pedimos los objetos completos a la persistencia
         List<Instituto> institutos = servidorCentral.obtenerInstitutos();

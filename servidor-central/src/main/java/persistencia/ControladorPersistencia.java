@@ -742,6 +742,18 @@ public List<String> listarCursosOEdicionesUsuario(String nick) {
     }
 }
 
+public List<String> listarEdicionesDocente(String nick) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        return em.createQuery(
+                "SELECT DISTINCT e.nombre FROM EdicionCurso e JOIN e.docentes d "
+                + "WHERE d.nick = :nick ORDER BY e.nombre", String.class)
+                .setParameter("nick", nick).getResultList();
+    } finally {
+        em.close();
+    }
+}
+
 public List<String> listarProgramasUsuario(String nick) {
     EntityManager em = emf.createEntityManager();
     try {

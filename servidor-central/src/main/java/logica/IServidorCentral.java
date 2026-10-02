@@ -169,6 +169,8 @@ public interface IServidorCentral {
 
     List<String> listarCursosOEdicionesUsuario(String nick);
 
+    List<String> listarEdicionesDocente(String nick);
+
     List<String> listarProgramasUsuario(String nick);
     
     

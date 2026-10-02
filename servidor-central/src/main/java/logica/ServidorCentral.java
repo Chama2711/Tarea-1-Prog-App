@@ -348,6 +348,11 @@ public class ServidorCentral implements IServidorCentral {
     public List<String> listarProgramasUsuario(String nick) {
     return persistencia.listarProgramasUsuario(nick);
     }
+
+    @Override
+    public List<String> listarEdicionesDocente(String nick) {
+        return persistencia.listarEdicionesDocente(nick);
+    }
     
     
     

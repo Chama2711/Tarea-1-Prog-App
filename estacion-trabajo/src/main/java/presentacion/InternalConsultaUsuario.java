@@ -7,7 +7,6 @@ package presentacion;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.ArrayList;
 import logica.ControladorUsuario;
 import logica.IServidorCentral;
 
@@ -27,11 +26,12 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         
         jScrollPane1.setPreferredSize(new java.awt.Dimension(280, 160));
         jScrollPane2.setPreferredSize(new java.awt.Dimension(280, 160));
+        jScrollPaneEdiciones.setPreferredSize(new java.awt.Dimension(280, 160));
 
         cargarUsuariosEnCombo();
 
         setTitle("Consulta de usuario");
-        setSize(700, 500);
+        setSize(980, 500);
         setMinimumSize(new java.awt.Dimension(700, 500));
         setResizable(true);
     }
@@ -73,6 +73,8 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         lstCursosEdiciones = new javax.swing.JList<>();
         jScrollPane2 = new javax.swing.JScrollPane();
         lstProgramas = new javax.swing.JList<>();
+        jScrollPaneEdiciones = new javax.swing.JScrollPane();
+        lstEdicionesDocente = new javax.swing.JList<>();
         btnSalir = new javax.swing.JButton();
 
         setClosable(true);
@@ -118,6 +120,17 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         });
         jScrollPane2.setViewportView(lstProgramas);
 
+        lstEdicionesDocente.setModel(new javax.swing.DefaultListModel<>());
+        lstEdicionesDocente.setBorder(javax.swing.BorderFactory.createTitledBorder("Ediciones en las que participa"));
+        lstEdicionesDocente.setToolTipText("Doble clic en una edición para consultar sus datos");
+        lstEdicionesDocente.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lstEdicionesDocenteMouseClicked(evt);
+            }
+        });
+        jScrollPaneEdiciones.setViewportView(lstEdicionesDocente);
+        jScrollPaneEdiciones.setVisible(false);
+
         btnSalir.setText("Salir");
         btnSalir.addActionListener(this::btnSalirActionPerformed);
 
@@ -143,8 +156,10 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
                         .addGap(23, 23, 23)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(117, Short.MAX_VALUE))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPaneEdiciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(12, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(btnSalir)
@@ -168,7 +183,8 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
                 .addGap(34, 34, 34)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPaneEdiciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(9, 9, 9)
                 .addComponent(btnSalir)
                 .addContainerGap(15, Short.MAX_VALUE))
@@ -186,6 +202,9 @@ javax.swing.DefaultListModel<String> academico = new javax.swing.DefaultListMode
 javax.swing.DefaultListModel<String> programas = new javax.swing.DefaultListModel<>();
 lstCursosEdiciones.setModel(academico);
 lstProgramas.setModel(programas);
+javax.swing.DefaultListModel<String> ediciones = new javax.swing.DefaultListModel<>();
+lstEdicionesDocente.setModel(ediciones);
+jScrollPaneEdiciones.setVisible(false);
 if (cmbUsuarios.getSelectedItem() == null) return;
 try {
     String nick = cmbUsuarios.getSelectedItem().toString();
@@ -197,6 +216,10 @@ try {
     txtFechaNac.setText(usuario.getFechaNacimiento() == null ? "No registrada"
             : usuario.getFechaNacimiento().format(DateTimeFormatter.ofPattern("dd/MM/uuuu")));
     boolean docente = usuario instanceof logica.Docente;
+    jScrollPaneEdiciones.setVisible(docente);
+    if (docente) {
+        for (String nombre : control.listarEdicionesDocente(nick)) ediciones.addElement(nombre);
+    }
     lstCursosEdiciones.setBorder(javax.swing.BorderFactory.createTitledBorder(
             docente ? "Cursos del docente" : "Ediciones inscriptas"));
     lstProgramas.setBorder(javax.swing.BorderFactory.createTitledBorder(
@@ -251,6 +274,23 @@ try {
 }
     }//GEN-LAST:event_lstProgramasMouseClicked
 
+    private void lstEdicionesDocenteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstEdicionesDocenteMouseClicked
+        if (evt.getClickCount() != 2 || !jScrollPaneEdiciones.isVisible()
+                || getDesktopPane() == null) return;
+        int indice = lstEdicionesDocente.locationToIndex(evt.getPoint());
+        if (indice < 0 || !lstEdicionesDocente.getCellBounds(indice, indice).contains(evt.getPoint())) return;
+        try {
+            ConsultaEdicionDeCursoInternalFrame ventana = new ConsultaEdicionDeCursoInternalFrame(servidorCentral);
+            ventana.seleccionarEdicion(lstEdicionesDocente.getModel().getElementAt(indice));
+            getDesktopPane().add(ventana);
+            ventana.setVisible(true);
+            ventana.toFront();
+        } catch (RuntimeException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No se pudo abrir la edición: "
+                    + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_lstEdicionesDocenteMouseClicked
+
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         // TODO add your handling code here:
 
@@ -266,6 +306,8 @@ try {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JList<String> lstCursosEdiciones;
     private javax.swing.JList<String> lstProgramas;
+    private javax.swing.JScrollPane jScrollPaneEdiciones;
+    private javax.swing.JList<String> lstEdicionesDocente;
     private javax.swing.JTextField txtApellido;
     private javax.swing.JTextField txtFechaNac;
     private javax.swing.JTextField txtMail;
