@@ -154,6 +154,11 @@
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
         <Component class="javax.swing.JTree" name="jtreeProgramasCursos">
+          <Properties>
+            <Property name="toolTipText" type="java.lang.String" value="Doble clic en un curso para consultar sus datos"/>
+          </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jtreeProgramasCursosMouseClicked"/>
           </Events>
         </Component>
       </SubComponents>
