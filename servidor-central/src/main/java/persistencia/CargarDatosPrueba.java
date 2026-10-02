@@ -26,6 +26,31 @@ public class CargarDatosPrueba {
 
             em.getTransaction().begin();
 
+            cargar(em);
+
+            //em.persist();
+
+
+
+            em.getTransaction().commit();
+
+        } catch (Exception e) {
+
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+
+            e.printStackTrace();
+
+        } finally {
+
+            em.close();
+            emf.close();
+        }
+    }
+    
+    /** Misma colección de datos para las cargas de escritorio y web. */
+    static void cargar(EntityManager em) {
             // =========================
             // USUARIOS
             // =========================
@@ -930,27 +955,8 @@ em.persist(P2);
 em.persist(P3);
 
 
-            //em.persist();
-
-
-
-            em.getTransaction().commit();
-
-        } catch (Exception e) {
-
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-
-        } finally {
-
-            em.close();
-            emf.close();
-        }
     }
-    
+
     private static LocalDate fecha(String f) {
     return LocalDate.parse(
             f,
