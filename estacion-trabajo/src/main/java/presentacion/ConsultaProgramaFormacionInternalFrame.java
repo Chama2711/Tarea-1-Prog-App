@@ -134,6 +134,7 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
     lstCategorias.setModel(new DefaultListModel<>());
     txtFechaInicio.setText("");
     txtFechaFin.setText("");
+    txtFechaAlta.setText("");
     txtDescripcion.setText("");
     rootNode = new DefaultMutableTreeNode("Seleccione un Programa");
     treeModel.setRoot(rootNode);
@@ -151,6 +152,7 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
             // Reemplaza por el nombre exacto de tus campos (ej. jTextField1 / txtFechaInicio)
             txtFechaInicio.setText(pf.getFechaInicio() != null ? pf.getFechaInicio().toString() : "");
             txtFechaFin.setText(pf.getFechaFin() != null ? pf.getFechaFin().toString() : "");
+            txtFechaAlta.setText(pf.getFechaAlta() != null ? pf.getFechaAlta().toString() : "No registrada");
             txtDescripcion.setText(pf.getDescripcion() != null ? pf.getDescripcion() : "");
 
             // Crear los nodos del JTree
@@ -193,8 +195,11 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
         cbProgramas = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        txtFechaInicio = new javax.swing.JTextField();
-        txtFechaFin = new javax.swing.JTextField();
+        txtFechaInicio = new javax.swing.JTextField(10);
+        txtFechaFin = new javax.swing.JTextField(10);
+        lblFechaAlta = new javax.swing.JLabel("Fecha de alta:");
+        txtFechaAlta = new javax.swing.JTextField(10);
+        txtFechaAlta.setEditable(false);
         btCerrar = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         jtreeProgramasCursos = new javax.swing.JTree();
@@ -266,6 +271,10 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
                                 .addComponent(jScrollPane3)
                                 .addComponent(scrollCategorias)))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(lblFechaAlta)
+                            .addGap(18, 18, 18)
+                            .addComponent(txtFechaAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(jLabel2)
                             .addGap(18, 18, 18)
                             .addComponent(txtFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -288,6 +297,10 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
                     .addComponent(jLabel4)
                     .addComponent(txtFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFechaAlta)
+                    .addComponent(txtFechaAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
@@ -333,6 +346,8 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel lblFechaAlta;
+    private javax.swing.JTextField txtFechaAlta;
     private javax.swing.JLabel lblCategorias;
     private javax.swing.JScrollPane scrollCategorias;
     private javax.swing.JList<String> lstCategorias;

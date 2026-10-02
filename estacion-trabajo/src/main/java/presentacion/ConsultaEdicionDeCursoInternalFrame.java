@@ -28,6 +28,7 @@ private void limpiarDetalleEdicion() {
     fechaInicioTXT.setText("");
     fechaFinTXT.setText("");
     fechaPublicacionTXT.setText("");
+    lstDocentes.setModel(new javax.swing.DefaultListModel<>());
 }
 
 public void seleccionarEdicion(String nombre) {
@@ -141,6 +142,11 @@ public void seleccionarEdicion(String nombre) {
 
         EdicionCurso edicion = (EdicionCurso) dato;
 
+        javax.swing.DefaultListModel<String> docentes = new javax.swing.DefaultListModel<>();
+        edicion.getDocentes().stream()
+                .sorted(java.util.Comparator.comparing(logica.Docente::getNick))
+                .forEach(docente -> docentes.addElement(docente.toString()));
+        lstDocentes.setModel(docentes);
         nombreTXT.setText(edicion.getNombre());
 
         cupoTXT.setText(
@@ -194,6 +200,11 @@ public void seleccionarEdicion(String nombre) {
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         arbolEdiciones = new javax.swing.JTree();
+        lblDocentes = new javax.swing.JLabel("Docentes participantes:");
+        scrollDocentes = new javax.swing.JScrollPane();
+        lstDocentes = new javax.swing.JList<>();
+        lstDocentes.setModel(new javax.swing.DefaultListModel<>());
+        scrollDocentes.setViewportView(lstDocentes);
 
         list1.addActionListener(this::list1ActionPerformed);
 
@@ -261,6 +272,8 @@ public void seleccionarEdicion(String nombre) {
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(nombreTXT))
+                    .addComponent(lblDocentes)
+                    .addComponent(scrollDocentes)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
@@ -300,7 +313,11 @@ public void seleccionarEdicion(String nombre) {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(fechaPublicacionTXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(56, 56, 56)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblDocentes)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scrollDocentes, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
                 .addComponent(jButton1)
                 .addGap(33, 33, 33))
         );
@@ -325,6 +342,9 @@ public void seleccionarEdicion(String nombre) {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel lblDocentes;
+    private javax.swing.JScrollPane scrollDocentes;
+    private javax.swing.JList<String> lstDocentes;
     private javax.swing.JTree arbolEdiciones;
     private javax.swing.JTextField cupoTXT;
     private javax.swing.JTextField fechaFinTXT;

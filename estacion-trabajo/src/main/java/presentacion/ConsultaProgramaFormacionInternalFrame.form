@@ -50,6 +50,11 @@
                           </Group>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
+                          <Component id="lblFechaAlta" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="txtFechaAlta" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
                           <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="txtFechaInicio" min="-2" max="-2" attributes="0"/>
@@ -80,6 +85,11 @@
                   <Component id="txtFechaFin" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblFechaAlta" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtFechaAlta" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                   <Component id="scrollPane1" min="-2" pref="121" max="-2" attributes="0"/>
@@ -104,6 +114,15 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
+    <Component class="javax.swing.JLabel" name="lblFechaAlta">
+      <Properties><Property name="text" type="java.lang.String" value="Fecha de alta:"/></Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtFechaAlta">
+      <Properties>
+        <Property name="columns" type="int" value="10"/>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
+    </Component>
     <Component class="javax.swing.JLabel" name="lblCategorias">
       <Properties><Property name="text" type="java.lang.String" value="Categorías:"/></Properties>
     </Component>
@@ -159,8 +178,10 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtFechaInicio">
+      <Properties><Property name="columns" type="int" value="10"/></Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtFechaFin">
+      <Properties><Property name="columns" type="int" value="10"/></Properties>
     </Component>
     <Component class="javax.swing.JButton" name="btCerrar">
       <Properties>

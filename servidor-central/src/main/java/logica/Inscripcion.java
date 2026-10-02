@@ -10,6 +10,9 @@ import javax.persistence.Id;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Column;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
 
 /**
  *
@@ -32,6 +35,24 @@ public class Inscripcion {
     private Long id;
     
     private LocalDate fechaInscripcion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ESTADO", nullable = false, length = 20)
+    private EstadoInscripcion estado = EstadoInscripcion.INSCRIPTO;
+
+    public EstadoInscripcion getEstado() {
+        return estado;
+    }
+
+    public void cambiarEstado(EstadoInscripcion nuevoEstado) {
+        if (nuevoEstado != EstadoInscripcion.ACEPTADA && nuevoEstado != EstadoInscripcion.RECHAZADA) {
+            throw new IllegalArgumentException("Seleccione Aceptada o Rechazada.");
+        }
+        if (estado != EstadoInscripcion.INSCRIPTO) {
+            throw new IllegalStateException("La inscripción ya fue resuelta.");
+        }
+        estado = nuevoEstado;
+    }
     
     public LocalDate getFechaInscripcion(){
         return fechaInscripcion;
