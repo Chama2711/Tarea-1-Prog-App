@@ -55,6 +55,8 @@ public interface IServidorCentral {
 
     List<String> listarNombresCategorias();
 
+    List<String> listarNombresCategoriasPrograma(String nombrePrograma);
+
     void altaCurso(
             String nombreInstituto,
             String nombre,

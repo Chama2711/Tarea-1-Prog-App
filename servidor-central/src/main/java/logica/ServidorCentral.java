@@ -121,6 +121,11 @@ public class ServidorCentral implements IServidorCentral {
     }
 
     @Override
+    public List<String> listarNombresCategoriasPrograma(String nombrePrograma) {
+        return persistencia.listarNombresCategoriasPrograma(nombrePrograma);
+    }
+
+    @Override
     public void altaCurso(
             String nombreInstituto,
             String nombre,

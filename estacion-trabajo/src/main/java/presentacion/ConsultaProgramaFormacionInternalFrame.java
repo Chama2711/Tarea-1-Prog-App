@@ -131,12 +131,23 @@ private void cargarProgramas() {
 
     private void mostrarDetallesPrograma() {
 String seleccionado = (String) cbProgramas.getSelectedItem();
+    lstCategorias.setModel(new DefaultListModel<>());
+    txtFechaInicio.setText("");
+    txtFechaFin.setText("");
+    txtDescripcion.setText("");
+    rootNode = new DefaultMutableTreeNode("Seleccione un Programa");
+    treeModel.setRoot(rootNode);
     if (seleccionado == null || seleccionado.isEmpty()) return;
 
     try {
         ProgramaFormacion pf = servidorCentral.obtenerDetallePrograma(seleccionado);
 
         if (pf != null) {
+            DefaultListModel<String> categorias = new DefaultListModel<>();
+            for (String nombre : servidorCentral.listarNombresCategoriasPrograma(seleccionado)) {
+                categorias.addElement(nombre);
+            }
+            lstCategorias.setModel(categorias);
             // Reemplaza por el nombre exacto de tus campos (ej. jTextField1 / txtFechaInicio)
             txtFechaInicio.setText(pf.getFechaInicio() != null ? pf.getFechaInicio().toString() : "");
             txtFechaFin.setText(pf.getFechaFin() != null ? pf.getFechaFin().toString() : "");
@@ -190,6 +201,11 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
         scrollPane1 = new java.awt.ScrollPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtDescripcion = new javax.swing.JTextArea();
+        lblCategorias = new javax.swing.JLabel("Categorías:");
+        scrollCategorias = new javax.swing.JScrollPane();
+        lstCategorias = new javax.swing.JList<>();
+        lstCategorias.setModel(new DefaultListModel<>());
+        scrollCategorias.setViewportView(lstCategorias);
 
         setClosable(true);
         setIconifiable(true);
@@ -242,11 +258,13 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel5)
-                                .addComponent(jLabel6))
+                                .addComponent(jLabel6)
+                                .addComponent(lblCategorias))
                             .addGap(18, 18, 18)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(scrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jScrollPane3)))
+                                .addComponent(jScrollPane3)
+                                .addComponent(scrollCategorias)))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(jLabel2)
                             .addGap(18, 18, 18)
@@ -279,9 +297,13 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
                     .addGroup(layout.createSequentialGroup()
                         .addGap(17, 17, 17)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblCategorias)
+                    .addComponent(scrollCategorias, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
                 .addComponent(btCerrar)
-                .addContainerGap(92, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
@@ -311,6 +333,9 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel lblCategorias;
+    private javax.swing.JScrollPane scrollCategorias;
+    private javax.swing.JList<String> lstCategorias;
     private javax.swing.JButton btCerrar;
     private javax.swing.JComboBox<String> cbProgramas;
     private javax.swing.JLabel jLabel1;

@@ -879,6 +879,19 @@ public List<Categoria> listarCategorias() {
         em.close();
     }
 }
+
+public List<String> listarNombresCategoriasPrograma(String nombrePrograma) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        return em.createQuery(
+                "SELECT DISTINCT categoria.nombre FROM ProgramaFormacion p "
+                + "JOIN p.cursos curso JOIN curso.categorias categoria "
+                + "WHERE p.nombre = :nombre ORDER BY categoria.nombre", String.class)
+                .setParameter("nombre", nombrePrograma).getResultList();
+    } finally {
+        em.close();
+    }
+}
 public void agregarCategoriaACurso(String nombreCurso, String nombreCategoria)
         throws Exception {
 
