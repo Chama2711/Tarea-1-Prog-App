@@ -416,13 +416,6 @@ public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
         }
         int cupo = edicionBD.getCupo();
         if (cupo < -1) throw new IllegalArgumentException("La edición tiene un cupo inválido; revíselo antes de inscribir.");
-        if (cupo != -1) {
-            Long ocupadas = em.createQuery(
-                    "SELECT COUNT(i) FROM Estudiante e JOIN e.inscripciones i "
-                    + "WHERE i.edicion.nombre = :edicion", Long.class)
-                    .setParameter("edicion", edicionBD.getNombre()).getSingleResult();
-            if (ocupadas >= cupo) throw new IllegalArgumentException("No quedan plazas disponibles.");
-        }
         Inscripcion nueva = new Inscripcion(fechaInscripcion, edicionBD);
         em.persist(nueva);
         estudianteBD.agregoInscripcion(nueva);
@@ -436,6 +429,98 @@ public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
     }
 }
     
+    public void seleccionarEstudiantes(String nickDocente, String nombreEdicion,
+            java.util.Map<Long, EstadoInscripcion> decisiones) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            EdicionCurso edicion = em.find(EdicionCurso.class, nombreEdicion,
+                    javax.persistence.LockModeType.PESSIMISTIC_WRITE);
+            if (edicion == null) throw new IllegalArgumentException("La edición ya no existe.");
+            edicion.validarDocenteParticipante(nickDocente);
+            if (!edicion.esVigente()) throw new IllegalArgumentException("La edición ya no está vigente.");
+            if (decisiones == null || decisiones.isEmpty()) {
+                throw new IllegalArgumentException("Seleccione al menos una inscripción.");
+            }
+            long aceptadas = em.createQuery(
+                    "SELECT COUNT(i) FROM Inscripcion i WHERE i.edicion.nombre = :edicion AND i.estado = :estado",
+                    Long.class).setParameter("edicion", nombreEdicion)
+                    .setParameter("estado", EstadoInscripcion.ACEPTADA).getSingleResult();
+            java.util.Map<Inscripcion, EstadoInscripcion> seleccion = new java.util.LinkedHashMap<>();
+            for (var decision : decisiones.entrySet()) {
+                if (decision.getKey() == null) throw new IllegalArgumentException("Indique la inscripción.");
+                Inscripcion inscripcion = em.find(Inscripcion.class, decision.getKey(),
+                        javax.persistence.LockModeType.PESSIMISTIC_WRITE);
+                edicion.validarSeleccion(inscripcion, decision.getValue(), aceptadas);
+                seleccion.put(inscripcion, decision.getValue());
+                if (decision.getValue() == EstadoInscripcion.ACEPTADA) aceptadas++;
+            }
+            // Valida todas las decisiones antes de modificar la primera inscripción.
+            for (var decision : seleccion.entrySet()) {
+                decision.getKey().cambiarEstado(decision.getValue());
+            }
+            em.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (e instanceof IllegalArgumentException || e instanceof IllegalStateException) throw e;
+            throw new IllegalStateException("No se pudo guardar la selección de estudiantes.", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    private static final String CONSULTA_INSCRIPCIONES =
+            "SELECT new logica.DTInscripcion(i.id, e.nick, CONCAT(CONCAT(e.nombre, ' '), e.apellido), "
+            + "i.edicion.nombre, i.edicion.curso.nombre, i.fechaInscripcion, i.estado) "
+            + "FROM Estudiante e JOIN e.inscripciones i ";
+
+    private EdicionCurso validarDocenteEdicion(EntityManager em, String nickDocente, String nombreEdicion) {
+        EdicionCurso edicion = em.find(EdicionCurso.class, nombreEdicion);
+        if (edicion == null) throw new IllegalArgumentException("La edición ya no existe.");
+        edicion.validarDocenteParticipante(nickDocente);
+        return edicion;
+    }
+
+    public List<DTInscripcion> listarInscripcionesEdicion(String nickDocente, String nombreEdicion) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            EdicionCurso edicion = validarDocenteEdicion(em, nickDocente, nombreEdicion);
+            if (!edicion.esVigente()) throw new IllegalArgumentException("La edición ya no está vigente.");
+            return em.createQuery(CONSULTA_INSCRIPCIONES
+                    + "WHERE i.edicion.nombre = :edicion ORDER BY i.fechaInscripcion, e.nick, i.id",
+                    DTInscripcion.class).setParameter("edicion", nombreEdicion).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            validarDocenteEdicion(em, nickDocente, nombreEdicion);
+            return em.createQuery(CONSULTA_INSCRIPCIONES
+                    + "WHERE i.edicion.nombre = :edicion AND i.estado = :estado ORDER BY i.fechaInscripcion, e.nick, i.id",
+                    DTInscripcion.class).setParameter("edicion", nombreEdicion)
+                    .setParameter("estado", EstadoInscripcion.ACEPTADA).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (em.find(Estudiante.class, nickEstudiante) == null) {
+                throw new IllegalArgumentException("El estudiante ya no existe.");
+            }
+            return em.createQuery(CONSULTA_INSCRIPCIONES
+                    + "WHERE e.nick = :nick AND i.edicion IS NOT NULL ORDER BY i.fechaInscripcion, i.edicion.nombre, i.id",
+                    DTInscripcion.class).setParameter("nick", nickEstudiante).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
     ////////
     public ArrayList<Curso> listarCursosPorInstituto(String nombreInstituto)
     {

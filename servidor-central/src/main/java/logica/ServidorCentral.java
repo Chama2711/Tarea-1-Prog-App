@@ -15,12 +15,14 @@ public class ServidorCentral implements IServidorCentral {
     private final ControladorCurso controladorCurso;
     private final ControladorUsuario controladorUsuario;
     private final ControladorProgramaFormacion controladorProgramaFormacion;
+    private final ControladorInscripcion controladorInscripcion;
 
     public ServidorCentral() {
         this.persistencia = new ControladorPersistencia();
         this.controladorCurso = new ControladorCurso(persistencia);
         this.controladorUsuario = new ControladorUsuario(this);
         this.controladorProgramaFormacion = new ControladorProgramaFormacion(persistencia);
+        this.controladorInscripcion = new ControladorInscripcion(persistencia);
     }
 
     // =========================
@@ -149,6 +151,27 @@ public class ServidorCentral implements IServidorCentral {
     }
 
     // =========================
+
+    @Override
+    public void seleccionarEstudiantes(String nickDocente, String nombreEdicion,
+            java.util.Map<Long, EstadoInscripcion> decisiones) {
+        controladorInscripcion.seleccionarEstudiantes(nickDocente, nombreEdicion, decisiones);
+    }
+
+    @Override
+    public List<DTInscripcion> listarInscripcionesEdicion(String nickDocente, String nombreEdicion) {
+        return controladorInscripcion.listarInscripcionesEdicion(nickDocente, nombreEdicion);
+    }
+
+    @Override
+    public List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion) {
+        return controladorInscripcion.listarAceptadosEdicion(nickDocente, nombreEdicion);
+    }
+
+    @Override
+    public List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante) {
+        return controladorInscripcion.listarResultadosInscripciones(nickEstudiante);
+    }
     // INSTITUTOS
     // =========================
 

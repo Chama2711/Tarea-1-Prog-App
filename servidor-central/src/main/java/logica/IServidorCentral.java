@@ -116,6 +116,15 @@ public interface IServidorCentral {
 
     List<Estudiante> obtenerEstudiantes();
 
+    void seleccionarEstudiantes(String nickDocente, String nombreEdicion,
+            java.util.Map<Long, EstadoInscripcion> decisiones);
+
+    List<DTInscripcion> listarInscripcionesEdicion(String nickDocente, String nombreEdicion);
+
+    List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion);
+
+    List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante);
+
     void inscriboAEdicionCurso(
         Estudiante estudiante,
         EdicionCurso edicion,
