@@ -57,40 +57,49 @@ public boolean existeCorreo(String mail) {
 }
 
     public void registrarEstudiante(String ni, String m, String no, String a,
-            LocalDate fn, char[] clave, char[] confirmacion) {
+            LocalDate fn, String clave, String confirmacion) {
         validarDatosAlta(ni, m, no, a, fn, clave, confirmacion);
         Estudiante e = new Estudiante(ni.trim(), m.trim(), no.trim(), a.trim(), fn);
-        e.setHashContrasena(Contrasenas.generarHash(clave));
+        e.setContrasena(clave);
         guardar(e);
     }
 
 public void registrarDocente(String ni, String m, String no, String a,
-        LocalDate fn, String nombreInstituto, char[] clave, char[] confirmacion) {
+        LocalDate fn, String nombreInstituto, String clave, String confirmacion) {
     validarDatosAlta(ni, m, no, a, fn, clave, confirmacion);
     if (nombreInstituto == null || nombreInstituto.isBlank()) {
         throw new IllegalArgumentException("Seleccione el instituto del docente.");
     }
     Docente d = new Docente(ni.trim(), m.trim(), no.trim(), a.trim(), fn);
-    d.setHashContrasena(Contrasenas.generarHash(clave));
+    d.setContrasena(clave);
     guardar(d, nombreInstituto);
 }
 
+private void validarContrasena(String clave, String confirmacion) {
+    if (clave == null || clave.isEmpty()) {
+        throw new IllegalArgumentException("Ingrese una contraseña.");
+    }
+    if (!clave.equals(confirmacion)) {
+        throw new IllegalArgumentException("Las contraseñas no coinciden.");
+    }
+}
+
 private void validarDatosAlta(String nick, String mail, String nombre,
-        String apellido, LocalDate fecha, char[] clave, char[] confirmacion) {
+        String apellido, LocalDate fecha, String clave, String confirmacion) {
     if (nick == null || nick.isBlank() || mail == null || mail.isBlank()
             || nombre == null || nombre.isBlank() || apellido == null || apellido.isBlank()
             || fecha == null || fecha.isAfter(LocalDate.now())) {
         throw new IllegalArgumentException("Revise los datos obligatorios y la fecha de nacimiento.");
     }
-    Contrasenas.validar(clave, confirmacion);
+    validarContrasena(clave, confirmacion);
 }
 
-public DTAutenticacion autenticarUsuario(String identificador, char[] clave) {
-    if (identificador == null || identificador.isBlank() || clave == null || clave.length == 0) {
+public DTAutenticacion autenticarUsuario(String identificador, String clave) {
+    if (identificador == null || identificador.isBlank() || clave == null || clave.isEmpty()) {
         throw new IllegalArgumentException("Nickname, correo o contraseña incorrectos.");
     }
     Usuario usuario = servidorCentral.obtenerUsuarioPorIdentificador(identificador.trim());
-    if (usuario == null || !Contrasenas.verificar(clave, usuario.getHashContrasena())) {
+    if (usuario == null || !clave.equals(usuario.getContrasena())) {
         throw new IllegalArgumentException("Nickname, correo o contraseña incorrectos.");
     }
     DTAutenticacion.Rol rol;
@@ -144,16 +153,16 @@ public void modificarUsuario(String nickname, String nuevoNombre,
 
 public void modificarUsuario(String nickname, String nuevoNombre,
         String nuevoApellido, LocalDate nuevaFechaNac,
-        char[] nuevaClave, char[] confirmacion) {
+        String nuevaClave, String confirmacion) {
     if (nuevoNombre == null || nuevoNombre.isBlank() || nuevoApellido == null
             || nuevoApellido.isBlank() || nuevaFechaNac == null
             || nuevaFechaNac.isAfter(LocalDate.now())) {
         throw new IllegalArgumentException("Revise nombre, apellido y fecha de nacimiento.");
     }
-    boolean cambiarClave = (nuevaClave != null && nuevaClave.length > 0)
-            || (confirmacion != null && confirmacion.length > 0);
+    boolean cambiarClave = (nuevaClave != null && !nuevaClave.isEmpty())
+            || (confirmacion != null && !confirmacion.isEmpty());
     if (cambiarClave) {
-        Contrasenas.validar(nuevaClave, confirmacion);
+        validarContrasena(nuevaClave, confirmacion);
     }
     try {
         Usuario u = servidorCentral.obtenerUsuario(nickname);
@@ -162,7 +171,7 @@ public void modificarUsuario(String nickname, String nuevoNombre,
         u.setApellido(nuevoApellido.trim());
         u.setFechaNacimiento(nuevaFechaNac);
         if (cambiarClave) {
-            u.setHashContrasena(Contrasenas.generarHash(nuevaClave));
+            u.setContrasena(nuevaClave);
         }
         servidorCentral.editarUsuario(u);
     } catch (IllegalArgumentException e) {

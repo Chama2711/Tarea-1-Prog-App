@@ -39,23 +39,23 @@ public class AutenticacionTest {
     public void registroYAccesoPorNicknameOCorreo() {
         AtomicReference<Usuario> cuenta = new AtomicReference<>();
         ControladorUsuario control = controlador(cuenta);
-        char[] clave = " clave de prueba ".toCharArray();
+        String clave = " clave de prueba ";
         control.registrarEstudiante(" alumno ", " alumno@example.test ",
                 " Ana ", " Perez ", NACIMIENTO, clave, clave);
-        assertNotEquals(new String(clave), cuenta.get().getHashContrasena());
+        assertEquals(clave, cuenta.get().getContrasena());
         assertEquals("Ana", control.autenticarUsuario("alumno", clave).getNombre());
         assertEquals("alumno", control.autenticarUsuario(" ALUMNO@EXAMPLE.TEST ", clave).getNick());
         assertEquals(DTAutenticacion.Rol.ESTUDIANTE,
                 control.autenticarUsuario("alumno", clave).getRol());
         assertThrows(IllegalArgumentException.class,
-                () -> control.autenticarUsuario("alumno", "clave de prueba".toCharArray()));
+                () -> control.autenticarUsuario("alumno", "clave de prueba"));
     }
 
     @Test
     public void registroDocenteDevuelveSuRol() {
         AtomicReference<Usuario> cuenta = new AtomicReference<>();
         ControladorUsuario control = controlador(cuenta);
-        char[] clave = "prueba-docente".toCharArray();
+        String clave = "prueba-docente";
         control.registrarDocente("docente", "docente@example.test", "Dora", "Perez",
                 NACIMIENTO, "Instituto", clave, clave);
         assertEquals(DTAutenticacion.Rol.DOCENTE,
@@ -66,11 +66,11 @@ public class AutenticacionTest {
     public void altaInvalidaNoGuardaUsuarios() {
         AtomicReference<Usuario> cuenta = new AtomicReference<>();
         ControladorUsuario control = controlador(cuenta);
-        char[] clave = "prueba".toCharArray();
+        String clave = "prueba";
         assertThrows(IllegalArgumentException.class, () -> control.registrarEstudiante(
-                "nick", "a@example.test", "Ana", "Perez", NACIMIENTO, clave, "otra".toCharArray()));
+                "nick", "a@example.test", "Ana", "Perez", NACIMIENTO, clave, "otra"));
         assertThrows(IllegalArgumentException.class, () -> control.registrarEstudiante(
-                "nick", "a@example.test", "Ana", "Perez", NACIMIENTO, new char[0], new char[0]));
+                "nick", "a@example.test", "Ana", "Perez", NACIMIENTO, "", ""));
         assertThrows(IllegalArgumentException.class, () -> control.registrarEstudiante(
                 "nick", "a@example.test", "Ana", "Perez", LocalDate.now().plusDays(1), clave, clave));
         assertThrows(IllegalArgumentException.class, () -> control.registrarDocente(
@@ -79,56 +79,51 @@ public class AutenticacionTest {
     }
 
     @Test
-    public void credencialesInvalidasYUsuarioAntiguoNoAutentican() {
+    public void credencialesInvalidasNoAutentican() {
         AtomicReference<Usuario> cuenta = new AtomicReference<>(
                 new Estudiante("antiguo", "a@example.test", "Ana", "Perez", NACIMIENTO));
         ControladorUsuario control = controlador(cuenta);
         String mensaje = assertThrows(IllegalArgumentException.class,
-                () -> control.autenticarUsuario("antiguo", "prueba".toCharArray())).getMessage();
+                () -> control.autenticarUsuario("antiguo", "prueba")).getMessage();
         assertEquals(mensaje, assertThrows(IllegalArgumentException.class,
-                () -> control.autenticarUsuario("desconocido", "prueba".toCharArray())).getMessage());
+                () -> control.autenticarUsuario("desconocido", "prueba")).getMessage());
         assertThrows(IllegalArgumentException.class, () -> control.autenticarUsuario(null, null));
-        assertThrows(IllegalArgumentException.class, () -> control.autenticarUsuario("antiguo", new char[0]));
+        assertThrows(IllegalArgumentException.class, () -> control.autenticarUsuario("antiguo", ""));
     }
 
     @Test
-    public void seAsignaClaveAlUsuarioAnteriorYSeConservaAlEditarPerfil() {
+    public void cambioDeClaveYEdicionDePerfilConservanLaContrasena() {
         AtomicReference<Usuario> cuenta = new AtomicReference<>(
                 new Estudiante("antiguo", "a@example.test", "Ana", "Perez", NACIMIENTO));
         ControladorUsuario control = controlador(cuenta);
-        char[] clave = "nueva clave".toCharArray();
+        String clave = "nueva clave";
         control.modificarUsuario("antiguo", "Ana", "Perez", NACIMIENTO, clave, clave);
         assertEquals("antiguo", control.autenticarUsuario("antiguo", clave).getNick());
-        String hash = cuenta.get().getHashContrasena();
-        control.modificarUsuario("antiguo", "Ana Maria", "Perez", NACIMIENTO, new char[0], new char[0]);
-        assertEquals(hash, cuenta.get().getHashContrasena());
+        String contrasena = cuenta.get().getContrasena();
+        control.modificarUsuario("antiguo", "Ana Maria", "Perez", NACIMIENTO, "", "");
+        assertEquals(contrasena, cuenta.get().getContrasena());
         assertEquals("Ana Maria", control.autenticarUsuario("antiguo", clave).getNombre());
         assertThrows(IllegalArgumentException.class, () -> control.modificarUsuario(
-                "antiguo", "Ana", "Perez", NACIMIENTO, "otra".toCharArray(), clave));
-        assertEquals(hash, cuenta.get().getHashContrasena());
+                "antiguo", "Ana", "Perez", NACIMIENTO, "otra", clave));
+        assertEquals(contrasena, cuenta.get().getContrasena());
     }
 
     @Test
     public void rechazaTiposQueNoSonEstudianteODocente() {
         Usuario base = new Usuario("base", "base@example.test", "Ana", "Perez", NACIMIENTO);
-        base.setHashContrasena(Contrasenas.generarHash("prueba".toCharArray()));
+        base.setContrasena("prueba");
         ControladorUsuario control = controlador(new AtomicReference<>(base));
         assertThrows(IllegalArgumentException.class,
-                () -> control.autenticarUsuario("base", "prueba".toCharArray()));
+                () -> control.autenticarUsuario("base", "prueba"));
     }
 
     @Test
-    public void hashUsaSalesDiferentesYRechazaDatosDañados() {
-        char[] clave = "prueba".toCharArray();
-        String hash = Contrasenas.generarHash(clave);
-        assertNotEquals(hash, Contrasenas.generarHash(clave));
-        assertTrue(Contrasenas.verificar(clave, hash));
-        assertFalse(Contrasenas.verificar("otra".toCharArray(), hash));
-        assertFalse(Contrasenas.verificar(clave, null));
-        assertFalse(Contrasenas.verificar(null, hash));
-        assertFalse(Contrasenas.verificar(clave, "pbkdf2-sha256$600000$???$???"));
-        assertFalse(Contrasenas.verificar(clave, "texto sin hash"));
-        assertFalse(Contrasenas.verificar(clave, "pbkdf2-sha256$600000$YQ==$YQ=="));
-        assertThrows(IllegalArgumentException.class, () -> Contrasenas.generarHash("   ".toCharArray()));
+    public void permiteUnaContrasenaDeUnSoloCaracter() {
+        AtomicReference<Usuario> cuenta = new AtomicReference<>();
+        ControladorUsuario control = controlador(cuenta);
+        control.registrarEstudiante("alumno", "a@example.test", "Ana", "Perez",
+                NACIMIENTO, "1", "1");
+        assertEquals("1", cuenta.get().getContrasena());
+        assertEquals("alumno", control.autenticarUsuario("alumno", "1").getNick());
     }
 }

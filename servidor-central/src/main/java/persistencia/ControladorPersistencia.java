@@ -240,7 +240,7 @@ public void editarUsuario(Usuario usuario) throws Exception {
         actual.setNombre(usuario.getNombre());
         actual.setApellido(usuario.getApellido());
         actual.setFechaNacimiento(usuario.getFechaNacimiento());
-        actual.setHashContrasena(usuario.getHashContrasena());
+        actual.setContrasena(usuario.getContrasena());
         em.getTransaction().commit();
     } catch (Exception e) {
         if (em.getTransaction().isActive()) em.getTransaction().rollback();

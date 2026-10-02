@@ -212,8 +212,8 @@ if (cmbUsuarios.getSelectedItem() == null) {
     javax.swing.JOptionPane.showMessageDialog(this, "Seleccione un usuario primero.");
     return;
 }
-char[] clave = txtContrasena.getPassword();
-char[] confirmacion = txtConfirmacion.getPassword();
+String clave = new String(txtContrasena.getPassword());
+String confirmacion = new String(txtConfirmacion.getPassword());
 try {
     String nick = cmbUsuarios.getSelectedItem().toString();
     String nombre = txtNombre.getText().trim();
@@ -229,8 +229,6 @@ try {
     javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(),
             "No se guardaron los cambios", javax.swing.JOptionPane.ERROR_MESSAGE);
 } finally {
-    java.util.Arrays.fill(clave, '\0');
-    java.util.Arrays.fill(confirmacion, '\0');
     txtContrasena.setText("");
     txtConfirmacion.setText("");
 }

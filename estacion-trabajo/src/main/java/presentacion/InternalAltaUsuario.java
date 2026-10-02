@@ -214,8 +214,8 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
         
-    char[] clave = txtContrasena.getPassword();
-    char[] confirmacion = txtConfirmacion.getPassword();
+    String clave = new String(txtContrasena.getPassword());
+    String confirmacion = new String(txtConfirmacion.getPassword());
     try {
         String nickname = txtNickname.getText().trim();
         String nombre = txtNombre.getText().trim();
@@ -241,8 +241,6 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
         javax.swing.JOptionPane.showMessageDialog(this, "No se pudo registrar el usuario.",
                 "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
     } finally {
-        java.util.Arrays.fill(clave, '\0');
-        java.util.Arrays.fill(confirmacion, '\0');
         txtContrasena.setText("");
         txtConfirmacion.setText("");
     }

@@ -166,6 +166,22 @@ public class CargarDatosPrueba {
                     );
 
             // =========================
+            EL.setContrasena("123");
+            CO.setContrasena("123");
+            RO.setContrasena("123");
+            CH.setContrasena("123");
+            JW.setContrasena("123");
+            WE.setContrasena("123");
+            WW.setContrasena("123");
+            OK.setContrasena("123");
+            EW.setContrasena("123");
+            GH.setContrasena("123");
+            TC.setContrasena("123");
+            DR.setContrasena("123");
+            PS.setContrasena("123");
+            BS.setContrasena("123");
+            AG.setContrasena("123");
+
             // INSTITUTOS
             // =========================
 

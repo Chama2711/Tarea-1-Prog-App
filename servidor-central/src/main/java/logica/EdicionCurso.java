@@ -104,8 +104,8 @@ public class EdicionCurso {
     public boolean esVigente() {
     LocalDate fechaActual = LocalDate.now();
 
-        return fechaActual.isAfter(fechaInicio) &&
-            fechaActual.isBefore(fechaFin);
+        return !fechaActual.isBefore(fechaInicio) &&
+            !fechaActual.isAfter(fechaFin);
         
     }
     

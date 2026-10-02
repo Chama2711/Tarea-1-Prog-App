@@ -290,20 +290,20 @@ public class ServidorCentral implements IServidorCentral {
     }
 
     @Override
-    public DTAutenticacion autenticarUsuario(String identificador, char[] clave) {
+    public DTAutenticacion autenticarUsuario(String identificador, String clave) {
         return controladorUsuario.autenticarUsuario(identificador, clave);
     }
 
     @Override
     public void registrarEstudiante(String nick, String mail, String nombre, String apellido,
-            LocalDate fechaNacimiento, char[] clave, char[] confirmacion) {
+            LocalDate fechaNacimiento, String clave, String confirmacion) {
         controladorUsuario.registrarEstudiante(nick, mail, nombre, apellido,
                 fechaNacimiento, clave, confirmacion);
     }
 
     @Override
     public void registrarDocente(String nick, String mail, String nombre, String apellido,
-            LocalDate fechaNacimiento, String instituto, char[] clave, char[] confirmacion) {
+            LocalDate fechaNacimiento, String instituto, String clave, String confirmacion) {
         controladorUsuario.registrarDocente(nick, mail, nombre, apellido,
                 fechaNacimiento, instituto, clave, confirmacion);
     }
