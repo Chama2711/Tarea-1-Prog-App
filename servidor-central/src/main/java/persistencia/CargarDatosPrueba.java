@@ -26,6 +26,31 @@ public class CargarDatosPrueba {
 
             em.getTransaction().begin();
 
+            cargar(em);
+
+            //em.persist();
+
+
+
+            em.getTransaction().commit();
+
+        } catch (Exception e) {
+
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+
+            e.printStackTrace();
+
+        } finally {
+
+            em.close();
+            emf.close();
+        }
+    }
+    
+    /** Misma colección de datos para las cargas de escritorio y web. */
+    static void cargar(EntityManager em) {
             // =========================
             // USUARIOS
             // =========================
@@ -166,6 +191,22 @@ public class CargarDatosPrueba {
                     );
 
             // =========================
+            EL.setContrasena("eleven11123");
+            CO.setContrasena("costas123");
+            RO.setContrasena("roro123");
+            CH.setContrasena("chechi123");
+            JW.setContrasena("jeffw123");
+            WE.setContrasena("weiss123");
+            WW.setContrasena("heisenberg123");
+            OK.setContrasena("benkenobi123");
+            EW.setContrasena("waston123");
+            GH.setContrasena("house123");
+            TC.setContrasena("timmy123");
+            DR.setContrasena("danny123");
+            PS.setContrasena("phils123");
+            BS.setContrasena("bruces123");
+            AG.setContrasena("adri123");
+
             // INSTITUTOS
             // =========================
 
@@ -914,27 +955,8 @@ em.persist(P2);
 em.persist(P3);
 
 
-            //em.persist();
-
-
-
-            em.getTransaction().commit();
-
-        } catch (Exception e) {
-
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-
-        } finally {
-
-            em.close();
-            emf.close();
-        }
     }
-    
+
     private static LocalDate fecha(String f) {
     return LocalDate.parse(
             f,

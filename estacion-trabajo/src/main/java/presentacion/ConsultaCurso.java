@@ -37,6 +37,7 @@ private void limpiarDetalleCurso() {
     
     ListaPreviasCurso.setModel(new DefaultListModel<>());
     ListaEdiciones.setModel(new DefaultListModel<>());
+    ListaProgramas.setModel(new DefaultListModel<>());
     ListaCategoriasCurso.setModel(new DefaultListModel<>());
 }
     /**
@@ -91,6 +92,9 @@ private void limpiarDetalleCurso() {
         lblCategorias = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         ListaCategoriasCurso = new javax.swing.JList<>();
+        lblProgramas = new javax.swing.JLabel();
+        scrollProgramas = new javax.swing.JScrollPane();
+        ListaProgramas = new javax.swing.JList<>();
 
         setClosable(true);
         setIconifiable(true);
@@ -150,6 +154,20 @@ private void limpiarDetalleCurso() {
         ComboCursoConsulta.addActionListener(this::ComboCursoConsultaActionPerformed);
 
         jScrollPane2.setViewportView(ListaEdiciones);
+        ListaEdiciones.setToolTipText("Doble clic para consultar la edición");
+        ListaEdiciones.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ListaEdicionesMouseClicked(evt);
+            }
+        });
+        lblProgramas.setText("Programas:");
+        ListaProgramas.setToolTipText("Doble clic para consultar el programa");
+        ListaProgramas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ListaProgramasMouseClicked(evt);
+            }
+        });
+        scrollProgramas.setViewportView(ListaProgramas);
 
         jLabel13.setText("Ediciones:");
 
@@ -182,6 +200,7 @@ private void limpiarDetalleCurso() {
                             .addComponent(jLabel11)
                             .addComponent(jLabel2)
                             .addComponent(jLabel12)
+                            .addComponent(lblProgramas)
                             .addComponent(jLabel13))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -193,6 +212,7 @@ private void limpiarDetalleCurso() {
                             .addComponent(txtFechaCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
                             .addComponent(txturlCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(scrollProgramas)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
                             .addComponent(btnSalir, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(ComboInstitutoConsulta, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -247,13 +267,17 @@ private void limpiarDetalleCurso() {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel13))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblProgramas)
+                    .addComponent(scrollProgramas, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addComponent(lblCategorias))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
                 .addComponent(btnSalir)
                 .addGap(24, 24, 24))
@@ -282,6 +306,10 @@ try {
     DefaultListModel<String> ediciones = new DefaultListModel<>();
     for (EdicionCurso edicion : servidorCentral.listarEdicionesCurso(curso)) ediciones.addElement(edicion.getNombre());
     DefaultListModel<String> categorias = new DefaultListModel<>();
+    DefaultListModel<String> programas = new DefaultListModel<>();
+    for (String programa : servidorCentral.listarNombresProgramasCurso(nombreCurso)) {
+        programas.addElement(programa);
+    }
     for (Categoria categoria : curso.getCategorias()) {
     categorias.addElement(categoria.getNombre());
     }
@@ -294,6 +322,7 @@ try {
     txturlCurso.setText(curso.getUrl());
     ListaPreviasCurso.setModel(previas);
     ListaEdiciones.setModel(ediciones);
+    ListaProgramas.setModel(programas);
     ListaCategoriasCurso.setModel(categorias);
 } catch (RuntimeException e) {
     e.printStackTrace();
@@ -322,7 +351,42 @@ try {
     }//GEN-LAST:event_ComboInstitutoConsultaActionPerformed
 
 
+    private void ListaEdicionesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaEdicionesMouseClicked
+        if (evt.getClickCount() != 2 || ListaEdiciones.getSelectedValue() == null
+                || getDesktopPane() == null) return;
+        try {
+            ConsultaEdicionDeCursoInternalFrame ventana =
+                    new ConsultaEdicionDeCursoInternalFrame(servidorCentral);
+            ventana.seleccionarEdicion(ListaEdiciones.getSelectedValue());
+            abrirConsulta(ventana);
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo abrir la edición: " + e.getMessage());
+        }
+    }//GEN-LAST:event_ListaEdicionesMouseClicked
+
+    private void ListaProgramasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaProgramasMouseClicked
+        if (evt.getClickCount() != 2 || ListaProgramas.getSelectedValue() == null
+                || getDesktopPane() == null) return;
+        try {
+            ConsultaProgramaFormacionInternalFrame ventana =
+                    new ConsultaProgramaFormacionInternalFrame(servidorCentral);
+            ventana.seleccionarPrograma(ListaProgramas.getSelectedValue());
+            abrirConsulta(ventana);
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo abrir el programa: " + e.getMessage());
+        }
+    }//GEN-LAST:event_ListaProgramasMouseClicked
+
+    private void abrirConsulta(javax.swing.JInternalFrame ventana) {
+        getDesktopPane().add(ventana);
+        ventana.setVisible(true);
+        ventana.toFront();
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JList<String> ListaProgramas;
+    private javax.swing.JLabel lblProgramas;
+    private javax.swing.JScrollPane scrollProgramas;
     private javax.swing.JComboBox<String> ComboCursoConsulta;
     private javax.swing.JComboBox<String> ComboInstitutoConsulta;
     private javax.swing.JList<String> ListaCategoriasCurso;

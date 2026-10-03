@@ -55,6 +55,8 @@ public interface IServidorCentral {
 
     List<String> listarNombresCategorias();
 
+    List<String> listarNombresCategoriasPrograma(String nombrePrograma);
+
     void altaCurso(
             String nombreInstituto,
             String nombre,
@@ -67,6 +69,10 @@ public interface IServidorCentral {
             List<String> nombresCategorias
     );
 
+
+    void altaCurso(String nombreInstituto, String nombre, String descripcion,
+            String duracion, int horas, int creditos, String url, LocalDate fechaAlta,
+            List<String> nombresPrevias, List<String> nombresCategorias);
 
     // =========================
     // INSTITUTOS
@@ -96,6 +102,7 @@ public interface IServidorCentral {
     List<Curso> obtenerCursosDeInstituto(Long institutoId);
 
     List<String> listarNicknamesDocentes();
+    List<String> listarNicknamesDocentesPorInstituto(String nombreInstituto);
 
     void altaEdicionCurso(
             String nombreInstituto,
@@ -109,6 +116,15 @@ public interface IServidorCentral {
 
     List<Estudiante> obtenerEstudiantes();
 
+    void seleccionarEstudiantes(String nickDocente, String nombreEdicion,
+            java.util.Map<Long, EstadoInscripcion> decisiones);
+
+    List<DTInscripcion> listarInscripcionesEdicion(String nickDocente, String nombreEdicion);
+
+    List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion);
+
+    List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante);
+
     void inscriboAEdicionCurso(
         Estudiante estudiante,
         EdicionCurso edicion,
@@ -119,7 +135,8 @@ public interface IServidorCentral {
     //  PROGRAMAS DE FORMACIÓN 
     //=========================
 
-    void altaProgramaFormacion(ProgramaFormacion programa);
+    void altaProgramaFormacion(String nombre, String descripcion,
+            LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta);
 
     void agregarCursoAPrograma(
         String nombrePrograma,
@@ -129,6 +146,7 @@ public interface IServidorCentral {
     List<String> listarNombresCursos();
 
     List<String> listarNombresProgramas();
+    List<String> listarNombresProgramasCurso(String nombreCurso);
 
     List<ProgramaFormacion> obtenerProgramas();
 
@@ -142,6 +160,17 @@ public interface IServidorCentral {
 
     Usuario obtenerUsuario(String nickname);
 
+    Usuario obtenerUsuarioPorIdentificador(String nicknameOCorreo);
+
+    DTAutenticacion autenticarUsuario(String nicknameOCorreo, String clave);
+
+    void registrarEstudiante(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String clave, String confirmacion);
+
+    void registrarDocente(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String nombreInstituto,
+            String clave, String confirmacion);
+
     void crearUsuario(
         Usuario usuario,
         String nombreInstituto
@@ -149,7 +178,13 @@ public interface IServidorCentral {
 
     void editarUsuario(Usuario usuario) throws Exception;
 
+    void crearUsuario(Usuario usuario, String nombreInstituto, byte[] imagen) throws Exception;
+
+    byte[] obtenerImagenUsuario(String nick) throws Exception;
+
     List<String> listarCursosOEdicionesUsuario(String nick);
+
+    List<String> listarEdicionesDocente(String nick);
 
     List<String> listarProgramasUsuario(String nick);
     

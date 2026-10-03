@@ -109,7 +109,7 @@ private void cargarProgramas() {
             
        for (Curso c : programa.getCursos().values()) {
        // Se agrega cada curso como hoja/nodo del árbol
-        nodoCursos.add(new DefaultMutableTreeNode(c.getNombre()));
+        nodoCursos.add(new DefaultMutableTreeNode(c));
         }
        
         } else {
@@ -131,15 +131,28 @@ private void cargarProgramas() {
 
     private void mostrarDetallesPrograma() {
 String seleccionado = (String) cbProgramas.getSelectedItem();
+    lstCategorias.setModel(new DefaultListModel<>());
+    txtFechaInicio.setText("");
+    txtFechaFin.setText("");
+    txtFechaAlta.setText("");
+    txtDescripcion.setText("");
+    rootNode = new DefaultMutableTreeNode("Seleccione un Programa");
+    treeModel.setRoot(rootNode);
     if (seleccionado == null || seleccionado.isEmpty()) return;
 
     try {
         ProgramaFormacion pf = servidorCentral.obtenerDetallePrograma(seleccionado);
 
         if (pf != null) {
+            DefaultListModel<String> categorias = new DefaultListModel<>();
+            for (String nombre : servidorCentral.listarNombresCategoriasPrograma(seleccionado)) {
+                categorias.addElement(nombre);
+            }
+            lstCategorias.setModel(categorias);
             // Reemplaza por el nombre exacto de tus campos (ej. jTextField1 / txtFechaInicio)
             txtFechaInicio.setText(pf.getFechaInicio() != null ? pf.getFechaInicio().toString() : "");
             txtFechaFin.setText(pf.getFechaFin() != null ? pf.getFechaFin().toString() : "");
+            txtFechaAlta.setText(pf.getFechaAlta() != null ? pf.getFechaAlta().toString() : "No registrada");
             txtDescripcion.setText(pf.getDescripcion() != null ? pf.getDescripcion() : "");
 
             // Crear los nodos del JTree
@@ -149,7 +162,7 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
 
             if (pf.getCursos() != null && !pf.getCursos().isEmpty()) {
                 for (Curso c : pf.getCursos().values()) {
-                    nodoCursos.add(new DefaultMutableTreeNode(c.getNombre()));
+                    nodoCursos.add(new DefaultMutableTreeNode(c));
                 }
             } else {
                 nodoCursos.add(new DefaultMutableTreeNode("Sin cursos asignados"));
@@ -182,14 +195,22 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
         cbProgramas = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        txtFechaInicio = new javax.swing.JTextField();
-        txtFechaFin = new javax.swing.JTextField();
+        txtFechaInicio = new javax.swing.JTextField(10);
+        txtFechaFin = new javax.swing.JTextField(10);
+        lblFechaAlta = new javax.swing.JLabel("Fecha de alta:");
+        txtFechaAlta = new javax.swing.JTextField(10);
+        txtFechaAlta.setEditable(false);
         btCerrar = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         jtreeProgramasCursos = new javax.swing.JTree();
         scrollPane1 = new java.awt.ScrollPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtDescripcion = new javax.swing.JTextArea();
+        lblCategorias = new javax.swing.JLabel("Categorías:");
+        scrollCategorias = new javax.swing.JScrollPane();
+        lstCategorias = new javax.swing.JList<>();
+        lstCategorias.setModel(new DefaultListModel<>());
+        scrollCategorias.setViewportView(lstCategorias);
 
         setClosable(true);
         setIconifiable(true);
@@ -213,6 +234,12 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
         btCerrar.addActionListener(this::btCerrarActionPerformed);
 
         jScrollPane3.setViewportView(jtreeProgramasCursos);
+        jtreeProgramasCursos.setToolTipText("Doble clic en un curso para consultar sus datos");
+        jtreeProgramasCursos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jtreeProgramasCursosMouseClicked(evt);
+            }
+        });
 
         txtDescripcion.setColumns(20);
         txtDescripcion.setRows(5);
@@ -236,11 +263,17 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel5)
-                                .addComponent(jLabel6))
+                                .addComponent(jLabel6)
+                                .addComponent(lblCategorias))
                             .addGap(18, 18, 18)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(scrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jScrollPane3)))
+                                .addComponent(jScrollPane3)
+                                .addComponent(scrollCategorias)))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(lblFechaAlta)
+                            .addGap(18, 18, 18)
+                            .addComponent(txtFechaAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(jLabel2)
                             .addGap(18, 18, 18)
@@ -265,6 +298,10 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
                     .addComponent(txtFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFechaAlta)
+                    .addComponent(txtFechaAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
                     .addComponent(scrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -273,13 +310,35 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
                     .addGroup(layout.createSequentialGroup()
                         .addGap(17, 17, 17)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblCategorias)
+                    .addComponent(scrollCategorias, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
                 .addComponent(btCerrar)
-                .addContainerGap(92, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jtreeProgramasCursosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtreeProgramasCursosMouseClicked
+        if (evt.getClickCount() != 2 || getDesktopPane() == null) return;
+        javax.swing.tree.TreePath ruta = jtreeProgramasCursos.getPathForLocation(evt.getX(), evt.getY());
+        if (ruta == null) return;
+        DefaultMutableTreeNode nodo = (DefaultMutableTreeNode) ruta.getLastPathComponent();
+        if (!(nodo.getUserObject() instanceof Curso curso)) return;
+        try {
+            ConsultaCurso ventana = new ConsultaCurso(servidorCentral);
+            ventana.seleccionarCurso(curso.getNombre());
+            getDesktopPane().add(ventana);
+            ventana.setVisible(true);
+            ventana.toFront();
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo abrir el curso: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jtreeProgramasCursosMouseClicked
 
     private void btCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCerrarActionPerformed
         this.dispose(); 
@@ -287,6 +346,11 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel lblFechaAlta;
+    private javax.swing.JTextField txtFechaAlta;
+    private javax.swing.JLabel lblCategorias;
+    private javax.swing.JScrollPane scrollCategorias;
+    private javax.swing.JList<String> lstCategorias;
     private javax.swing.JButton btCerrar;
     private javax.swing.JComboBox<String> cbProgramas;
     private javax.swing.JLabel jLabel1;

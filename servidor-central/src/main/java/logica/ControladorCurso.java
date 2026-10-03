@@ -110,6 +110,17 @@ public class ControladorCurso {
             String url,
             List<String> nombresPrevias,
             List<String> nombresCategorias) {
+        altaCurso(nombreInstituto, nombre, descripcion, duracion, horas, creditos,
+                url, LocalDate.now(), nombresPrevias, nombresCategorias);
+    }
+
+    public void altaCurso(String nombreInstituto, String nombre, String descripcion,
+            String duracion, int horas, int creditos, String url, LocalDate fechaAlta,
+            List<String> nombresPrevias, List<String> nombresCategorias) {
+
+        if (fechaAlta == null) {
+            throw new IllegalArgumentException("Seleccione la fecha de alta.");
+        }
 
         if (nombreInstituto == null || nombreInstituto.isBlank()) {
             throw new IllegalArgumentException("Seleccione un instituto.");
@@ -120,6 +131,9 @@ public class ControladorCurso {
                 || url == null || url.isBlank()) {
             throw new IllegalArgumentException(
                     "Complete nombre, descripción, duración y URL.");
+        }
+        if (horas < 0 || creditos < 0) {
+            throw new IllegalArgumentException("Horas y créditos no pueden ser negativos.");
         }
         if (nombresCategorias == null || nombresCategorias.isEmpty()) {
             throw new IllegalArgumentException("Seleccione al menos una categoría.");
@@ -153,7 +167,7 @@ public class ControladorCurso {
         }
 
         Curso curso = new Curso(nombre.trim(), duracion.trim(), horas, creditos,
-                LocalDate.now(), descripcion.trim(), url.trim());
+                fechaAlta, descripcion.trim(), url.trim());
         curso.setInstituto(instituto);
         curso.setPrevias(previas);
         curso.setCategorias(categorias);

@@ -56,6 +56,7 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblFechaAlta" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="txtCategorias" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -69,6 +70,7 @@
                           <Component id="txtCantidadHorasCurso" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtDuracionCurso" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtURLCurso" max="32767" attributes="0"/>
+                          <Component id="dcFechaAlta" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
@@ -140,6 +142,11 @@
                   <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtURLCurso" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
+              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="lblFechaAlta" min="-2" max="-2" attributes="0"/>
+                  <Component id="dcFechaAlta" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -171,6 +178,13 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
+    <Component class="javax.swing.JLabel" name="lblFechaAlta">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Fecha de alta:"/>
+      </Properties>
+    </Component>
+    <Component class="com.toedter.calendar.JDateChooser" name="dcFechaAlta">
+    </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
         <Property name="text" type="java.lang.String" value="Instituto: "/>

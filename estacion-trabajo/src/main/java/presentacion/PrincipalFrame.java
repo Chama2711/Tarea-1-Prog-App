@@ -115,6 +115,8 @@ public class PrincipalFrame extends javax.swing.JFrame {
         menuConsultaEdicionCurso = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         menuModificarUsuario = new javax.swing.JMenuItem();
+        menuPruebas = new javax.swing.JMenu();
+        menuSeleccionTemporal = new javax.swing.JMenuItem();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -200,6 +202,12 @@ public class PrincipalFrame extends javax.swing.JFrame {
         jMenu3.add(menuModificarUsuario);
 
         jMenuBar1.add(jMenu3);
+
+        menuPruebas.setText("Pruebas");
+        menuSeleccionTemporal.setText("Seleccionar estudiantes (temporal)");
+        menuSeleccionTemporal.addActionListener(this::menuSeleccionTemporalActionPerformed);
+        menuPruebas.add(menuSeleccionTemporal);
+        jMenuBar1.add(menuPruebas);
 
         setJMenuBar(jMenuBar1);
 
@@ -292,7 +300,13 @@ private void menuAltaProgFormacionActionPerformed(java.awt.event.ActionEvent evt
 
     
 
+    private void menuSeleccionTemporalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSeleccionTemporalActionPerformed
+        abrirInternalFrame(new SeleccionEstudiantesTemporal(servidorCentral));
+    }//GEN-LAST:event_menuSeleccionTemporalActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu menuPruebas;
+    private javax.swing.JMenuItem menuSeleccionTemporal;
     private javax.swing.JMenuItem MenuAltaCurso;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;

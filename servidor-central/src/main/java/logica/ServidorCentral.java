@@ -9,14 +9,38 @@ import java.util.ArrayList;
 import java.util.List;
 import persistencia.ControladorPersistencia;
 
-public class ServidorCentral implements IServidorCentral {
+public class ServidorCentral implements IServidorCentral, AutoCloseable {
 
     private final ControladorPersistencia persistencia;
     private final ControladorCurso controladorCurso;
+    private final ControladorUsuario controladorUsuario;
+    private final ControladorProgramaFormacion controladorProgramaFormacion;
+    private final ControladorInscripcion controladorInscripcion;
 
     public ServidorCentral() {
-        this.persistencia = new ControladorPersistencia();
+        this(new ControladorPersistencia());
+    }
+
+    /** El servidor se hace responsable de cerrar la persistencia recibida. */
+    public ServidorCentral(ControladorPersistencia persistencia) {
+        this.persistencia = java.util.Objects.requireNonNull(persistencia);
         this.controladorCurso = new ControladorCurso(persistencia);
+        this.controladorUsuario = new ControladorUsuario(this);
+        this.controladorProgramaFormacion = new ControladorProgramaFormacion(persistencia);
+        this.controladorInscripcion = new ControladorInscripcion(persistencia);
+    }
+
+    /** Permite que cada aplicación elija su base sin cambiar persistence.xml. */
+    public static ServidorCentral conectarBaseExistente(
+            String url, String usuario, String contrasena) {
+        return new ServidorCentral(
+                ControladorPersistencia.conectarBaseExistente(url, usuario, contrasena));
+    }
+
+    /** Llamar al detener la aplicación, cuando ya no haya operaciones en curso. */
+    @Override
+    public void close() {
+        persistencia.close();
     }
 
     // =========================
@@ -117,6 +141,11 @@ public class ServidorCentral implements IServidorCentral {
     }
 
     @Override
+    public List<String> listarNombresCategoriasPrograma(String nombrePrograma) {
+        return persistencia.listarNombresCategoriasPrograma(nombrePrograma);
+    }
+
+    @Override
     public void altaCurso(
             String nombreInstituto,
             String nombre,
@@ -131,7 +160,36 @@ public class ServidorCentral implements IServidorCentral {
                 duracion, horas, creditos, url, nombresPrevias, nombresCategorias);
     }
 
+    @Override
+    public void altaCurso(String nombreInstituto, String nombre, String descripcion,
+            String duracion, int horas, int creditos, String url, LocalDate fechaAlta,
+            List<String> nombresPrevias, List<String> nombresCategorias) {
+        controladorCurso.altaCurso(nombreInstituto, nombre, descripcion,
+                duracion, horas, creditos, url, fechaAlta, nombresPrevias, nombresCategorias);
+    }
+
     // =========================
+
+    @Override
+    public void seleccionarEstudiantes(String nickDocente, String nombreEdicion,
+            java.util.Map<Long, EstadoInscripcion> decisiones) {
+        controladorInscripcion.seleccionarEstudiantes(nickDocente, nombreEdicion, decisiones);
+    }
+
+    @Override
+    public List<DTInscripcion> listarInscripcionesEdicion(String nickDocente, String nombreEdicion) {
+        return controladorInscripcion.listarInscripcionesEdicion(nickDocente, nombreEdicion);
+    }
+
+    @Override
+    public List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion) {
+        return controladorInscripcion.listarAceptadosEdicion(nickDocente, nombreEdicion);
+    }
+
+    @Override
+    public List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante) {
+        return controladorInscripcion.listarResultadosInscripciones(nickEstudiante);
+    }
     // INSTITUTOS
     // =========================
 
@@ -207,6 +265,11 @@ public class ServidorCentral implements IServidorCentral {
         return controladorCurso.listarNicknamesDocentes();
     }
 
+    @Override
+    public List<String> listarNicknamesDocentesPorInstituto(String nombreInstituto) {
+        return persistencia.listarNicknamesDocentesPorInstituto(nombreInstituto);
+    }
+
    @Override
    public void inscriboAEdicionCurso(
         Estudiante estudiante,
@@ -223,8 +286,10 @@ public class ServidorCentral implements IServidorCentral {
     // ==================== PROGRAMAS DE FORMACIÓN ====================
 
     @Override
-    public void altaProgramaFormacion(ProgramaFormacion programa) {
-    persistencia.altaProgramaFormacion(programa);
+    public void altaProgramaFormacion(String nombre, String descripcion,
+            LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta) {
+        controladorProgramaFormacion.altaProgramaFormacion(
+                nombre, descripcion, fechaInicio, fechaFin, fechaAlta);
     }
 
     @Override
@@ -246,6 +311,11 @@ public class ServidorCentral implements IServidorCentral {
     @Override
     public List<String> listarNombresProgramas() {
     return persistencia.listarNombresProgramas();
+    }
+
+    @Override
+    public List<String> listarNombresProgramasCurso(String nombreCurso) {
+        return persistencia.listarNombresProgramasCurso(nombreCurso);
     }
 
     @Override
@@ -279,6 +349,30 @@ public class ServidorCentral implements IServidorCentral {
     }
 
     @Override
+    public Usuario obtenerUsuarioPorIdentificador(String identificador) {
+        return persistencia.obtenerUsuarioPorIdentificador(identificador);
+    }
+
+    @Override
+    public DTAutenticacion autenticarUsuario(String identificador, String clave) {
+        return controladorUsuario.autenticarUsuario(identificador, clave);
+    }
+
+    @Override
+    public void registrarEstudiante(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String clave, String confirmacion) {
+        controladorUsuario.registrarEstudiante(nick, mail, nombre, apellido,
+                fechaNacimiento, clave, confirmacion);
+    }
+
+    @Override
+    public void registrarDocente(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String instituto, String clave, String confirmacion) {
+        controladorUsuario.registrarDocente(nick, mail, nombre, apellido,
+                fechaNacimiento, instituto, clave, confirmacion);
+    }
+
+    @Override
     public void crearUsuario(
         Usuario usuario,
         String nombreInstituto) throws Exception {
@@ -299,6 +393,21 @@ public class ServidorCentral implements IServidorCentral {
     @Override
     public List<String> listarProgramasUsuario(String nick) {
     return persistencia.listarProgramasUsuario(nick);
+    }
+
+    @Override
+    public void crearUsuario(Usuario usuario, String nombreInstituto, byte[] imagen) throws Exception {
+        persistencia.crearUsuario(usuario, nombreInstituto, imagen);
+    }
+
+    @Override
+    public byte[] obtenerImagenUsuario(String nick) throws Exception {
+        return persistencia.obtenerImagenUsuario(nick);
+    }
+
+    @Override
+    public List<String> listarEdicionesDocente(String nick) {
+        return persistencia.listarEdicionesDocente(nick);
     }
     
     

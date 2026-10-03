@@ -7,7 +7,6 @@ package presentacion;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.ArrayList;
 import logica.ControladorUsuario;
 import logica.IServidorCentral;
 
@@ -19,19 +18,18 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
 
     private ControladorUsuario control;
     private IServidorCentral servidorCentral;
+    private java.awt.image.BufferedImage imagenUsuario;
     
     public InternalConsultaUsuario(ControladorUsuario control,IServidorCentral servidorCentral) {
         initComponents();
         this.control = control;
         this.servidorCentral = servidorCentral;
         
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(280, 160));
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(280, 160));
 
         cargarUsuariosEnCombo();
 
         setTitle("Consulta de usuario");
-        setSize(700, 500);
+        setSize(980, 500);
         setMinimumSize(new java.awt.Dimension(700, 500));
         setResizable(true);
     }
@@ -64,15 +62,27 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
+        lblImagen = new javax.swing.JLabel("Sin imagen", javax.swing.SwingConstants.CENTER);
+        lblImagen.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        lblImagen.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblImagenMouseClicked(evt);
+            }
+        });
         cmbUsuarios = new javax.swing.JComboBox<>();
         txtNombre = new javax.swing.JTextField();
         txtApellido = new javax.swing.JTextField();
         txtMail = new javax.swing.JTextField();
         txtFechaNac = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(280, 160));
         lstCursosEdiciones = new javax.swing.JList<>();
         jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(280, 160));
         lstProgramas = new javax.swing.JList<>();
+        jScrollPaneEdiciones = new javax.swing.JScrollPane();
+        jScrollPaneEdiciones.setPreferredSize(new java.awt.Dimension(280, 160));
+        lstEdicionesDocente = new javax.swing.JList<>();
         btnSalir = new javax.swing.JButton();
 
         setClosable(true);
@@ -118,6 +128,17 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         });
         jScrollPane2.setViewportView(lstProgramas);
 
+        lstEdicionesDocente.setModel(new javax.swing.DefaultListModel<>());
+        lstEdicionesDocente.setBorder(javax.swing.BorderFactory.createTitledBorder("Ediciones en las que participa"));
+        lstEdicionesDocente.setToolTipText("Doble clic en una edición para consultar sus datos");
+        lstEdicionesDocente.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lstEdicionesDocenteMouseClicked(evt);
+            }
+        });
+        jScrollPaneEdiciones.setViewportView(lstEdicionesDocente);
+        jScrollPaneEdiciones.setVisible(false);
+
         btnSalir.setText("Salir");
         btnSalir.addActionListener(this::btnSalirActionPerformed);
 
@@ -125,6 +146,7 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lblImagen, javax.swing.GroupLayout.Alignment.TRAILING, 120, 120, 120)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -143,8 +165,10 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
                         .addGap(23, 23, 23)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(117, Short.MAX_VALUE))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPaneEdiciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(12, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(btnSalir)
@@ -152,6 +176,7 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup().addGap(80).addComponent(lblImagen, 120, 120, 120))
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -168,7 +193,8 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
                 .addGap(34, 34, 34)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPaneEdiciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(9, 9, 9)
                 .addComponent(btnSalir)
                 .addContainerGap(15, Short.MAX_VALUE))
@@ -178,6 +204,11 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cmbUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbUsuariosActionPerformed
+imagenUsuario = null;
+lblImagen.setToolTipText(null);
+lblImagen.setCursor(java.awt.Cursor.getDefaultCursor());
+lblImagen.setIcon(null);
+lblImagen.setText("Sin imagen");
 txtNombre.setText("");
 txtApellido.setText("");
 txtMail.setText("");
@@ -186,17 +217,25 @@ javax.swing.DefaultListModel<String> academico = new javax.swing.DefaultListMode
 javax.swing.DefaultListModel<String> programas = new javax.swing.DefaultListModel<>();
 lstCursosEdiciones.setModel(academico);
 lstProgramas.setModel(programas);
+javax.swing.DefaultListModel<String> ediciones = new javax.swing.DefaultListModel<>();
+lstEdicionesDocente.setModel(ediciones);
+jScrollPaneEdiciones.setVisible(false);
 if (cmbUsuarios.getSelectedItem() == null) return;
 try {
     String nick = cmbUsuarios.getSelectedItem().toString();
     logica.Usuario usuario = control.obtenerUsuarioPorNickname(nick);
     if (usuario == null) throw new IllegalArgumentException("El usuario ya no existe.");
+    mostrarImagen(nick);
     txtNombre.setText(usuario.getNombre());
     txtApellido.setText(usuario.getApellido());
     txtMail.setText(usuario.getMail());
     txtFechaNac.setText(usuario.getFechaNacimiento() == null ? "No registrada"
             : usuario.getFechaNacimiento().format(DateTimeFormatter.ofPattern("dd/MM/uuuu")));
     boolean docente = usuario instanceof logica.Docente;
+    jScrollPaneEdiciones.setVisible(docente);
+    if (docente) {
+        for (String nombre : control.listarEdicionesDocente(nick)) ediciones.addElement(nombre);
+    }
     lstCursosEdiciones.setBorder(javax.swing.BorderFactory.createTitledBorder(
             docente ? "Cursos del docente" : "Ediciones inscriptas"));
     lstProgramas.setBorder(javax.swing.BorderFactory.createTitledBorder(
@@ -251,6 +290,57 @@ try {
 }
     }//GEN-LAST:event_lstProgramasMouseClicked
 
+    private void mostrarImagen(String nick) {
+        try {
+            byte[] datos = servidorCentral.obtenerImagenUsuario(nick);
+            if (datos == null) return;
+            java.awt.image.BufferedImage imagen = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(datos));
+            if (imagen == null) throw new java.io.IOException("Imagen no válida");
+            double escala = Math.min(116.0 / imagen.getWidth(), 116.0 / imagen.getHeight());
+            lblImagen.setIcon(new javax.swing.ImageIcon(imagen.getScaledInstance(
+                    Math.max(1, (int) (imagen.getWidth() * escala)),
+                    Math.max(1, (int) (imagen.getHeight() * escala)), java.awt.Image.SCALE_SMOOTH)));
+            lblImagen.setText("");
+            imagenUsuario = imagen;
+            lblImagen.setToolTipText("Doble clic para ver la imagen más grande");
+            lblImagen.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+        } catch (Exception e) {
+            lblImagen.setText("Imagen no disponible");
+        }
+    }
+
+    private void lblImagenMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblImagenMouseClicked
+        if (evt.getClickCount() != 2 || imagenUsuario == null
+                || cmbUsuarios.getSelectedItem() == null || getDesktopPane() == null) return;
+        javax.swing.JInternalFrame ventana = new javax.swing.JInternalFrame(
+                "Imagen de " + cmbUsuarios.getSelectedItem(), true, true, true, true);
+        javax.swing.JLabel imagen = new javax.swing.JLabel(new javax.swing.ImageIcon(imagenUsuario));
+        imagen.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ventana.add(new javax.swing.JScrollPane(imagen));
+        ventana.setSize(Math.min(750, Math.max(300, imagenUsuario.getWidth() + 40)),
+                Math.min(600, Math.max(250, imagenUsuario.getHeight() + 60)));
+        getDesktopPane().add(ventana);
+        ventana.setVisible(true);
+        ventana.toFront();
+    }//GEN-LAST:event_lblImagenMouseClicked
+
+    private void lstEdicionesDocenteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstEdicionesDocenteMouseClicked
+        if (evt.getClickCount() != 2 || !jScrollPaneEdiciones.isVisible()
+                || getDesktopPane() == null) return;
+        int indice = lstEdicionesDocente.locationToIndex(evt.getPoint());
+        if (indice < 0 || !lstEdicionesDocente.getCellBounds(indice, indice).contains(evt.getPoint())) return;
+        try {
+            ConsultaEdicionDeCursoInternalFrame ventana = new ConsultaEdicionDeCursoInternalFrame(servidorCentral);
+            ventana.seleccionarEdicion(lstEdicionesDocente.getModel().getElementAt(indice));
+            getDesktopPane().add(ventana);
+            ventana.setVisible(true);
+            ventana.toFront();
+        } catch (RuntimeException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No se pudo abrir la edición: "
+                    + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_lstEdicionesDocenteMouseClicked
+
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         // TODO add your handling code here:
 
@@ -262,10 +352,13 @@ try {
     private javax.swing.JButton btnSalir;
     private javax.swing.JComboBox<String> cmbUsuarios;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel lblImagen;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JList<String> lstCursosEdiciones;
     private javax.swing.JList<String> lstProgramas;
+    private javax.swing.JScrollPane jScrollPaneEdiciones;
+    private javax.swing.JList<String> lstEdicionesDocente;
     private javax.swing.JTextField txtApellido;
     private javax.swing.JTextField txtFechaNac;
     private javax.swing.JTextField txtMail;

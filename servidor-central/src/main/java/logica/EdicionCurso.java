@@ -104,13 +104,37 @@ public class EdicionCurso {
     public boolean esVigente() {
     LocalDate fechaActual = LocalDate.now();
 
-        return fechaActual.isAfter(fechaInicio) &&
-            fechaActual.isBefore(fechaFin);
+        return !fechaActual.isBefore(fechaInicio) &&
+            !fechaActual.isAfter(fechaFin);
         
     }
     
 public Set<Docente> getDocentes() {
     return docentes;
+}
+
+public void validarDocenteParticipante(String nickDocente) {
+    if (nickDocente == null || docentes.stream().noneMatch(d -> nickDocente.equals(d.getNick()))) {
+        throw new IllegalArgumentException("El docente no participa en esta edición.");
+    }
+}
+
+public void validarSeleccion(Inscripcion inscripcion, EstadoInscripcion destino, long aceptadas) {
+    if (!esVigente()) throw new IllegalArgumentException("La edición ya no está vigente.");
+    if (inscripcion == null || inscripcion.getEdicionCurso() == null
+            || !nombre.equals(inscripcion.getEdicionCurso().getNombre())) {
+        throw new IllegalArgumentException("La inscripción no pertenece a esta edición.");
+    }
+    if (destino != EstadoInscripcion.ACEPTADA && destino != EstadoInscripcion.RECHAZADA) {
+        throw new IllegalArgumentException("Seleccione Aceptada o Rechazada.");
+    }
+    if (inscripcion.getEstado() != EstadoInscripcion.INSCRIPTO) {
+        throw new IllegalStateException("La inscripción ya fue resuelta.");
+    }
+    if (cupo < -1) throw new IllegalArgumentException("La edición tiene un cupo inválido.");
+    if (destino == EstadoInscripcion.ACEPTADA && cupo != -1 && aceptadas >= cupo) {
+        throw new IllegalArgumentException("No quedan plazas disponibles para aceptar estudiantes.");
+    }
 }
 
 public void setDocentes(Set<Docente> d){
