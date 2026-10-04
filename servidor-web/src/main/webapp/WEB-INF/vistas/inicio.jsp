@@ -8,21 +8,75 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
 </head>
 <body>
-    <header class="cabecera">
-        <div class="contenedor cabecera-interior">
-            <a class="marca" href="${pageContext.request.contextPath}/" aria-label="edEXT, inicio">ed<span>EXT</span></a>
-            <span class="descripcion-marca">Formación y extensión</span>
+   <header class="cabecera">
+    <div class="contenedor cabecera-interior">
+
+        <div>
+            <a class="marca"
+               href="${pageContext.request.contextPath}/"
+               aria-label="edEXT, inicio">
+                ed<span>EXT</span>
+            </a>
+
+            <span class="descripcion-marca">
+                Formación y extensión
+            </span>
         </div>
-    </header>
+
+        <div class="sesion">
+
+            <% if (session.getAttribute("usuario") != null) { %>
+
+                <span>
+                    Hola, ${sessionScope.usuario.nombre}
+                </span>
+
+                <span>
+                    (${sessionScope.usuario.rol})
+                </span>
+
+                <a href="${pageContext.request.contextPath}/logout">
+                    Cerrar sesión
+                </a>
+
+            <% } else { %>
+
+                <a href="${pageContext.request.contextPath}/login">
+                    Iniciar sesión
+                </a>
+
+            <% } %>
+
+        </div>
+
+    </div>
+</header>
     <main class="contenedor">
         <section class="bienvenida" aria-labelledby="titulo">
             <p class="etiqueta">BIENVENIDO A edEXT</p>
             <h1 id="titulo">Un espacio para<br>seguir aprendiendo.</h1>
             <p class="introduccion">Cursos y programas de formación para compartir conocimientos y descubrir nuevas oportunidades.</p>
+            <% if (session.getAttribute("usuario") != null) { %>
+
             <div class="aviso">
                 <span class="indicador" aria-hidden="true"></span>
-                <p>Estamos preparando la plataforma. Pronto podrás iniciar sesión y gestionar tus inscripciones.</p>
+                <p>
+                    Sesión iniciada como
+                    <strong>${sessionScope.usuario.nick}</strong>.
+                </p>
             </div>
+
+            <% } else { %>
+
+            <div class="aviso">
+                <span class="indicador" aria-hidden="true"></span>
+                <p>
+                    Iniciá sesión para acceder a las funcionalidades
+                    de la plataforma.
+                </p>
+            </div>
+
+            <% } %>
         </section>
         <section class="oferta" aria-labelledby="titulo-oferta">
             <div class="titulo-seccion">
@@ -31,9 +85,18 @@
             </div>
             <div class="tarjetas">
                 <article class="tarjeta">
-                    <span class="numero">${cantidadCursos}</span>
-                    <h3>Cursos</h3>
-                    <p>Propuestas para ampliar tus conocimientos.</p>
+                       <span class="numero">${cantidadCursos}</span>
+
+                        <h3>Cursos</h3>
+
+                        <p>
+                            Propuestas para ampliar tus conocimientos.
+                        </p>
+
+                        <a class="boton-tarjeta"
+                           href="${pageContext.request.contextPath}/cursos">
+                            Ver cursos →
+                        </a>
                 </article>
                 <article class="tarjeta">
                     <span class="numero">${cantidadProgramas}</span>
