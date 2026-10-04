@@ -429,8 +429,120 @@ h3 { margin: 0 0 10px; font-size: 17px; font-weight: 650; }
 .enlace-detalle:hover {
     text-decoration: underline;
 }
+/* =========================
+   PROGRAMAS DE FORMACIÓN
+   ========================= */
 
+.programas-contenedor {
+    padding-top: 55px;
+    padding-bottom: 55px;
+}
 
+.encabezado-programas {
+    max-width: 700px;
+    margin-bottom: 40px;
+}
+
+.encabezado-programas h1 {
+    font-size: 48px;
+    margin: 8px 0 16px;
+    color: #202824;
+}
+
+.grilla-programas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 35px;
+}
+
+.programa-tarjeta {
+    background: #ffffff;
+    border: 1px solid #dfe4dd;
+    border-radius: 14px;
+    padding: 26px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.programa-tarjeta h2 {
+    margin: 0;
+    color: #202824;
+    font-size: 21px;
+}
+
+.programa-descripcion {
+    margin: 0;
+    line-height: 1.5;
+    color: #59635e;
+    flex-grow: 1;
+}
+
+.programa-datos {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    padding-top: 15px;
+    border-top: 1px solid #e5e8e5;
+
+    font-size: 14px;
+    color: #59635e;
+}
+
+@media (max-width: 900px) {
+    .grilla-programas {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .grilla-programas {
+        grid-template-columns: 1fr;
+    }
+
+    .encabezado-programas h1 {
+        font-size: 38px;
+    }
+}
+/* Cursos pertenecientes a un programa */
+
+.cursos-programa {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.curso-programa-tarjeta {
+    background: #ffffff;
+    border: 1px solid #dfe4dd;
+    border-radius: 12px;
+    padding: 22px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.curso-programa-tarjeta h3 {
+    margin: 0 0 10px;
+    color: #202824;
+}
+
+.curso-programa-tarjeta p {
+    margin: 0;
+    color: #59635e;
+    line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+    .cursos-programa {
+        grid-template-columns: 1fr;
+    }
+}
 /* ======================
          INICIO
    ====================== */

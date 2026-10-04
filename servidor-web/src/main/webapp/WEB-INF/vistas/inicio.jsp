@@ -77,6 +77,7 @@
             </div>
 
             <% } %>
+            
         </section>
         <section class="oferta" aria-labelledby="titulo-oferta">
             <div class="titulo-seccion">
@@ -100,8 +101,16 @@
                 </article>
                 <article class="tarjeta">
                     <span class="numero">${cantidadProgramas}</span>
+                    
                     <h3>Programas de formación</h3>
-                    <p>Cursos que se unen en un recorrido de aprendizaje.</p>
+                    
+                    <p>Recorridos formativos.</p>
+                    
+                    <a class="boton-tarjeta"
+                        href="${pageContext.request.contextPath}/programas">
+                         Ver programas →
+                    </a>
+                    
                 </article>
                 <article class="tarjeta">
                     <span class="numero">${cantidadCategorias}</span>
