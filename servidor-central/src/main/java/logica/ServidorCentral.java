@@ -344,6 +344,11 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
 
     @Override
+    public List<String> listarNicknamesUsuarios() {
+        return controladorUsuario.listarNicknamesUsuarios();
+    }
+
+    @Override
     public Usuario obtenerUsuario(String nick) {
     return persistencia.obtenerUsuario(nick);
     }
@@ -366,10 +371,32 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
 
     @Override
+    public void registrarEstudiante(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String clave, String confirmacion, byte[] imagen) {
+        controladorUsuario.registrarEstudiante(nick, mail, nombre, apellido,
+                fechaNacimiento, clave, confirmacion, imagen);
+    }
+
+    @Override
     public void registrarDocente(String nick, String mail, String nombre, String apellido,
             LocalDate fechaNacimiento, String instituto, String clave, String confirmacion) {
         controladorUsuario.registrarDocente(nick, mail, nombre, apellido,
                 fechaNacimiento, instituto, clave, confirmacion);
+    }
+
+    @Override
+    public void registrarDocente(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String instituto, String clave, String confirmacion,
+            byte[] imagen) {
+        controladorUsuario.registrarDocente(nick, mail, nombre, apellido,
+                fechaNacimiento, instituto, clave, confirmacion, imagen);
+    }
+
+    @Override
+    public void modificarUsuario(String nickname, String nuevoNombre, String nuevoApellido,
+            LocalDate nuevaFechaNacimiento, String nuevaClave, String confirmacion) {
+        controladorUsuario.modificarUsuario(nickname, nuevoNombre, nuevoApellido,
+                nuevaFechaNacimiento, nuevaClave, confirmacion);
     }
 
     @Override

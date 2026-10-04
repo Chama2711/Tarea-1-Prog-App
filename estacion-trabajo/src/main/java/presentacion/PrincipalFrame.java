@@ -60,13 +60,11 @@ public class PrincipalFrame extends javax.swing.JFrame {
     }
     // 2. La instancia de la lógica/persistencia
     private IServidorCentral servidorCentral;
-    private logica.ControladorUsuario controlUsuario;
 
     public PrincipalFrame() {
         initComponents();
         
     servidorCentral = new ServidorCentral();
-    controlUsuario = new logica.ControladorUsuario(servidorCentral);
   
 
         setTitle("edEXT - Plataforma Educativa");
@@ -254,19 +252,19 @@ private void menuAltaProgFormacionActionPerformed(java.awt.event.ActionEvent evt
     }//GEN-LAST:event_menuConsultaEdicionCursoActionPerformed
 
     private void menuAltaUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAltaUsuarioActionPerformed
-        presentacion.InternalAltaUsuario ventanaAlta = new presentacion.InternalAltaUsuario(controlUsuario);
+        presentacion.InternalAltaUsuario ventanaAlta = new presentacion.InternalAltaUsuario(servidorCentral);
         jDesktopPane1.add(ventanaAlta);
         ventanaAlta.setVisible(true);
     }//GEN-LAST:event_menuAltaUsuarioActionPerformed
 
     private void menuConsultaUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuConsultaUsuarioActionPerformed
-        presentacion.InternalConsultaUsuario ventanaConsulta = new presentacion.InternalConsultaUsuario(controlUsuario,servidorCentral);
+        presentacion.InternalConsultaUsuario ventanaConsulta = new presentacion.InternalConsultaUsuario(servidorCentral);
         jDesktopPane1.add(ventanaConsulta);
         ventanaConsulta.setVisible(true);
     }//GEN-LAST:event_menuConsultaUsuarioActionPerformed
 
     private void menuModificarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuModificarUsuarioActionPerformed
-        presentacion.InternalModificarUsuario ventanaModificar = new presentacion.InternalModificarUsuario(controlUsuario);
+        presentacion.InternalModificarUsuario ventanaModificar = new presentacion.InternalModificarUsuario(servidorCentral);
         jDesktopPane1.add(ventanaModificar);
         ventanaModificar.setVisible(true);
     }//GEN-LAST:event_menuModificarUsuarioActionPerformed

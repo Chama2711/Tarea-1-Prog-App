@@ -7,7 +7,6 @@ package presentacion;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import logica.ControladorUsuario;
 import logica.IServidorCentral;
 
 /**
@@ -16,13 +15,11 @@ import logica.IServidorCentral;
  */
 public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
 
-    private ControladorUsuario control;
     private IServidorCentral servidorCentral;
     private java.awt.image.BufferedImage imagenUsuario;
     
-    public InternalConsultaUsuario(ControladorUsuario control,IServidorCentral servidorCentral) {
+    public InternalConsultaUsuario(IServidorCentral servidorCentral) {
         initComponents();
-        this.control = control;
         this.servidorCentral = servidorCentral;
         
 
@@ -39,7 +36,7 @@ public class InternalConsultaUsuario extends javax.swing.JInternalFrame {
     
     private void cargarUsuariosEnCombo() {
     cmbUsuarios.removeAllItems();
-    List<String> nickname = control.listarNicknamesUsuarios();
+    List<String> nickname = servidorCentral.listarNicknamesUsuarios();
     
     for (String nick : nickname) {
         cmbUsuarios.addItem(nick);
@@ -223,7 +220,7 @@ jScrollPaneEdiciones.setVisible(false);
 if (cmbUsuarios.getSelectedItem() == null) return;
 try {
     String nick = cmbUsuarios.getSelectedItem().toString();
-    logica.Usuario usuario = control.obtenerUsuarioPorNickname(nick);
+    logica.Usuario usuario = servidorCentral.obtenerUsuario(nick);
     if (usuario == null) throw new IllegalArgumentException("El usuario ya no existe.");
     mostrarImagen(nick);
     txtNombre.setText(usuario.getNombre());
@@ -234,14 +231,14 @@ try {
     boolean docente = usuario instanceof logica.Docente;
     jScrollPaneEdiciones.setVisible(docente);
     if (docente) {
-        for (String nombre : control.listarEdicionesDocente(nick)) ediciones.addElement(nombre);
+        for (String nombre : servidorCentral.listarEdicionesDocente(nick)) ediciones.addElement(nombre);
     }
     lstCursosEdiciones.setBorder(javax.swing.BorderFactory.createTitledBorder(
             docente ? "Cursos del docente" : "Ediciones inscriptas"));
     lstProgramas.setBorder(javax.swing.BorderFactory.createTitledBorder(
             docente ? "Programas relacionados con sus cursos" : "Programas inscriptos"));
-    for (String nombre : control.listarCursosOEdicionesUsuario(nick)) academico.addElement(nombre);
-    for (String nombre : control.listarProgramasUsuario(nick)) programas.addElement(nombre);
+    for (String nombre : servidorCentral.listarCursosOEdicionesUsuario(nick)) academico.addElement(nombre);
+    for (String nombre : servidorCentral.listarProgramasUsuario(nick)) programas.addElement(nombre);
 } catch (RuntimeException e) {
     e.printStackTrace();
     javax.swing.JOptionPane.showMessageDialog(this, "No se pudo completar la consulta: "
@@ -254,7 +251,7 @@ if (evt.getClickCount() != 2 || lstCursosEdiciones.getSelectedValue() == null
         || cmbUsuarios.getSelectedItem() == null || getDesktopPane() == null) return;
 try {
     String nombre = lstCursosEdiciones.getSelectedValue();
-    logica.Usuario usuario = control.obtenerUsuarioPorNickname(cmbUsuarios.getSelectedItem().toString());
+    logica.Usuario usuario = servidorCentral.obtenerUsuario(cmbUsuarios.getSelectedItem().toString());
     if (usuario == null) throw new IllegalArgumentException("El usuario ya no existe.");
 
     javax.swing.JInternalFrame ventana;

@@ -4,7 +4,7 @@
  */
 package presentacion;
 
-import logica.ControladorUsuario;
+import logica.IServidorCentral;
 
 /**
  *
@@ -15,7 +15,7 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
     /**
      * Creates new form InternalAltaUsuario
      */
-    private ControladorUsuario control;
+    private IServidorCentral servidorCentral;
     private byte[] imagenSeleccionada;
     private char caracterContrasena;
     private char caracterConfirmacion;
@@ -23,12 +23,12 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
     
     
     
-    public InternalAltaUsuario(ControladorUsuario control) {
+    public InternalAltaUsuario(IServidorCentral servidorCentral) {
     initComponents();
     caracterContrasena = txtContrasena.getEchoChar();
     caracterConfirmacion = txtConfirmacion.getEchoChar();
     FechasFormulario.configurar(dcNacimiento);
-    this.control = control;
+    this.servidorCentral = servidorCentral;
 
     // Estado inicial de selección de Instituto
     cmbInstituto.setEnabled(false);
@@ -39,8 +39,7 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
     cmbInstituto.removeAllItems();
     cmbInstituto.addItem("Seleccione un Instituto...");
     try {
-            // Asume que agregas este método en ControladorUsuario
-            java.util.List<String> institutos = control.obtenerNombresInstitutos();
+            java.util.List<String> institutos = servidorCentral.listarNombresInstitutos();
             for (String nombreInst : institutos) {
                 cmbInstituto.addItem(nombreInst);
             }
@@ -290,10 +289,10 @@ public class InternalAltaUsuario extends javax.swing.JInternalFrame {
         if (chkDocente.isSelected()) {
             String instituto = cmbInstituto.getSelectedIndex() > 0
                     ? (String) cmbInstituto.getSelectedItem() : null;
-            control.registrarDocente(nickname, correo, nombre, apellido, fechaNac,
+            servidorCentral.registrarDocente(nickname, correo, nombre, apellido, fechaNac,
                     instituto, clave, confirmacion, imagenSeleccionada);
         } else {
-            control.registrarEstudiante(nickname, correo, nombre, apellido, fechaNac,
+            servidorCentral.registrarEstudiante(nickname, correo, nombre, apellido, fechaNac,
                     clave, confirmacion, imagenSeleccionada);
         }
         javax.swing.JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente.");

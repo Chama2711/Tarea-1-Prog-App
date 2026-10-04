@@ -158,6 +158,8 @@ public interface IServidorCentral {
  
     List<Usuario> obtenerUsuarios();
 
+    List<String> listarNicknamesUsuarios();
+
     Usuario obtenerUsuario(String nickname);
 
     Usuario obtenerUsuarioPorIdentificador(String nicknameOCorreo);
@@ -167,9 +169,20 @@ public interface IServidorCentral {
     void registrarEstudiante(String nick, String mail, String nombre, String apellido,
             LocalDate fechaNacimiento, String clave, String confirmacion);
 
+    void registrarEstudiante(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String clave, String confirmacion, byte[] imagen);
+
     void registrarDocente(String nick, String mail, String nombre, String apellido,
             LocalDate fechaNacimiento, String nombreInstituto,
             String clave, String confirmacion);
+
+    void registrarDocente(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String nombreInstituto,
+            String clave, String confirmacion, byte[] imagen);
+
+    /** Una contraseña y confirmación vacías conservan la contraseña actual. */
+    void modificarUsuario(String nickname, String nuevoNombre, String nuevoApellido,
+            LocalDate nuevaFechaNacimiento, String nuevaClave, String confirmacion);
 
     void crearUsuario(
         Usuario usuario,
