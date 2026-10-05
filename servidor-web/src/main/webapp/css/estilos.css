@@ -16,6 +16,66 @@ a:focus-visible { outline: 3px solid var(--acento); outline-offset: 5px; }
 .marca { font-size: 30px; font-weight: 750; letter-spacing: -1.5px; text-decoration: none; color: var(--texto); }
 .marca span { color: var(--acento); }
 .descripcion-marca { color: var(--secundario); font-size: 14px; }
+.identidad {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.navegacion-principal {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-left: auto;
+}
+
+.navegacion-principal a {
+    color: var(--secundario);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 8px 0;
+    border-bottom: 2px solid transparent;
+}
+
+.navegacion-principal a:hover {
+    color: var(--acento);
+}
+
+.navegacion-principal a.nav-activo {
+    color: var(--acento);
+    border-bottom-color: var(--acento);
+}
+
+.sesion {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: 18px;
+    font-size: 13px;
+}
+
+.sesion > a {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.usuario-sesion {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+
+.rol-sesion {
+    padding: 4px 7px;
+    border-radius: 12px;
+    background: #edf2e9;
+    color: var(--acento);
+    font-size: 10px;
+    font-weight: 700;
+}
 .bienvenida { padding-block: 64px 44px; max-width: 780px; }
 .etiqueta { margin: 0 0 20px; color: var(--acento); font-size: 12px; font-weight: 700; letter-spacing: 2px; }
 h1 { margin: 0 0 24px; font-size: clamp(36px, 5vw, 58px); line-height: 1.12; font-weight: 650; letter-spacing: -2px; }
@@ -557,4 +617,24 @@ h3 { margin: 0 0 10px; font-size: 17px; font-weight: 650; }
     .tarjetas { grid-template-columns: 1fr; gap: 14px; }
     .tarjeta { padding: 22px; }
     .numero { margin-bottom: 14px; }
+    .navegacion-principal {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 24px;
+    margin-left: 0;
+}
+
+.cabecera-interior {
+    flex-wrap: wrap;
+    padding-block: 12px;
+}
+
+.sesion {
+    margin-left: auto;
+}
+
+.usuario-sesion {
+    display: none;
+}
 }

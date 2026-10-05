@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
 </head>
 <body>
-   <header class="cabecera">
+<header class="cabecera">
     <div class="contenedor cabecera-interior">
 
-        <div>
+        <div class="identidad">
             <a class="marca"
-               href="${pageContext.request.contextPath}/"
+               href="${pageContext.request.contextPath}/inicio"
                aria-label="edEXT, inicio">
                 ed<span>EXT</span>
             </a>
@@ -23,17 +23,37 @@
             </span>
         </div>
 
+        <nav class="navegacion-principal"
+             aria-label="Navegación principal">
+
+            <a class="nav-activo"
+               href="${pageContext.request.contextPath}/inicio">
+                Inicio
+            </a>
+
+            <a href="${pageContext.request.contextPath}/cursos">
+                Cursos
+            </a>
+
+            <a href="${pageContext.request.contextPath}/programas">
+                Programas
+            </a>
+
+        </nav>
+
         <div class="sesion">
 
             <% if (session.getAttribute("usuario") != null) { %>
 
-                <span>
-                    Hola, ${sessionScope.usuario.nombre}
-                </span>
+                <div class="usuario-sesion">
+                    <span>
+                        Hola, ${sessionScope.usuario.nombre}
+                    </span>
 
-                <span>
-                    (${sessionScope.usuario.rol})
-                </span>
+                    <span class="rol-sesion">
+                        ${sessionScope.usuario.rol}
+                    </span>
+                </div>
 
                 <a href="${pageContext.request.contextPath}/logout">
                     Cerrar sesión
