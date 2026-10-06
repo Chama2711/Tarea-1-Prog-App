@@ -6,6 +6,17 @@
     <display-name>edEXT</display-name>
     <request-character-encoding>UTF-8</request-character-encoding>
     <response-character-encoding>UTF-8</response-character-encoding>
+    
+    <servlet>
+        <servlet-name>InscripcionEdicionServlet</servlet-name>
+        <servlet-class>web.InscripcionEdicionServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>InscripcionEdicionServlet</servlet-name>
+        <url-pattern>/inscripcion-edicion</url-pattern>
+    </servlet-mapping>
+    
     <error-page>
         <error-code>500</error-code>
         <location>/WEB-INF/vistas/error.jsp</location>

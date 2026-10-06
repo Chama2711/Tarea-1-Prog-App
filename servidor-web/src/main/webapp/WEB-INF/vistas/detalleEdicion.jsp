@@ -2,10 +2,19 @@
 <%@ page import="logica.*,java.util.*" %>
 <%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
 <%
-    DTEdicionConsulta edicion = (DTEdicionConsulta) request.getAttribute("edicion");
+    DTEdicionConsulta edicion =
+            (DTEdicionConsulta) request.getAttribute("edicion");
+
     String tituloPagina = edicion.nombre();
     String bajadaPagina = "Una edición de " + edicion.nombreCurso() + ".";
     String paginaActiva = "cursos";
+
+    DTAutenticacion usuarioInscripcion =
+            (DTAutenticacion) session.getAttribute("usuario");
+
+  boolean puedeInscribirse =
+    usuarioInscripcion != null && usuarioInscripcion.getRol() == DTAutenticacion.Rol.ESTUDIANTE && edicion.vigente();
+
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -22,18 +31,77 @@
 <main id="contenido" class="contenedor contenido">
 
     <a class="volver" href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(edicion.nombreCurso()) %>">← Ver el curso</a>
-    <section class="panel" aria-label="Información de la edición">
+        <% if ("ok".equals(request.getParameter("inscripcion"))) { %>
+            <div class="mensaje-exito">
+                Inscripción realizada correctamente.
+            </div>
+        <% } %>
+
+        <% if (request.getParameter("errorInscripcion") != null) { %>
+            <div class="mensaje-error">
+                <%= escapar(request.getParameter("errorInscripcion")) %>
+            </div>
+        <% } %>
+<section class="panel" aria-label="Información de la edición">
+
+    <div class="titulo-edicion">
         <h2>Información de la edición</h2>
-        <div class="detalle-datos">
-            <div class="dato"><span>Inicio</span><strong><%= fecha(edicion.inicio()) %></strong></div>
-            <div class="dato"><span>Fin</span><strong><%= fecha(edicion.fin()) %></strong></div>
-            <div class="dato"><span>Publicación</span><strong><%= fecha(edicion.publicacion()) %></strong></div>
-            <div class="dato"><span>Cupo</span><strong><%= edicion.cupo() == -1 ? "Sin límite" : edicion.cupo() %></strong></div>
+
+        <% if (!edicion.vigente()) { %>
+            <span class="estado-no-vigente">NO VIGENTE</span>
+        <% } %>
+    </div>
+
+    <div class="detalle-datos">
+        <div class="dato">
+            <span>Inicio</span>
+            <strong><%= fecha(edicion.inicio()) %></strong>
         </div>
-        <p><strong>Curso:</strong> <a href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(edicion.nombreCurso()) %>"><%= escapar(edicion.nombreCurso()) %></a></p>
-    </section>
+
+        <div class="dato">
+            <span>Fin</span>
+            <strong><%= fecha(edicion.fin()) %></strong>
+        </div>
+
+        <div class="dato">
+            <span>Publicación</span>
+            <strong><%= fecha(edicion.publicacion()) %></strong>
+        </div>
+
+        <div class="dato">
+            <span>Cupo</span>
+            <strong><%= edicion.cupo() == -1 ? "Sin límite" : edicion.cupo() %></strong>
+        </div>
+    </div>
+
+    <p>
+        <strong>Curso:</strong>
+        <a href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(edicion.nombreCurso()) %>">
+            <%= escapar(edicion.nombreCurso()) %>
+        </a>
+    </p>
+
+    <% if (puedeInscribirse) { %>
+
+        <form method="post"
+              action="${pageContext.request.contextPath}/inscripcion-edicion">
+
+            <input type="hidden"
+                   name="edicion"
+                   value="<%= escapar(edicion.nombre()) %>">
+
+            <button type="submit"
+                    class="boton-principal">
+                Inscribirme a esta edición
+            </button>
+
+        </form>
+
+    <% } %>
+
+</section>
     <section class="panel" aria-labelledby="titulo-docentes">
-        <h2 id="titulo-docentes">Docentes de la edición</h2>
+        <h2 id="titulo-docentes">Docentes de la edición</h2>    
         <% if (edicion.docentes().isEmpty()) { %><p class="texto-secundario">No hay docentes asignados.</p><% } %>
         <div class="grilla-usuarios">
         <% for (DTUsuarioConsulta docente : edicion.docentes()) { %>

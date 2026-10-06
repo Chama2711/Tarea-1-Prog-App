@@ -47,9 +47,16 @@ import logica.*;
         List<DTUsuarioConsulta> docentes = edicion.getDocentes().stream()
                 .sorted(java.util.Comparator.comparing(Usuario::getNick))
                 .map(d -> datosUsuario(em, d, false)).toList();
-        return new DTEdicionConsulta(edicion.getNombre(), edicion.getCurso().getNombre(),
-                edicion.getFechaInicio(), edicion.getFechaFin(), edicion.getFechaPublicacion(),
-                edicion.getCupo(), docentes);
+       return new DTEdicionConsulta(
+        edicion.getNombre(),
+        edicion.getCurso().getNombre(),
+        edicion.getFechaInicio(),
+        edicion.getFechaFin(),
+        edicion.getFechaPublicacion(),
+        edicion.getCupo(),
+        edicion.esVigente(),
+        docentes
+        );
     }
 
     public DTEdicionConsulta consultarEdicion(String nombre) {

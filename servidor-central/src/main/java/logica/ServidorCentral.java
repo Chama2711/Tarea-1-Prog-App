@@ -24,6 +24,11 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     public DTEdicionConsulta consultarEdicion(String nombre) {
         return persistencia.consultarEdicion(nombre);
     }
+    
+    @Override
+    public EdicionCurso buscarEdicion(String nombre) {
+        return persistencia.buscarEdicion(nombre);
+    }
 
     private final ControladorPersistencia persistencia;
     private final ControladorCurso controladorCurso;

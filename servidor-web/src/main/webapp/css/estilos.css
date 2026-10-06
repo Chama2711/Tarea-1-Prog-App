@@ -226,3 +226,28 @@ h3 { margin-bottom:12px; font-size:21px; letter-spacing:-.4px; }
 .visor-foto-cabecera h2 { font-size:22px; margin:0; }
 .visor-foto-cabecera form { margin:0; }
 .visor-foto img { display:block; width:min(760px,80vw); max-height:calc(85vh - 90px); object-fit:contain; margin:auto; }
+
+
+.titulo-edicion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.titulo-edicion h2 {
+    margin: 0;
+}
+
+.estado-no-vigente {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}

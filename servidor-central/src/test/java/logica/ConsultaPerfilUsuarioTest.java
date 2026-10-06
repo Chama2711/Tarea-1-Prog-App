@@ -22,7 +22,7 @@ public class ConsultaPerfilUsuarioTest {
                         inscripcion(2, EstadoInscripcion.ACEPTADA),
                         inscripcion(3, EstadoInscripcion.RECHAZADA)),
                 List.of(new DTEdicionConsulta("Edición", "Curso", LocalDate.now(),
-                        LocalDate.now(), LocalDate.now(), -1, List.of())),
+                        LocalDate.now(), LocalDate.now(), -1,true, List.of())),
                 List.of("Programa"), List.of(inscripcion(2, EstadoInscripcion.ACEPTADA)));
     }
 

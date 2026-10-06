@@ -14,6 +14,8 @@ public interface IServidorCentral {
     DTPerfilUsuario consultarPerfilUsuario(String nick, String nickConsultante);
 
     DTEdicionConsulta consultarEdicion(String nombre);
+    
+    EdicionCurso buscarEdicion(String nombre);
 
     // =========================
     // CATEGORÍAS
