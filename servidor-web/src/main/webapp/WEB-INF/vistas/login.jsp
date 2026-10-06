@@ -1,125 +1,47 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="logica.*,java.util.*" %>
+<%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
+<%
 
+    String tituloPagina = "Qué bueno verte de nuevo.";
+    String bajadaPagina = "Ingresá a edEXT para continuar.";
+    String paginaActiva = "login";
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Iniciar sesión | edEXT</title>
-
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/estilos.css">
+    <title><%= escapar(tituloPagina) %> | edEXT</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
 </head>
-
 <body>
+<%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
+<%@ include file="/WEB-INF/vistas/fragmentos/bienvenida.jspf" %>
 
-    <header class="cabecera">
-        <div class="contenedor cabecera-interior">
-
-            <div>
-                <a class="marca"
-                   href="${pageContext.request.contextPath}/inicio"
-                   aria-label="edEXT, inicio">
-                    ed<span>EXT</span>
-                </a>
-
-                <span class="descripcion-marca">
-                    Formación y extensión
-                </span>
-            </div>
-
+<main id="contenido" class="contenedor contenido">
+    <section class="formulario-tarjeta login-tarjeta" aria-labelledby="titulo-login">
+        <h2 id="titulo-login">Iniciar sesión</h2>
+        <% if ("correcto".equals(request.getParameter("registro"))) { %>
+            <div class="aviso aviso-exito" role="status">Tu cuenta fue creada. Ya podés iniciar sesión.</div>
+        <% } %>
+        <% if (request.getAttribute("error") != null) { %>
+            <div class="aviso aviso-error" role="alert"><%= escapar(request.getAttribute("error")) %></div>
+        <% } %>
+        <form method="post" action="${pageContext.request.contextPath}/login" class="login-formulario">
+            <div class="campo"><label for="identificador">Nickname o correo electrónico</label>
+                <input id="identificador" name="identificador" value="<%= escapar(request.getAttribute("identificador")) %>" autocomplete="username" required></div>
+            <div class="campo"><label for="clave">Contraseña</label>
+                <input type="password" id="clave" name="clave" autocomplete="current-password" required></div>
+            <button type="submit" class="boton">Iniciar sesión</button>
+        </form>
+        <div class="formulario-enlaces">
+            <p>¿No tenés cuenta? <a href="${pageContext.request.contextPath}/registro">Registrarse</a></p>
+            <a href="${pageContext.request.contextPath}/inicio">Volver al inicio</a>
         </div>
-    </header>
-
-
-    <main class="contenedor login-contenedor">
-
-        <section class="login-presentacion">
-
-            <p class="etiqueta">BIENVENIDO DE NUEVO</p>
-
-            <h1>Iniciar sesión</h1>
-
-            <p class="introduccion">
-                Ingresá a edEXT para acceder a las funcionalidades
-                de la plataforma.
-            </p>
-
-
-            <div class="login-tarjeta">
-
-                <% if (request.getAttribute("error") != null) { %>
-
-                    <div class="login-error">
-                        <%= request.getAttribute("error") %>
-                    </div>
-
-                <% } %>
-
-
-                <form method="post"
-                      action="${pageContext.request.contextPath}/login"
-                      class="login-formulario">
-
-                    <div class="campo-login">
-
-                        <label for="identificador">
-                            Nickname o correo electrónico
-                        </label>
-
-                        <input
-                            type="text"
-                            id="identificador"
-                            name="identificador"
-                            value="${identificador}"
-                            placeholder="Nickname o correo"
-                            required
-                            autofocus>
-
-                    </div>
-
-
-                    <div class="campo-login">
-
-                        <label for="clave">
-                            Contraseña
-                        </label>
-
-                        <input
-                            type="password"
-                            id="clave"
-                            name="clave"
-                            placeholder="Contraseña"
-                            required>
-
-                    </div>
-
-
-                    <button type="submit"
-                            class="boton-login">
-                        Iniciar sesión
-                    </button>
-
-                </form>
-
-            </div>
-
-
-            <a class="volver-inicio"
-               href="${pageContext.request.contextPath}/inicio">
-                ← Volver al inicio
-            </a>
-
-        </section>
-
-    </main>
-
-
-    <footer class="contenedor pie">
-        edEXT
-        <span>Aprendizaje que conecta.</span>
-    </footer>
+    </section>
+</main>
+<%@ include file="/WEB-INF/vistas/fragmentos/pie.jspf" %>
 
 </body>
 </html>

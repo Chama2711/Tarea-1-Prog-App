@@ -1,0 +1,9 @@
+<footer class="pie"><div class="contenedor pie-interior">
+    <div><a class="marca" href="${pageContext.request.contextPath}/inicio">ed<span>EXT</span></a><p>Aprendizaje que conecta.</p></div>
+    <nav aria-label="Navegación del pie">
+        <a href="${pageContext.request.contextPath}/inicio">Inicio</a>
+        <a href="${pageContext.request.contextPath}/cursos">Cursos</a>
+        <a href="${pageContext.request.contextPath}/programas">Programas</a>
+    </nav>
+</div></footer>
+<%@ page pageEncoding="UTF-8" %>
