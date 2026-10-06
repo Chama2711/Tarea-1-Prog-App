@@ -1,162 +1,46 @@
-<%-- 
-    Document   : programas
-    Created on : 4 oct 2026, 18:47:45
-    Author     : elizeth
---%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.util.List" %>
-<%@ page import="logica.ProgramaFormacion" %>
-
+<%@ page import="logica.*,java.util.*" %>
+<%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
 <%
-    List<ProgramaFormacion> programas =
-            (List<ProgramaFormacion>) request.getAttribute("programas");
+    List<ProgramaFormacion> programas = (List<ProgramaFormacion>) request.getAttribute("programas");
+    String tituloPagina = "Un recorrido para seguir creciendo.";
+    String bajadaPagina = "Conocé los programas y los cursos que forman cada propuesta.";
+    String paginaActiva = "programas";
 %>
-
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Programas de Formación - edEXT</title>
-
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/estilos.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= escapar(tituloPagina) %> | edEXT</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
 </head>
-
 <body>
+<%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
+<%@ include file="/WEB-INF/vistas/fragmentos/bienvenida.jspf" %>
 
-<header class="cabecera">
-    <div class="contenedor cabecera-interior">
-
-        <div>
-            <a class="marca"
-               href="${pageContext.request.contextPath}/inicio">
-                ed<span>EXT</span>
-            </a>
-
-            <span class="descripcion-marca">
-                Formación y extensión
-            </span>
-        </div>
-
-                
-                
-        <div class="sesion">
-
-            <% if (session.getAttribute("usuario") != null) { %>
-
-                <span>
-                    Hola, ${sessionScope.usuario.nombre}
-                </span>
-
-                <span>
-                    (${sessionScope.usuario.rol})
-                </span>
-
-                <a href="${pageContext.request.contextPath}/logout">
-                    Cerrar sesión
-                </a>
-
-            <% } else { %>
-
-                <a href="${pageContext.request.contextPath}/login">
-                    Iniciar sesión
-                </a>
-
-            <% } %>
-
-        </div>
-
-    </div>
-</header>
-
-
-<main class="contenedor programas-contenedor">
-
-    <section class="encabezado-programas">
-
-        <p class="etiqueta">
-            FORMACIÓN
-        </p>
-
-        <h1>
-            Programas de Formación
-        </h1>
-
-        <p class="introduccion">
-            Conocé los programas disponibles y los cursos
-            que forman parte de cada propuesta.
-        </p>
-
-    </section>
-
-
+<main id="contenido" class="contenedor contenido">
+    <h2>Programas de formación</h2>
     <% if (programas == null || programas.isEmpty()) { %>
-
-        <p class="texto-secundario">
-            No hay programas de formación disponibles.
-        </p>
-
+        <div class="aviso">No hay programas de formación disponibles.</div>
     <% } else { %>
-
-        <section class="grilla-programas">
-
+        <section class="grilla-programas" aria-label="Programas de formación">
             <% for (ProgramaFormacion programa : programas) { %>
-
                 <article class="programa-tarjeta">
-
-                    <h2>
-                        <%= programa.getNombre() %>
-                    </h2>
-
-                    <p class="programa-descripcion">
-                        <%= programa.getDescripcion() %>
-                    </p>
-
+                    <h2><%= escapar(programa.getNombre()) %></h2>
+                    <p><%= escapar(programa.getDescripcion()) %></p>
                     <div class="programa-datos">
-
-                        <span>
-                            <strong>Inicio:</strong>
-                            <%= programa.getFechaInicio() %>
-                        </span>
-
-                        <span>
-                            <strong>Fin:</strong>
-                            <%= programa.getFechaFin() %>
-                        </span>
-
+                        <span><strong>Inicio</strong><%= fecha(programa.getFechaInicio()) %></span>
+                        <span><strong>Fin</strong><%= fecha(programa.getFechaFin()) %></span>
+                        <a class="enlace-detalle" href="${pageContext.request.contextPath}/programa?nombre=<%= parametro(programa.getNombre()) %>" aria-label="Ver detalle de <%= escapar(programa.getNombre()) %>">Ver detalle →</a>
                     </div>
-                        
-                        
-                        <a class="enlace-detalle"
-                            href="${pageContext.request.contextPath}/programa?nombre=<%= java.net.URLEncoder.encode(programa.getNombre(), "UTF-8") %>">
-                             Ver detalle →
-                        </a>
-
                 </article>
-
             <% } %>
-
         </section>
-
     <% } %>
-
-
-    <a class="volver-inicio"
-       href="${pageContext.request.contextPath}/inicio">
-        ← Volver al inicio
-    </a>
-
+    <a class="volver volver-final" href="${pageContext.request.contextPath}/inicio">← Volver al inicio</a>
 </main>
-
-
-<footer class="pie">
-    <div class="contenedor">
-        <p>edEXT · Plataforma de formación y extensión</p>
-    </div>
-</footer>
+<%@ include file="/WEB-INF/vistas/fragmentos/pie.jspf" %>
 
 </body>
 </html>

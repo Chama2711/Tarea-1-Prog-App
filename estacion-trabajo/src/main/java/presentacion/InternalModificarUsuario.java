@@ -4,7 +4,7 @@
  */
 package presentacion;
 
-import logica.ControladorUsuario;
+import logica.IServidorCentral;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -16,12 +16,12 @@ import java.time.format.DateTimeParseException;
  */
 public class InternalModificarUsuario extends javax.swing.JInternalFrame {
 
-    private ControladorUsuario control;
+    private IServidorCentral servidorCentral;
     
-    public InternalModificarUsuario(ControladorUsuario control) {
+    public InternalModificarUsuario(IServidorCentral servidorCentral) {
         initComponents();
         FechasFormulario.configurar(dcNacimiento);
-        this.control = control;
+        this.servidorCentral = servidorCentral;
         
         cargarUsuariosEnCombo();
     }
@@ -170,7 +170,7 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
     private void cargarUsuariosEnCombo() {
         cmbUsuarios.removeAllItems();
         
-        java.util.List<String> nicknames = control.listarNicknamesUsuarios();
+        java.util.List<String> nicknames = servidorCentral.listarNicknamesUsuarios();
         for (String nick : nicknames) {
             cmbUsuarios.addItem(nick);
         }
@@ -181,7 +181,7 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
     
     
     private void cmbUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbUsuariosActionPerformed
-       if (control == null) return;
+       if (servidorCentral == null) return;
        txtContrasena.setText("");
        txtConfirmacion.setText("");
        if (cmbUsuarios.getSelectedItem() == null) {
@@ -189,7 +189,7 @@ public class InternalModificarUsuario extends javax.swing.JInternalFrame {
         }
 
         String nickSeleccionado = cmbUsuarios.getSelectedItem().toString();
-        logica.Usuario u = control.obtenerUsuarioPorNickname(nickSeleccionado);
+        logica.Usuario u = servidorCentral.obtenerUsuario(nickSeleccionado);
 
         if (u != null) {
             txtNickname.setText(u.getNick()); 
@@ -221,7 +221,7 @@ try {
     LocalDate fecha = FechasFormulario.leer(
         dcNacimiento, "la fecha de nacimiento"
     );
-    control.modificarUsuario(nick, nombre, apellido, fecha, clave, confirmacion);
+    servidorCentral.modificarUsuario(nick, nombre, apellido, fecha, clave, confirmacion);
     javax.swing.JOptionPane.showMessageDialog(this, "Usuario modificado con éxito.");
     dispose();
 } catch (RuntimeException e) {
