@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface IServidorCentral {
+    List<DTUsuarioConsulta> listarUsuariosConsulta();
+
+    DTPerfilUsuario consultarPerfilUsuario(String nick, String nickConsultante);
+
+    DTEdicionConsulta consultarEdicion(String nombre);
 
     // =========================
     // CATEGORÍAS

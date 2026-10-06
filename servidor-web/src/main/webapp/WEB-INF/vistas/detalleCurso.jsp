@@ -52,7 +52,7 @@
             <div class="ediciones">
                 <% for (EdicionCurso edicion : ediciones) { %>
                     <article class="edicion">
-                        <h3><%= escapar(edicion.getNombre()) %></h3>
+                        <h3><a href="${pageContext.request.contextPath}/edicion?nombre=<%= parametro(edicion.getNombre()) %>"><%= escapar(edicion.getNombre()) %></a></h3>
                         <div class="edicion-datos">
                             <span><strong>Inicio:</strong> <%= fecha(edicion.getFechaInicio()) %></span>
                             <span><strong>Fin:</strong> <%= fecha(edicion.getFechaFin()) %></span>

@@ -21,6 +21,91 @@ import logica.*;
 
     private final EntityManagerFactory emf;
 
+    /** Materializar los datos de consulta antes de cerrar JPA, sin exponer entidades a la web. */
+    private DTUsuarioConsulta datosUsuario(EntityManager em, Usuario usuario, boolean incluirInstitutos) {
+        boolean docente = usuario instanceof Docente;
+        List<String> institutos = docente && incluirInstitutos ? em.createQuery(
+                "SELECT i.nombre FROM Docente d JOIN d.institutos i WHERE d.nick = :nick ORDER BY i.nombre",
+                String.class).setParameter("nick", usuario.getNick()).getResultList() : List.of();
+        return new DTUsuarioConsulta(usuario.getNick(), usuario.getNombre(), usuario.getApellido(),
+                usuario.getMail(), usuario.getFechaNacimiento(),
+                docente ? DTAutenticacion.Rol.DOCENTE : DTAutenticacion.Rol.ESTUDIANTE,
+                usuario.getImagen() != null && !usuario.getImagen().isBlank(), institutos);
+    }
+
+    public List<DTUsuarioConsulta> listarUsuariosConsulta() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT u FROM Usuario u ORDER BY u.nick", Usuario.class)
+                    .getResultList().stream().map(u -> datosUsuario(em, u, false)).toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    private DTEdicionConsulta datosEdicion(EntityManager em, EdicionCurso edicion) {
+        List<DTUsuarioConsulta> docentes = edicion.getDocentes().stream()
+                .sorted(java.util.Comparator.comparing(Usuario::getNick))
+                .map(d -> datosUsuario(em, d, false)).toList();
+        return new DTEdicionConsulta(edicion.getNombre(), edicion.getCurso().getNombre(),
+                edicion.getFechaInicio(), edicion.getFechaFin(), edicion.getFechaPublicacion(),
+                edicion.getCupo(), docentes);
+    }
+
+    public DTEdicionConsulta consultarEdicion(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            EdicionCurso edicion = nombre == null ? null : em.find(EdicionCurso.class, nombre);
+            return edicion == null ? null : datosEdicion(em, edicion);
+        } finally {
+            em.close();
+        }
+    }
+
+    public DTPerfilUsuario consultarPerfilUsuario(String nick, String nickConsultante) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Usuario usuario = nick == null ? null : em.find(Usuario.class, nick);
+            if (usuario == null) return null;
+            DTUsuarioConsulta datos = datosUsuario(em, usuario, true);
+            List<DTInscripcion> inscripciones = List.of();
+            List<DTEdicionConsulta> ediciones = List.of();
+            List<String> programas = List.of();
+            List<DTInscripcion> aceptados = List.of();
+            if (usuario instanceof Estudiante) {
+                inscripciones = em.createQuery(CONSULTA_INSCRIPCIONES
+                        + "WHERE e.nick = :nick AND i.edicion IS NOT NULL "
+                        + "ORDER BY i.fechaInscripcion, i.edicion.nombre, i.id",
+                        DTInscripcion.class).setParameter("nick", nick).getResultList();
+                // Las inscripciones a programas también se consultan, sin crear ni modificar ninguna.
+                programas = em.createQuery(
+                        "SELECT DISTINCT i.programa.nombre FROM Estudiante e JOIN e.inscripciones i "
+                        + "WHERE e.nick = :nick AND i.programa IS NOT NULL "
+                        + "AND (:propio = TRUE OR i.estado IN :estados) ORDER BY i.programa.nombre",
+                        String.class).setParameter("nick", nick)
+                        .setParameter("propio", nick.equals(nickConsultante))
+                        .setParameter("estados", List.of(EstadoInscripcion.INSCRIPTO, EstadoInscripcion.ACEPTADA))
+                        .getResultList();
+            } else if (usuario instanceof Docente) {
+                ediciones = em.createQuery(
+                        "SELECT DISTINCT e FROM EdicionCurso e JOIN e.docentes d "
+                        + "WHERE d.nick = :nick ORDER BY e.nombre", EdicionCurso.class)
+                        .setParameter("nick", nick).getResultList().stream()
+                        .map(e -> datosEdicion(em, e)).toList();
+                if (nick.equals(nickConsultante)) {
+                    aceptados = em.createQuery(CONSULTA_INSCRIPCIONES
+                            + "JOIN i.edicion.docentes d WHERE d.nick = :nick AND i.estado = :estado "
+                            + "ORDER BY i.edicion.nombre, e.nick", DTInscripcion.class)
+                            .setParameter("nick", nick).setParameter("estado", EstadoInscripcion.ACEPTADA)
+                            .getResultList();
+                }
+            }
+            return DTPerfilUsuario.crear(datos, nickConsultante, inscripciones, ediciones, programas, aceptados);
+        } finally {
+            em.close();
+        }
+    }
+
     public ControladorPersistencia() {
         this(Persistence.createEntityManagerFactory("edEXTPU"));
     }

@@ -160,3 +160,69 @@ h3 { margin-bottom:12px; font-size:21px; letter-spacing:-.4px; }
     .programa-datos .enlace-detalle { margin-left:0; flex-basis:100%; } .detalle-datos { grid-template-columns:1fr; }
     .dato { border-right:0; border-bottom:1px solid var(--borde); } .dato:last-child { border-bottom:0; }
 }
+/* Comunidad y perfiles: consultas accesibles, con la misma identidad visual. */
+.grilla-usuarios { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+.usuario-tarjeta { display:flex; gap:20px; align-items:flex-start; background:white; border:1px solid var(--borde); border-radius:13px; padding:24px; box-shadow:var(--sombra); min-width:0; }
+.avatar-usuario { display:block; width:72px; height:72px; border-radius:50%; object-fit:cover; background:#e7edf1; flex-shrink:0; }
+.usuario-tarjeta-datos { min-width:0; overflow-wrap:anywhere; }
+.usuario-tarjeta h2,.usuario-tarjeta h3 { font-size:21px; margin:12px 0 3px; }
+.usuario-tarjeta p { margin-bottom:14px; }
+.perfil-encabezado .avatar-grande { width:220px; height:220px; }
+.perfil-encabezado { display:grid; grid-template-columns:220px minmax(0,1fr); gap:34px; align-items:center; padding:30px; }
+.perfil-identidad { min-width:0; }
+.perfil-encabezado h2 { font-size:30px; margin:14px 0 4px; overflow-wrap:anywhere; }
+.perfil-encabezado p { margin:0; overflow-wrap:anywhere; }
+.perfil-pestanas { display:flex; flex-wrap:wrap; gap:20px; border-bottom:1px solid var(--borde); margin-bottom:26px; }
+.perfil-pestanas a { display:block; padding:12px 18px; border-bottom:3px solid transparent; text-decoration:none; font-weight:650; color:var(--texto); }
+.perfil-pestanas a:hover { background:var(--suave); }
+.perfil-pestanas a[aria-selected="true"] { border-bottom-color:var(--acento); color:var(--enlace); }
+.perfil-panel { padding-block:8px; }
+.perfil-panel h4 { font-size:18px; margin:0 0 8px; overflow-wrap:anywhere; }
+.perfil-panel h4 a { text-decoration:none; }
+.perfil-panel h4 a:hover { text-decoration:underline; }
+.perfil-datos { display:grid; gap:8px; margin:18px 0 0; }
+.perfil-datos > div { display:grid; grid-template-columns:175px minmax(0,1fr); gap:16px; }
+.perfil-datos dt { font-size:14px; color:var(--secundario); }
+.perfil-datos dd { font-size:15px; margin:0; overflow-wrap:anywhere; }
+.usuarios-introduccion { text-align:center; margin-top:8px; }
+.usuarios-introduccion h2 { font-size:36px; margin-bottom:10px; }
+.selector-usuarios { display:flex; width:min(100%,420px); margin:26px auto 34px; border:1px solid #bfccd7; border-radius:9px; overflow:hidden; background:white; }
+.selector-usuarios a { flex:1; padding:12px 20px; text-align:center; font-weight:650; text-decoration:none; color:var(--texto); }
+.selector-usuarios a[aria-current="page"] { background:var(--acento); color:#123443; }
+.selector-usuarios a:hover:not([aria-current]) { background:var(--suave); }
+.selector-usuarios a:focus-visible { outline-offset:-4px; }
+.titulo-grupo-usuarios { font-size:25px; }
+.directorio-usuarios .usuario-tarjeta { display:grid; grid-template-columns:88px minmax(0,1fr) auto; gap:18px; align-items:center; }
+.directorio-usuarios .avatar-usuario { width:88px; height:88px; }
+.directorio-usuarios .usuario-tarjeta h2 { margin:0 0 4px; font-size:20px; }
+.directorio-usuarios .usuario-tarjeta p { margin:0; }
+.usuario-tarjeta-acciones { display:flex; flex-direction:column; align-items:flex-end; justify-content:space-between; align-self:stretch; gap:24px; }
+.usuario-tarjeta-acciones .enlace-detalle { align-self:flex-end; white-space:nowrap; }
+.estado-inscripcion { background:var(--suave); color:#12627e; border-radius:20px; padding:4px 12px; font-weight:650; }
+@media(max-width:1000px) { .cabecera-interior { flex-wrap:wrap; } .navegacion { flex-wrap:wrap; } }
+@media(max-width:1000px) { .directorio-usuarios { grid-template-columns:1fr; } }
+@media(max-width:760px) {
+    .grilla-usuarios { grid-template-columns:1fr; }
+    .perfil-encabezado { grid-template-columns:100px minmax(0,1fr); gap:22px; align-items:start; padding:24px; }
+    .perfil-encabezado .avatar-grande { width:100px; height:100px; }
+    .perfil-encabezado h2 { font-size:25px; }
+    .perfil-datos > div { grid-template-columns:1fr; gap:0; }
+}
+@media(max-width:480px) {
+    .perfil-encabezado { grid-template-columns:60px minmax(0,1fr); gap:16px; padding:20px; }
+    .perfil-encabezado .avatar-grande { width:60px; height:60px; }
+    .perfil-encabezado h2 { font-size:23px; }
+    .perfil-pestanas { gap:8px; } .perfil-pestanas a { font-size:14px; padding:9px 11px; }
+    .usuario-tarjeta { padding:20px; gap:14px; }
+    .directorio-usuarios .usuario-tarjeta { grid-template-columns:60px minmax(0,1fr); gap:14px; }
+    .directorio-usuarios .avatar-usuario { width:60px; height:60px; grid-row:1 / 3; }
+    .usuario-tarjeta-acciones { grid-column:2; flex-direction:row; flex-wrap:wrap; align-items:center; gap:10px; }
+    .usuarios-introduccion h2 { font-size:29px; }
+}
+.foto-ampliable { cursor:zoom-in; }
+.visor-foto { width:fit-content; max-width:92vw; max-height:90vh; border:1px solid var(--borde); border-radius:14px; padding:20px; color:var(--texto); background:white; box-shadow:0 18px 70px rgba(0,0,0,.25); }
+.visor-foto::backdrop { background:rgba(20,32,40,.72); }
+.visor-foto-cabecera { display:flex; align-items:center; justify-content:space-between; gap:24px; margin-bottom:18px; }
+.visor-foto-cabecera h2 { font-size:22px; margin:0; }
+.visor-foto-cabecera form { margin:0; }
+.visor-foto img { display:block; width:min(760px,80vw); max-height:calc(85vh - 90px); object-fit:contain; margin:auto; }

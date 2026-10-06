@@ -2,6 +2,7 @@
     <div><a class="marca" href="${pageContext.request.contextPath}/inicio">ed<span>EXT</span></a><p>Aprendizaje que conecta.</p></div>
     <nav aria-label="Navegación del pie">
         <a href="${pageContext.request.contextPath}/inicio">Inicio</a>
+        <a href="${pageContext.request.contextPath}/usuarios">Usuarios</a>
         <a href="${pageContext.request.contextPath}/cursos">Cursos</a>
         <a href="${pageContext.request.contextPath}/programas">Programas</a>
     </nav>

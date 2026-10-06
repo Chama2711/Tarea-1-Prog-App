@@ -10,6 +10,20 @@ import java.util.List;
 import persistencia.ControladorPersistencia;
 
 public class ServidorCentral implements IServidorCentral, AutoCloseable {
+    @Override
+    public List<DTUsuarioConsulta> listarUsuariosConsulta() {
+        return persistencia.listarUsuariosConsulta();
+    }
+
+    @Override
+    public DTPerfilUsuario consultarPerfilUsuario(String nick, String nickConsultante) {
+        return persistencia.consultarPerfilUsuario(nick, nickConsultante);
+    }
+
+    @Override
+    public DTEdicionConsulta consultarEdicion(String nombre) {
+        return persistencia.consultarEdicion(nombre);
+    }
 
     private final ControladorPersistencia persistencia;
     private final ControladorCurso controladorCurso;
