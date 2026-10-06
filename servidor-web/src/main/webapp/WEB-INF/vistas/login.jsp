@@ -49,6 +49,10 @@
 
             <div class="login-tarjeta">
 
+                <% if ("correcto".equals(request.getParameter("registro"))) { %>
+                    <p role="status">Tu cuenta fue creada. Ya podés iniciar sesión.</p>
+                <% } %>
+
                 <% if (request.getAttribute("error") != null) { %>
 
                     <div class="login-error">
@@ -105,6 +109,8 @@
 
             </div>
 
+
+            <p>¿No tenés cuenta? <a href="${pageContext.request.contextPath}/registro">Registrarse</a></p>
 
             <a class="volver-inicio"
                href="${pageContext.request.contextPath}/inicio">

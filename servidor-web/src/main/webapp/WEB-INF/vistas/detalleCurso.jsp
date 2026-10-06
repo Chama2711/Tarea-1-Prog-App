@@ -65,6 +65,7 @@
                 <a href="${pageContext.request.contextPath}/login">
                     Iniciar sesión
                 </a>
+                <a href="${pageContext.request.contextPath}/registro">Registrarse</a>
 
             <% } %>
 
