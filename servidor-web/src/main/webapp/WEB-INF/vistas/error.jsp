@@ -13,11 +13,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
-<%@ include file="/WEB-INF/vistas/fragmentos/bienvenida.jspf" %>
+
 
 <main id="contenido" class="contenedor contenido error-contenido">
     <section class="panel error-tarjeta">

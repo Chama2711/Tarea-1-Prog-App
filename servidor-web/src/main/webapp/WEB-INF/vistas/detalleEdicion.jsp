@@ -22,37 +22,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
     
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
-<%@ include file="/WEB-INF/vistas/fragmentos/bienvenida.jspf" %>
-<main id="contenido" class="contenedor contenido">
+
+<main id="contenido" class="contenedor contenido disposicion-web">
+<%@ include file="/WEB-INF/vistas/fragmentos/lateral.jspf" %>
+<div class="contenido-pagina">
+
 
     <a class="volver" href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(edicion.nombreCurso()) %>">← Ver el curso</a>
         <% if ("ok".equals(request.getParameter("inscripcion"))) { %>
-            <div class="mensaje-exito">
+            <div class="aviso aviso-exito" role="status">
                 Inscripción realizada correctamente.
             </div>
         <% } %>
 
         <% if (request.getParameter("errorInscripcion") != null) { %>
-            <div class="mensaje-error">
+            <div class="aviso aviso-error" role="alert">
                 <%= escapar(request.getParameter("errorInscripcion")) %>
             </div>
         <% } %>
 <section class="panel" aria-label="Información de la edición">
 
+    <img class="imagen-detalle" src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="Edición sin imagen">
     <div class="titulo-edicion">
-        <h2>Información de la edición</h2>
+        <h1><%= escapar(edicion.nombre()) %></h1>
 
         <% if (!edicion.vigente()) { %>
             <span class="estado-no-vigente">NO VIGENTE</span>
         <% } %>
     </div>
 
-    <div class="detalle-datos">
+    <div class="detalle-datos datos-columna">
         <div class="dato">
             <span>Inicio</span>
             <strong><%= fecha(edicion.inicio()) %></strong>
@@ -91,7 +95,7 @@
                    value="<%= escapar(edicion.nombre()) %>">
 
             <button type="submit"
-                    class="boton-principal">
+                    class="boton boton-inscripcion">
                 Inscribirme a esta edición
             </button>
 
@@ -103,20 +107,14 @@
     <section class="panel" aria-labelledby="titulo-docentes">
         <h2 id="titulo-docentes">Docentes de la edición</h2>    
         <% if (edicion.docentes().isEmpty()) { %><p class="texto-secundario">No hay docentes asignados.</p><% } %>
-        <div class="grilla-usuarios">
+        <ul class="lista-docentes">
         <% for (DTUsuarioConsulta docente : edicion.docentes()) { %>
-            <article class="usuario-tarjeta">
-                <img class="avatar-usuario" src="${pageContext.request.contextPath}/<%= docente.tieneImagen() ? "imagen-usuario?nick=" + parametro(docente.nick()) : "imagenes/avatar.svg" %>" alt="" loading="lazy" width="72" height="72">
-                <div class="usuario-tarjeta-datos">
-                    <h3><%= escapar(docente.nombreCompleto()) %></h3>
-                    <p class="texto-secundario">@<%= escapar(docente.nick()) %></p>
-                    <a class="enlace-detalle" href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(docente.nick()) %>">Ver perfil →</a>
-                </div>
-            </article>
+            <li><%= escapar(docente.nombreCompleto()) %> — <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(docente.nick()) %>">@<%= escapar(docente.nick()) %></a></li>
         <% } %>
-        </div>
+        </ul>
     </section>
 
+</div>
 </main>
 <%@ include file="/WEB-INF/vistas/fragmentos/pie.jspf" %>
 </body>

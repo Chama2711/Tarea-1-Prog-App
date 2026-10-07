@@ -15,13 +15,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
-    <script src="${pageContext.request.contextPath}/js/perfil.js?v=2" defer></script>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
+    <script src="${pageContext.request.contextPath}/js/perfil.js?v=3" defer></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
-<%@ include file="/WEB-INF/vistas/fragmentos/bienvenida.jspf" %>
-<main id="contenido" class="contenedor contenido">
+
+<main id="contenido" class="contenedor contenido disposicion-web">
+<%@ include file="/WEB-INF/vistas/fragmentos/lateral.jspf" %>
+<div class="contenido-pagina">
+<%@ include file="/WEB-INF/vistas/fragmentos/intro.jspf" %>
 
     <a class="volver" href="${pageContext.request.contextPath}/usuarios?tipo=<%= docente ? "docentes" : "estudiantes" %>">← Volver a usuarios</a>
     <section class="panel perfil-encabezado" aria-label="Perfil de usuario">
@@ -30,6 +33,17 @@
             <span class="categoria-chip"><%= docente ? "Docente" : "Estudiante" %></span>
             <h2><%= escapar(usuario.nombreCompleto()) %></h2>
             <p class="texto-secundario">@<%= escapar(usuario.nick()) %><%= perfil.propio() ? " · Mi perfil" : "" %></p>
+        </div>
+    </section>
+    <section class="panel perfil-contenido" aria-label="Información del usuario">
+
+        <nav class="perfil-pestanas" aria-label="Secciones del perfil">
+            <a id="tab-general" href="#perfil-general">General</a>
+            <a id="tab-ediciones" href="#perfil-ediciones">Ediciones</a>
+            <% if (!docente) { %><a id="tab-programas" href="#perfil-programas">Programas</a><% } %>
+            <% if (docente && perfil.propio()) { %><a id="tab-aceptados" href="#perfil-aceptados">Estudiantes aceptados</a><% } %>
+        </nav>
+        <section id="perfil-general" class="perfil-panel" aria-labelledby="tab-general">
         <div class="perfil-datos-fijos">
             <dl class="perfil-datos">
                 <div><dt>Nombre</dt><dd><%= escapar(usuario.nombre()) %></dd></div>
@@ -41,15 +55,7 @@
                 <% } %>
             </dl>
         </div>
-        </div>
-    </section>
-    <section class="panel perfil-contenido" aria-label="Información del usuario">
-        <% if (!docente) { %><h2>Inscripciones</h2><% } %>
-        <nav class="perfil-pestanas" aria-label="Secciones del perfil">
-            <a id="tab-ediciones" href="#perfil-ediciones">Ediciones</a>
-            <% if (!docente) { %><a id="tab-programas" href="#perfil-programas">Programas</a><% } %>
-            <% if (docente && perfil.propio()) { %><a id="tab-aceptados" href="#perfil-aceptados">Estudiantes aceptados</a><% } %>
-        </nav>
+        </section>
         <section id="perfil-ediciones" class="perfil-panel" aria-labelledby="titulo-participacion">
             <h3 id="titulo-participacion"><%= docente ? "Ediciones en las que participa" : "Inscripciones a ediciones de cursos" %></h3>
             <% if (docente) { %>
@@ -108,6 +114,7 @@
         <% } %>
     </section>
 
+</div>
 </main>
 <dialog id="visor-foto" class="visor-foto" aria-labelledby="titulo-visor-foto">
     <div class="visor-foto-cabecera">

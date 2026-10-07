@@ -1,0 +1,28 @@
+<%@ page pageEncoding="UTF-8" %>
+<aside class="navegacion-lateral" aria-label="Explorar edEXT">
+    <% if (usuarioSesion != null) { %>
+    <nav aria-label="Mi cuenta">
+        <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>">Mi perfil</a>
+        <% if (usuarioSesion.getRol() == DTAutenticacion.Rol.ESTUDIANTE) { %>
+        <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>#perfil-ediciones">Mis inscripciones</a>
+        <% } else { %>
+        <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>#perfil-ediciones">Mis ediciones</a>
+        <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>#perfil-aceptados">Estudiantes aceptados</a>
+        <% } %>
+    </nav>
+    <% } %>
+    <nav aria-labelledby="nav-institutos">
+        <h2 id="nav-institutos">Institutos</h2>
+        <% if (request.getAttribute("navInstitutos") != null) {
+            for (logica.Instituto item : (java.util.List<logica.Instituto>) request.getAttribute("navInstitutos")) { %>
+        <a href="${pageContext.request.contextPath}/busqueda?instituto=<%= parametro(item.getNombre()) %>" <%= item.getNombre().equals(request.getParameter("instituto")) ? "aria-current=\"true\"" : "" %>><%= escapar(item.getNombre()) %></a>
+        <% } } %>
+    </nav>
+    <nav aria-labelledby="nav-categorias">
+        <h2 id="nav-categorias">Categorías</h2>
+        <% if (request.getAttribute("navCategorias") != null) {
+            for (logica.Categoria item : (java.util.List<logica.Categoria>) request.getAttribute("navCategorias")) { %>
+        <a href="${pageContext.request.contextPath}/busqueda?categoria=<%= parametro(item.getNombre()) %>" <%= item.getNombre().equals(request.getParameter("categoria")) ? "aria-current=\"true\"" : "" %>><%= escapar(item.getNombre()) %></a>
+        <% } } %>
+    </nav>
+</aside>

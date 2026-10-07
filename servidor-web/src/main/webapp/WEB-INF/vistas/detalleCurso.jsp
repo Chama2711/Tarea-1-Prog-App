@@ -15,16 +15,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
-<%@ include file="/WEB-INF/vistas/fragmentos/bienvenida.jspf" %>
 
-<main id="contenido" class="contenedor contenido">
+
+<main id="contenido" class="contenedor contenido disposicion-web">
+<%@ include file="/WEB-INF/vistas/fragmentos/lateral.jspf" %>
+<div class="contenido-pagina">
+
     <a class="volver" href="${pageContext.request.contextPath}/cursos">← Volver a cursos</a>
+    <div class="consulta-curso">
     <section class="panel" aria-label="Información del curso">
-        <h2>Información del curso</h2>
+        <img class="imagen-detalle" src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="Curso sin imagen">
+        <h1><%= escapar(curso.getNombre()) %></h1>
+        <p><%= escapar(curso.getDescripcion()) %></p>
+        <% String urlCurso = curso.getUrl(); if (urlCurso != null && (urlCurso.startsWith("https://") || urlCurso.startsWith("http://"))) { %>
+        <p><a href="<%= escapar(urlCurso) %>" target="_blank" rel="noopener">Acceder al sitio del curso</a></p><% } %>
         <div class="detalle-datos">
             <div class="dato"><span>Duración</span><strong><%= escapar(curso.getDuracion()) %></strong></div>
             <div class="dato"><span>Carga horaria</span><strong><%= curso.getCantidadHoras() %> horas</strong></div>
@@ -43,7 +51,11 @@
                 <% } %>
             </div>
         <% } %>
+        <h3>Previas</h3>
+        <% if (curso.getPrevias().isEmpty()) { %><p class="texto-secundario">Este curso no tiene previas.</p><% } %>
+        <ul><% for (Curso previa : curso.getPrevias()) { %><li><a href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(previa.getNombre()) %>"><%= escapar(previa.getNombre()) %></a></li><% } %></ul>
     </section>
+    <aside class="relaciones-curso">
     <section class="panel" aria-labelledby="titulo-ediciones">
         <h2 id="titulo-ediciones">Ediciones del curso</h2>
         <% if (ediciones == null || ediciones.isEmpty()) { %>
@@ -51,18 +63,26 @@
         <% } else { %>
             <div class="ediciones">
                 <% for (EdicionCurso edicion : ediciones) { %>
-                    <article class="edicion">
+                    <article class="edicion edicion-miniatura">
+                        <img src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="" width="100" height="76">
+                        <div>
                         <h3><a href="${pageContext.request.contextPath}/edicion?nombre=<%= parametro(edicion.getNombre()) %>"><%= escapar(edicion.getNombre()) %></a></h3>
                         <div class="edicion-datos">
                             <span><strong>Inicio:</strong> <%= fecha(edicion.getFechaInicio()) %></span>
                             <span><strong>Fin:</strong> <%= fecha(edicion.getFechaFin()) %></span>
                             <span><strong>Cupo:</strong> <%= edicion.getCupo() == -1 ? "Sin límite" : edicion.getCupo() %></span>
                         </div>
+                        </div>
                     </article>
                 <% } %>
             </div>
         <% } %>
     </section>
+    <section class="panel"><h2>Programas de formación</h2>
+        <% if (curso.getProgramasFormacion().isEmpty()) { %><p class="texto-secundario">Este curso no integra programas.</p><% } %>
+        <ul class="lista-docentes"><% for (ProgramaFormacion programaCurso : curso.getProgramasFormacion()) { %><li><a href="${pageContext.request.contextPath}/programa?nombre=<%= parametro(programaCurso.getNombre()) %>"><%= escapar(programaCurso.getNombre()) %></a></li><% } %></ul>
+    </section></aside></div>
+</div>
 </main>
 <%@ include file="/WEB-INF/vistas/fragmentos/pie.jspf" %>
 

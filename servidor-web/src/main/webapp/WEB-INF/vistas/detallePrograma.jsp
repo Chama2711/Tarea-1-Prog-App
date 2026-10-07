@@ -13,16 +13,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
-<%@ include file="/WEB-INF/vistas/fragmentos/bienvenida.jspf" %>
 
-<main id="contenido" class="contenedor contenido">
+
+<main id="contenido" class="contenedor contenido disposicion-web">
+<%@ include file="/WEB-INF/vistas/fragmentos/lateral.jspf" %>
+<div class="contenido-pagina">
+
     <a class="volver" href="${pageContext.request.contextPath}/programas">← Volver a programas</a>
     <section class="panel" aria-label="Información del programa">
-        <h2>Información del programa</h2>
+        <h1><%= escapar(programa.getNombre()) %></h1><p><%= escapar(programa.getDescripcion()) %></p>
         <div class="detalle-datos">
             <div class="dato"><span>Fecha de inicio</span><strong><%= fecha(programa.getFechaInicio()) %></strong></div>
             <div class="dato"><span>Fecha de finalización</span><strong><%= fecha(programa.getFechaFin()) %></strong></div>
@@ -45,6 +48,7 @@
             </div>
         <% } %>
     </section>
+</div>
 </main>
 <%@ include file="/WEB-INF/vistas/fragmentos/pie.jspf" %>
 

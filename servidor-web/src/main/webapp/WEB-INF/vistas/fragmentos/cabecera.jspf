@@ -19,3 +19,10 @@
         <% } %>
     </div>
 </div></header>
+
+<div class="contenedor buscador-compartido">
+<form method="get" action="${pageContext.request.contextPath}/busqueda" role="search">
+<label class="solo-lectores" for="busqueda-global">Buscar cursos o programas</label>
+<input id="busqueda-global" type="search" name="q" placeholder="Buscar cursos o programas…" value="<%= escapar(request.getParameter("q")) %>">
+<button class="boton" type="submit">Buscar</button>
+</form></div>

@@ -13,13 +13,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
-<%@ include file="/WEB-INF/vistas/fragmentos/bienvenida.jspf" %>
 
-<main id="contenido" class="contenedor contenido">
+
+<main id="contenido" class="contenedor contenido disposicion-web">
+<%@ include file="/WEB-INF/vistas/fragmentos/lateral.jspf" %>
+<div class="contenido-pagina">
+<%@ include file="/WEB-INF/vistas/fragmentos/intro.jspf" %>
     <h2>Programas de formación</h2>
     <% if (programas == null || programas.isEmpty()) { %>
         <div class="aviso">No hay programas de formación disponibles.</div>
@@ -27,6 +30,7 @@
         <section class="grilla-programas" aria-label="Programas de formación">
             <% for (ProgramaFormacion programa : programas) { %>
                 <article class="programa-tarjeta">
+                    <img class="imagen-oferta" src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="Programa sin imagen">
                     <h2><%= escapar(programa.getNombre()) %></h2>
                     <p><%= escapar(programa.getDescripcion()) %></p>
                     <div class="programa-datos">
@@ -39,6 +43,7 @@
         </section>
     <% } %>
     <a class="volver volver-final" href="${pageContext.request.contextPath}/inicio">← Volver al inicio</a>
+</div>
 </main>
 <%@ include file="/WEB-INF/vistas/fragmentos/pie.jspf" %>
 

@@ -17,13 +17,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
     
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
-<%@ include file="/WEB-INF/vistas/fragmentos/bienvenida.jspf" %>
-<main id="contenido" class="contenedor contenido">
+
+<main id="contenido" class="contenedor contenido disposicion-web">
+<%@ include file="/WEB-INF/vistas/fragmentos/lateral.jspf" %>
+<div class="contenido-pagina">
+<%@ include file="/WEB-INF/vistas/fragmentos/intro.jspf" %>
 
     <% if (request.getAttribute("error") != null) { %>
         <div class="aviso aviso-error" role="alert"><%= escapar(request.getAttribute("error")) %></div>
@@ -54,6 +57,7 @@
         </section>
     <% } %>
 
+</div>
 </main>
 <%@ include file="/WEB-INF/vistas/fragmentos/pie.jspf" %>
 </body>

@@ -14,13 +14,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
-<%@ include file="/WEB-INF/vistas/fragmentos/bienvenida.jspf" %>
 
-<main id="contenido" class="contenedor contenido">
+
+<main id="contenido" class="contenedor contenido disposicion-web">
+<%@ include file="/WEB-INF/vistas/fragmentos/lateral.jspf" %>
+<div class="contenido-pagina">
+<%@ include file="/WEB-INF/vistas/fragmentos/intro.jspf" %>
     <section class="formulario-tarjeta registro-tarjeta" aria-labelledby="titulo-registro">
         <h2 id="titulo-registro">Creá tu cuenta</h2>
         <% if (request.getAttribute("error") != null) { %>
@@ -82,6 +85,7 @@
         </form>
         <p class="formulario-enlaces">¿Ya tenés cuenta? <a href="${pageContext.request.contextPath}/login">Iniciá sesión</a></p>
     </section>
+</div>
 </main>
 <%@ include file="/WEB-INF/vistas/fragmentos/pie.jspf" %>
 <script src="${pageContext.request.contextPath}/js/registro.js" defer></script>
