@@ -21,6 +21,23 @@ import logica.*;
 
     private final EntityManagerFactory emf;
 
+    public List<String> listarNombresInstitutosDocente(String nickDocente) {
+        if (nickDocente == null || nickDocente.isBlank()) {
+            throw new SecurityException("Se requiere un docente registrado.");
+        }
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (!(em.find(Usuario.class, nickDocente) instanceof Docente)) {
+                throw new SecurityException("Se requiere un docente registrado.");
+            }
+            return em.createQuery("SELECT DISTINCT i.nombre FROM Docente d JOIN d.institutos i "
+                    + "WHERE d.nick = :nick ORDER BY i.nombre", String.class)
+                    .setParameter("nick", nickDocente).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
     /** Materializar los datos de consulta antes de cerrar JPA, sin exponer entidades a la web. */
     private DTUsuarioConsulta datosUsuario(EntityManager em, Usuario usuario, boolean incluirInstitutos) {
         boolean docente = usuario instanceof Docente;

@@ -1,187 +1,88 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
-
+<%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
+<%
+    String tituloPagina = "Creá una edición.";
+    String bajadaPagina = "Definí las fechas, el cupo y los docentes de un curso.";
+    String paginaActiva = "cursos";
+    List<String> institutos = (List<String>) request.getAttribute("institutos");
+    List<String> cursos = (List<String>) request.getAttribute("cursos");
+    List<String> docentes = (List<String>) request.getAttribute("docentes");
+    List<String> docentesSeleccionados = (List<String>) request.getAttribute("docentesSeleccionados");
+    String institutoElegido = (String) request.getAttribute("instituto");
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Alta de Edición de Curso | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= escapar(tituloPagina) %> | edEXT</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=6">
 </head>
-
 <body>
-    
-    <main class="alta-curso-contenedor">
-        
-        <h1>Alta de Edición de Curso</h1>
-        <div class="alta-curso-tarjeta">
-        
-        <form class="alta-curso-formulario"
-            action="${pageContext.request.contextPath}/alta-edicion-curso"
-              method="get">
-                
-                <div class="alta-curso-campo">
-                    <label for="instituto">Instituto:</label>
-
-                    <select id="instituto" name="instituto">
-
-                        <option value =""> Seleccione un instituto</option>
-
-                            <%
-                                List<String> institutos = (List<String>) request.getAttribute("institutos");
-
-                                if (institutos != null) 
-                                {
-                                    for (String instituto : institutos) 
-                                    {
-                            %>
-                                        <option value="<%= instituto %>"
-                                            <%= instituto.equals(request.getAttribute("institutoSeleccionado") != null ? request.getAttribute("institutoSeleccionado") : request.getParameter("instituto")) ? "selected" : "" %>>
-                                            <%= instituto %>
-                                        </option>
-                            <%
-                                    }
-                                }
-                            %>    
-
-                    </select>
-                </div>
-                        
-                        <button type="submit" class="alta-curso-boton">Seleccionar instituto</button>
-
-        </form>
-            <%            
-                List<String> cursos = (List<String>) request.getAttribute("cursos");
-
-                List<String> docentes = (List<String>) request.getAttribute("docentes");
-
-                String institutoSeleccionado = (String) request.getAttribute("institutoSeleccionado");
-                
-                if(institutoSeleccionado != null)
-                {
-            %>
-                
-                    <h2>Datos de la edición</h2>
-                    
-                    <% if (request.getAttribute("error") != null) { %>
-
-                        <p class="alta-curso-error">
-                            ${error}
-                        </p>
-
-                    <% } %>
-                    
-                    <form class="alta-curso-formulario"
-                        action="${pageContext.request.contextPath}/alta-edicion-curso"
-                        method="post">
-
-                        <input type="hidden"
-                               name="instituto"
-                               value="<%= institutoSeleccionado %>">
-
-                        <div class="alta-curso-campo">
-                            <label for="curso">Curso:</label>
-
-                            <select id="curso" name="curso" required>
-
-                                <option value="">Seleccione un curso</option>
-
-                                <% if (cursos != null) 
-                                   {
-                                        for (String curso : cursos) 
-                                        { %>
-
-                                            <option value="<%= curso %>"
-                                                <%= curso.equals(request.getAttribute("cursoIngresado")) ? "selected" : "" %>>
-                                                <%= curso %>
-                                            </option>
-                                    <%  }
-                                    } %>
-
-                            </select>
-                        </div>                
-                                    
-                            <div class="alta-curso-campo">
-                                <label for="nombre">Nombre de la edición:</label>
-                                <input 
-                                    type="text"
-                                    id="nombre"
-                                    name="nombre"
-                                    value="${nombreIngresado}"
-                                    required>
-                            </div>
-                                
-                            <div class="alta-curso-campo">    
-                                <label for="fechaInicio">Fecha de inicio:</label>
-                                <input
-                                    type="date"
-                                    id="fechaInicio"
-                                    name="fechaInicio"
-                                    value="${fechaInicioIngresada}"
-                                    required>
-                            </div>   
-                                
-                                
-                            <div class="alta-curso-campo">    
-                                <label for="fechaFin">Fecha de finalización:</label>
-                                <input
-                                    type="date"
-                                    id="fechaFin"
-                                    name="fechaFin"
-                                    value="${fechaFinIngresada}"
-                                    required>
-                            </div> 
-                                
-                            <div class="alta-curso-campo">    
-                                <label for="cupos">Cupos:</label>
-                                <input
-                                    type="number"
-                                    id="cupos"
-                                    name="cupos"
-                                    value="${cuposIngresados}"
-                                    min="1"
-                                    placeholder="Sin límite">
-                            </div> 
-                                
-                                
-                                
-                            <h3>Docentes disponibles</h3>
-                            
-                            <div class="alta-curso-opciones">
-
-                                <% if (docentes != null) 
-                                {
-                                    for (String docente : docentes) 
-                                    { %>
-                                        <div>
-                                            <label>
-                                                <input 
-                                                    type="checkbox"
-                                                    name="docentes"
-                                                    value="<%= docente %>"
-                                                        <%= request.getAttribute("docentesSeleccionados") != null && ((List<String>) request.getAttribute("docentesSeleccionados")).contains(docente) ? "checked" : "" %>>
-                                                    <%= docente %>
-                                            </label>
-                                        </div>
-                                <%  }
-                                } %>
-                            
-                            </div>
-                            
-                            <div class="alta-curso-acciones">
-                                <button type="submit" class="alta-curso-boton">Crear edición</button>
-
-                                <a href="${pageContext.request.contextPath}/inicio">
-                                    Cancelar
-                                </a>
-                            </div>  
-                            
-                    </form>
-             <% } %>
+<%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
+<main id="contenido" class="contenedor contenido disposicion-web">
+<%@ include file="/WEB-INF/vistas/fragmentos/lateral.jspf" %>
+<div class="contenido-pagina">
+<%@ include file="/WEB-INF/vistas/fragmentos/intro.jspf" %>
+<section class="panel" aria-labelledby="datos-edicion">
+    <h2 id="datos-edicion">Datos de la edición</h2>
+    <% if (request.getAttribute("error") != null) { %>
+        <div class="aviso aviso-error" role="alert"><%= escapar(request.getAttribute("error")) %></div>
+    <% } %>
+    <% if (institutos.isEmpty()) { %>
+        <p>No tenés institutos asociados para registrar una edición.</p>
+    <% } else { %>
+    <form method="get" action="${pageContext.request.contextPath}/alta-edicion-curso">
+        <div class="campo"><label for="instituto">Instituto</label>
+            <select id="instituto" name="instituto" required>
+                <option value="">Seleccioná un instituto</option>
+                <% for (String instituto : institutos) { %>
+                    <option value="<%= escapar(instituto) %>" <%= instituto.equals(institutoElegido) ? "selected" : "" %>><%= escapar(instituto) %></option>
+                <% } %>
+            </select>
         </div>
-    </main>
-
+        <button type="submit" class="boton boton-secundario boton-pequeno">Ver cursos del instituto</button>
+    </form>
+    <% if (!institutoElegido.isEmpty() && cursos.isEmpty()) { %>
+        <p class="aviso">Este instituto no tiene cursos. <a href="${pageContext.request.contextPath}/alta-curso">Creá un curso</a> antes de registrar su edición.</p>
+    <% } else if (!institutoElegido.isEmpty()) { %>
+    <form class="formulario-edicion" method="post" action="${pageContext.request.contextPath}/alta-edicion-curso">
+        <input type="hidden" name="instituto" value="<%= escapar(institutoElegido) %>">
+        <div class="campo"><label for="curso">Curso</label>
+            <select id="curso" name="curso" required>
+                <option value="">Seleccioná un curso</option>
+                <% for (String curso : cursos) { %>
+                    <option value="<%= escapar(curso) %>" <%= curso.equals(request.getAttribute("curso")) ? "selected" : "" %>><%= escapar(curso) %></option>
+                <% } %>
+            </select>
+        </div>
+        <div class="campo"><label for="nombre">Nombre de la edición</label>
+            <input id="nombre" name="nombre" value="<%= escapar(request.getAttribute("nombre")) %>" required></div>
+        <div class="campo"><label for="fechaInicio">Fecha de inicio</label>
+            <input type="date" id="fechaInicio" name="fechaInicio" value="<%= escapar(request.getAttribute("fechaInicio")) %>" required></div>
+        <div class="campo"><label for="fechaFin">Fecha de finalización</label>
+            <input type="date" id="fechaFin" name="fechaFin" value="<%= escapar(request.getAttribute("fechaFin")) %>" required></div>
+        <div class="campo"><label for="cupos">Cupo</label>
+            <input type="number" id="cupos" name="cupos" min="-1" step="1" value="<%= escapar(request.getAttribute("cupos")) %>" aria-describedby="ayuda-cupo" placeholder="Sin límite">
+            <p id="ayuda-cupo" class="ayuda">Dejalo vacío o usá -1 para sin límite. El valor 0 no permite aceptaciones.</p>
+        </div>
+        <fieldset class="opciones-formulario"><legend>Docentes participantes</legend>
+            <% for (String docente : docentes) { %>
+                <label class="check"><input type="checkbox" name="docentes" value="<%= escapar(docente) %>" <%= docentesSeleccionados.contains(docente) ? "checked" : "" %>><%= escapar(docente) %></label>
+            <% } %>
+            <% if (docentes.isEmpty()) { %><p>No hay docentes disponibles en este instituto.</p><% } %>
+        </fieldset>
+        <div class="acciones-registro">
+            <button type="submit" class="boton">Crear edición</button>
+            <a class="boton boton-secundario" href="${pageContext.request.contextPath}/cursos">Cancelar</a>
+        </div>
+    </form>
+    <% } %>
+    <% } %>
+</section>
+</div>
+</main>
+<%@ include file="/WEB-INF/vistas/fragmentos/pie.jspf" %>
 </body>
 </html>
-                         
-        
