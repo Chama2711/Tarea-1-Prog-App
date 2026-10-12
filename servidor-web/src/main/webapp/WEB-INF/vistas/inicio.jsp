@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="logica.DTAutenticacion" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -98,6 +99,24 @@
                            href="${pageContext.request.contextPath}/cursos">
                             Ver cursos →
                         </a>
+			<%
+    			DTAutenticacion usuario = (DTAutenticacion) session.getAttribute("usuario");
+
+    			if (usuario != null && usuario.getRol() == DTAutenticacion.Rol.DOCENTE) {
+			%>
+
+    			<a class="boton-tarjeta"
+       			href="${pageContext.request.contextPath}/alta-curso">
+       			 Crear curso +
+    			</a>
+
+    			<a class="boton-tarjeta"
+       			href="${pageContext.request.contextPath}/alta-edicion-curso">
+        		Crear edición +
+    			</a>
+
+			<% } %>
+			
                 </article>
                 <article class="tarjeta">
                     <span class="numero">${cantidadProgramas}</span>
