@@ -17,6 +17,17 @@
         <url-pattern>/inscripcion-edicion</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+    <servlet-name>InscripcionProgramaServlet</servlet-name>
+    <servlet-class>web.InscripcionProgramaServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>InscripcionProgramaServlet</servlet-name>
+        <url-pattern>/inscripcion-programa</url-pattern>
+    </servlet-mapping>
+    
+    
     <error-page>
         <error-code>500</error-code>
         <location>/WEB-INF/vistas/error.jsp</location>

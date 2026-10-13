@@ -30,6 +30,15 @@ public class Inscripcion {
         this.edicion = ec;
     }
     
+    //Inscripcion a Programa de Formacion
+    public Inscripcion(LocalDate fi, ProgramaFormacion pf){
+        this.fechaInscripcion = fi;
+        this.programa = pf;
+    }
+    
+    
+    
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

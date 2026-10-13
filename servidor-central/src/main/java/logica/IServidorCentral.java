@@ -159,7 +159,13 @@ public interface IServidorCentral {
         String nombrePrograma,
         String nombreCurso
     ) throws Exception;
-
+    
+    void inscriboAProgramaFormacion(
+        Estudiante estudiante,
+        ProgramaFormacion programa,
+        LocalDate fechaInscripcion
+    );
+    
     List<String> listarNombresCursos();
 
     List<String> listarNombresProgramas();
@@ -168,6 +174,8 @@ public interface IServidorCentral {
     List<ProgramaFormacion> obtenerProgramas();
 
     ProgramaFormacion obtenerDetallePrograma(String nombrePrograma);
+    
+    boolean estaInscriptoAPrograma(String nick, Long programaId);
     
    // ==================== 
    //    USUARIOS

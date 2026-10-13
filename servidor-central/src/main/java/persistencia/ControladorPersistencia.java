@@ -10,6 +10,7 @@ import java.util.List;
 import javax.persistence.EntityTransaction;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.LockModeType;
 import javax.persistence.Persistence;
 import logica.*;
 
@@ -516,6 +517,12 @@ public void editarUsuario(Usuario usuario) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
+    
+    
+    
+    
+//// INSCRIPCIONES    
+    
 public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
         LocalDate fechaInscripcion) {
     if (estudiante == null || estudiante.getNick() == null || edicion == null
@@ -563,7 +570,131 @@ public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
         em.close();
     }
 }
+
+public void inscriboAProgramaFormacion(
+        Estudiante estudiante,
+        ProgramaFormacion programa,
+        LocalDate fechaInscripcion) {
+
+    if (estudiante == null || estudiante.getNick() == null
+            || programa == null || programa.getId() == null
+            || fechaInscripcion == null) {
+
+        throw new IllegalArgumentException(
+                "Seleccione estudiante, programa y fecha."
+        );
+    }
+
+    if (fechaInscripcion.isAfter(LocalDate.now())) {
+        throw new IllegalArgumentException(
+                "La fecha de inscripción no puede ser futura."
+        );
+    }
     
+    EntityManager em = emf.createEntityManager();
+
+    try {
+    em.getTransaction().begin();
+
+    Estudiante estudianteBD =
+            em.find(Estudiante.class, estudiante.getNick());
+
+    ProgramaFormacion programaBD = em.find(
+            ProgramaFormacion.class,
+            programa.getId(),
+            LockModeType.PESSIMISTIC_WRITE
+    );
+
+    if (estudianteBD == null || programaBD == null) {
+        throw new IllegalArgumentException(
+                "El estudiante o el programa ya no existen."
+        );
+    }
+    
+    LocalDate inicio = programaBD.getFechaInicio();
+    LocalDate fin = programaBD.getFechaFin();
+
+    if (fechaInscripcion.isAfter(fin)) {
+        throw new IllegalArgumentException(
+            "No puedes inscribirte porque el programa ya finalizó."
+        );
+    }
+
+    if (fechaInscripcion.isAfter(inicio.plusDays(14))) {
+        throw new IllegalArgumentException(
+            "El plazo de inscripción terminó. "
+            + "Solo puedes inscribirte durante los primeros 14 días."
+        );
+    }
+    
+    Long repetidas = em.createQuery(
+        "SELECT COUNT(i) FROM Estudiante e JOIN e.inscripciones i "
+        + "WHERE e.nick = :nick AND i.programa.id = :programaId",
+        Long.class)
+    .setParameter("nick", estudianteBD.getNick())
+    .setParameter("programaId", programaBD.getId())
+    .getSingleResult();
+
+    if (repetidas > 0) {
+        throw new IllegalArgumentException(
+                "El estudiante ya está inscripto en este programa."
+        );
+    }
+
+    Inscripcion nueva = new Inscripcion(
+            fechaInscripcion,
+            programaBD
+    );
+
+    em.persist(nueva);
+
+    estudianteBD.agregoInscripcion(nueva);
+
+    em.getTransaction().commit();
+    
+    } catch (RuntimeException e) {
+
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+
+        throw e;
+
+    } finally {
+        em.close();
+    }
+    
+}
+
+public boolean estaInscriptoAPrograma(String nick, Long programaId) {
+
+    if (nick == null || nick.isBlank() || programaId == null) {
+        throw new IllegalArgumentException(
+                "Debe indicar el estudiante y el programa."
+        );
+    }
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        Long cantidad = em.createQuery(
+                "SELECT COUNT(i) "
+                + "FROM Estudiante e JOIN e.inscripciones i "
+                + "WHERE e.nick = :nick "
+                + "AND i.programa.id = :programaId",
+                Long.class
+        )
+        .setParameter("nick", nick)
+        .setParameter("programaId", programaId)
+        .getSingleResult();
+
+        return cantidad > 0;
+
+    } finally {
+        em.close();
+    }
+}
+
     public void seleccionarEstudiantes(String nickDocente, String nombreEdicion,
             java.util.Map<Long, EstadoInscripcion> decisiones) {
         EntityManager em = emf.createEntityManager();

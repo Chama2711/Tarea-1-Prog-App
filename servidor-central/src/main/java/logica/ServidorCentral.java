@@ -370,9 +370,23 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     return persistencia.obtenerDetallePrograma(nombrePrograma);
     }
     
+    @Override
+    public void inscriboAProgramaFormacion(
+        Estudiante estudiante,
+        ProgramaFormacion programa,
+        LocalDate fechaInscripcion) {
+
+    persistencia.inscriboAProgramaFormacion(
+            estudiante,
+            programa,
+            fechaInscripcion
+    );
+    }
     
-    
-    
+    @Override
+    public boolean estaInscriptoAPrograma(String nick, Long programaId) {
+        return persistencia.estaInscriptoAPrograma(nick, programaId);
+    }
     
     // ==================== 
     //     USUARIOS 
