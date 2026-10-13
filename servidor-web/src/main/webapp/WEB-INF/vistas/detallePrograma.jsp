@@ -15,6 +15,11 @@
         usuarioPrograma != null
         && usuarioPrograma.getRol() == DTAutenticacion.Rol.ESTUDIANTE;
     
+    boolean esDocente =
+        usuarioPrograma != null
+        && usuarioPrograma.getRol() == DTAutenticacion.Rol.DOCENTE;
+    
+    
     LocalDate hoy = LocalDate.now();
 
     boolean inscripcionAbierta =
@@ -49,6 +54,18 @@
         String resultadoInscripcion = request.getParameter("inscripcion");
         String errorInscripcion = request.getParameter("errorInscripcion");
     %>
+    
+    <%
+    String resultadoCurso = request.getParameter("cursoAgregado");
+    %>
+
+    <% if ("ok".equals(resultadoCurso)) { %>
+        <div class="aviso" role="status">
+            El curso se agregó correctamente al programa de formación.
+        </div>
+    <% } %>
+    
+    
 
     <% if ("ok".equals(resultadoInscripcion)) { %>
         <div class="aviso" role="status">
@@ -105,7 +122,20 @@
         <% } %>
     </section>
 <% } %>
-        
+ 
+<% if (esDocente) { %>
+    <section class="panel" aria-label="Administración del programa">
+        <h2>Administrar programa</h2>
+
+        <p>Podés agregar cursos a este programa de formación.</p>
+
+        <a class="boton"
+           href="<%= request.getContextPath() %>/agregar-curso-programa?programa=<%= parametro(programa.getNombre()) %>">
+            Agregar curso al programa
+        </a>
+    </section>
+<% } %>
+
     <section aria-labelledby="titulo-cursos-programa">
         <h2 id="titulo-cursos-programa">Cursos del programa</h2>
         <% if (programa.getCursos() == null || programa.getCursos().isEmpty()) { %>

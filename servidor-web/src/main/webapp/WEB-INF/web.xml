@@ -27,6 +27,16 @@
         <url-pattern>/inscripcion-programa</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+    <servlet-name>AgregarCursoProgramaServlet</servlet-name>
+    <servlet-class>web.AgregarCursoProgramaServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+    <servlet-name>AgregarCursoProgramaServlet</servlet-name>
+    <url-pattern>/agregar-curso-programa</url-pattern>
+    </servlet-mapping>
+    
     
     <error-page>
         <error-code>500</error-code>
