@@ -20,6 +20,11 @@ import java.time.LocalDate;
 import logica.Estudiante;
 import logica.ProgramaFormacion;
 import logica.Inscripcion;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import logica.Usuario;
 
 public class CargarDatosPruebaTarea2 {
 
@@ -49,6 +54,8 @@ public static void main(String[] args) {
             Persistence.createEntityManagerFactory("edEXTPU", propiedades);
 
     EntityManager em = emf.createEntityManager();
+    
+    List<String> imagenesNuevas = new ArrayList<>();
 
     // A partir de aquí conservá el try/catch/finally existente.
 
@@ -65,12 +72,13 @@ public static void main(String[] args) {
                 );
             }
 
-          em.getTransaction().begin();
+            em.getTransaction().begin();
 
-          cargarCategorias(em);
-          cargarInscripcionesProgramas(em);
+            cargarCategorias(em);
+            cargarInscripcionesProgramas(em);
+            cargarImagenHeisenberg(em, imagenesNuevas);
 
-          em.getTransaction().commit();
+            em.getTransaction().commit();
 
             System.out.println(
                     "Categorías de Tarea 2 cargadas correctamente."
@@ -83,7 +91,17 @@ public static void main(String[] args) {
             }
 
             e.printStackTrace();
+            
+            for (String nombre : imagenesNuevas) {
+            try {
+                new ImagenesUsuario().eliminar(nombre);
+            } catch (Exception limpiezaError) {
+                e.addSuppressed(limpiezaError);
+                }
+            }
 
+            throw new RuntimeException("Falló la carga de datos de Tarea 2.", e);
+            
         } finally {
             em.close();
             emf.close();
@@ -277,6 +295,51 @@ private static void inscribir(
 }
 
     
+private static void cargarImagenHeisenberg(
+        EntityManager em,
+        List<String> imagenesNuevas
+) throws Exception {
+
+    Usuario usuario = em.find(Usuario.class, "heisenberg");
+
+    if (usuario == null) {
+        throw new IllegalStateException(
+                "No existe el usuario heisenberg."
+        );
+    }
+
+    if (usuario.getImagen() != null
+            && !usuario.getImagen().isBlank()) {
+
+        System.out.println(
+                "heisenberg ya tiene una imagen asignada."
+        );
+        return;
+    }
+
+    Path ruta = Path.of(
+            System.getProperty("user.home"),
+            "Descargas",
+            "edext-imagenes-tarea2",
+            "heisenberg.png"
+    );
+
+    byte[] datos = Files.readAllBytes(ruta);
+
+    ImagenesUsuario almacenamiento = new ImagenesUsuario();
+
+    String nombre = almacenamiento.guardar(datos);
+
+    // Registrar el archivo para limpiarlo si falla la transacción.
+    imagenesNuevas.add(nombre);
+
+    usuario.setImagen(nombre);
+
+    System.out.println(
+            "Imagen asignada a heisenberg: " + nombre
+    );
+}
+
     
     
 }
