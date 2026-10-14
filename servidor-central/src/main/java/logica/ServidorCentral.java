@@ -485,6 +485,11 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     public byte[] obtenerImagenUsuario(String nick) throws Exception {
         return persistencia.obtenerImagenUsuario(nick);
     }
+    
+   @Override
+    public byte[] obtenerImagenCurso(String nombreCurso) throws Exception {
+        return persistencia.obtenerImagenCurso(nombreCurso);
+    }
 
     @Override
     public List<String> listarEdicionesDocente(String nick) {

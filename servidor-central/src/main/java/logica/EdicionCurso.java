@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.ManyToMany;
 import javax.persistence.JoinColumn;
+import javax.persistence.Column;
 
 /**
  *
@@ -29,6 +30,8 @@ public class EdicionCurso {
     private LocalDate fechaFin;
     private LocalDate fechaPublicacion;
     private int cupo;
+    @Column(name = "IMAGEN", length = 255)
+    private String imagen;
     
     public EdicionCurso(){
         
@@ -137,13 +140,22 @@ public void validarSeleccion(Inscripcion inscripcion, EstadoInscripcion destino,
     }
 }
 
-public void setDocentes(Set<Docente> d){
+    public void setDocentes(Set<Docente> d){
         this.docentes = d;
     }
     
     
     public void agregoDocente(Docente d){
         docentes.add(d);
+    }
+    
+    
+    public String getImagen() {
+    return imagen;
+}
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
     
 }

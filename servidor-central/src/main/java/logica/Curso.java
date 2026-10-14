@@ -46,6 +46,9 @@ public class Curso implements Serializable {
     private int creditos;
     private LocalDate fechaRegistro;
     private String url;
+    
+    @Column(name = "IMAGEN", length = 255)
+    private String imagen;
 
     @ManyToMany(mappedBy = "cursos")
     private Set<ProgramaFormacion> programas = new HashSet<>() ;
@@ -153,5 +156,11 @@ public class Curso implements Serializable {
     categorias.add(categoria);
     }
    
-    
+    public String getImagen() {
+    return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
 }

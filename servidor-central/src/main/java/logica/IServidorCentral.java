@@ -219,6 +219,7 @@ public interface IServidorCentral {
     void crearUsuario(Usuario usuario, String nombreInstituto, byte[] imagen) throws Exception;
 
     byte[] obtenerImagenUsuario(String nick) throws Exception;
+    byte[] obtenerImagenCurso(String nombreCurso) throws Exception;
 
     List<String> listarCursosOEdicionesUsuario(String nick);
 

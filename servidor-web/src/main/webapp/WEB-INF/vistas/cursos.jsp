@@ -30,7 +30,19 @@
         <section class="grilla-cursos" aria-label="Cursos disponibles">
             <% for (Curso curso : cursos) { %>
                 <article class="curso-tarjeta">
-                    <img class="imagen-oferta" src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="Curso sin imagen">
+                    <% if (curso.getImagen() != null && !curso.getImagen().isBlank()) { %>
+
+                            <img class="imagen-oferta"
+                                 src="${pageContext.request.contextPath}/imagen-curso?nombre=<%= parametro(curso.getNombre()) %>"
+                                 alt="Imagen del curso <%= escapar(curso.getNombre()) %>">
+
+                    <% } else { %>
+
+                            <img class="imagen-oferta"
+                                 src="${pageContext.request.contextPath}/imagenes/formacion.svg"
+                                 alt="Curso sin imagen">
+
+                    <% } %>
                     <h2><%= escapar(curso.getNombre()) %></h2>
                     <p class="curso-descripcion"><%= escapar(curso.getDescripcion()) %></p>
                     <div class="curso-datos">

@@ -56,6 +56,7 @@ public static void main(String[] args) {
     EntityManager em = emf.createEntityManager();
     
     List<String> imagenesNuevas = new ArrayList<>();
+    List<String> imagenesCursosNuevas = new ArrayList<>();
 
     // A partir de aquí conservá el try/catch/finally existente.
 
@@ -76,36 +77,107 @@ public static void main(String[] args) {
 
             cargarCategorias(em);
             cargarInscripcionesProgramas(em);
-            cargarImagenHeisenberg(em, imagenesNuevas);
 
+            cargarImagenUsuario(
+                    em, "heisenberg", "heisenberg.png", imagenesNuevas
+            );
+
+            cargarImagenUsuario(
+                    em, "roro", "roro.jpg", imagenesNuevas
+            );
+
+            
+            cargarImagenUsuario(
+                    em, "chechi", "chechi.jpg", imagenesNuevas
+            );
+            
+            cargarImagenUsuario(
+                    em, "jeffw", "jeffw.jpg", imagenesNuevas
+            );
+
+            cargarImagenUsuario(
+                    em, "benkenobi", "benkenobi.jpg", imagenesNuevas
+            );
+
+            cargarImagenUsuario(
+                    em, "waston", "waston.jpg", imagenesNuevas
+            );
+            
+            cargarImagenUsuario(
+                    em, "timmy", "timmy.jpg", imagenesNuevas
+            );
+            
+            cargarImagenUsuario(
+                    em, "house", "house.jpg", imagenesNuevas
+            );
+            
+          cargarImagenCurso(
+                    em, "Dalavuelta",
+                    "dalavuelta.png", imagenesCursosNuevas
+            );
+
+            cargarImagenCurso(
+                    em, "Inclusión Energética",
+                    "inclusion-energetica.jpg", imagenesCursosNuevas
+            );
+
+            cargarImagenCurso(
+                    em, "Flor del Ceibo",
+                    "extensionismo-industrial.png", imagenesCursosNuevas
+            );
+
+            cargarImagenCurso(
+                    em, "Taller de robótica educativa",
+                    "microbit.jpg", imagenesCursosNuevas
+            );
+
+            cargarImagenCurso(
+                    em, "MicroBit",
+                    "curso-c10.jpg", imagenesCursosNuevas
+            );
+
+            
             em.getTransaction().commit();
 
             System.out.println(
                     "Categorías de Tarea 2 cargadas correctamente."
             );
 
-        } catch (Exception e) {
+            } catch (Exception e) {
 
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
+           if (em.getTransaction().isActive()) {
+               em.getTransaction().rollback();
+           }
 
-            e.printStackTrace();
-            
-            for (String nombre : imagenesNuevas) {
-            try {
-                new ImagenesUsuario().eliminar(nombre);
-            } catch (Exception limpiezaError) {
-                e.addSuppressed(limpiezaError);
-                }
-            }
+           e.printStackTrace();
 
-            throw new RuntimeException("Falló la carga de datos de Tarea 2.", e);
-            
-        } finally {
-            em.close();
-            emf.close();
-        }
+           // Limpiar imágenes nuevas de usuarios
+           for (String nombre : imagenesNuevas) {
+               try {
+                   new ImagenesUsuario().eliminar(nombre);
+               } catch (Exception limpiezaError) {
+                   e.addSuppressed(limpiezaError);
+               }
+           }
+
+           // Limpiar imágenes nuevas de cursos
+           for (String nombre : imagenesCursosNuevas) {
+               try {
+                   ImagenesEntidades.cursos().eliminar(nombre);
+               } catch (Exception limpiezaError) {
+                   e.addSuppressed(limpiezaError);
+               }
+           }
+
+           // Esta instrucción debe quedar al final del catch
+           throw new RuntimeException(
+                   "Falló la carga de datos de Tarea 2.", e
+           );
+
+       } finally {
+           em.close();
+           emf.close();
+       }
     }
 
     private static void cargarCategorias(EntityManager em) {
@@ -295,16 +367,19 @@ private static void inscribir(
 }
 
     
-private static void cargarImagenHeisenberg(
+
+private static void cargarImagenUsuario(
         EntityManager em,
+        String nick,
+        String archivo,
         List<String> imagenesNuevas
 ) throws Exception {
 
-    Usuario usuario = em.find(Usuario.class, "heisenberg");
+    Usuario usuario = em.find(Usuario.class, nick);
 
     if (usuario == null) {
         throw new IllegalStateException(
-                "No existe el usuario heisenberg."
+                "No existe el usuario: " + nick
         );
     }
 
@@ -312,7 +387,7 @@ private static void cargarImagenHeisenberg(
             && !usuario.getImagen().isBlank()) {
 
         System.out.println(
-                "heisenberg ya tiene una imagen asignada."
+                nick + " ya tiene una imagen asignada."
         );
         return;
     }
@@ -321,7 +396,7 @@ private static void cargarImagenHeisenberg(
             System.getProperty("user.home"),
             "Descargas",
             "edext-imagenes-tarea2",
-            "heisenberg.png"
+            archivo
     );
 
     byte[] datos = Files.readAllBytes(ruta);
@@ -330,13 +405,63 @@ private static void cargarImagenHeisenberg(
 
     String nombre = almacenamiento.guardar(datos);
 
-    // Registrar el archivo para limpiarlo si falla la transacción.
     imagenesNuevas.add(nombre);
 
     usuario.setImagen(nombre);
 
     System.out.println(
-            "Imagen asignada a heisenberg: " + nombre
+            "Imagen asignada a " + nick + ": " + nombre
+    );
+}
+
+private static void cargarImagenCurso(
+        EntityManager em,
+        String nombreCurso,
+        String archivo,
+        List<String> imagenesCursosNuevas
+) throws Exception {
+
+    List<Curso> cursos = em.createQuery(
+            "SELECT c FROM Curso c WHERE c.nombre = :nombre",
+            Curso.class
+    )
+    .setParameter("nombre", nombreCurso)
+    .getResultList();
+
+    if (cursos.isEmpty()) {
+        throw new IllegalStateException(
+                "No existe el curso: " + nombreCurso
+        );
+    }
+
+    Curso curso = cursos.get(0);
+
+    if (curso.getImagen() != null
+            && !curso.getImagen().isBlank()) {
+
+        System.out.println(
+                nombreCurso + " ya tiene una imagen asignada."
+        );
+        return;
+    }
+
+    Path ruta = Path.of(
+            System.getProperty("user.home"),
+            "Descargas",
+            "edext-imagenes-tarea2",
+            archivo
+    );
+
+    byte[] datos = Files.readAllBytes(ruta);
+
+    String nombre = ImagenesEntidades.cursos().guardar(datos);
+
+    imagenesCursosNuevas.add(nombre);
+
+    curso.setImagen(nombre);
+
+    System.out.println(
+            "Imagen asignada al curso " + nombreCurso + ": " + nombre
     );
 }
 
