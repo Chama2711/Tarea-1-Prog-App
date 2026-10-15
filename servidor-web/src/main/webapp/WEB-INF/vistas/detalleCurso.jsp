@@ -28,7 +28,20 @@
     <a class="volver" href="${pageContext.request.contextPath}/cursos">← Volver a cursos</a>
     <div class="consulta-curso">
     <section class="panel" aria-label="Información del curso">
-        <img class="imagen-detalle" src="${pageContext.request.contextPath}/imagen-curso?nombre=<%= parametro(curso.getNombre()) %>" alt="Imagen del curso <%= escapar(curso.getNombre()) %>">
+       <% if (curso.getImagen() != null && !curso.getImagen().isBlank()) { %>
+
+           <img class="imagen-detalle"
+                src="${pageContext.request.contextPath}/imagen-curso?nombre=<%= parametro(ccurso.getNombre()) %>"
+                alt="Imagen del curso <%= escapar (curso.getNombre()) %>">
+
+       <% } else { %>
+
+          <img class="imagen-detalle"
+               src="${pageContext.request.contextPath}/imagenes/formacion.svg"
+               alt="Curso sin imagen">
+       <% } %>
+
+
         <h1><%= escapar(curso.getNombre()) %></h1>
         <p><%= escapar(curso.getDescripcion()) %></p>
         <% String urlCurso = curso.getUrl(); if (urlCurso != null && (urlCurso.startsWith("https://") || urlCurso.startsWith("http://"))) { %>

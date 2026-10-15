@@ -73,6 +73,7 @@ import logica.*;
         edicion.getFechaPublicacion(),
         edicion.getCupo(),
         edicion.esVigente(),
+        edicion.getImagen() != null && !edicion.getImagen().isBlank(),
         docentes
         );
     }
@@ -1133,27 +1134,6 @@ public byte[] obtenerImagenUsuario(String nick) throws java.io.IOException {
 }
 
 
-public byte[] obtenerImagenEdicion(String nombre) throws java.io.IOException {
-    EntityManager em = emf.createEntityManager();
-    try {
-        EdicionCurso edicion = nombre == null ? null : em.find(EdicionCurso.class, nombre);
-        return edicion == null ? null : ImagenesEntidades.ediciones().leer(edicion.getImagen());
-    } finally {
-        em.close();
-    }
-}
-
-public byte[] obtenerImagenPrograma(String nombre) throws java.io.IOException {
-    EntityManager em = emf.createEntityManager();
-    try {
-        List<ProgramaFormacion> programas = em.createQuery(
-                "SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre", ProgramaFormacion.class)
-                .setParameter("nombre", nombre).getResultList();
-        return programas.isEmpty() ? null : ImagenesEntidades.programas().leer(programas.get(0).getImagen());
-    } finally {
-        em.close();
-    }
-}
 
 public byte[] obtenerImagenCurso(String nombreCurso) throws java.io.IOException {
     EntityManager em = emf.createEntityManager();
@@ -1182,6 +1162,68 @@ public byte[] obtenerImagenCurso(String nombreCurso) throws java.io.IOException 
         em.close();
     }
 }
+
+public byte[] obtenerImagenEdicion(String nombreEdicion)
+        throws java.io.IOException {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        List<EdicionCurso> ediciones = em.createQuery(
+                "SELECT e FROM EdicionCurso e WHERE e.nombre = :nombre",
+                EdicionCurso.class
+        )
+        .setParameter("nombre", nombreEdicion)
+        .getResultList();
+
+        if (ediciones.isEmpty()) {
+            return null;
+        }
+
+        String nombreImagen = ediciones.get(0).getImagen();
+
+        if (nombreImagen == null || nombreImagen.isBlank()) {
+            return null;
+        }
+
+        return ImagenesEntidades.ediciones().leer(nombreImagen);
+
+    } finally {
+        em.close();
+    }
+}
+
+
+public byte[] obtenerImagenPrograma(String nombrePrograma)
+        throws java.io.IOException {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        List<ProgramaFormacion> programas = em.createQuery(
+                "SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre",
+                ProgramaFormacion.class
+        )
+        .setParameter("nombre", nombrePrograma)
+        .getResultList();
+
+        if (programas.isEmpty()) {
+            return null;
+        }
+
+        String nombreImagen = programas.get(0).getImagen();
+
+        if (nombreImagen == null || nombreImagen.isBlank()) {
+            return null;
+        }
+
+        return ImagenesEntidades.programas().leer(nombreImagen);
+
+    } finally {
+        em.close();
+    }
+}
+
 
 public List<String> listarProgramasUsuario(String nick) {
     EntityManager em = emf.createEntityManager();
