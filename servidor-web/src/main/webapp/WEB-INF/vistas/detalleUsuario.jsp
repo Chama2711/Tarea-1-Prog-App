@@ -94,12 +94,12 @@
         <section id="perfil-general" class="perfil-panel" aria-labelledby="tab-general">
             <% if (perfil.propio()) { %>
                 <%-- Formulario editable si es mi propio perfil --%>
-                <form action="${pageContext.request.contextPath}/modificarUsuario" method="POST" id="formModificarUsuario">
+                <form action="${pageContext.request.contextPath}/modificarUsuario" method="POST" id="formModificarUsuario" class="perfil-form-editable">
                     
                     <%-- Nickname (Fijo / No editable) --%>
                     <div class="fila-dato deshabilitado">
                         <span class="label">Nickname</span>
-                        <span class="valor-fijo"><%= escapar(usuario.nick()) %></span>
+                        <span class="valor-fijo">@<%= escapar(usuario.nick()) %></span>
                     </div>
 
                     <%-- Nombre (Editable con lápiz) --%>
@@ -148,7 +148,7 @@
                         </div>
                     <% } %>
 
-                    <div id="contenedor-guardar" class="acciones-guardar" style="display: none; margin-top: 16px;">
+                    <div id="contenedor-guardar" class="acciones-guardar" style="display: none; margin-top: 20px;">
                         <button type="submit" class="boton boton-principal">Guardar Cambios</button>
                     </div>
                 </form>
