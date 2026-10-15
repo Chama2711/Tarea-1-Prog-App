@@ -31,7 +31,7 @@
        <% if (curso.getImagen() != null && !curso.getImagen().isBlank()) { %>
 
            <img class="imagen-detalle"
-                src="${pageContext.request.contextPath}/imagen-curso?nombre=<%= parametro(ccurso.getNombre()) %>"
+                src="${pageContext.request.contextPath}/imagen-curso?nombre=<%= parametro(curso.getNombre()) %>"
                 alt="Imagen del curso <%= escapar (curso.getNombre()) %>">
 
        <% } else { %>
