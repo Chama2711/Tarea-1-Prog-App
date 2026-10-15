@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import logica.Usuario;
+import logica.EdicionCurso;
 
 public class CargarDatosPruebaTarea2 {
 
@@ -57,6 +58,8 @@ public static void main(String[] args) {
     
     List<String> imagenesNuevas = new ArrayList<>();
     List<String> imagenesCursosNuevas = new ArrayList<>();
+    List<String> imagenesEdicionesNuevas = new ArrayList<>();
+    List<String> imagenesProgramasNuevas = new ArrayList<>();
 
     // A partir de aquí conservá el try/catch/finally existente.
 
@@ -137,10 +140,22 @@ public static void main(String[] args) {
             );
 
             
+            cargarImagenCurso(em, "Participación en investigación\nsobre el empleo del juego\nKomikan como recurso\ndidáctico en la Escuela", "komikan.png", imagenesCursosNuevas);
+            cargarImagenEdicion(em, "Flor del Ceibo - 2010", "edicion-e1.jpg", imagenesEdicionesNuevas);
+            cargarImagenEdicion(em, "Flor del Ceibo - 2012", "edicion-e2.jpg", imagenesEdicionesNuevas);
+            cargarImagenEdicion(em, "Flor del Ceibo - 2025", "edicion-e3.jpg", imagenesEdicionesNuevas);
+            cargarImagenEdicion(em, "Dalavuelta - 2025", "edicion-e4.jpg", imagenesEdicionesNuevas);
+            cargarImagenEdicion(em, "Taller de robótica educativa - 2024", "edicion-e7.jpg", imagenesEdicionesNuevas);
+            cargarImagenEdicion(em, "Taller de robótica educativa - 2026", "edicion-e8.jpg", imagenesEdicionesNuevas);
+            cargarImagenEdicion(em, "Taller de robótica educativa - 2026-2", "edicion-e9.jpg", imagenesEdicionesNuevas);
+            cargarImagenPrograma(em, "EFI Ingeniería Mecánica", "programa-p1.jpg", imagenesProgramasNuevas);
+            cargarImagenPrograma(em, "Formación integral", "programa-p2.jpg", imagenesProgramasNuevas);
+            cargarImagenPrograma(em, "EFI Robótica", "programa-p3.jpg", imagenesProgramasNuevas);
+
             em.getTransaction().commit();
 
             System.out.println(
-                    "Categorías de Tarea 2 cargadas correctamente."
+                    "Categorías, inscripciones a programas e imágenes de Tarea 2 cargadas correctamente."
             );
 
             } catch (Exception e) {
@@ -168,6 +183,9 @@ public static void main(String[] args) {
                    e.addSuppressed(limpiezaError);
                }
            }
+
+           limpiarImagenes(ImagenesEntidades.ediciones(), imagenesEdicionesNuevas, e);
+           limpiarImagenes(ImagenesEntidades.programas(), imagenesProgramasNuevas, e);
 
            // Esta instrucción debe quedar al final del catch
            throw new RuntimeException(
@@ -467,5 +485,42 @@ private static void cargarImagenCurso(
 
     
     
+
+private static void cargarImagenEdicion(EntityManager em, String nombre, String archivo,
+        List<String> imagenesNuevas) throws Exception {
+    EdicionCurso edicion = em.find(EdicionCurso.class, nombre);
+    if (edicion == null) throw new IllegalStateException("No existe la edición: " + nombre);
+    edicion.setImagen(guardarImagenPendiente(edicion.getImagen(), archivo,
+            ImagenesEntidades.ediciones(), imagenesNuevas));
+}
+
+private static void cargarImagenPrograma(EntityManager em, String nombre, String archivo,
+        List<String> imagenesNuevas) throws Exception {
+    var programas = em.createQuery("SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre",
+            ProgramaFormacion.class).setParameter("nombre", nombre).getResultList();
+    if (programas.isEmpty()) throw new IllegalStateException("No existe el programa: " + nombre);
+    ProgramaFormacion programa = programas.get(0);
+    programa.setImagen(guardarImagenPendiente(programa.getImagen(), archivo,
+            ImagenesEntidades.programas(), imagenesNuevas));
+}
+
+/** Respeta imágenes existentes y registra los archivos que debe limpiar si falla la transacción. */
+private static String guardarImagenPendiente(String actual, String archivo,
+        ImagenesUsuario almacenamiento, List<String> imagenesNuevas) throws Exception {
+    if (actual != null && !actual.isBlank()) return actual;
+    Path ruta = Path.of(System.getProperty("user.home"), "Descargas", "edext-imagenes-tarea2", archivo);
+    String nombre = almacenamiento.guardar(Files.readAllBytes(ruta));
+    imagenesNuevas.add(nombre);
+    System.out.println("Imagen cargada: " + archivo);
+    return nombre;
+}
+
+private static void limpiarImagenes(ImagenesUsuario almacenamiento, List<String> nombres,
+        Exception error) {
+    for (String nombre : nombres) {
+        try { almacenamiento.eliminar(nombre); }
+        catch (Exception limpieza) { error.addSuppressed(limpieza); }
+    }
+}
 }
 

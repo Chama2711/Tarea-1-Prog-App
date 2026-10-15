@@ -1133,6 +1133,28 @@ public byte[] obtenerImagenUsuario(String nick) throws java.io.IOException {
 }
 
 
+public byte[] obtenerImagenEdicion(String nombre) throws java.io.IOException {
+    EntityManager em = emf.createEntityManager();
+    try {
+        EdicionCurso edicion = nombre == null ? null : em.find(EdicionCurso.class, nombre);
+        return edicion == null ? null : ImagenesEntidades.ediciones().leer(edicion.getImagen());
+    } finally {
+        em.close();
+    }
+}
+
+public byte[] obtenerImagenPrograma(String nombre) throws java.io.IOException {
+    EntityManager em = emf.createEntityManager();
+    try {
+        List<ProgramaFormacion> programas = em.createQuery(
+                "SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre", ProgramaFormacion.class)
+                .setParameter("nombre", nombre).getResultList();
+        return programas.isEmpty() ? null : ImagenesEntidades.programas().leer(programas.get(0).getImagen());
+    } finally {
+        em.close();
+    }
+}
+
 public byte[] obtenerImagenCurso(String nombreCurso) throws java.io.IOException {
     EntityManager em = emf.createEntityManager();
 

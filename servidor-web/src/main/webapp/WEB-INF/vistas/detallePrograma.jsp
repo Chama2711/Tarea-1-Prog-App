@@ -80,6 +80,7 @@
     <% } %>
     
     <section class="panel" aria-label="Información del programa">
+        <img class="imagen-detalle" src="${pageContext.request.contextPath}/imagen-programa?nombre=<%= parametro(programa.getNombre()) %>" alt="Imagen del programa <%= escapar(programa.getNombre()) %>">
         <h1><%= escapar(programa.getNombre()) %></h1><p><%= escapar(programa.getDescripcion()) %></p>
         <div class="detalle-datos">
             <div class="dato"><span>Fecha de inicio</span><strong><%= fecha(programa.getFechaInicio()) %></strong></div>

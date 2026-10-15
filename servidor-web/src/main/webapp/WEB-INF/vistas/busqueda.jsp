@@ -32,7 +32,7 @@
 <% if (resultados.isEmpty()) { %><div class="aviso">No hay resultados para esta búsqueda.</div><% } %>
 <section class="oferta-lista" aria-label="Resultados">
 <% for (Resultado resultado : resultados) { %>
-    <article class="oferta-fila"><img src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="Sin imagen"><div>
+    <article class="oferta-fila"><img src="${pageContext.request.contextPath}/imagen-<%= resultado.tipo() %>?nombre=<%= parametro(resultado.nombre()) %>" alt="Imagen de <%= escapar(resultado.nombre()) %>"><div>
         <span class="categoria-chip"><%= resultado.tipo().equals("curso") ? "Curso" : "Programa" %></span>
         <h2><%= escapar(resultado.nombre()) %></h2><p><%= escapar(resultado.descripcion()) %></p>
         <p class="texto-secundario">Publicado: <%= fecha(resultado.publicacion()) %></p>

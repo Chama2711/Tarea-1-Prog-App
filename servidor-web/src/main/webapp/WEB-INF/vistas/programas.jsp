@@ -30,7 +30,7 @@
         <section class="grilla-programas" aria-label="Programas de formación">
             <% for (ProgramaFormacion programa : programas) { %>
                 <article class="programa-tarjeta">
-                    <img class="imagen-oferta" src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="Programa sin imagen">
+                    <img class="imagen-oferta" src="${pageContext.request.contextPath}/imagen-programa?nombre=<%= parametro(programa.getNombre()) %>" alt="Imagen del programa <%= escapar(programa.getNombre()) %>">
                     <h2><%= escapar(programa.getNombre()) %></h2>
                     <p><%= escapar(programa.getDescripcion()) %></p>
                     <div class="programa-datos">

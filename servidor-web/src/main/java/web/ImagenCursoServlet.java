@@ -31,14 +31,12 @@ public class ImagenCursoServlet extends HttpServlet {
         byte[] imagen;
 
         try {
-            imagen = InicializadorAplicacion
-                    .getServidor(getServletContext())
-                    .obtenerImagenCurso(nombre);
+            imagen = obtenerImagen(request, nombre);
 
         } catch (IOException e) {
             getServletContext().log(
                     "No se pudo leer la imagen del curso solicitado.", e);
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            mostrarPredeterminada(request, response);
             return;
 
         } catch (Exception e) {
@@ -47,7 +45,7 @@ public class ImagenCursoServlet extends HttpServlet {
         }
 
         if (imagen == null || imagen.length == 0) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            mostrarPredeterminada(request, response);
             return;
         }
 
@@ -63,12 +61,21 @@ public class ImagenCursoServlet extends HttpServlet {
                 && imagen[2] == (byte) 0xff;
 
         if (!png && !jpg) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            mostrarPredeterminada(request, response);
             return;
         }
 
         response.setContentType(png ? "image/png" : "image/jpeg");
         response.setContentLength(imagen.length);
         response.getOutputStream().write(imagen);
+    }
+
+    protected byte[] obtenerImagen(HttpServletRequest request, String nombre) throws Exception {
+        return InicializadorAplicacion.getServidor(getServletContext()).obtenerImagenCurso(nombre);
+    }
+
+    private void mostrarPredeterminada(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.sendRedirect(request.getContextPath() + "/imagenes/formacion.svg");
     }
 }

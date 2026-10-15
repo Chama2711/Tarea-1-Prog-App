@@ -47,7 +47,7 @@
         <% } %>
 <section class="panel" aria-label="Información de la edición">
 
-    <img class="imagen-detalle" src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="Edición sin imagen">
+    <img class="imagen-detalle" src="${pageContext.request.contextPath}/imagen-edicion?nombre=<%= parametro(edicion.nombre()) %>" alt="Imagen de la edición <%= escapar(edicion.nombre()) %>">
     <div class="titulo-edicion">
         <h1><%= escapar(edicion.nombre()) %></h1>
 
