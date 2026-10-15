@@ -28,7 +28,20 @@
     <a class="volver" href="${pageContext.request.contextPath}/cursos">← Volver a cursos</a>
     <div class="consulta-curso">
     <section class="panel" aria-label="Información del curso">
-        <img class="imagen-detalle" src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="Curso sin imagen">
+       <% if (curso.getImagen() != null && !curso.getImagen().isBlank()) { %>
+
+           <img class="imagen-detalle"
+                src="${pageContext.request.contextPath}/imagen-curso?nombre=<%= parametro(curso.getNombre()) %>"
+                alt="Imagen del curso <%= escapar (curso.getNombre()) %>">
+
+       <% } else { %>
+
+          <img class="imagen-detalle"
+               src="${pageContext.request.contextPath}/imagenes/formacion.svg"
+               alt="Curso sin imagen">
+       <% } %>
+
+
         <h1><%= escapar(curso.getNombre()) %></h1>
         <p><%= escapar(curso.getDescripcion()) %></p>
         <% String urlCurso = curso.getUrl(); if (urlCurso != null && (urlCurso.startsWith("https://") || urlCurso.startsWith("http://"))) { %>
@@ -64,7 +77,7 @@
             <div class="ediciones">
                 <% for (EdicionCurso edicion : ediciones) { %>
                     <article class="edicion edicion-miniatura">
-                        <img src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="" width="100" height="76">
+                        <img src="${pageContext.request.contextPath}/imagen-edicion?nombre=<%= parametro(edicion.getNombre()) %>" alt="Imagen de la edición <%= escapar(edicion.getNombre()) %>" width="100" height="76">
                         <div>
                         <h3><a href="${pageContext.request.contextPath}/edicion?nombre=<%= parametro(edicion.getNombre()) %>"><%= escapar(edicion.getNombre()) %></a></h3>
                         <div class="edicion-datos">

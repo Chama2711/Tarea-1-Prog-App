@@ -15,6 +15,37 @@ public class ControladorCurso {
         this.persistencia = persistencia;
     }
 
+    private String validarInstitutoDocente(String nickDocente, String nombreInstituto) {
+        if (nombreInstituto == null || nombreInstituto.isBlank()) {
+            throw new IllegalArgumentException("Seleccione un instituto.");
+        }
+        String nombre = nombreInstituto.trim();
+        if (!persistencia.listarNombresInstitutosDocente(nickDocente).contains(nombre)) {
+            throw new SecurityException("Solo puede registrar cursos y ediciones de sus institutos.");
+        }
+        return nombre;
+    }
+
+    /** Recorrido docente: autorización central y fecha del sistema, sin alterar el administrativo. */
+    public void altaCursoDocente(String nickDocente, String nombreInstituto, String nombre,
+            String descripcion, String duracion, int horas, int creditos, String url,
+            List<String> nombresPrevias, List<String> nombresCategorias) {
+        String instituto = validarInstitutoDocente(nickDocente, nombreInstituto);
+        altaCurso(instituto, nombre, descripcion, duracion, horas, creditos, url,
+                nombresPrevias, nombresCategorias);
+    }
+
+    public void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
+            String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
+            int cupo, List<String> nicknamesDocentes) {
+        String instituto = validarInstitutoDocente(nickDocente, nombreInstituto);
+        List<String> disponibles = persistencia.listarNicknamesDocentesPorInstituto(instituto);
+        if (nicknamesDocentes != null && !disponibles.containsAll(nicknamesDocentes)) {
+            throw new IllegalArgumentException("Seleccione docentes del instituto indicado.");
+        }
+        altaEdicionCurso(instituto, nombreCurso, nombreEdicion, inicio, fin, cupo, nicknamesDocentes);
+    }
+
     public List<String> listarNombresInstitutos() {
         List<String> nombres = new ArrayList<>();
         for (Instituto instituto : persistencia.listarInstitutos()) {
@@ -147,10 +178,10 @@ public class ControladorCurso {
         Set<Curso> previas = new HashSet<>();
         if (nombresPrevias != null) {
             for (String nombrePrevia : nombresPrevias) {
-                Curso previa = persistencia.buscarCurso(nombrePrevia);
+                Curso previa = persistencia.buscarCursoInstituto(nombrePrevia, instituto);
                 if (previa == null) {
                     throw new IllegalArgumentException(
-                            "Una previa seleccionada ya no existe.");
+                            "Las previas deben ser cursos existentes del instituto seleccionado.");
                 }
                 previas.add(previa);
             }

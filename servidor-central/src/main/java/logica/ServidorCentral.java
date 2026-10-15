@@ -25,7 +25,7 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     public DTEdicionConsulta consultarEdicion(String nombre) {
         return persistencia.consultarEdicion(nombre);
     }
-    
+
     @Override
     public EdicionCurso buscarEdicion(String nombre) {
         return persistencia.buscarEdicion(nombre);
@@ -36,6 +36,27 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     private final ControladorUsuario controladorUsuario;
     private final ControladorProgramaFormacion controladorProgramaFormacion;
     private final ControladorInscripcion controladorInscripcion;
+
+    @Override
+    public List<String> listarNombresInstitutosDocente(String nickDocente) {
+        return persistencia.listarNombresInstitutosDocente(nickDocente);
+    }
+
+    @Override
+    public void altaCursoDocente(String nickDocente, String nombreInstituto, String nombre,
+            String descripcion, String duracion, int horas, int creditos, String url,
+            List<String> nombresPrevias, List<String> nombresCategorias) {
+        controladorCurso.altaCursoDocente(nickDocente, nombreInstituto, nombre,
+                descripcion, duracion, horas, creditos, url, nombresPrevias, nombresCategorias);
+    }
+
+    @Override
+    public void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
+            String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
+            int cupo, List<String> nicknamesDocentes) {
+        controladorCurso.altaEdicionCursoDocente(nickDocente, nombreInstituto,
+                nombreCurso, nombreEdicion, inicio, fin, cupo, nicknamesDocentes);
+    }
 
     public ServidorCentral() {
         this(new ControladorPersistencia());
@@ -222,13 +243,13 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     public Instituto buscarInstituto(String nombre) {
         return persistencia.buscarInstituto(nombre);
     }
-    
+
     @Override
     public void altaInstituto(String nombreInstituto) throws Exception {
     persistencia.altaInstituto(nombreInstituto);
     }
-    
-    
+
+
 
     // =========================
     // EDICIONES
@@ -240,8 +261,8 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
 
         return persistencia.listarEdicionesCurso(curso);
     }
-    
-    
+
+
     @Override
     public ArrayList<Docente> listarDocentes() {
        return persistencia.listarDocentes();
@@ -250,7 +271,7 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     @Override
     public Docente buscarDocentePorNick(String nick) {
        return persistencia.buscarDocentePorNick(nick);
-    }   
+    }
 
     @Override
     public List<Instituto> obtenerInstitutos() {
@@ -301,8 +322,8 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
             edicion,
             fechaInscripcion
     );
-    } 
-    
+    }
+
     // ==================== PROGRAMAS DE FORMACIÓN ====================
 
     @Override
@@ -349,13 +370,27 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
 
     return persistencia.obtenerDetallePrograma(nombrePrograma);
     }
-    
-    
-    
-    
-    
-    // ==================== 
-    //     USUARIOS 
+
+    @Override
+    public void inscriboAProgramaFormacion(
+        Estudiante estudiante,
+        ProgramaFormacion programa,
+        LocalDate fechaInscripcion) {
+
+    persistencia.inscriboAProgramaFormacion(
+            estudiante,
+            programa,
+            fechaInscripcion
+    );
+    }
+
+    @Override
+    public boolean estaInscriptoAPrograma(String nick, Long programaId) {
+        return persistencia.estaInscriptoAPrograma(nick, programaId);
+    }
+
+    // ====================
+    //     USUARIOS
     //=====================
 
     @Override
@@ -452,6 +487,26 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
         return persistencia.obtenerImagenUsuario(nick);
     }
 
+   @Override
+    public byte[] obtenerImagenCurso(String nombreCurso) throws Exception {
+        return persistencia.obtenerImagenCurso(nombreCurso);
+    }
+
+
+    @Override
+    public byte[] obtenerImagenEdicion(String nombreEdicion)
+            throws Exception {
+
+        return persistencia.obtenerImagenEdicion(nombreEdicion);
+    }
+
+    @Override
+    public byte[] obtenerImagenPrograma(String nombrePrograma)
+            throws Exception {
+
+        return persistencia.obtenerImagenPrograma(nombrePrograma);
+   }
+
     @Override
     public List<String> listarEdicionesDocente(String nick) {
         return persistencia.listarEdicionesDocente(nick);
@@ -473,5 +528,8 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
     
 
-    
+
+
+
+
 }

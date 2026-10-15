@@ -10,6 +10,7 @@ import java.util.List;
 import javax.persistence.EntityTransaction;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.LockModeType;
 import javax.persistence.Persistence;
 import logica.*;
 
@@ -20,6 +21,23 @@ import logica.*;
     public class ControladorPersistencia implements AutoCloseable {
 
     private final EntityManagerFactory emf;
+
+    public List<String> listarNombresInstitutosDocente(String nickDocente) {
+        if (nickDocente == null || nickDocente.isBlank()) {
+            throw new SecurityException("Se requiere un docente registrado.");
+        }
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (!(em.find(Usuario.class, nickDocente) instanceof Docente)) {
+                throw new SecurityException("Se requiere un docente registrado.");
+            }
+            return em.createQuery("SELECT DISTINCT i.nombre FROM Docente d JOIN d.institutos i "
+                    + "WHERE d.nick = :nick ORDER BY i.nombre", String.class)
+                    .setParameter("nick", nickDocente).getResultList();
+        } finally {
+            em.close();
+        }
+    }
 
     /** Materializar los datos de consulta antes de cerrar JPA, sin exponer entidades a la web. */
     private DTUsuarioConsulta datosUsuario(EntityManager em, Usuario usuario, boolean incluirInstitutos) {
@@ -55,6 +73,7 @@ import logica.*;
         edicion.getFechaPublicacion(),
         edicion.getCupo(),
         edicion.esVigente(),
+        edicion.getImagen() != null && !edicion.getImagen().isBlank(),
         docentes
         );
     }
@@ -499,6 +518,12 @@ public void editarUsuario(Usuario usuario) throws Exception {
         return emf.createEntityManager();
     }
     
+    
+    
+    
+    
+//// INSCRIPCIONES    
+    
 public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
         LocalDate fechaInscripcion) {
     if (estudiante == null || estudiante.getNick() == null || edicion == null
@@ -546,7 +571,131 @@ public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
         em.close();
     }
 }
+
+public void inscriboAProgramaFormacion(
+        Estudiante estudiante,
+        ProgramaFormacion programa,
+        LocalDate fechaInscripcion) {
+
+    if (estudiante == null || estudiante.getNick() == null
+            || programa == null || programa.getId() == null
+            || fechaInscripcion == null) {
+
+        throw new IllegalArgumentException(
+                "Seleccione estudiante, programa y fecha."
+        );
+    }
+
+    if (fechaInscripcion.isAfter(LocalDate.now())) {
+        throw new IllegalArgumentException(
+                "La fecha de inscripción no puede ser futura."
+        );
+    }
     
+    EntityManager em = emf.createEntityManager();
+
+    try {
+    em.getTransaction().begin();
+
+    Estudiante estudianteBD =
+            em.find(Estudiante.class, estudiante.getNick());
+
+    ProgramaFormacion programaBD = em.find(
+            ProgramaFormacion.class,
+            programa.getId(),
+            LockModeType.PESSIMISTIC_WRITE
+    );
+
+    if (estudianteBD == null || programaBD == null) {
+        throw new IllegalArgumentException(
+                "El estudiante o el programa ya no existen."
+        );
+    }
+    
+    LocalDate inicio = programaBD.getFechaInicio();
+    LocalDate fin = programaBD.getFechaFin();
+
+    if (fechaInscripcion.isAfter(fin)) {
+        throw new IllegalArgumentException(
+            "No puedes inscribirte porque el programa ya finalizó."
+        );
+    }
+
+    if (fechaInscripcion.isAfter(inicio.plusDays(14))) {
+        throw new IllegalArgumentException(
+            "El plazo de inscripción terminó. "
+            + "Solo puedes inscribirte durante los primeros 14 días."
+        );
+    }
+    
+    Long repetidas = em.createQuery(
+        "SELECT COUNT(i) FROM Estudiante e JOIN e.inscripciones i "
+        + "WHERE e.nick = :nick AND i.programa.id = :programaId",
+        Long.class)
+    .setParameter("nick", estudianteBD.getNick())
+    .setParameter("programaId", programaBD.getId())
+    .getSingleResult();
+
+    if (repetidas > 0) {
+        throw new IllegalArgumentException(
+                "El estudiante ya está inscripto en este programa."
+        );
+    }
+
+    Inscripcion nueva = new Inscripcion(
+            fechaInscripcion,
+            programaBD
+    );
+
+    em.persist(nueva);
+
+    estudianteBD.agregoInscripcion(nueva);
+
+    em.getTransaction().commit();
+    
+    } catch (RuntimeException e) {
+
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+
+        throw e;
+
+    } finally {
+        em.close();
+    }
+    
+}
+
+public boolean estaInscriptoAPrograma(String nick, Long programaId) {
+
+    if (nick == null || nick.isBlank() || programaId == null) {
+        throw new IllegalArgumentException(
+                "Debe indicar el estudiante y el programa."
+        );
+    }
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        Long cantidad = em.createQuery(
+                "SELECT COUNT(i) "
+                + "FROM Estudiante e JOIN e.inscripciones i "
+                + "WHERE e.nick = :nick "
+                + "AND i.programa.id = :programaId",
+                Long.class
+        )
+        .setParameter("nick", nick)
+        .setParameter("programaId", programaId)
+        .getSingleResult();
+
+        return cantidad > 0;
+
+    } finally {
+        em.close();
+    }
+}
+
     public void seleccionarEstudiantes(String nickDocente, String nombreEdicion,
             java.util.Map<Long, EstadoInscripcion> decisiones) {
         EntityManager em = emf.createEntityManager();
@@ -983,6 +1132,98 @@ public byte[] obtenerImagenUsuario(String nick) throws java.io.IOException {
     Usuario usuario = obtenerUsuario(nick);
     return usuario == null ? null : new ImagenesUsuario().leer(usuario.getImagen());
 }
+
+
+
+public byte[] obtenerImagenCurso(String nombreCurso) throws java.io.IOException {
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        List<Curso> cursos = em.createQuery(
+                "SELECT c FROM Curso c WHERE c.nombre = :nombre",
+                Curso.class
+        )
+        .setParameter("nombre", nombreCurso)
+        .getResultList();
+
+        if (cursos.isEmpty()) {
+            return null;
+        }
+
+        String nombreImagen = cursos.get(0).getImagen();
+
+        if (nombreImagen == null || nombreImagen.isBlank()) {
+            return null;
+        }
+
+        return ImagenesEntidades.cursos().leer(nombreImagen);
+
+    } finally {
+        em.close();
+    }
+}
+
+public byte[] obtenerImagenEdicion(String nombreEdicion)
+        throws java.io.IOException {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        List<EdicionCurso> ediciones = em.createQuery(
+                "SELECT e FROM EdicionCurso e WHERE e.nombre = :nombre",
+                EdicionCurso.class
+        )
+        .setParameter("nombre", nombreEdicion)
+        .getResultList();
+
+        if (ediciones.isEmpty()) {
+            return null;
+        }
+
+        String nombreImagen = ediciones.get(0).getImagen();
+
+        if (nombreImagen == null || nombreImagen.isBlank()) {
+            return null;
+        }
+
+        return ImagenesEntidades.ediciones().leer(nombreImagen);
+
+    } finally {
+        em.close();
+    }
+}
+
+
+public byte[] obtenerImagenPrograma(String nombrePrograma)
+        throws java.io.IOException {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        List<ProgramaFormacion> programas = em.createQuery(
+                "SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre",
+                ProgramaFormacion.class
+        )
+        .setParameter("nombre", nombrePrograma)
+        .getResultList();
+
+        if (programas.isEmpty()) {
+            return null;
+        }
+
+        String nombreImagen = programas.get(0).getImagen();
+
+        if (nombreImagen == null || nombreImagen.isBlank()) {
+            return null;
+        }
+
+        return ImagenesEntidades.programas().leer(nombreImagen);
+
+    } finally {
+        em.close();
+    }
+}
+
 
 public List<String> listarProgramasUsuario(String nick) {
     EntityManager em = emf.createEntityManager();

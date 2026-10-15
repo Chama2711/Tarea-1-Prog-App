@@ -11,9 +11,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import logica.IServidorCentral;
 import logica.ProgramaFormacion;
+import logica.DTAutenticacion;
 
 @WebServlet(
         name = "DetalleProgramaServlet",
@@ -49,9 +51,24 @@ public class DetalleProgramaServlet extends HttpServlet {
             );
             return;
         }
+        
+        
+        HttpSession sesion = request.getSession(false);
+
+        DTAutenticacion autenticado = sesion == null? null: (DTAutenticacion) sesion.getAttribute("usuario");
+
+        boolean yaInscripto = false;
+        
+        if (autenticado != null
+        && autenticado.getRol() == DTAutenticacion.Rol.ESTUDIANTE) {
+
+        yaInscripto = servidor.estaInscriptoAPrograma(
+            autenticado.getNick(),
+            programa.getId());
+        }
 
         request.setAttribute("programa", programa);
-
+        request.setAttribute("yaInscripto", yaInscripto);
         request.getRequestDispatcher(
                 "/WEB-INF/vistas/detallePrograma.jsp"
         ).forward(request, response);

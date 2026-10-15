@@ -19,6 +19,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.MapKey;
 import javax.persistence.Table;
 
+
 /**
  *
  * @author elizeth
@@ -38,6 +39,8 @@ public class ProgramaFormacion implements Serializable {
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private LocalDate fechaAlta;
+    @Column(name = "IMAGEN", length = 255)
+    private String imagen;
 
     @ManyToMany
     @JoinTable(
@@ -77,5 +80,12 @@ public class ProgramaFormacion implements Serializable {
         this.cursos.put(curso.getNombre(), curso);
     }
     
+    public String getImagen() {
+    return imagen;
+    } 
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
     
 }

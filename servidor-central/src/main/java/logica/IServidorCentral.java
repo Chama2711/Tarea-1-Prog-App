@@ -59,6 +59,16 @@ public interface IServidorCentral {
 
     List<String> listarNombresInstitutos();
 
+    List<String> listarNombresInstitutosDocente(String nickDocente);
+
+    void altaCursoDocente(String nickDocente, String nombreInstituto, String nombre,
+            String descripcion, String duracion, int horas, int creditos, String url,
+            List<String> nombresPrevias, List<String> nombresCategorias);
+
+    void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
+            String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
+            int cupo, List<String> nicknamesDocentes);
+
     List<String> listarNombresCursosPorInstituto(String nombreInstituto);
 
     List<String> listarNombresCategorias();
@@ -150,7 +160,13 @@ public interface IServidorCentral {
         String nombrePrograma,
         String nombreCurso
     ) throws Exception;
-
+    
+    void inscriboAProgramaFormacion(
+        Estudiante estudiante,
+        ProgramaFormacion programa,
+        LocalDate fechaInscripcion
+    );
+    
     List<String> listarNombresCursos();
 
     List<String> listarNombresProgramas();
@@ -159,6 +175,8 @@ public interface IServidorCentral {
     List<ProgramaFormacion> obtenerProgramas();
 
     ProgramaFormacion obtenerDetallePrograma(String nombrePrograma);
+    
+    boolean estaInscriptoAPrograma(String nick, Long programaId);
     
    // ==================== 
    //    USUARIOS
@@ -202,6 +220,9 @@ public interface IServidorCentral {
     void crearUsuario(Usuario usuario, String nombreInstituto, byte[] imagen) throws Exception;
 
     byte[] obtenerImagenUsuario(String nick) throws Exception;
+    byte[] obtenerImagenCurso(String nombreCurso) throws Exception;
+    byte[] obtenerImagenEdicion(String nombreEdicion) throws Exception;
+    byte[] obtenerImagenPrograma(String nombrePrograma) throws Exception;
 
     List<String> listarCursosOEdicionesUsuario(String nick);
 

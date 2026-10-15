@@ -25,10 +25,10 @@
 <%@ include file="/WEB-INF/vistas/fragmentos/intro.jspf" %>
     <section class="oferta-lista" aria-label="Oferta de formación">
     <% for (Curso oferta : (List<Curso>) request.getAttribute("cursos")) { %>
-        <article class="oferta-fila"><img src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="Curso sin imagen"><div><span class="categoria-chip">Curso</span><h2><%= escapar(oferta.getNombre()) %></h2><p><%= escapar(oferta.getDescripcion()) %></p><a class="boton boton-pequeno" href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(oferta.getNombre()) %>">Ver detalle</a></div></article>
+        <article class="oferta-fila"><img src="${pageContext.request.contextPath}/imagen-curso?nombre=<%= parametro(oferta.getNombre()) %>" alt="Imagen del curso <%= escapar(oferta.getNombre()) %>"><div><span class="categoria-chip">Curso</span><h2><%= escapar(oferta.getNombre()) %></h2><p><%= escapar(oferta.getDescripcion()) %></p><a class="boton boton-pequeno" href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(oferta.getNombre()) %>">Ver detalle</a></div></article>
     <% } %>
     <% for (ProgramaFormacion oferta : (List<ProgramaFormacion>) request.getAttribute("programas")) { %>
-        <article class="oferta-fila"><img src="${pageContext.request.contextPath}/imagenes/formacion.svg" alt="Programa sin imagen"><div><span class="categoria-chip">Programa</span><h2><%= escapar(oferta.getNombre()) %></h2><p><%= escapar(oferta.getDescripcion()) %></p><a class="boton boton-pequeno" href="${pageContext.request.contextPath}/programa?nombre=<%= parametro(oferta.getNombre()) %>">Ver detalle</a></div></article>
+        <article class="oferta-fila"><img src="${pageContext.request.contextPath}/imagen-programa?nombre=<%= parametro(oferta.getNombre()) %>" alt="Imagen del programa <%= escapar(oferta.getNombre()) %>"><div><span class="categoria-chip">Programa</span><h2><%= escapar(oferta.getNombre()) %></h2><p><%= escapar(oferta.getDescripcion()) %></p><a class="boton boton-pequeno" href="${pageContext.request.contextPath}/programa?nombre=<%= parametro(oferta.getNombre()) %>">Ver detalle</a></div></article>
     <% } %>
     </section>
     <% if (usuarioSesion == null) { %>
@@ -37,6 +37,5 @@
 </div>
 </main>
 <%@ include file="/WEB-INF/vistas/fragmentos/pie.jspf" %>
-
 </body>
 </html>
