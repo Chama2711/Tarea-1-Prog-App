@@ -8,8 +8,14 @@ import java.io.Serializable;
 import javax.persistence.Id;
 import javax.persistence.Column;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -93,6 +99,29 @@ public class Usuario implements Serializable {
     @Override
     public String toString() {
         return nick + " - " + nombre + " " + apellido;
+    }
+    
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "usuario_seguidores",
+        joinColumns = @JoinColumn(name = "seguidor_nickname"),
+        inverseJoinColumns = @JoinColumn(name = "seguido_nickname")
+    )
+    private List<Usuario> seguidos = new ArrayList<>();
+
+    public List<Usuario> getSeguidos() {
+        return seguidos;
+    }
+
+    public void seguir(Usuario u) {
+        if (!this.seguidos.contains(u)) {
+            this.seguidos.add(u);
+        }
+    }
+
+    public void dejarDeSeguir(Usuario u) {
+        this.seguidos.remove(u);
     }
     
 }

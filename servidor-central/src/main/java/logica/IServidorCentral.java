@@ -7,6 +7,7 @@ package logica;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
 
 public interface IServidorCentral {
     List<DTUsuarioConsulta> listarUsuariosConsulta();
@@ -207,9 +208,12 @@ public interface IServidorCentral {
     List<String> listarEdicionesDocente(String nick);
 
     List<String> listarProgramasUsuario(String nick);
+
+    public EntityManager getEntityManager();
     
     
-    
+    void seguirUsuario(String nickSeguidor, String nickSeguido) throws Exception;
+    void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) throws Exception;
     
     
     
