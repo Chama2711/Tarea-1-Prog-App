@@ -25,6 +25,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import logica.Usuario;
+import logica.EdicionCurso;
+import logica.ProgramaFormacion;
 
 public class CargarDatosPruebaTarea2 {
 
@@ -54,11 +56,12 @@ public static void main(String[] args) {
             Persistence.createEntityManagerFactory("edEXTPU", propiedades);
 
     EntityManager em = emf.createEntityManager();
-    
+
     List<String> imagenesNuevas = new ArrayList<>();
     List<String> imagenesCursosNuevas = new ArrayList<>();
+    List<String> imagenesEdicionesNuevas = new ArrayList<>();
+    List<String> imagenesProgramasNuevas = new ArrayList<>();
 
-    // A partir de aquí conservá el try/catch/finally existente.
 
         try {
             // Protección: este cargador es exclusivo de edext_web.
@@ -78,6 +81,8 @@ public static void main(String[] args) {
             cargarCategorias(em);
             cargarInscripcionesProgramas(em);
 
+            // Imágenes oficiales de usuarios
+
             cargarImagenUsuario(
                     em, "heisenberg", "heisenberg.png", imagenesNuevas
             );
@@ -86,11 +91,11 @@ public static void main(String[] args) {
                     em, "roro", "roro.jpg", imagenesNuevas
             );
 
-            
+
             cargarImagenUsuario(
                     em, "chechi", "chechi.jpg", imagenesNuevas
             );
-            
+
             cargarImagenUsuario(
                     em, "jeffw", "jeffw.jpg", imagenesNuevas
             );
@@ -102,16 +107,18 @@ public static void main(String[] args) {
             cargarImagenUsuario(
                     em, "waston", "waston.jpg", imagenesNuevas
             );
-            
+
             cargarImagenUsuario(
                     em, "timmy", "timmy.jpg", imagenesNuevas
             );
-            
+
             cargarImagenUsuario(
                     em, "house", "house.jpg", imagenesNuevas
             );
-            
-          cargarImagenCurso(
+
+            // Imágenes oficiales de cursos
+
+            cargarImagenCurso(
                     em, "Dalavuelta",
                     "dalavuelta.png", imagenesCursosNuevas
             );
@@ -136,7 +143,71 @@ public static void main(String[] args) {
                     "curso-c10.jpg", imagenesCursosNuevas
             );
 
-            
+
+            // Imágenes oficiales de ediciones de cursos
+
+            // E1 - Flor del Ceibo - 2010
+            cargarImagenEdicion(
+                    em, "Flor del Ceibo - 2010",
+                    "edicion-e1.jpg", imagenesEdicionesNuevas
+            );
+
+            // E2 - Flor del Ceibo - 2012
+            cargarImagenEdicion(
+                    em, "Flor del Ceibo - 2012",
+                    "edicion-e2.jpg", imagenesEdicionesNuevas
+            );
+
+            // E3 - Flor del Ceibo - 2025
+            cargarImagenEdicion(
+                    em, "Flor del Ceibo - 2025",
+                    "edicion-e3.jpg", imagenesEdicionesNuevas
+            );
+
+            // E4 - Dalavuelta - 2025
+            cargarImagenEdicion(
+                    em, "Dalavuelta - 2025",
+                    "edicion-e4.jpg", imagenesEdicionesNuevas
+            );
+
+            // E7 - Taller de robótica educativa - 2024
+            cargarImagenEdicion(
+                    em, "Taller de robótica educativa - 2024",
+                    "edicion-e7.jpg", imagenesEdicionesNuevas
+            );
+
+            // E8 - Taller de robótica educativa - 2026
+            cargarImagenEdicion(
+                    em, "Taller de robótica educativa - 2026",
+                    "edicion-e8.jpg", imagenesEdicionesNuevas
+            );
+
+            // E9 - Taller de robótica educativa - 2026-2
+            cargarImagenEdicion(
+                    em, "Taller de robótica educativa - 2026-2",
+                    "edicion-e9.jpg", imagenesEdicionesNuevas
+            );
+
+            // Imágenes oficiales de programas de formación
+
+            // P1 - EFI Ingeniería Mecánica
+            cargarImagenPrograma(
+                    em, "EFI Ingeniería Mecánica",
+                    "programa-p1.jpg", imagenesProgramasNuevas
+            );
+
+            // P2 - Formación integral
+            cargarImagenPrograma(
+                    em, "Formación integral",
+                    "programa-p2.jpg", imagenesProgramasNuevas
+            );
+
+            // P3 - EFI Robótica
+            cargarImagenPrograma(
+                    em, "EFI Robótica",
+                    "programa-p3.jpg", imagenesProgramasNuevas
+            );
+
             em.getTransaction().commit();
 
             System.out.println(
@@ -152,24 +223,42 @@ public static void main(String[] args) {
            e.printStackTrace();
 
            // Limpiar imágenes nuevas de usuarios
-           for (String nombre : imagenesNuevas) {
+            for (String nombre : imagenesNuevas) {
                try {
                    new ImagenesUsuario().eliminar(nombre);
                } catch (Exception limpiezaError) {
                    e.addSuppressed(limpiezaError);
                }
-           }
+            }
 
            // Limpiar imágenes nuevas de cursos
-           for (String nombre : imagenesCursosNuevas) {
+            for (String nombre : imagenesCursosNuevas) {
                try {
                    ImagenesEntidades.cursos().eliminar(nombre);
                } catch (Exception limpiezaError) {
                    e.addSuppressed(limpiezaError);
                }
-           }
+            }
 
-           // Esta instrucción debe quedar al final del catch
+
+           // Limpiar imágenes nuevas de ediciones
+            for (String nombre : imagenesEdicionesNuevas) {
+                try {
+                    ImagenesEntidades.ediciones().eliminar(nombre);
+                } catch (Exception limpiezaError) {
+                    e.addSuppressed(limpiezaError);
+                }
+            }
+
+            // Limpiar imágenes nuevas de programas
+            for (String nombre : imagenesProgramasNuevas) {
+                try {
+                    ImagenesEntidades.programas().eliminar(nombre);
+                } catch (Exception limpiezaError) {
+                    e.addSuppressed(limpiezaError);
+                }
+            }
+
            throw new RuntimeException(
                    "Falló la carga de datos de Tarea 2.", e
            );
@@ -279,8 +368,8 @@ public static void main(String[] args) {
                 + " -> " + categoria.getNombre()
         );
     }
-    
-    
+
+
 private static void cargarInscripcionesProgramas(EntityManager em) {
 
     // P1 - EFI Ingeniería Mecánica
@@ -366,7 +455,7 @@ private static void inscribir(
     );
 }
 
-    
+
 
 private static void cargarImagenUsuario(
         EntityManager em,
@@ -465,7 +554,115 @@ private static void cargarImagenCurso(
     );
 }
 
-    
-    
+
+private static void cargarImagenEdicion(
+        EntityManager em,
+        String nombreEdicion,
+        String archivo,
+        List<String> imagenesEdicionesNuevas
+) throws Exception {
+
+    List<EdicionCurso> ediciones = em.createQuery(
+            "SELECT e FROM EdicionCurso e WHERE e.nombre = :nombre",
+            EdicionCurso.class
+    )
+    .setParameter("nombre", nombreEdicion)
+    .getResultList();
+
+    if (ediciones.isEmpty()) {
+        throw new IllegalStateException(
+                "No existe la edición: " + nombreEdicion
+        );
+    }
+
+    EdicionCurso edicion = ediciones.get(0);
+
+    if (edicion.getImagen() != null
+            && !edicion.getImagen().isBlank()) {
+
+        System.out.println(
+                nombreEdicion + " ya tiene una imagen asignada."
+        );
+        return;
+    }
+
+    Path ruta = Path.of(
+            System.getProperty("user.home"),
+            "Descargas",
+            "edext-imagenes-tarea2",
+            "ediciones",
+            archivo
+    );
+
+    byte[] datos = Files.readAllBytes(ruta);
+
+    String nombre = ImagenesEntidades.ediciones().guardar(datos);
+
+    imagenesEdicionesNuevas.add(nombre);
+
+    edicion.setImagen(nombre);
+
+    System.out.println(
+            "Imagen asignada a la edición "
+                    + nombreEdicion + ": " + nombre
+    );
+}
+
+
+private static void cargarImagenPrograma(
+        EntityManager em,
+        String nombrePrograma,
+        String archivo,
+        List<String> imagenesProgramasNuevas
+) throws Exception {
+
+    List<ProgramaFormacion> programas = em.createQuery(
+            "SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre",
+            ProgramaFormacion.class
+    )
+    .setParameter("nombre", nombrePrograma)
+    .getResultList();
+
+    if (programas.isEmpty()) {
+        throw new IllegalStateException(
+                "No existe el programa: " + nombrePrograma
+        );
+    }
+
+    ProgramaFormacion programa = programas.get(0);
+
+    if (programa.getImagen() != null
+            && !programa.getImagen().isBlank()) {
+
+        System.out.println(
+                nombrePrograma + " ya tiene una imagen asignada."
+        );
+        return;
+    }
+
+    Path ruta = Path.of(
+            System.getProperty("user.home"),
+            "Descargas",
+            "edext-imagenes-tarea2",
+            "programas",
+            archivo
+    );
+
+    byte[] datos = Files.readAllBytes(ruta);
+
+    String nombre = ImagenesEntidades.programas().guardar(datos);
+
+    imagenesProgramasNuevas.add(nombre);
+
+    programa.setImagen(nombre);
+
+    System.out.println(
+            "Imagen asignada al programa "
+                    + nombrePrograma + ": " + nombre
+    );
+}
+
+
+
 }
 

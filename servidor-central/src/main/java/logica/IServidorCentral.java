@@ -220,6 +220,8 @@ public interface IServidorCentral {
 
     byte[] obtenerImagenUsuario(String nick) throws Exception;
     byte[] obtenerImagenCurso(String nombreCurso) throws Exception;
+    byte[] obtenerImagenEdicion(String nombreEdicion) throws Exception;
+    byte[] obtenerImagenPrograma(String nombrePrograma) throws Exception;
 
     List<String> listarCursosOEdicionesUsuario(String nick);
 

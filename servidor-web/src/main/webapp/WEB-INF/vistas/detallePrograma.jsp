@@ -79,9 +79,23 @@
         </div>
     <% } %>
     
+
     <section class="panel" aria-label="Información del programa">
-        <h1><%= escapar(programa.getNombre()) %></h1><p><%= escapar(programa.getDescripcion()) %></p>
-        <div class="detalle-datos">
+            <h1><%= escapar(programa.getNombre()) %></h1>
+            <p><%= escapar(programa.getDescripcion()) %></p>
+
+            <% if (programa.getImagen() != null && !programa.getImagen().isBlank()) { %>
+                <img class="imagen-detalle"
+                     src="${pageContext.request.contextPath}/imagen-programa?nombre=<%= parametro(programa.getNombre()) %>"
+                     alt="Imagen del programa <%= escapar(programa.getNombre()) %>">
+            <% } else { %>
+                <img class="imagen-detalle"
+                     src="${pageContext.request.contextPath}/imagenes/formacion.svg"
+                     alt="Programa sin imagen">
+            <% } %>
+
+            <div class="detalle-datos">
+
             <div class="dato"><span>Fecha de inicio</span><strong><%= fecha(programa.getFechaInicio()) %></strong></div>
             <div class="dato"><span>Fecha de finalización</span><strong><%= fecha(programa.getFechaFin()) %></strong></div>
             <div class="dato"><span>Fecha de alta</span><strong><%= fecha(programa.getFechaAlta()) %></strong></div>

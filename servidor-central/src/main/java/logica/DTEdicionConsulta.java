@@ -13,6 +13,7 @@ public final class DTEdicionConsulta {
     private final LocalDate publicacion;
     private final int cupo;
     private final boolean vigente;
+    private final boolean tieneImagen;
     private final List<DTUsuarioConsulta> docentes;
 
     public DTEdicionConsulta(
@@ -23,6 +24,7 @@ public final class DTEdicionConsulta {
             LocalDate publicacion,
             int cupo,
             boolean vigente,
+            boolean tieneImagen,
             List<DTUsuarioConsulta> docentes) {
 
         this.nombre = nombre;
@@ -32,6 +34,7 @@ public final class DTEdicionConsulta {
         this.publicacion = publicacion;
         this.cupo = cupo;
         this.vigente = vigente;
+        this.tieneImagen = tieneImagen;
         this.docentes = List.copyOf(docentes);
     }
 
@@ -42,5 +45,6 @@ public final class DTEdicionConsulta {
     public LocalDate publicacion() { return publicacion; }
     public int cupo() { return cupo; }
     public boolean vigente() { return vigente; }
+    public boolean tieneImagen() { return tieneImagen; }
     public List<DTUsuarioConsulta> docentes() { return docentes; }
 }
