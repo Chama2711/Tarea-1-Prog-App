@@ -14,6 +14,7 @@ package logica;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
+import javax.persistence.EntityManager;
 
 
 
@@ -216,6 +217,67 @@ public List<String> obtenerNombresInstitutos() {
             }
         }
         return nombres;
+    }
+
+
+public void seguirUsuario(String nickSeguidor, String nickSeguido) throws Exception {
+        EntityManager em = servidorCentral.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Usuario seguidor = em.find(Usuario.class, nickSeguidor);
+            Usuario seguido = em.find(Usuario.class, nickSeguido);
+
+            if (seguidor != null && seguido != null) {
+                boolean yaLoSigue = seguidor.getSeguidos().stream()
+                .anyMatch(u -> u.getNick().equalsIgnoreCase(nickSeguido));
+
+                if (!yaLoSigue) {
+                    seguidor.getSeguidos().add(seguido);
+                    em.merge(seguidor);
+                }
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        }finally {
+            em.close();
+        }
+    }
+
+    public void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) throws Exception {
+        EntityManager em = servidorCentral.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Usuario seguidor = em.find(Usuario.class, nickSeguidor);
+            Usuario seguido = em.find(Usuario.class, nickSeguido);
+
+            if (seguidor != null && seguido != null) {
+                seguidor.getSeguidos().removeIf(u -> u.getNick().equalsIgnoreCase(nickSeguido));
+                em.merge(seguidor);
+            }
+            em.getTransaction().commit();
+        }catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean esSeguidor(String nickSeguidor, String nickSeguido) {
+        EntityManager em = servidorCentral.getEntityManager();
+        try {
+            Usuario seguidor = em.find(Usuario.class, nickSeguidor);
+            Usuario seguido = em.find(Usuario.class, nickSeguido);
+            return seguidor != null && seguidor.getSeguidos().contains(seguido);
+        } finally {
+            em.close();
+        }
     }
 
 

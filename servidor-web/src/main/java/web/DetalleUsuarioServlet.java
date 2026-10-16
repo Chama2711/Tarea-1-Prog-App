@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import logica.DTAutenticacion;
 import logica.DTPerfilUsuario;
 import logica.IServidorCentral;
+import logica.Usuario;
 
 @WebServlet(name = "DetalleUsuarioServlet", urlPatterns = {"/usuario"})
 public class DetalleUsuarioServlet extends HttpServlet {
@@ -35,6 +36,27 @@ public class DetalleUsuarioServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/vistas/usuarios.jsp").forward(request, response);
             return;
         }
+        
+        // =========================================================
+        // LÓGICA PARA PESTAÑA SEGUIDOS Y BOTÓN SEGUIR
+        // =========================================================
+        Usuario uConsultado = servidor.obtenerUsuario(nick);
+        if (uConsultado != null) {
+            // Pasa la lista de usuarios seguidos por el usuario del perfil
+            request.setAttribute("listaSeguidos", uConsultado.getSeguidos());
+        }
+
+        boolean esSeguidor = false;
+        if (autenticado != null && uConsultado != null && !autenticado.getNick().equalsIgnoreCase(nick)) {
+            Usuario uLogueado = servidor.obtenerUsuario(autenticado.getNick());
+            if (uLogueado != null && uLogueado.getSeguidos() != null) {
+                // Comparación por nickname para asegurar coincidencia de objetos en memoria
+                esSeguidor = uLogueado.getSeguidos().stream()
+                .anyMatch(u -> u.getNick().equalsIgnoreCase(uConsultado.getNick()));
+            }
+        }
+        request.setAttribute("esSeguidor", esSeguidor);
+        
         request.setAttribute("perfil", perfil);
         request.getRequestDispatcher("/WEB-INF/vistas/detalleUsuario.jsp").forward(request, response);
     }

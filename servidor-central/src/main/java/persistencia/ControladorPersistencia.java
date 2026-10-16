@@ -514,8 +514,8 @@ public void editarUsuario(Usuario usuario) throws Exception {
     }
 }
 
-    private EntityManager getEntityManager() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public EntityManager getEntityManager() {
+        return emf.createEntityManager();
     }
     
     
