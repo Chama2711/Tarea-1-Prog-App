@@ -31,11 +31,12 @@
     <h2 id="datos-curso">Datos del curso</h2>
     <% if (request.getAttribute("error") != null) { %>
         <div class="aviso aviso-error" role="alert"><%= escapar(request.getAttribute("error")) %></div>
+        <p class="ayuda">Si habías elegido una imagen, volvé a seleccionarla antes de enviar.</p>
     <% } %>
     <% if (institutos.isEmpty()) { %>
         <p>No tenés institutos asociados para registrar un curso.</p>
     <% } else { %>
-    <form method="post" action="${pageContext.request.contextPath}/alta-curso">
+    <form method="post" action="${pageContext.request.contextPath}/alta-curso" enctype="multipart/form-data">
         <div class="campo"><label for="instituto">Instituto</label>
             <select id="instituto" name="instituto" required>
                 <option value="">Seleccioná un instituto</option>
@@ -56,6 +57,11 @@
             <input type="number" id="creditos" name="creditos" min="0" step="1" value="<%= escapar(request.getAttribute("creditos")) %>" required></div>
         <div class="campo"><label for="url">URL del curso</label>
             <input id="url" name="url" inputmode="url" value="<%= escapar(request.getAttribute("url")) %>" required></div>
+        <div class="campo">
+            <label for="imagen">Imagen del curso (opcional)</label>
+            <input type="file" id="imagen" name="imagen" accept="image/jpeg,image/png" aria-describedby="ayuda-imagen">
+            <p class="ayuda" id="ayuda-imagen">JPG o PNG, hasta 5 MB. Si no elegís una, se muestra la imagen por defecto.</p>
+        </div>
         <fieldset class="opciones-formulario"><legend>Categorías</legend>
             <p class="ayuda">Seleccioná al menos una categoría.</p>
             <% for (String categoria : categorias) { %>

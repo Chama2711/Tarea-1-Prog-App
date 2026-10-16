@@ -29,6 +29,7 @@
     <h2 id="datos-edicion">Datos de la edición</h2>
     <% if (request.getAttribute("error") != null) { %>
         <div class="aviso aviso-error" role="alert"><%= escapar(request.getAttribute("error")) %></div>
+        <p class="ayuda">Si habías elegido una imagen, volvé a seleccionarla antes de enviar.</p>
     <% } %>
     <% if (institutos.isEmpty()) { %>
         <p>No tenés institutos asociados para registrar una edición.</p>
@@ -47,7 +48,7 @@
     <% if (!institutoElegido.isEmpty() && cursos.isEmpty()) { %>
         <p class="aviso">Este instituto no tiene cursos. <a href="${pageContext.request.contextPath}/alta-curso">Creá un curso</a> antes de registrar su edición.</p>
     <% } else if (!institutoElegido.isEmpty()) { %>
-    <form class="formulario-edicion" method="post" action="${pageContext.request.contextPath}/alta-edicion-curso">
+    <form class="formulario-edicion" method="post" action="${pageContext.request.contextPath}/alta-edicion-curso" enctype="multipart/form-data">
         <input type="hidden" name="instituto" value="<%= escapar(institutoElegido) %>">
         <div class="campo"><label for="curso">Curso</label>
             <select id="curso" name="curso" required>
@@ -66,6 +67,11 @@
         <div class="campo"><label for="cupos">Cupo</label>
             <input type="number" id="cupos" name="cupos" min="-1" step="1" value="<%= escapar(request.getAttribute("cupos")) %>" aria-describedby="ayuda-cupo" placeholder="Sin límite">
             <p id="ayuda-cupo" class="ayuda">Dejalo vacío o usá -1 para sin límite. El valor 0 no permite aceptaciones.</p>
+        </div>
+        <div class="campo">
+            <label for="imagen">Imagen de la edición (opcional)</label>
+            <input type="file" id="imagen" name="imagen" accept="image/jpeg,image/png" aria-describedby="ayuda-imagen">
+            <p class="ayuda" id="ayuda-imagen">JPG o PNG, hasta 5 MB. Si no elegís una, se muestra la imagen por defecto.</p>
         </div>
         <fieldset class="opciones-formulario"><legend>Docentes participantes</legend>
             <% for (String docente : docentes) { %>

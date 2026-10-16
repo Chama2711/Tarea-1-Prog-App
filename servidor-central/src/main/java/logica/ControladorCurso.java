@@ -30,20 +30,34 @@ public class ControladorCurso {
     public void altaCursoDocente(String nickDocente, String nombreInstituto, String nombre,
             String descripcion, String duracion, int horas, int creditos, String url,
             List<String> nombresPrevias, List<String> nombresCategorias) {
+        altaCursoDocente(nickDocente, nombreInstituto, nombre, descripcion, duracion,
+                horas, creditos, url, nombresPrevias, nombresCategorias, null);
+    }
+
+    public void altaCursoDocente(String nickDocente, String nombreInstituto, String nombre,
+            String descripcion, String duracion, int horas, int creditos, String url,
+            List<String> nombresPrevias, List<String> nombresCategorias, byte[] imagen) {
         String instituto = validarInstitutoDocente(nickDocente, nombreInstituto);
         altaCurso(instituto, nombre, descripcion, duracion, horas, creditos, url,
-                nombresPrevias, nombresCategorias);
+                LocalDate.now(), nombresPrevias, nombresCategorias, imagen);
     }
 
     public void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
             String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
             int cupo, List<String> nicknamesDocentes) {
+        altaEdicionCursoDocente(nickDocente, nombreInstituto, nombreCurso, nombreEdicion,
+                inicio, fin, cupo, nicknamesDocentes, null);
+    }
+
+    public void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
+            String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
+            int cupo, List<String> nicknamesDocentes, byte[] imagen) {
         String instituto = validarInstitutoDocente(nickDocente, nombreInstituto);
         List<String> disponibles = persistencia.listarNicknamesDocentesPorInstituto(instituto);
         if (nicknamesDocentes != null && !disponibles.containsAll(nicknamesDocentes)) {
             throw new IllegalArgumentException("Seleccione docentes del instituto indicado.");
         }
-        altaEdicionCurso(instituto, nombreCurso, nombreEdicion, inicio, fin, cupo, nicknamesDocentes);
+        altaEdicionCurso(instituto, nombreCurso, nombreEdicion, inicio, fin, cupo, nicknamesDocentes, imagen);
     }
 
     public List<String> listarNombresInstitutos() {
@@ -89,6 +103,12 @@ public class ControladorCurso {
             LocalDate fin,
             int cupo,
             List<String> nicknamesDocentes) {
+        altaEdicionCurso(nombreInstituto, nombreCurso, nombreEdicion, inicio, fin,
+                cupo, nicknamesDocentes, null);
+    }
+
+    private void altaEdicionCurso(String nombreInstituto, String nombreCurso, String nombreEdicion,
+            LocalDate inicio, LocalDate fin, int cupo, List<String> nicknamesDocentes, byte[] imagen) {
         if (nombreInstituto == null || nombreInstituto.isBlank()
                 || nombreCurso == null || nombreCurso.isBlank()) {
             throw new IllegalArgumentException("Seleccione instituto y curso.");
@@ -128,7 +148,7 @@ public class ControladorCurso {
         EdicionCurso edicion = new EdicionCurso(
                 nombreEdicion.trim(), inicio, fin, cupo, LocalDate.now());
         edicion.setDocentes(docentes);
-        persistencia.altaEdicionCurso(curso, edicion);
+        persistencia.altaEdicionCurso(curso, edicion, imagen);
     }
 
     public void altaCurso(
@@ -148,6 +168,13 @@ public class ControladorCurso {
     public void altaCurso(String nombreInstituto, String nombre, String descripcion,
             String duracion, int horas, int creditos, String url, LocalDate fechaAlta,
             List<String> nombresPrevias, List<String> nombresCategorias) {
+        altaCurso(nombreInstituto, nombre, descripcion, duracion, horas, creditos, url,
+                fechaAlta, nombresPrevias, nombresCategorias, null);
+    }
+
+    private void altaCurso(String nombreInstituto, String nombre, String descripcion,
+            String duracion, int horas, int creditos, String url, LocalDate fechaAlta,
+            List<String> nombresPrevias, List<String> nombresCategorias, byte[] imagen) {
 
         if (fechaAlta == null) {
             throw new IllegalArgumentException("Seleccione la fecha de alta.");
@@ -202,6 +229,6 @@ public class ControladorCurso {
         curso.setInstituto(instituto);
         curso.setPrevias(previas);
         curso.setCategorias(categorias);
-        persistencia.altaCurso(curso);
+        persistencia.altaCurso(curso, imagen);
     }
 }

@@ -874,6 +874,45 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
     
     
     
+public void altaCurso(Curso curso, byte[] imagen) {
+    guardarConImagen(imagen, ImagenesEntidades.cursos(), curso::setImagen, () -> altaCurso(curso));
+}
+
+public void altaEdicionCurso(Curso curso, EdicionCurso edicion, byte[] imagen) {
+    guardarConImagen(imagen, ImagenesEntidades.ediciones(), edicion::setImagen,
+            () -> altaEdicionCurso(curso, edicion));
+}
+
+/** El archivo se conserva únicamente si se pudo completar el alta en JPA. */
+private void guardarConImagen(byte[] imagen, ImagenesUsuario archivos,
+        java.util.function.Consumer<String> asignar, Runnable guardar) {
+    if (imagen == null || imagen.length == 0) {
+        guardar.run();
+        return;
+    }
+    if (imagen.length > 5 * 1024 * 1024) {
+        throw new IllegalArgumentException("La imagen no puede superar los 5 MB.");
+    }
+    String nombre;
+    try {
+        nombre = archivos.guardar(imagen);
+    } catch (java.io.IOException error) {
+        throw new IllegalStateException("No se pudo guardar la imagen.", error);
+    }
+    try {
+        asignar.accept(nombre);
+        guardar.run();
+    } catch (RuntimeException error) {
+        asignar.accept(null);
+        try {
+            archivos.eliminar(nombre);
+        } catch (java.io.IOException limpieza) {
+            error.addSuppressed(limpieza);
+        }
+        throw error;
+    }
+}
+
 public void altaCurso(Curso curso) {
     if (curso == null || curso.getNombre() == null || curso.getNombre().isBlank()
             || curso.getInstituto() == null || curso.getInstituto().getId() == null) {

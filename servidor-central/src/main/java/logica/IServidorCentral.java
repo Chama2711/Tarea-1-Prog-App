@@ -65,9 +65,17 @@ public interface IServidorCentral {
             String descripcion, String duracion, int horas, int creditos, String url,
             List<String> nombresPrevias, List<String> nombresCategorias);
 
+    void altaCursoDocente(String nickDocente, String nombreInstituto, String nombre,
+            String descripcion, String duracion, int horas, int creditos, String url,
+            List<String> nombresPrevias, List<String> nombresCategorias, byte[] imagen);
+
     void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
             String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
             int cupo, List<String> nicknamesDocentes);
+
+    void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
+            String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
+            int cupo, List<String> nicknamesDocentes, byte[] imagen);
 
     List<String> listarNombresCursosPorInstituto(String nombreInstituto);
 

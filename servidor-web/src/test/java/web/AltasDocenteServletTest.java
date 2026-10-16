@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
@@ -31,6 +32,8 @@ public class AltasDocenteServletTest {
         String redireccion, vista;
         int estado = 200, altas, consultas, logs;
         Object[] argumentosAlta;
+        Part archivo;
+        boolean archivoExcedido;
 
         final IServidorCentral central = proxy(IServidorCentral.class, (p, m, args) -> {
             if (m.getName().startsWith("alta")) {
@@ -61,6 +64,11 @@ public class AltasDocenteServletTest {
             return switch (m.getName()) {
                 case "getSession" -> usuario == null ? null : sesion;
                 case "getContextPath" -> "/edext";
+                case "setCharacterEncoding" -> null;
+                case "getPart" -> {
+                    if (archivoExcedido) throw new IllegalStateException("Archivo excedido");
+                    yield archivo;
+                }
                 case "getParameter" -> parametros.containsKey(args[0]) ? parametros.get(args[0])[0] : null;
                 case "getParameterValues" -> parametros.get(args[0]);
                 case "setAttribute" -> { atributos.put((String) args[0], args[1]); yield null; }
@@ -176,6 +184,46 @@ public class AltasDocenteServletTest {
             assertEquals("docente", s.argumentosAlta[0]); assertEquals(1, s.altas);
             assertEquals(edicion ? "/edext/edicion?nombre=Curso+%26+edici%C3%B3n"
                     : "/edext/curso?nombre=Curso+%26+edici%C3%B3n", s.redireccion);
+        }
+    }
+
+    @Test public void ambasAltasEnvianLosBytesDeImagenAlCentral() throws Exception {
+        for (boolean edicion : List.of(false, true)) {
+            Escenario s = new Escenario();
+            byte[] datos = new byte[]{1, 2, 3};
+            s.archivo = proxy(Part.class, (p, m, args) -> switch (m.getName()) {
+                case "getSize" -> (long) datos.length;
+                case "getInputStream" -> new java.io.ByteArrayInputStream(datos);
+                default -> throw new AssertionError(m.getName());
+            });
+            s.ejecutar(edicion, true);
+            assertArrayEquals(datos, (byte[]) s.argumentosAlta[s.argumentosAlta.length - 1]);
+            assertEquals(302, s.estado);
+        }
+    }
+
+    @Test public void ambasAltasPermitenNoAdjuntarImagen() throws Exception {
+        for (boolean edicion : List.of(false, true)) {
+            Escenario s = new Escenario(); s.ejecutar(edicion, true);
+            assertNull(s.argumentosAlta[s.argumentosAlta.length - 1]);
+            assertEquals(1, s.altas);
+        }
+    }
+
+    @Test public void imagenExcedidaNoInvocaElAlta() throws Exception {
+        for (boolean edicion : List.of(false, true)) {
+            Escenario s = new Escenario(); s.archivoExcedido = true; s.ejecutar(edicion, true);
+            assertEquals(413, s.estado); assertEquals(0, s.altas);
+        }
+    }
+
+    @Test public void formatoRechazadoPorCentralConservaLosDatos() throws Exception {
+        for (boolean edicion : List.of(false, true)) {
+            Escenario s = new Escenario(); s.fallo = new IllegalArgumentException("Seleccione una imagen JPG o PNG.");
+            s.ejecutar(edicion, true);
+            assertNotNull(s.vista);
+            assertEquals(" Curso nuevo ", s.atributos.get("nombre"));
+            assertEquals("Seleccione una imagen JPG o PNG.", s.atributos.get("error"));
         }
     }
 

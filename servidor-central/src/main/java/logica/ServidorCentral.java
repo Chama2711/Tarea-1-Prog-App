@@ -58,6 +58,22 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
                 nombreCurso, nombreEdicion, inicio, fin, cupo, nicknamesDocentes);
     }
 
+    @Override
+    public void altaCursoDocente(String nickDocente, String nombreInstituto, String nombre,
+            String descripcion, String duracion, int horas, int creditos, String url,
+            List<String> nombresPrevias, List<String> nombresCategorias, byte[] imagen) {
+        controladorCurso.altaCursoDocente(nickDocente, nombreInstituto, nombre,
+                descripcion, duracion, horas, creditos, url, nombresPrevias, nombresCategorias, imagen);
+    }
+
+    @Override
+    public void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
+            String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
+            int cupo, List<String> nicknamesDocentes, byte[] imagen) {
+        controladorCurso.altaEdicionCursoDocente(nickDocente, nombreInstituto,
+                nombreCurso, nombreEdicion, inicio, fin, cupo, nicknamesDocentes, imagen);
+    }
+
     public ServidorCentral() {
         this(new ControladorPersistencia());
     }

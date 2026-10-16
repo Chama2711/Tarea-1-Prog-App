@@ -2,6 +2,7 @@ package web;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +14,7 @@ import logica.DTAutenticacion;
 import logica.IServidorCentral;
 
 @WebServlet(name = "AltaCursoServlet", urlPatterns = {"/alta-curso"})
+@MultipartConfig(maxFileSize = 5 * 1024 * 1024, maxRequestSize = 6 * 1024 * 1024)
 public class AltaCursoServlet extends HttpServlet {
     private static final String VISTA = "/WEB-INF/vistas/altaCurso.jsp";
     private static final String[] CAMPOS = {
@@ -31,6 +33,17 @@ public class AltaCursoServlet extends HttpServlet {
             throws ServletException, IOException {
         DTAutenticacion docente = FormulariosDocente.exigirDocente(request, response);
         if (docente == null) return;
+        request.setCharacterEncoding("UTF-8");
+        byte[] imagen;
+        try {
+            imagen = ImagenFormulario.leer(request);
+        } catch (IllegalStateException e) {
+            response.sendError(413, "El archivo supera los 5 MB o el formulario supera los 6 MB. Volvé a elegir una imagen más pequeña.");
+            return;
+        } catch (ServletException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No se pudo recibir la imagen. Volvé a enviar el formulario.");
+            return;
+        }
         IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
         try {
             int horas = FormulariosDocente.entero(FormulariosDocente.valor(request, "horas"), "horas");
@@ -39,7 +52,7 @@ public class AltaCursoServlet extends HttpServlet {
                     FormulariosDocente.valor(request, "nombre"), FormulariosDocente.valor(request, "descripcion"),
                     FormulariosDocente.valor(request, "duracion"), horas, creditos,
                     FormulariosDocente.valor(request, "url"), FormulariosDocente.seleccion(request, "previas"),
-                    FormulariosDocente.seleccion(request, "categorias"));
+                    FormulariosDocente.seleccion(request, "categorias"), imagen);
             response.sendRedirect(request.getContextPath() + "/curso?nombre="
                     + java.net.URLEncoder.encode(FormulariosDocente.valor(request, "nombre").trim(),
                             java.nio.charset.StandardCharsets.UTF_8));
