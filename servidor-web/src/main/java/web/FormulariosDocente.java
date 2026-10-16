@@ -22,7 +22,7 @@ final class FormulariosDocente {
         }
         if (usuario.getRol() != DTAutenticacion.Rol.DOCENTE) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN,
-                    "Solo los docentes pueden registrar cursos y ediciones.");
+                    "Esta acción requiere una sesión de docente.");
             return null;
         }
         return usuario;

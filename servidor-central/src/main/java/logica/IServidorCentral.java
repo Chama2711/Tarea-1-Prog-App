@@ -147,6 +147,12 @@ public interface IServidorCentral {
 
     List<DTInscripcion> listarInscripcionesEdicion(String nickDocente, String nombreEdicion);
 
+    List<DTRankingInscripcion> listarInscripcionesParaSeleccion(String nickDocente,
+            String nombreEdicion, OrdenInscripciones orden);
+
+    List<DTEdicionConsulta> listarEdicionesParaSeleccion(String nickDocente,
+            String nombreInstituto, String nombreCurso);
+
     List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion);
 
     List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante);

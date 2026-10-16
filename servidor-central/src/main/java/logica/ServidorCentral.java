@@ -239,6 +239,18 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
 
     @Override
+    public List<DTRankingInscripcion> listarInscripcionesParaSeleccion(String nickDocente,
+            String nombreEdicion, OrdenInscripciones orden) {
+        return controladorInscripcion.listarInscripcionesParaSeleccion(nickDocente, nombreEdicion, orden);
+    }
+
+    @Override
+    public List<DTEdicionConsulta> listarEdicionesParaSeleccion(String nickDocente,
+            String nombreInstituto, String nombreCurso) {
+        return controladorInscripcion.listarEdicionesParaSeleccion(nickDocente, nombreInstituto, nombreCurso);
+    }
+
+    @Override
     public List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion) {
         return controladorInscripcion.listarAceptadosEdicion(nickDocente, nombreEdicion);
     }

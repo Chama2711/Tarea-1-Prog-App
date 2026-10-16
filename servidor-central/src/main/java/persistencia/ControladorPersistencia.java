@@ -774,6 +774,62 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
         }
     }
 
+    public List<DTEdicionConsulta> listarEdicionesParaSeleccion(String nickDocente,
+            String nombreInstituto, String nombreCurso, LocalDate referencia) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (!(em.find(Usuario.class, nickDocente) instanceof Docente)) {
+                throw new SecurityException("Se requiere un docente registrado.");
+            }
+            return em.createQuery("SELECT DISTINCT e FROM EdicionCurso e JOIN e.docentes d "
+                    + "WHERE d.nick = :docente AND e.curso.instituto.nombre = :instituto "
+                    + "AND e.curso.nombre = :curso AND e.fechaInicio <= :hoy "
+                    + "AND e.fechaFin >= :hoy ORDER BY e.nombre", EdicionCurso.class)
+                    .setParameter("docente", nickDocente).setParameter("instituto", nombreInstituto)
+                    .setParameter("curso", nombreCurso).setParameter("hoy", referencia)
+                    .getResultList().stream().map(edicion -> datosEdicion(em, edicion)).toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    /** Consulta los antecedentes en bloque; no modifica inscripciones ni guarda la prioridad. */
+    public List<DTRankingInscripcion> listarInscripcionesConPrioridad(String nickDocente,
+            String nombreEdicion, LocalDate referencia) {
+        if (referencia == null) throw new IllegalArgumentException("Indique la fecha de referencia.");
+        EntityManager em = emf.createEntityManager();
+        try {
+            EdicionCurso edicion = validarDocenteEdicion(em, nickDocente, nombreEdicion);
+            if (referencia.isBefore(edicion.getFechaInicio()) || referencia.isAfter(edicion.getFechaFin())) {
+                throw new IllegalArgumentException("La edición no está vigente.");
+            }
+            List<DTInscripcion> actuales = em.createQuery(CONSULTA_INSCRIPCIONES
+                    + "WHERE i.edicion.nombre = :edicion", DTInscripcion.class)
+                    .setParameter("edicion", nombreEdicion).getResultList();
+            if (actuales.isEmpty()) return List.of();
+
+            List<String> nicks = actuales.stream().map(DTInscripcion::getNicknameEstudiante).distinct().toList();
+            List<Object[]> antecedentes = em.createQuery(
+                    "SELECT e.nick, COUNT(i) FROM Estudiante e JOIN e.inscripciones i "
+                    + "WHERE e.nick IN :nicks AND i.edicion.curso.id = :curso "
+                    + "AND i.edicion.nombre <> :edicion AND i.estado = :rechazada "
+                    + "AND i.edicion.fechaFin < :referencia GROUP BY e.nick", Object[].class)
+                    .setParameter("nicks", nicks)
+                    .setParameter("curso", edicion.getCurso().getId())
+                    .setParameter("edicion", nombreEdicion)
+                    .setParameter("rechazada", EstadoInscripcion.RECHAZADA)
+                    .setParameter("referencia", referencia).getResultList();
+            java.util.Map<String, Long> rechazos = new java.util.HashMap<>();
+            for (Object[] antecedente : antecedentes) {
+                rechazos.put((String) antecedente[0], ((Number) antecedente[1]).longValue());
+            }
+            return actuales.stream().map(inscripcion -> new DTRankingInscripcion(inscripcion,
+                    rechazos.getOrDefault(inscripcion.getNicknameEstudiante(), 0L))).toList();
+        } finally {
+            em.close();
+        }
+    }
+
     public List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante) {
         EntityManager em = emf.createEntityManager();
         try {

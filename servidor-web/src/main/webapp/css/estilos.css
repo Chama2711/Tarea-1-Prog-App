@@ -369,6 +369,12 @@ h3 { margin-bottom:12px; font-size:21px; letter-spacing:-.4px; }
 .buscador-compartido input { flex:1; min-width:0; background:white; border:1px solid #bfccd7; border-radius:8px; padding:12px 16px; font:inherit; }
 @media(max-width:760px) { .buscador-compartido .boton { padding:10px 15px; } }
 
+.filtro-seleccion + .filtro-seleccion { margin-top: 24px; }
+.seleccion-estudiantes .ediciones { display: flex; flex-direction: column; gap: 16px; }
+.seleccion-estudiantes .edicion-datos { display: flex; flex-direction: column; gap: 6px; }
+.seleccion-estudiantes .campo { margin-top: 16px; max-width: 340px; }
+.seleccion-estudiantes .acciones-registro { margin-top: 24px; }
+
 /* --- ESTILOS EDICIÓN DE PERFIL --- */
 #formModificarUsuario {
     display: flex;
