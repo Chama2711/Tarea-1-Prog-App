@@ -81,6 +81,7 @@ public static void main(String[] args) {
 
             cargarCategorias(em);
             cargarInscripcionesProgramas(em);
+            cargarEstadosInscripcionesEdiciones(em);
 
             // Imágenes oficiales de usuarios
 
@@ -669,7 +670,101 @@ private static void cargarImagenPrograma(
     );
 }
 
+private static void cargarEstadosInscripcionesEdiciones(EntityManager em) {
 
+    // Formato: nickname, edición, estado
+    String[][] datos = {
+        {"eleven11", "Flor del Ceibo - 2010", "ACEPTADA"},
+        {"chechi", "Flor del Ceibo - 2010", "ACEPTADA"},
+
+        {"costas", "Flor del Ceibo - 2012", "ACEPTADA"},
+        {"roro", "Flor del Ceibo - 2012", "RECHAZADA"},
+        {"weiss", "Flor del Ceibo - 2012", "ACEPTADA"},
+
+        {"roro", "Flor del Ceibo - 2025", "ACEPTADA"},
+        {"jeffw", "Flor del Ceibo - 2025", "ACEPTADA"},
+
+        {"chechi", "Dalavuelta - 2025", "ACEPTADA"},
+        {"eleven11", "Dalavuelta - 2025", "RECHAZADA"},
+        {"roro", "Dalavuelta - 2025", "ACEPTADA"},
+        {"costas", "Dalavuelta - 2025", "ACEPTADA"},
+        {"jeffw", "Dalavuelta - 2025", "RECHAZADA"},
+
+        {"costas", "Extensionismo Industrial - 2025", "ACEPTADA"},
+        {"chechi", "Extensionismo Industrial - 2025", "ACEPTADA"},
+        {"eleven11", "Extensionismo Industrial - 2025", "ACEPTADA"},
+        {"weiss", "Extensionismo Industrial - 2025", "ACEPTADA"},
+
+        {"roro", "Inclusión Energética - 2026", "ACEPTADA"},
+        {"weiss", "Inclusión Energética - 2026", "RECHAZADA"},
+        {"chechi", "Inclusión Energética - 2026", "ACEPTADA"},
+        {"eleven11", "Inclusión Energética - 2026", "RECHAZADA"},
+
+        {"weiss", "Taller de robótica educativa - 2024", "RECHAZADA"},
+        {"roro", "Taller de robótica educativa - 2024", "RECHAZADA"},
+        {"eleven11", "Taller de robótica educativa - 2024", "ACEPTADA"},
+
+        {"jeffw", "Taller de robótica educativa - 2026", "ACEPTADA"},
+        {"costas", "Taller de robótica educativa - 2026", "ACEPTADA"},
+       // {"roro", "Taller de robótica educativa - 2026", "RECHAZADA"},
+
+        {"chechi", "Participación en investigación sobre\nel empleo del juego Komikan como\nrecurso didáctico en la Escuela - 2026", "ACEPTADA"},
+        {"weiss", "Participación en investigación sobre\nel empleo del juego Komikan como\nrecurso didáctico en la Escuela - 2026", "ACEPTADA"},
+        {"roro", "Participación en investigación sobre\nel empleo del juego Komikan como\nrecurso didáctico en la Escuela - 2026", "ACEPTADA"},
+
+        {"costas", "Talleres plenarios - 2026", "RECHAZADA"},
+        {"weiss", "Talleres plenarios - 2026", "ACEPTADA"},
+        {"roro", "Talleres plenarios - 2026", "ACEPTADA"},
+
+        {"weiss", "Seminarios de Resolución de\nProblemas - 2026", "ACEPTADA"},
+        {"costas", "Seminarios de Resolución de\nProblemas - 2026", "RECHAZADA"},
+        {"roro", "Seminarios de Resolución de\nProblemas - 2026", "ACEPTADA"},
+        {"chechi", "Seminarios de Resolución de\nProblemas - 2026", "RECHAZADA"}
+    };
+
+    for (String[] dato : datos) {
+
+        List<Inscripcion> inscripciones = em.createQuery(
+                "SELECT i FROM Estudiante e JOIN e.inscripciones i "
+                + "WHERE e.nick = :nick AND i.edicion.nombre = :edicion",
+                Inscripcion.class
+        )
+        .setParameter("nick", dato[0])
+        .setParameter("edicion", dato[1])
+        .getResultList();
+
+        if (inscripciones.size() != 1) {
+            throw new IllegalStateException(
+                    "Se esperaba una inscripción para "
+                    + dato[0] + " en " + dato[1]
+                    + ", pero se encontraron " + inscripciones.size()
+            );
+        }
+
+        Inscripcion inscripcion = inscripciones.get(0);
+
+        logica.EstadoInscripcion esperado =
+                logica.EstadoInscripcion.valueOf(dato[2]);
+
+        if (inscripcion.getEstado() == esperado) {
+            continue;
+        }
+
+        if (inscripcion.getEstado()
+                != logica.EstadoInscripcion.INSCRIPTO) {
+            throw new IllegalStateException(
+                    "Estado diferente al esperado para "
+                    + dato[0] + " en " + dato[1]
+            );
+        }
+
+        inscripcion.cambiarEstado(esperado);
+    }
+
+    System.out.println(
+            "Estados oficiales de inscripciones cargados correctamente."
+    );
+}
 
 
 }
