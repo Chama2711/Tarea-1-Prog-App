@@ -82,6 +82,7 @@ public static void main(String[] args) {
             cargarCategorias(em);
             cargarInscripcionesProgramas(em);
             cargarEstadosInscripcionesEdiciones(em);
+            cargarSeguidores(em);
 
             // Imágenes oficiales de usuarios
 
@@ -766,6 +767,69 @@ private static void cargarEstadosInscripcionesEdiciones(EntityManager em) {
     );
 }
 
+private static void agregarSeguimiento(
+        EntityManager em,
+        String nickSeguidor,
+        String nickSeguido) {
 
+    Usuario seguidor = em.find(Usuario.class, nickSeguidor);
+    Usuario seguido = em.find(Usuario.class, nickSeguido);
+
+    if (seguidor == null || seguido == null) {
+        throw new IllegalStateException(
+                "No se encontró el usuario: "
+                + nickSeguidor + " o " + nickSeguido
+        );
+    }
+
+    boolean yaLoSigue = seguidor.getSeguidos().stream()
+            .anyMatch(u -> u.getNick().equalsIgnoreCase(nickSeguido));
+
+    if (!yaLoSigue) {
+        seguidor.getSeguidos().add(seguido);
+    }
+}
+
+private static void cargarSeguidores(EntityManager em) {
+
+    agregarSeguimiento(em, "adri", "heisenberg");
+    agregarSeguimiento(em, "benkenobi", "danny");
+    agregarSeguimiento(em, "bruces", "phils");
+    agregarSeguimiento(em, "chechi", "eleven11");
+    agregarSeguimiento(em, "chechi", "house");
+    agregarSeguimiento(em, "chechi", "jeffw");
+    agregarSeguimiento(em, "costas", "benkenobi");
+    agregarSeguimiento(em, "costas", "chechi");
+    agregarSeguimiento(em, "costas", "danny");
+    agregarSeguimiento(em, "costas", "jeffw");
+    agregarSeguimiento(em, "costas", "phils");
+    agregarSeguimiento(em, "danny", "costas");
+    agregarSeguimiento(em, "danny", "heisenberg");
+    agregarSeguimiento(em, "danny", "weiss");
+    agregarSeguimiento(em, "eleven11", "heisenberg");
+    agregarSeguimiento(em, "eleven11", "roro");
+    agregarSeguimiento(em, "eleven11", "waston");
+    agregarSeguimiento(em, "heisenberg", "roro");
+    agregarSeguimiento(em, "house", "benkenobi");
+    agregarSeguimiento(em, "house", "jeffw");
+    agregarSeguimiento(em, "house", "weiss");
+    agregarSeguimiento(em, "jeffw", "eleven11");
+    agregarSeguimiento(em, "phils", "bruces");
+    agregarSeguimiento(em, "roro", "costas");
+    agregarSeguimiento(em, "roro", "weiss");
+    agregarSeguimiento(em, "timmy", "chechi");
+    agregarSeguimiento(em, "timmy", "eleven11");
+    agregarSeguimiento(em, "timmy", "jeffw");
+    agregarSeguimiento(em, "waston", "heisenberg");
+    agregarSeguimiento(em, "waston", "roro");
+    agregarSeguimiento(em, "waston", "weiss");
+    agregarSeguimiento(em, "weiss", "costas");
+    agregarSeguimiento(em, "weiss", "heisenberg");
+    agregarSeguimiento(em, "weiss", "timmy");
+
+    System.out.println(
+            "Relaciones de seguidores de Tarea 2 procesadas correctamente."
+    );
+}
 }
 
