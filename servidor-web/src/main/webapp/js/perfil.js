@@ -1,4 +1,15 @@
 (() => {
+    const formulario = document.getElementById('formModificarUsuario');
+    if (formulario) {
+        const guardar = document.getElementById('contenedor-guardar');
+        formulario.addEventListener('input', () => {
+            if (guardar) guardar.style.display = 'block';
+        });
+        if (formulario.dataset.recuperarEdicion === 'true') {
+            formulario.querySelectorAll('.input-lectura:not([readonly])')
+                .forEach(input => input.classList.add('en-edicion'));
+        }
+    }
     const foto = document.querySelector('.foto-ampliable');
     const visor = document.getElementById('visor-foto');
     if (foto && visor) {

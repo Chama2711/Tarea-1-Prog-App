@@ -1,6 +1,7 @@
 package web;
 
 import java.io.IOException;
+import java.util.Map;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -58,6 +59,12 @@ public class DetalleUsuarioServlet extends HttpServlet {
         request.setAttribute("esSeguidor", esSeguidor);
         
         request.setAttribute("perfil", perfil);
+        if (perfil.propio() && sesion != null
+                && sesion.getAttribute(ModificarUsuarioServlet.BORRADOR_PERFIL) instanceof Map<?, ?> borrador
+                && nick.equals(borrador.get("nick"))) {
+            request.setAttribute("datosEdicion", borrador);
+            sesion.removeAttribute(ModificarUsuarioServlet.BORRADOR_PERFIL);
+        }
         request.getRequestDispatcher("/WEB-INF/vistas/detalleUsuario.jsp").forward(request, response);
     }
 }

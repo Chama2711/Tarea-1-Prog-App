@@ -4,6 +4,8 @@
 <%
     DTPerfilUsuario perfil = (DTPerfilUsuario) request.getAttribute("perfil");
     DTUsuarioConsulta usuario = perfil.usuario();
+    Map<String, String> datosEdicion = (Map<String, String>) request.getAttribute("datosEdicion");
+    boolean recuperarEdicion = perfil.propio() && datosEdicion != null;
     boolean docente = usuario.rol() == DTAutenticacion.Rol.DOCENTE;
     String tituloPagina = perfil.propio() ? "Tu espacio en edEXT." : "Conocé su recorrido.";
     String bajadaPagina = "Datos personales y participación en la comunidad.";
@@ -35,7 +37,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
-    <script src="${pageContext.request.contextPath}/js/perfil.js?v=3" defer></script>
+    <script src="${pageContext.request.contextPath}/js/perfil.js?v=4" defer></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
@@ -94,7 +96,7 @@
         <section id="perfil-general" class="perfil-panel" aria-labelledby="tab-general">
             <% if (perfil.propio()) { %>
                 <%-- Formulario editable si es mi propio perfil --%>
-                <form action="${pageContext.request.contextPath}/modificarUsuario" method="POST" id="formModificarUsuario" class="perfil-form-editable">
+                <form action="${pageContext.request.contextPath}/modificarUsuario" method="POST" id="formModificarUsuario" class="perfil-form-editable" data-recuperar-edicion="<%= recuperarEdicion %>">
                     
                     <%-- Nickname (Fijo / No editable) --%>
                     <div class="fila-dato deshabilitado">
@@ -106,7 +108,7 @@
                     <div class="fila-dato">
                         <label for="nombre" class="label">Nombre</label>
                         <div class="input-contenedor">
-                            <input type="text" id="nombre" name="nombre" value="<%= escapar(usuario.nombre()) %>" class="input-lectura" readonly required />
+                            <input type="text" id="nombre" name="nombre" value="<%= escapar(recuperarEdicion ? datosEdicion.get("nombre") : usuario.nombre()) %>" class="input-lectura" <%= recuperarEdicion ? "" : "readonly" %> required />
                             <button type="button" class="btn-lapiz" onclick="habilitarCampo('nombre')" title="Editar Nombre">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                             </button>
@@ -117,7 +119,7 @@
                     <div class="fila-dato">
                         <label for="apellido" class="label">Apellido</label>
                         <div class="input-contenedor">
-                            <input type="text" id="apellido" name="apellido" value="<%= escapar(usuario.apellido()) %>" class="input-lectura" readonly required />
+                            <input type="text" id="apellido" name="apellido" value="<%= escapar(recuperarEdicion ? datosEdicion.get("apellido") : usuario.apellido()) %>" class="input-lectura" <%= recuperarEdicion ? "" : "readonly" %> required />
                             <button type="button" class="btn-lapiz" onclick="habilitarCampo('apellido')" title="Editar Apellido">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                             </button>
@@ -134,7 +136,7 @@
                     <div class="fila-dato">
                         <label for="fechaNacimiento" class="label">Fecha de nacimiento</label>
                         <div class="input-contenedor">
-                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" value="<%= usuario.fechaNacimiento() != null ? usuario.fechaNacimiento().toString() : "" %>" class="input-lectura" readonly required />
+                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" value="<%= escapar(recuperarEdicion ? datosEdicion.get("fechaNacimiento") : usuario.fechaNacimiento() != null ? usuario.fechaNacimiento().toString() : "") %>" class="input-lectura" <%= recuperarEdicion ? "" : "readonly" %> required />
                             <button type="button" class="btn-lapiz" onclick="habilitarCampo('fechaNacimiento')" title="Editar Fecha">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                             </button>
@@ -148,7 +150,21 @@
                         </div>
                     <% } %>
 
-                    <div id="contenedor-guardar" class="acciones-guardar" style="display: none; margin-top: 20px;">
+                    <div class="fila-dato">
+                        <label for="clave" class="label">Nueva contraseña</label>
+                        <div class="input-contenedor">
+                            <input type="password" id="clave" name="clave" class="input-lectura en-edicion" autocomplete="new-password" aria-describedby="ayuda-clave-perfil" />
+                        </div>
+                    </div>
+                    <div class="fila-dato">
+                        <label for="confirmacionClave" class="label">Confirmar contraseña</label>
+                        <div class="input-contenedor">
+                            <input type="password" id="confirmacionClave" name="confirmacionClave" class="input-lectura en-edicion" autocomplete="new-password" aria-describedby="ayuda-clave-perfil" />
+                        </div>
+                    </div>
+                    <p id="ayuda-clave-perfil" class="texto-secundario">Dejá ambos campos vacíos para mantener tu contraseña actual.</p>
+
+                    <div id="contenedor-guardar" class="acciones-guardar" style="<%= recuperarEdicion ? "" : "display: none;" %> margin-top: 20px;">
                         <button type="submit" class="boton boton-principal">Guardar Cambios</button>
                     </div>
                 </form>
