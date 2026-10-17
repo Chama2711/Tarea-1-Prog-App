@@ -8,9 +8,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ProgramaFormacionTest {
-    private static final LocalDate INICIO = LocalDate.of(2026, 10, 1);
-    private static final LocalDate FIN = LocalDate.of(2026, 12, 1);
-    private static final LocalDate ALTA = LocalDate.of(2026, 9, 1);
+    private static final LocalDate INICIO = LocalDate.now();
+    private static final LocalDate FIN = INICIO.plusMonths(2);
+    private static final LocalDate ALTA = INICIO.minusMonths(1);
 
     private static class PersistenciaEnMemoria extends ControladorPersistencia {
         PersistenciaEnMemoria() {
@@ -112,4 +112,37 @@ public class ProgramaFormacionTest {
         assertNull(repo.guardado);
         assertEquals(0, repo.escrituras);
     }
+    
+    @Test
+    public void noPermiteCrearProgramaConFechaPasada() {
+
+    PersistenciaEnMemoria repo = new PersistenciaEnMemoria();
+
+    ControladorProgramaFormacion control =
+            new ControladorProgramaFormacion(repo);
+
+    LocalDate ayer = LocalDate.now().minusDays(1);
+    LocalDate manana = LocalDate.now().plusDays(1);
+
+    IllegalArgumentException error = assertThrows(
+            IllegalArgumentException.class,
+            () -> control.altaProgramaFormacion(
+                    "Programa antiguo",
+                    "Programa con fecha inválida",
+                    ayer,
+                    manana,
+                    LocalDate.now()
+            )
+    );
+
+    assertEquals(
+            "La fecha de inicio no puede ser anterior a la fecha actual.",
+            error.getMessage()
+    );
+
+    assertEquals(0, repo.escrituras);
+    assertNull(repo.guardado);
+    }
+    
+    
 }

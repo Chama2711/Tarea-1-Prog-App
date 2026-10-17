@@ -1,4 +1,4 @@
-package logica;
+    package logica;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -116,8 +116,22 @@ public class ControladorCurso {
         if (nombreEdicion == null || nombreEdicion.isBlank()) {
             throw new IllegalArgumentException("Indique el nombre de la edición.");
         }
-        if (inicio == null || fin == null || fin.isBefore(inicio)) {
-            throw new IllegalArgumentException("Revise las fechas de inicio y fin.");
+                // Las fechas son obligatorias.
+        if (inicio == null || fin == null) {
+             throw new IllegalArgumentException(
+                     "Complete las fechas de inicio y finalización.");
+        }
+
+         // La edición debe comenzar hoy o en el futuro.
+        if (inicio.isBefore(LocalDate.now())) {
+             throw new IllegalArgumentException(
+                     "La fecha de inicio no puede ser anterior a la fecha actual.");
+        }
+
+         // La finalización debe ser igual o posterior al inicio.
+        if (fin.isBefore(inicio)) {
+             throw new IllegalArgumentException(
+                     "La fecha de finalización no puede ser anterior a la fecha de inicio.");
         }
         if (cupo < -1) {
             throw new IllegalArgumentException(
