@@ -82,6 +82,58 @@
             actualizarFormulario(false);
         });
 
+        // Actualizar automáticamente el orden de las inscripciones.
+        const ordenAnterior = new URLSearchParams(
+            window.location.search
+        ).get('orden') || 'FECHA';
+
+        const opcionesOrden = filtro.querySelectorAll(
+            'input[name="orden"]'
+        );
+
+        opcionesOrden.forEach(opcion => {
+            opcion.addEventListener('change', () => {
+
+                const edicion = document.getElementById('edicion');
+
+                // Solo actualizar cuando hay una edición seleccionada.
+                if (!edicion || !edicion.value) {
+                    return;
+                }
+
+                // Proteger decisiones pendientes de guardar.
+                if (cambios && !window.confirm(
+                    'Tenés decisiones sin guardar. ¿Querés descartarlas y cambiar el orden?'
+                )) {
+                    const anterior = Array.from(opcionesOrden).find(
+                        radio => radio.value === ordenAnterior
+                    );
+
+                    if (anterior) {
+                        anterior.checked = true;
+                    }
+
+                    return;
+                }
+
+                cambios = false;
+
+                // Conservar instituto, curso y edición seleccionados.
+                const parametros = new URLSearchParams(
+                    new FormData(filtro)
+                );
+
+                // Recargar la lista con el nuevo criterio.
+                window.location.assign(
+                    filtro.action + '?' + parametros.toString()
+                );
+            });
+        });
+
+
+
+
+
         filtro.addEventListener('submit', evento => {
             if (cambios && !window.confirm(
                 'Tenés decisiones sin guardar. ¿Querés descartarlas y cambiar la consulta?'

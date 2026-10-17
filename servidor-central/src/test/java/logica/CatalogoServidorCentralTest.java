@@ -92,7 +92,7 @@ public class CatalogoServidorCentralTest {
 
     @Test public void programaCreadoSeConsultaYRecibeCursosPorLaFachada() throws Exception {
         var p = catalogo(); var central = new ServidorCentral(p);
-        LocalDate inicio = LocalDate.of(2026, 1, 1), fin = inicio.plusMonths(6);
+        LocalDate inicio = LocalDate.now(), fin = inicio.plusMonths(6);
         central.altaProgramaFormacion(" Programa ", " Formación ", inicio, fin, inicio.minusDays(1));
         var programa = central.obtenerDetallePrograma("Programa");
         assertEquals("Formación", programa.getDescripcion()); assertEquals(inicio, programa.getFechaInicio());
