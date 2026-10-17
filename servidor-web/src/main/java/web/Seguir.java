@@ -1,6 +1,8 @@
 package web;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,30 +19,47 @@ public class Seguir extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        request.setCharacterEncoding("UTF-8");
+        response.setHeader("Cache-Control", "no-store");
         HttpSession session = request.getSession(false);
-        DTAutenticacion autenticado = (session != null) ? (DTAutenticacion) session.getAttribute("usuario") : null;
-        
-        String nickDestino = request.getParameter("nickDestino");
-        String accion = request.getParameter("accion");
-
-        IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
-
-        if (servidor != null && autenticado != null && nickDestino != null) {
-            try {
-                String nickLogueado = autenticado.getNick();
-                if ("seguir".equals(accion)) {
-                    servidor.seguirUsuario(nickLogueado, nickDestino);
-                    session.setAttribute("mensajeExito", "Ahora sigues a @" + nickDestino);
-                } else if ("dejar_seguir".equals(accion)) {
-                    servidor.dejarDeSeguirUsuario(nickLogueado, nickDestino);
-                    session.setAttribute("mensajeExito", "Has dejado de seguir a @" + nickDestino);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                session.setAttribute("mensajeError", "No se pudo realizar la acción: " + e.getMessage());
-            }
+        Object identidad = session == null ? null : session.getAttribute("usuario");
+        if (!(identidad instanceof DTAutenticacion autenticado)) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
         }
 
-        response.sendRedirect(request.getContextPath() + "/usuario?nick=" + nickDestino);
+        String nickDestino = FormulariosDocente.valor(request, "nickDestino").trim();
+        String accion = request.getParameter("accion");
+        if (nickDestino.isEmpty() || (!"seguir".equals(accion) && !"dejar_seguir".equals(accion))) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Indique un usuario y una acción válida.");
+            return;
+        }
+
+        session.removeAttribute("mensajeExito");
+        session.removeAttribute("mensajeError");
+        String destino = nickDestino;
+        try {
+            IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+            if ("seguir".equals(accion)) {
+                servidor.seguirUsuario(autenticado.getNick(), nickDestino);
+                session.setAttribute("mensajeExito", "Ahora seguís a @" + nickDestino);
+            } else {
+                servidor.dejarDeSeguirUsuario(autenticado.getNick(), nickDestino);
+                session.setAttribute("mensajeExito", "Dejaste de seguir a @" + nickDestino);
+            }
+        } catch (SecurityException e) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+            return;
+        } catch (IllegalArgumentException e) {
+            session.setAttribute("mensajeError", e.getMessage());
+            destino = autenticado.getNick();
+        } catch (Exception e) {
+            getServletContext().log("No se pudo actualizar el seguimiento de usuario.", e);
+            session.setAttribute("mensajeError", "No se pudo realizar la acción. Intentá nuevamente.");
+            destino = autenticado.getNick();
+        }
+
+        response.sendRedirect(request.getContextPath() + "/usuario?nick="
+                + URLEncoder.encode(destino, StandardCharsets.UTF_8));
     }
 }

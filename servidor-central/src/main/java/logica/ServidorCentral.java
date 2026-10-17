@@ -7,7 +7,6 @@ package logica;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
 import persistencia.ControladorPersistencia;
 
 public class ServidorCentral implements IServidorCentral, AutoCloseable {
@@ -541,18 +540,13 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
 
     @Override
-    public EntityManager getEntityManager() {
-        return persistencia.getEntityManager();
-    }
-    
-    @Override
     public void seguirUsuario(String nickSeguidor, String nickSeguido) throws Exception {
-        controladorUsuario.seguirUsuario(nickSeguidor, nickSeguido);
+        persistencia.seguirUsuario(nickSeguidor, nickSeguido);
     }
 
     @Override
     public void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) throws Exception {
-        controladorUsuario.dejarDeSeguirUsuario(nickSeguidor, nickSeguido);
+        persistencia.dejarDeSeguirUsuario(nickSeguidor, nickSeguido);
     }
     
 

@@ -110,8 +110,7 @@ public class SeleccionEstudiantesServlet extends HttpServlet {
         request.getRequestDispatcher(VISTA).forward(request, response);
     }
     private static String valor(HttpServletRequest request, String nombre) {
-        // Los formularios HTML envían CRLF; los nombres originales contienen LF.
-        return FormulariosDocente.valor(request, nombre).replace("\r\n", "\n").replace('\r', '\n').trim();
+        return FormulariosDocente.valor(request, nombre).trim();
     }
     private static String url(String valor) { return URLEncoder.encode(valor, StandardCharsets.UTF_8); }
 }

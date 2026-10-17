@@ -514,8 +514,46 @@ public void editarUsuario(Usuario usuario) throws Exception {
     }
 }
 
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
+    public void seguirUsuario(String nickSeguidor, String nickSeguido) {
+        cambiarSeguimiento(nickSeguidor, nickSeguido, true);
+    }
+
+    public void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) {
+        cambiarSeguimiento(nickSeguidor, nickSeguido, false);
+    }
+
+    private void cambiarSeguimiento(String nickSeguidor, String nickSeguido, boolean seguir) {
+        if (nickSeguidor == null || nickSeguidor.isBlank()) {
+            throw new SecurityException("Se requiere un usuario registrado.");
+        }
+        if (nickSeguido == null || nickSeguido.isBlank()) {
+            throw new IllegalArgumentException("Seleccione un usuario.");
+        }
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // Serializa cambios de la misma lista para evitar seguimientos duplicados.
+            Usuario seguidor = em.find(Usuario.class, nickSeguidor, LockModeType.PESSIMISTIC_WRITE);
+            Usuario seguido = em.find(Usuario.class, nickSeguido);
+            if (seguidor == null) throw new SecurityException("El usuario autenticado ya no existe.");
+            if (seguido == null) throw new IllegalArgumentException("El usuario seleccionado no existe.");
+            if (seguidor.getNick().equalsIgnoreCase(seguido.getNick())) {
+                throw new IllegalArgumentException("No podés seguirte a vos mismo.");
+            }
+            boolean existente = seguidor.getSeguidos().stream()
+                    .anyMatch(u -> u.getNick().equalsIgnoreCase(seguido.getNick()));
+            if (seguir && existente) throw new IllegalArgumentException("Ya seguís a ese usuario.");
+            if (!seguir && !existente) throw new IllegalArgumentException("No seguís a ese usuario.");
+            if (seguir) seguidor.getSeguidos().add(seguido);
+            else seguidor.getSeguidos().removeIf(u -> u.getNick().equalsIgnoreCase(seguido.getNick()));
+            em.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (e instanceof IllegalArgumentException || e instanceof SecurityException) throw e;
+            throw new IllegalStateException("No se pudo actualizar el seguimiento.", e);
+        } finally {
+            em.close();
+        }
     }
     
     

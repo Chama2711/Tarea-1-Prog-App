@@ -30,12 +30,18 @@ final class FormulariosDocente {
 
     static String valor(HttpServletRequest request, String nombre) {
         String valor = request.getParameter(nombre);
-        return valor == null ? "" : valor;
+        return normalizarSaltos(valor);
     }
 
     static List<String> seleccion(HttpServletRequest request, String nombre) {
         String[] valores = request.getParameterValues(nombre);
-        return valores == null ? List.of() : Arrays.asList(valores);
+        return valores == null ? List.of() : Arrays.stream(valores)
+                .map(FormulariosDocente::normalizarSaltos).toList();
+    }
+
+    // HTML envía CRLF; los nombres originales de cursos se almacenan con LF.
+    static String normalizarSaltos(String valor) {
+        return valor == null ? "" : valor.replace("\r\n", "\n").replace('\r', '\n');
     }
 
     static int entero(String texto, String campo) {

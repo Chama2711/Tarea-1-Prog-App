@@ -70,7 +70,7 @@
             <%-- Botón Seguir / Dejar de seguir --%>
             <% if (autenticado != null && !perfil.propio()) { %>
                 <form action="${pageContext.request.contextPath}/Seguir" method="POST" style="margin-top: 10px;">
-                    <input type="hidden" name="nickDestino" value="<%= parametro(usuario.nick()) %>">
+                    <input type="hidden" name="nickDestino" value="<%= escapar(usuario.nick()) %>">
                     <% if (esSeguidor) { %>
                         <input type="hidden" name="accion" value="dejar_seguir">
                         <button type="submit" class="boton boton-secundario">Dejar de seguir</button>

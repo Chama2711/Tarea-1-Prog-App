@@ -20,6 +20,21 @@ import static org.junit.Assert.*;
 
 /** Ejercita HTTP sin escribir registros en las bases usadas por los integrantes. */
 public class AltasDocenteServletTest {
+    @Test public void altaEdicionNormalizaElCursoConSaltosDeLinea() throws Exception {
+        Escenario s = new Escenario(); s.valor("curso", "Curso\r\ncon\rotro salto");
+        s.ejecutar(true, true);
+        assertEquals("Curso\ncon\notro salto", s.argumentosAlta[2]);
+        assertEquals(302, s.estado);
+    }
+
+    @Test public void altaCursoNormalizaLasPreviasSinCambiarLaSeleccion() throws Exception {
+        Escenario s = new Escenario();
+        s.parametros.put("previas", new String[]{"Curso\r\nUno", "Curso\rDos"});
+        s.ejecutar(false, true);
+        assertEquals(List.of("Curso\nUno", "Curso\nDos"), s.argumentosAlta[8]);
+        assertEquals(302, s.estado);
+    }
+
     private static <T> T proxy(Class<T> tipo, InvocationHandler comportamiento) {
         return tipo.cast(Proxy.newProxyInstance(tipo.getClassLoader(), new Class<?>[]{tipo}, comportamiento));
     }
