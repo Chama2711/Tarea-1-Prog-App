@@ -65,7 +65,7 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
                 <configuration>
-                    <append>true</append>
+                    <append>false</append>
                 </configuration>
                 <executions>
                     <execution>
@@ -80,6 +80,35 @@
                                 <exclude>persistencia/**</exclude>
                                 <exclude>logica/*_*</exclude>
                             </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>comprobar-cobertura-logica</id>
+                        <phase>verify</phase>
+                        <goals><goal>check</goal></goals>
+                        <configuration>
+                            <!-- Mismo alcance que el informe: lógica, sin persistencia ni metamodelo generado. -->
+                            <excludes>
+                                <exclude>persistencia/**</exclude>
+                                <exclude>logica/*_*</exclude>
+                            </excludes>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>INSTRUCTION</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.80</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.80</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
                         </configuration>
                     </execution>
                 </executions>

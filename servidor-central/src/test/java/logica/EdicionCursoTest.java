@@ -23,4 +23,19 @@ public class EdicionCursoTest {
         assertFalse(edicion(hoy.plusDays(1), hoy.plusDays(2)).esVigente());
         assertFalse(edicion(hoy.minusDays(2), hoy.minusDays(1)).esVigente());
     }
+
+    @Test public void validacionDirectaDeSeleccionRechazaDestinosNoDefinidos() {
+        var e = edicion(LocalDate.now(), LocalDate.now());
+        var i = new Inscripcion(LocalDate.now(), e);
+        assertThrows(IllegalArgumentException.class, () -> e.validarSeleccion(i, null, 0));
+        assertThrows(IllegalArgumentException.class, () -> e.validarSeleccion(i, EstadoInscripcion.INSCRIPTO, 0));
+        assertEquals(EstadoInscripcion.INSCRIPTO, i.getEstado());
+    }
+
+    @Test public void participanteNuloNoSeAutorizaAunqueLaEdicionTengaDocentes() {
+        var e = edicion(LocalDate.now(), LocalDate.now());
+        e.agregoDocente(new Docente("doc", "doc@test", "Docente", "Uno", LocalDate.of(1980, 1, 1)));
+        assertThrows(IllegalArgumentException.class, () -> e.validarDocenteParticipante(null));
+        e.validarDocenteParticipante("doc");
+    }
 }

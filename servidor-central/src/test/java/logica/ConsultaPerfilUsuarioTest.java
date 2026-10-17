@@ -2,6 +2,7 @@ package logica;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -59,5 +60,31 @@ public class ConsultaPerfilUsuarioTest {
     @Test public void identidadDebeCoincidirExactamente() {
         assertFalse(perfil("ANA", DTAutenticacion.Rol.ESTUDIANTE).propio());
         assertEquals(2, perfil("ANA", DTAutenticacion.Rol.ESTUDIANTE).inscripciones().size());
+    }
+
+    @Test public void lasListasDelPerfilNoSePuedenAlterarDesdeLaPresentacion() {
+        var pendientes = new ArrayList<>(List.of(inscripcion(1, EstadoInscripcion.INSCRIPTO)));
+        var programas = new ArrayList<>(List.of("Programa"));
+        var datos = usuario(DTAutenticacion.Rol.ESTUDIANTE);
+        var perfil = DTPerfilUsuario.crear(datos, "ana", pendientes, List.of(), programas, List.of());
+        pendientes.clear(); programas.add("Otro programa");
+        assertSame(datos, perfil.usuario()); assertEquals(1, perfil.inscripciones().size());
+        assertEquals(List.of("Programa"), perfil.programas());
+        assertThrows(UnsupportedOperationException.class, () -> perfil.inscripciones().clear());
+        assertThrows(UnsupportedOperationException.class, () -> perfil.programas().add("Intruso"));
+    }
+
+    @Test public void consultaDocenteMantieneSusEdicionesYProtegeLaListaDeAceptados() {
+        var aceptados = new ArrayList<>(List.of(inscripcion(1, EstadoInscripcion.ACEPTADA)));
+        var ediciones = new ArrayList<>(List.of(new DTEdicionConsulta("Edición", "Curso", LocalDate.now(),
+                LocalDate.now(), LocalDate.now(), 1, true, false, List.of())));
+        var datos = usuario(DTAutenticacion.Rol.DOCENTE);
+        var propio = DTPerfilUsuario.crear(datos, "ana", List.of(), ediciones, List.of(), aceptados);
+        var visitante = DTPerfilUsuario.crear(datos, null, List.of(), ediciones, List.of(), aceptados);
+        ediciones.clear(); aceptados.clear();
+        assertEquals(1, propio.aceptados().size()); assertEquals(1, propio.ediciones().size());
+        assertTrue(visitante.aceptados().isEmpty()); assertEquals(1, visitante.ediciones().size());
+        assertThrows(UnsupportedOperationException.class, () -> propio.aceptados().clear());
+        assertThrows(UnsupportedOperationException.class, () -> visitante.ediciones().clear());
     }
 }

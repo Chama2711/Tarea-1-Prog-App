@@ -21,6 +21,7 @@ public class SeleccionEstudiantesTest {
         long aceptadas;
         boolean activa, confirmada, revertida, cerrada;
         int accesos;
+        RuntimeException falloConsulta;
         final ControladorInscripcion controlador;
 
         Escenario() {
@@ -40,7 +41,10 @@ public class SeleccionEstudiantesTest {
                     TypedQuery.class.getClassLoader(), new Class[]{TypedQuery.class},
                     (proxy, metodo, args) -> switch (metodo.getName()) {
                         case "setParameter" -> proxy;
-                        case "getSingleResult" -> aceptadas;
+                        case "getSingleResult" -> {
+                            if (falloConsulta != null) throw falloConsulta;
+                            yield aceptadas;
+                        }
                         default -> throw new AssertionError(metodo.getName());
                     });
             EntityManager em = (EntityManager) Proxy.newProxyInstance(
@@ -154,5 +158,67 @@ public class SeleccionEstudiantesTest {
         assertThrows(IllegalArgumentException.class, () -> s.controlador.listarAceptadosEdicion("docente", null));
         assertThrows(IllegalArgumentException.class, () -> s.controlador.listarResultadosInscripciones(null));
         assertEquals(0, s.accesos);
+    }
+
+    @Test public void clavesYEstadosNulosNoAccedenALaBase() {
+        for (boolean claveNula : new boolean[]{true, false}) {
+            Escenario s = new Escenario(); Map<Long, EstadoInscripcion> lote = new LinkedHashMap<>();
+            lote.put(claveNula ? null : 1L, claveNula ? EstadoInscripcion.ACEPTADA : null);
+            assertThrows(IllegalArgumentException.class,
+                    () -> s.controlador.seleccionarEstudiantes("docente", "Edición", lote));
+            assertEquals(0, s.accesos); assertEquals(EstadoInscripcion.INSCRIPTO, s.primera.getEstado());
+        }
+    }
+
+    @Test public void edicionFuturaOInexistenteRevierteYCierraSinCambios() {
+        for (boolean futura : new boolean[]{true, false}) {
+            Escenario s = new Escenario();
+            if (futura) s.edicion.setFechaInicio(LocalDate.now().plusDays(1));
+            assertThrows(IllegalArgumentException.class, () -> s.controlador.seleccionarEstudiantes(
+                    "docente", futura ? "Edición" : "Inexistente", Map.of(1L, EstadoInscripcion.ACEPTADA)));
+            assertTrue(s.revertida && s.cerrada); assertFalse(s.confirmada);
+            assertEquals(EstadoInscripcion.INSCRIPTO, s.primera.getEstado());
+        }
+    }
+
+    @Test public void inscripcionDeProgramaNoSeSeleccionaComoInscripcionDeEdicion() {
+        Escenario s = new Escenario(); s.primera.setEdicionCurso(null);
+        assertThrows(IllegalArgumentException.class, () -> s.controlador.seleccionarEstudiantes(
+                "docente", "Edición", Map.of(1L, EstadoInscripcion.ACEPTADA)));
+        assertEquals(EstadoInscripcion.INSCRIPTO, s.primera.getEstado()); assertTrue(s.revertida);
+    }
+
+    @Test public void cupoCeroNoPermiteAceptarPeroPermiteRechazar() {
+        Escenario s = new Escenario(); s.edicion.setCupo(0);
+        assertThrows(IllegalArgumentException.class, () -> s.controlador.seleccionarEstudiantes(
+                "docente", "Edición", Map.of(1L, EstadoInscripcion.ACEPTADA)));
+        assertEquals(EstadoInscripcion.INSCRIPTO, s.primera.getEstado());
+        s.controlador.seleccionarEstudiantes("docente", "Edición", Map.of(1L, EstadoInscripcion.RECHAZADA));
+        assertEquals(EstadoInscripcion.RECHAZADA, s.primera.getEstado());
+    }
+
+    @Test public void cupoInvalidoNoPermiteResolverNingunaInscripcion() {
+        Escenario s = new Escenario(); s.edicion.setCupo(-2);
+        assertThrows(IllegalArgumentException.class, () -> s.controlador.seleccionarEstudiantes(
+                "docente", "Edición", Map.of(1L, EstadoInscripcion.RECHAZADA)));
+        assertEquals(EstadoInscripcion.INSCRIPTO, s.primera.getEstado()); assertTrue(s.revertida && s.cerrada);
+    }
+
+    @Test public void falloDeConsultaNoCambiaEstadosYConservaLaCausaParaDiagnostico() {
+        Escenario s = new Escenario(); s.falloConsulta = new javax.persistence.PersistenceException("Fallo de prueba.");
+        var error = assertThrows(IllegalStateException.class, () -> s.controlador.seleccionarEstudiantes(
+                "docente", "Edición", Map.of(1L, EstadoInscripcion.ACEPTADA)));
+        assertSame(s.falloConsulta, error.getCause()); assertTrue(s.revertida && s.cerrada);
+        assertFalse(s.confirmada); assertEquals(EstadoInscripcion.INSCRIPTO, s.primera.getEstado());
+    }
+
+    @Test public void decisionInvalidaAlFinalDelLoteNoAplicaElRechazoAnterior() {
+        Escenario s = new Escenario(); s.segunda.cambiarEstado(EstadoInscripcion.ACEPTADA);
+        Map<Long, EstadoInscripcion> lote = new LinkedHashMap<>();
+        lote.put(1L, EstadoInscripcion.RECHAZADA); lote.put(2L, EstadoInscripcion.RECHAZADA);
+        assertThrows(IllegalStateException.class,
+                () -> s.controlador.seleccionarEstudiantes("docente", "Edición", lote));
+        assertEquals(EstadoInscripcion.INSCRIPTO, s.primera.getEstado());
+        assertEquals(EstadoInscripcion.ACEPTADA, s.segunda.getEstado()); assertFalse(s.confirmada);
     }
 }
