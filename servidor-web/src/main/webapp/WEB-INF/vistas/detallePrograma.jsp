@@ -4,6 +4,7 @@
 <%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
 <%
     ProgramaFormacion programa = (ProgramaFormacion) request.getAttribute("programa");
+    List<String> categorias = (List<String>) request.getAttribute("categorias");
     String tituloPagina = programa.getNombre();
     String bajadaPagina = programa.getDescripcion();
     String paginaActiva = "programas";
@@ -101,6 +102,16 @@
             <div class="dato"><span>Fecha de alta</span><strong><%= fecha(programa.getFechaAlta()) %></strong></div>
             <div class="dato"><span>Cursos</span><strong><%= programa.getCursos() == null ? 0 : programa.getCursos().size() %></strong></div>
         </div>
+        <h3>Categorías</h3>
+        <% if (categorias == null || categorias.isEmpty()) { %>
+            <p class="texto-secundario">Este programa no tiene categorías asociadas.</p>
+        <% } else { %>
+            <div class="categorias" aria-label="Categorías del programa">
+                <% for (String categoria : categorias) { %>
+                    <span class="categoria-chip"><%= escapar(categoria) %></span>
+                <% } %>
+            </div>
+        <% } %>
     </section>
         
 <% if (esEstudiante) { %>

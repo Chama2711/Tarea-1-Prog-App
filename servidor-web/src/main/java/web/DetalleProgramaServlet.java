@@ -68,6 +68,7 @@ public class DetalleProgramaServlet extends HttpServlet {
         }
 
         request.setAttribute("programa", programa);
+        request.setAttribute("categorias", servidor.listarNombresCategoriasPrograma(programa.getNombre()));
         request.setAttribute("yaInscripto", yaInscripto);
         request.getRequestDispatcher(
                 "/WEB-INF/vistas/detallePrograma.jsp"
