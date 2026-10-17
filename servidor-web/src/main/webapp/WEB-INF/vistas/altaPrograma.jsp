@@ -9,6 +9,8 @@
     String tituloPagina = "Creá un programa de formación.";
     String bajadaPagina = "Definí el nombre, la descripción y las fechas del programa.";
     String paginaActiva = "programas";
+    String hoy = java.time.LocalDate.now().toString();
+    
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -18,6 +20,26 @@
     <title><%= escapar(tituloPagina) %> | edEXT</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=6">
 </head>
+
+<script>
+    const fechaInicio = document.getElementById("fechaInicio");
+    const fechaFin = document.getElementById("fechaFin");
+    const hoy = "<%= hoy %>";
+
+    function actualizarFechaFin() {
+        fechaFin.min = fechaInicio.value || hoy;
+
+        if (fechaFin.value && fechaFin.value < fechaFin.min) {
+            fechaFin.value = "";
+        }
+    }
+
+    fechaInicio.addEventListener("change", actualizarFechaFin);
+
+    actualizarFechaFin();
+</script>
+
+
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
 
@@ -57,21 +79,23 @@
                 </div>
 
                 <div class="campo">
-                    <label for="fechaInicio">Fecha de inicio</label>
-                    <input type="date"
-                           id="fechaInicio"
-                           name="fechaInicio"
-                           value="<%= escapar(request.getAttribute("fechaInicio")) %>"
-                           required>
+                      <label for="fechaInicio">Fecha de inicio</label>
+                      <input type="date"
+                             id="fechaInicio"
+                             name="fechaInicio"
+                             min="<%= hoy %>"
+                             value="<%= escapar(request.getAttribute("fechaInicio")) %>"
+                             required>
                 </div>
 
                 <div class="campo">
-                    <label for="fechaFin">Fecha de finalización</label>
-                    <input type="date"
-                           id="fechaFin"
-                           name="fechaFin"
-                           value="<%= escapar(request.getAttribute("fechaFin")) %>"
-                           required>
+                      <label for="fechaFin">Fecha de finalización</label>
+                      <input type="date"
+                             id="fechaFin"
+                             name="fechaFin"
+                             min="<%= hoy %>"
+                             value="<%= escapar(request.getAttribute("fechaFin")) %>"
+                             required>
                 </div>
 
                 <div class="acciones-registro">

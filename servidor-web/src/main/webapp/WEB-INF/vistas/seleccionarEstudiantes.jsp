@@ -32,46 +32,84 @@
 <%@ include file="/WEB-INF/vistas/fragmentos/intro.jspf" %>
     <section class="panel" aria-labelledby="titulo-seleccion">
         <h2 id="titulo-seleccion">Seleccionar estudiantes</h2>
-        <form class="filtro-seleccion" method="get" action="${pageContext.request.contextPath}/seleccion-estudiantes">
-            <div class="campo"><label for="instituto">Instituto</label>
-                <select id="instituto" name="instituto" required>
-                    <option value="">Seleccioná un instituto</option>
-                    <% for (String item : institutos) { %><option value="<%= escapar(item) %>" <%= item.equals(instituto) ? "selected" : "" %>><%= escapar(item) %></option><% } %>
-                </select>
-            </div>
-            <button type="submit" class="boton boton-secundario boton-pequeno">Ver cursos</button>
-        </form>
-        <% if (!instituto.isEmpty()) { %>
-        <% if (cursos.isEmpty()) { %><p class="aviso">Este instituto no tiene cursos.</p><% } else { %>
-        <form class="filtro-seleccion" method="get" action="${pageContext.request.contextPath}/seleccion-estudiantes">
-            <input type="hidden" name="instituto" value="<%= escapar(instituto) %>">
-            <div class="campo"><label for="curso">Curso</label>
-                <select id="curso" name="curso" required>
-                    <option value="">Seleccioná un curso</option>
-                    <% for (String item : cursos) { %><option value="<%= escapar(item) %>" <%= item.equals(curso) ? "selected" : "" %>><%= escapar(item) %></option><% } %>
-                </select>
-            </div>
-            <button type="submit" class="boton boton-secundario boton-pequeno">Ver ediciones vigentes</button>
-        </form>
-        <% } } %>
-        <% if (!curso.isEmpty()) { %>
-        <% if (ediciones.isEmpty()) { %><p class="aviso">No hay ediciones vigentes de este curso en las que participes.</p><% } else { %>
-        <form class="filtro-seleccion" method="get" action="${pageContext.request.contextPath}/seleccion-estudiantes">
-            <input type="hidden" name="instituto" value="<%= escapar(instituto) %>">
-            <input type="hidden" name="curso" value="<%= escapar(curso) %>">
-            <div class="campo"><label for="edicion">Edición vigente</label>
-                <select id="edicion" name="edicion" required>
-                    <option value="">Seleccioná una edición</option>
-                    <% for (DTEdicionConsulta item : ediciones) { %><option value="<%= escapar(item.nombre()) %>" <%= item.nombre().equals(nombreEdicion) ? "selected" : "" %>><%= escapar(item.nombre()) %></option><% } %>
-                </select>
-            </div>
-            <fieldset class="selector-cuenta"><legend>Ordenar por</legend><div class="selector-opciones">
-                <label><input type="radio" name="orden" value="FECHA" <%= orden == OrdenInscripciones.FECHA ? "checked" : "" %>><span>Fecha de inscripción</span></label>
-                <label><input type="radio" name="orden" value="PRIORIDAD" <%= orden == OrdenInscripciones.PRIORIDAD ? "checked" : "" %>><span>Prioridad</span></label>
-            </div></fieldset>
-            <button type="submit" class="boton boton-pequeno">Ver inscripciones</button>
-        </form>
-        <% } } %>
+       <form id="filtro-estudiantes"
+      class="filtro-seleccion"
+      method="get"
+      action="${pageContext.request.contextPath}/seleccion-estudiantes">
+
+    <div class="campo">
+        <label for="instituto">Instituto</label>
+        <select id="instituto" name="instituto" required>
+            <option value="">Seleccioná un instituto</option>
+            <% for (String item : institutos) { %>
+                <option value="<%= escapar(item) %>"
+                    <%= item.equals(instituto) ? "selected" : "" %>>
+                    <%= escapar(item) %>
+                </option>
+            <% } %>
+        </select>
+    </div>
+
+    <div class="campo">
+        <label for="curso">Curso</label>
+        <select id="curso" name="curso"
+                <%= instituto.isEmpty() ? "disabled" : "" %>
+                required>
+            <option value="">Seleccioná un curso</option>
+            <% for (String item : cursos) { %>
+                <option value="<%= escapar(item) %>"
+                    <%= item.equals(curso) ? "selected" : "" %>>
+                    <%= escapar(item) %>
+                </option>
+            <% } %>
+        </select>
+    </div>
+
+    <div class="campo">
+        <label for="edicion">Edición vigente</label>
+        <select id="edicion" name="edicion"
+                <%= curso.isEmpty() ? "disabled" : "" %>
+                required>
+            <option value="">Seleccioná una edición</option>
+            <% for (DTEdicionConsulta item : ediciones) { %>
+                <option value="<%= escapar(item.nombre()) %>"
+                    <%= item.nombre().equals(nombreEdicion) ? "selected" : "" %>>
+                    <%= escapar(item.nombre()) %>
+                </option>
+            <% } %>
+        </select>
+    </div>
+
+    <fieldset class="selector-cuenta">
+        <legend>Ordenar por</legend>
+
+        <div class="selector-opciones">
+            <label>
+                <input type="radio" name="orden" value="FECHA"
+                    <%= orden == OrdenInscripciones.FECHA ? "checked" : "" %>>
+                <span>Fecha de inscripción</span>
+            </label>
+
+            <label>
+                <input type="radio" name="orden" value="PRIORIDAD"
+                    <%= orden == OrdenInscripciones.PRIORIDAD ? "checked" : "" %>>
+                <span>Prioridad</span>
+            </label>
+        </div>
+    </fieldset>
+
+    <button type="submit" class="boton">
+        Ver inscripciones
+    </button>
+</form>
+
+<% if (!instituto.isEmpty() && cursos.isEmpty()) { %>
+    <p class="aviso">Este instituto no tiene cursos.</p>
+<% } else if (!curso.isEmpty() && ediciones.isEmpty()) { %>
+    <p class="aviso">
+        No hay ediciones vigentes de este curso en las que participes.
+    </p>
+<% } %>
     </section>
     <% if (detalle != null) { %>
     <section class="panel seleccion-estudiantes" aria-labelledby="titulo-inscripciones">

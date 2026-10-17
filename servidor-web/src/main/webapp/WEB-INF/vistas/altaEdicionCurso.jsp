@@ -5,6 +5,7 @@
     String tituloPagina = "Creá una edición.";
     String bajadaPagina = "Definí las fechas, el cupo y los docentes de un curso.";
     String paginaActiva = "cursos";
+    String hoy = java.time.LocalDate.now().toString();
     List<String> institutos = (List<String>) request.getAttribute("institutos");
     List<String> cursos = (List<String>) request.getAttribute("cursos");
     List<String> docentes = (List<String>) request.getAttribute("docentes");
@@ -19,6 +20,33 @@
     <title><%= escapar(tituloPagina) %> | edEXT</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=6">
 </head>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const fechaInicio = document.getElementById("fechaInicio");
+    const fechaFin = document.getElementById("fechaFin");
+    const hoy = "<%= hoy %>";
+
+    // Los campos solo existen cuando se seleccionó un instituto.
+    if (!fechaInicio || !fechaFin) {
+        return;
+    }
+
+    function actualizarFechaFin() {
+        fechaFin.min = fechaInicio.value || hoy;
+
+        if (fechaFin.value && fechaFin.value < fechaFin.min) {
+            fechaFin.value = "";
+        }
+    }
+
+    fechaInicio.addEventListener("change", actualizarFechaFin);
+
+    actualizarFechaFin();
+});
+</script>
+
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
 <main id="contenido" class="contenedor contenido disposicion-web">
@@ -60,10 +88,25 @@
         </div>
         <div class="campo"><label for="nombre">Nombre de la edición</label>
             <input id="nombre" name="nombre" value="<%= escapar(request.getAttribute("nombre")) %>" required></div>
-        <div class="campo"><label for="fechaInicio">Fecha de inicio</label>
-            <input type="date" id="fechaInicio" name="fechaInicio" value="<%= escapar(request.getAttribute("fechaInicio")) %>" required></div>
-        <div class="campo"><label for="fechaFin">Fecha de finalización</label>
-            <input type="date" id="fechaFin" name="fechaFin" value="<%= escapar(request.getAttribute("fechaFin")) %>" required></div>
+        <div class="campo">
+            <label for="fechaInicio">Fecha de inicio</label>
+            <input type="date"
+                   id="fechaInicio"
+                   name="fechaInicio"
+                   min="<%= hoy %>"
+                   value="<%= escapar(request.getAttribute("fechaInicio")) %>"
+                   required>
+        </div>
+
+        <div class="campo">
+            <label for="fechaFin">Fecha de finalización</label>
+            <input type="date"
+                   id="fechaFin"
+                   name="fechaFin"
+                   min="<%= hoy %>"
+                   value="<%= escapar(request.getAttribute("fechaFin")) %>"
+                   required>
+        </div>
         <div class="campo"><label for="cupos">Cupo</label>
             <input type="number" id="cupos" name="cupos" min="-1" step="1" value="<%= escapar(request.getAttribute("cupos")) %>" aria-describedby="ayuda-cupo" placeholder="Sin límite">
             <p id="ayuda-cupo" class="ayuda">Dejalo vacío o usá -1 para sin límite. El valor 0 no permite aceptaciones.</p>

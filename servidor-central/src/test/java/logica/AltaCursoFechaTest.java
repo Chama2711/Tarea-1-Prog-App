@@ -60,4 +60,34 @@ public class AltaCursoFechaTest {
         assertFalse(fecha.isBefore(antes));
         assertFalse(fecha.isAfter(LocalDate.now()));
     }
+    
+    @Test
+    public void noPermiteCrearEdicionConFechaPasada() {
+
+    PersistenciaDePrueba persistencia = new PersistenciaDePrueba();
+
+    ControladorCurso controlador = new ControladorCurso(persistencia);
+
+    LocalDate ayer = LocalDate.now().minusDays(1);
+    LocalDate manana = LocalDate.now().plusDays(1);
+
+    IllegalArgumentException error = assertThrows(
+            IllegalArgumentException.class,
+            () -> controlador.altaEdicionCurso(
+                    "Instituto",
+                    "Curso",
+                    "Edición antigua",
+                    ayer,
+                    manana,
+                    10,
+                    List.of()
+            )
+    );
+
+    assertEquals(
+            "La fecha de inicio no puede ser anterior a la fecha actual.",
+            error.getMessage()
+    );
+    }
+    
 }

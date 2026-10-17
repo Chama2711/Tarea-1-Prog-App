@@ -17,9 +17,18 @@ public class ControladorProgramaFormacion {
                 || descripcion == null || descripcion.isBlank()) {
             throw new IllegalArgumentException("Complete nombre y descripción.");
         }
-        if (fechaInicio == null || fechaFin == null || fechaAlta == null) {
-            throw new IllegalArgumentException("Complete las fechas de inicio, fin y alta.");
+       if (fechaInicio == null || fechaFin == null || fechaAlta == null) {
+            throw new IllegalArgumentException(
+            "Complete las fechas de inicio, fin y alta.");
         }
+
+        // No permitir crear programas que comiencen en el pasado.
+        if (fechaInicio.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException(
+                    "La fecha de inicio no puede ser anterior a la fecha actual.");
+        }
+
+        // La finalización debe ser igual o posterior al inicio.
         if (fechaFin.isBefore(fechaInicio)) {
             throw new IllegalArgumentException(
                     "La fecha de fin no puede ser anterior a la fecha de inicio.");

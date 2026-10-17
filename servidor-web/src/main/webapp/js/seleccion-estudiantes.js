@@ -1,27 +1,103 @@
 (() => {
+    const filtro = document.getElementById('filtro-estudiantes');
     const formulario = document.getElementById('form-seleccion');
-    if (!formulario) return;
-    const selectores = Array.from(formulario.querySelectorAll('select'));
+
+    // Detectar decisiones pendientes sin guardar.
+    const selectores = formulario
+        ? Array.from(formulario.querySelectorAll('select'))
+        : [];
+
     let cambios = selectores.some(select => select.value !== '');
-    formulario.addEventListener('change', () => {
-        cambios = selectores.some(select => select.value !== '');
-    });
-    formulario.addEventListener('reset', evento => {
-        evento.preventDefault();
-        selectores.forEach(select => { select.value = ''; });
-        cambios = false;
-    });
-    formulario.addEventListener('submit', () => { cambios = false; });
-    document.querySelectorAll('.filtro-seleccion').forEach(filtro => {
+
+    if (formulario) {
+        formulario.addEventListener('change', () => {
+            cambios = selectores.some(select => select.value !== '');
+        });
+
+        formulario.addEventListener('reset', evento => {
+            evento.preventDefault();
+
+            selectores.forEach(select => {
+                select.value = '';
+            });
+
+            cambios = false;
+        });
+
+        formulario.addEventListener('submit', () => {
+            cambios = false;
+        });
+    }
+
+    if (filtro) {
+        const instituto = document.getElementById('instituto');
+        const curso = document.getElementById('curso');
+
+        const institutoAnterior = instituto.value;
+        const cursoAnterior = curso.value;
+
+        function actualizarFormulario(cambioInstituto) {
+
+            if (cambios && !window.confirm(
+                'Tenés decisiones sin guardar. ¿Querés descartarlas y cambiar la consulta?'
+            )) {
+                if (cambioInstituto) {
+                    instituto.value = institutoAnterior;
+                } else {
+                    curso.value = cursoAnterior;
+                }
+                return;
+            }
+
+            cambios = false;
+
+            const parametros = new URLSearchParams();
+
+            if (instituto.value) {
+                parametros.set('instituto', instituto.value);
+            }
+
+            if (!cambioInstituto && curso.value) {
+                parametros.set('curso', curso.value);
+            }
+
+            const orden = filtro.querySelector(
+                'input[name="orden"]:checked'
+            );
+
+            if (orden) {
+                parametros.set('orden', orden.value);
+            }
+
+            window.location.assign(
+                filtro.action + '?' + parametros.toString()
+            );
+        }
+
+        instituto.addEventListener('change', () => {
+            actualizarFormulario(true);
+        });
+
+        curso.addEventListener('change', () => {
+            actualizarFormulario(false);
+        });
+
         filtro.addEventListener('submit', evento => {
-            if (cambios && !window.confirm('Tenés decisiones sin guardar. ¿Querés descartarlas y cambiar la consulta?')) {
+            if (cambios && !window.confirm(
+                'Tenés decisiones sin guardar. ¿Querés descartarlas y cambiar la consulta?'
+            )) {
                 evento.preventDefault();
                 return;
             }
+
             cambios = false;
         });
-    });
+    }
+
     window.addEventListener('beforeunload', evento => {
-        if (cambios) { evento.preventDefault(); evento.returnValue = ''; }
+        if (cambios) {
+            evento.preventDefault();
+            evento.returnValue = '';
+        }
     });
 })();
