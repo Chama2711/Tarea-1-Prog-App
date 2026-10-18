@@ -9,7 +9,8 @@
         <a href="${pageContext.request.contextPath}/alta-curso">Crear curso</a>
         <a href="${pageContext.request.contextPath}/alta-edicion-curso">Crear edición</a>
         <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>#perfil-ediciones">Mis ediciones</a>
-        <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>#perfil-aceptados">Estudiantes aceptados</a>
+        <a href="${pageContext.request.contextPath}/seleccionar-estudiantes">Seleccionar estudiantes</a>
+        <a href="${pageContext.request.contextPath}/listar-aceptados">Estudiantes aceptados</a>
         <% } %>
     </nav>
     <% } %>

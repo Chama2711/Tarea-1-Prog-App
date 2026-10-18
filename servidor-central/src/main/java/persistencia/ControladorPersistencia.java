@@ -748,17 +748,76 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
     }
 
     public List<DTInscripcion> listarInscripcionesEdicion(String nickDocente, String nombreEdicion) {
+         
+        List<DTInscripcion> inscripciones = listarInscripcionesPorPrioridad(nickDocente, nombreEdicion);
+
+        inscripciones.sort(java.util.Comparator.comparing(DTInscripcion::getFechaInscripcion).thenComparing(DTInscripcion::getNicknameEstudiante).thenComparing(DTInscripcion::getId));
+
+        return inscripciones;
+    }
+    
+    
+    public List<DTInscripcion> listarInscripcionesPorPrioridad(
+            String nickDocente, String nombreEdicion) {
+
         EntityManager em = emf.createEntityManager();
-        try {
+
+        try 
+        {
             EdicionCurso edicion = validarDocenteEdicion(em, nickDocente, nombreEdicion);
-            if (!edicion.esVigente()) throw new IllegalArgumentException("La edición ya no está vigente.");
-            return em.createQuery(CONSULTA_INSCRIPCIONES
-                    + "WHERE i.edicion.nombre = :edicion ORDER BY i.fechaInscripcion, e.nick, i.id",
-                    DTInscripcion.class).setParameter("edicion", nombreEdicion).getResultList();
+
+            if (!edicion.esVigente()) 
+            {
+                throw new IllegalArgumentException("La edición ya no está vigente.");
+            }
+
+            List<DTInscripcion> inscripciones = em.createQuery(CONSULTA_INSCRIPCIONES + "WHERE i.edicion.nombre = :edicion",DTInscripcion.class).setParameter("edicion", nombreEdicion).getResultList();
+
+            List<DTInscripcion> resultado = new ArrayList<>();
+
+            for (DTInscripcion inscripcion : inscripciones) {
+
+                Long rechazos = em.createQuery(
+                        "SELECT COUNT(i) "
+                        + "FROM Estudiante e JOIN e.inscripciones i "
+                        + "WHERE e.nick = :nick "
+                        + "AND i.edicion.curso.nombre = :curso "
+                        + "AND i.estado = :estado "
+                        + "AND i.edicion.fechaFin < :hoy",
+                        Long.class)
+                        .setParameter("nick", inscripcion.getNicknameEstudiante())
+                        .setParameter("curso", inscripcion.getNombreCurso())
+                        .setParameter("estado", EstadoInscripcion.RECHAZADA)
+                        .setParameter("hoy", LocalDate.now())
+                        .getSingleResult();
+
+                double prioridad = rechazos * 0.5;
+
+                DTInscripcion datos = new DTInscripcion(
+                        inscripcion.getId(),
+                        inscripcion.getNicknameEstudiante(),
+                        inscripcion.getNombreEstudiante(),
+                        inscripcion.getNombreEdicion(),
+                        inscripcion.getNombreCurso(),
+                        inscripcion.getFechaInscripcion(),
+                        inscripcion.getEstado(),
+                        prioridad
+                );
+
+                resultado.add(datos);
+            }
+
+            resultado.sort(java.util.Comparator.comparingDouble(DTInscripcion::getPrioridad).reversed().thenComparing(DTInscripcion::getFechaInscripcion).thenComparing(DTInscripcion::getNicknameEstudiante));
+
+            return resultado;
+
         } finally {
             em.close();
         }
     }
+
+    
+    
 
     public List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion) {
         EntityManager em = emf.createEntityManager();

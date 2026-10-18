@@ -10,6 +10,7 @@ public final class DTInscripcion {
     private final String nombreCurso;
     private final LocalDate fechaInscripcion;
     private final EstadoInscripcion estado;
+    private final double prioridad;
 
     public DTInscripcion(Long id, String nicknameEstudiante, String nombreEstudiante,
             String nombreEdicion, String nombreCurso, LocalDate fechaInscripcion,
@@ -21,6 +22,20 @@ public final class DTInscripcion {
         this.nombreCurso = nombreCurso;
         this.fechaInscripcion = fechaInscripcion;
         this.estado = estado;
+        this.prioridad = 0.0;
+    }
+    
+     public DTInscripcion(Long id, String nicknameEstudiante, String nombreEstudiante,
+            String nombreEdicion, String nombreCurso, LocalDate fechaInscripcion,
+            EstadoInscripcion estado, double prioridad) {
+        this.id = id;
+        this.nicknameEstudiante = nicknameEstudiante;
+        this.nombreEstudiante = nombreEstudiante;
+        this.nombreEdicion = nombreEdicion;
+        this.nombreCurso = nombreCurso;
+        this.fechaInscripcion = fechaInscripcion;
+        this.estado = estado;
+        this.prioridad = prioridad;
     }
 
     public Long getId() { return id; }
@@ -30,4 +45,5 @@ public final class DTInscripcion {
     public String getNombreCurso() { return nombreCurso; }
     public LocalDate getFechaInscripcion() { return fechaInscripcion; }
     public EstadoInscripcion getEstado() { return estado; }
+    public double getPrioridad(){return prioridad; }
 }

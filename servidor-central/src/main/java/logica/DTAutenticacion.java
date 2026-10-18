@@ -17,7 +17,7 @@ public final class DTAutenticacion implements Serializable {
         this.nombre = nombre;
         this.rol = rol;
     }
-
+    
     public String getNick() { return nick; }
     public String getNombre() { return nombre; }
     public Rol getRol() { return rol; }

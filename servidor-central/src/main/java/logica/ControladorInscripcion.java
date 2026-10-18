@@ -31,6 +31,13 @@ public class ControladorInscripcion {
         validarIdentificadores(nickDocente, nombreEdicion);
         return persistencia.listarInscripcionesEdicion(nickDocente, nombreEdicion);
     }
+    
+    public List<DTInscripcion> listarInscripcionesPorPrioridad(String nickDocente, String nombreEdicion) {
+
+        validarIdentificadores(nickDocente, nombreEdicion);
+        return persistencia.listarInscripcionesPorPrioridad(nickDocente, nombreEdicion);
+    }
+    
 
     public List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion) {
         validarIdentificadores(nickDocente, nombreEdicion);

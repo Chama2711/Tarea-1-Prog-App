@@ -370,3 +370,34 @@ h3 { margin-bottom:12px; font-size:21px; letter-spacing:-.4px; }
 @media(max-width:760px) { .buscador-compartido .boton { padding:10px 15px; } }
 
 .campo textarea { resize:vertical; min-height:120px; }
+
+/* Tabla de selección de estudiantes */
+
+.tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 16px;
+    margin-bottom: 20px;
+}
+
+.tabla-contenedor table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.tabla-contenedor th,
+.tabla-contenedor td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #d9e2e8;
+    white-space: nowrap;
+}
+
+.tabla-contenedor th {
+    background-color: #f1f5f9;
+    font-weight: 600;
+}
+
+.tabla-contenedor tbody tr:hover {
+    background-color: #f8fafc;
+}

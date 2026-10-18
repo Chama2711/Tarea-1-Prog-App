@@ -137,6 +137,8 @@ public interface IServidorCentral {
             java.util.Map<Long, EstadoInscripcion> decisiones);
 
     List<DTInscripcion> listarInscripcionesEdicion(String nickDocente, String nombreEdicion);
+    
+    List<DTInscripcion> listarInscripcionesPorPrioridad(String nickDocente, String nombreEdicion);
 
     List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion);
 
