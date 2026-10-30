@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import javax.persistence.EntityManagerFactory;
 import logica.Curso;
 import logica.EdicionCurso;
+import logica.ProgramaFormacion;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import static org.junit.Assert.*;
@@ -34,6 +35,7 @@ public class ImagenesAltasFormacionTest {
                     }));
         }
         @Override public void altaCurso(Curso curso) { guardar(); }
+        @Override public void altaProgramaFormacion(ProgramaFormacion programa) { guardar(); }
         @Override public void altaEdicionCurso(Curso curso, EdicionCurso edicion) { guardar(); }
         private void guardar() {
             altas++;
@@ -92,5 +94,33 @@ public class ImagenesAltasFormacionTest {
             assertEquals(1, p.altas); assertNull(edicion ? e.getImagen() : curso.getImagen());
             assertFalse(Files.exists(carpeta(edicion)));
         }
+    }
+
+    @Test public void programaGuardaJpgYPngYRevierteElArchivoSiFallaElAlta() throws Exception {
+        Path carpeta = temporal.getRoot().toPath().resolve("edEXT/imagenes/programas");
+        for (String formato : new String[]{"png", "jpg"}) {
+            var p = new PersistenciaPrueba(); var programa = new ProgramaFormacion();
+            byte[] datos = imagen(formato);
+            p.altaProgramaFormacion(programa, datos);
+            assertArrayEquals(datos, Files.readAllBytes(carpeta.resolve(programa.getImagen())));
+            assertArrayEquals(datos, ImagenesEntidades.programas().leer(programa.getImagen()));
+        }
+        var p = new PersistenciaPrueba(); p.fallar = true;
+        var programa = new ProgramaFormacion(); byte[] datos = imagen("png");
+        assertThrows(IllegalArgumentException.class, () -> p.altaProgramaFormacion(programa, datos));
+        assertNull(programa.getImagen());
+        try (var archivos = Files.list(carpeta)) { assertEquals(2, archivos.count()); }
+    }
+
+    @Test public void programaRechazaImagenInvalidaOExcedidaYPermiteOmitirla() {
+        var p = new PersistenciaPrueba();
+        for (byte[] datos : new byte[][]{new byte[]{1, 2, 3}, new byte[5*1024*1024+1]}) {
+            assertThrows(IllegalArgumentException.class,
+                    () -> p.altaProgramaFormacion(new ProgramaFormacion(), datos));
+        }
+        assertEquals(0, p.altas);
+        assertFalse(Files.exists(temporal.getRoot().toPath().resolve("edEXT/imagenes/programas")));
+        p.altaProgramaFormacion(new ProgramaFormacion(), null);
+        assertEquals(1, p.altas);
     }
 }

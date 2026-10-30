@@ -114,6 +114,9 @@ public class AltasDocenteServletTest {
         void valor(String campo, String valor) { parametros.put(campo, new String[]{valor}); }
         void ejecutar(boolean edicion, boolean post) throws Exception {
             HttpServlet servlet = edicion ? new AltaEdicionCursoServlet() : new AltaCursoServlet();
+            ejecutar(servlet, post);
+        }
+        void ejecutar(HttpServlet servlet, boolean post) throws Exception {
             servlet.init(proxy(ServletConfig.class, (p, m, a) -> switch (m.getName()) {
                 case "getServletContext" -> contexto;
                 case "getServletName" -> "alta-de-prueba";
@@ -121,6 +124,8 @@ public class AltasDocenteServletTest {
                 default -> throw new AssertionError(m.getName());
             }));
             if (servlet instanceof AltaEdicionCursoServlet s) {
+                if (post) s.doPost(request, response); else s.doGet(request, response);
+            } else if (servlet instanceof AltaProgramaServlet s) {
                 if (post) s.doPost(request, response); else s.doGet(request, response);
             } else {
                 AltaCursoServlet s = (AltaCursoServlet) servlet;
@@ -215,6 +220,38 @@ public class AltasDocenteServletTest {
             assertArrayEquals(datos, (byte[]) s.argumentosAlta[s.argumentosAlta.length - 1]);
             assertEquals(302, s.estado);
         }
+    }
+
+    @Test public void programaEnviaImagenOpcionalAlCentral() throws Exception {
+        for (boolean conImagen : List.of(false, true)) {
+            Escenario s = new Escenario();
+            byte[] datos = new byte[]{1, 2, 3};
+            if (conImagen) s.archivo = proxy(Part.class, (p, m, args) -> switch (m.getName()) {
+                case "getSize" -> (long) datos.length;
+                case "getInputStream" -> new java.io.ByteArrayInputStream(datos);
+                default -> throw new AssertionError(m.getName());
+            });
+            s.ejecutar(new AltaProgramaServlet(), true);
+            assertEquals(1, s.altas);
+            assertEquals(6, s.argumentosAlta.length);
+            assertArrayEquals(conImagen ? datos : null, (byte[]) s.argumentosAlta[5]);
+            assertEquals("/edext/programa?nombre=Curso+nuevo", s.redireccion);
+        }
+    }
+
+    @Test public void programaConImagenExcedidaNoSeCrea() throws Exception {
+        Escenario s = new Escenario(); s.archivoExcedido = true;
+        s.ejecutar(new AltaProgramaServlet(), true);
+        assertEquals(413, s.estado); assertEquals(0, s.altas);
+    }
+
+    @Test public void programaConFormatoRechazadoConservaFormulario() throws Exception {
+        Escenario s = new Escenario();
+        s.fallo = new IllegalArgumentException("Seleccione una imagen JPG o PNG.");
+        s.ejecutar(new AltaProgramaServlet(), true);
+        assertEquals("/WEB-INF/vistas/altaPrograma.jsp", s.vista);
+        assertEquals(" Curso nuevo ", s.atributos.get("nombre"));
+        assertEquals("Seleccione una imagen JPG o PNG.", s.atributos.get("error"));
     }
 
     @Test public void ambasAltasPermitenNoAdjuntarImagen() throws Exception {

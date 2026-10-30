@@ -355,6 +355,13 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
 
     @Override
     public void altaProgramaFormacion(String nombre, String descripcion,
+            LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta, byte[] imagen) {
+        controladorProgramaFormacion.altaProgramaFormacion(
+                nombre, descripcion, fechaInicio, fechaFin, fechaAlta, imagen);
+    }
+
+    @Override
+    public void altaProgramaFormacion(String nombre, String descripcion,
             LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta) {
         controladorProgramaFormacion.altaProgramaFormacion(
                 nombre, descripcion, fechaInicio, fechaFin, fechaAlta);

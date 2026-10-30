@@ -22,6 +22,7 @@
 </head>
 
 <script>
+document.addEventListener("DOMContentLoaded", () => {
     const fechaInicio = document.getElementById("fechaInicio");
     const fechaFin = document.getElementById("fechaFin");
     const hoy = "<%= hoy %>";
@@ -37,6 +38,7 @@
     fechaInicio.addEventListener("change", actualizarFechaFin);
 
     actualizarFechaFin();
+});
 </script>
 
 
@@ -58,7 +60,7 @@
                 </div>
             <% } %>
 
-            <form method="post"
+            <form method="post" enctype="multipart/form-data"
                   action="${pageContext.request.contextPath}/alta-programa">
 
                 <div class="campo">
@@ -96,6 +98,13 @@
                              min="<%= hoy %>"
                              value="<%= escapar(request.getAttribute("fechaFin")) %>"
                              required>
+                </div>
+
+                <div class="campo">
+                    <label for="imagen">Imagen del programa (opcional)</label>
+                    <input type="file" id="imagen" name="imagen"
+                           accept="image/jpeg,image/png" aria-describedby="ayuda-imagen">
+                    <p id="ayuda-imagen" class="texto-secundario">JPG o PNG, hasta 5 MB. Si hay un error al guardar, volvé a seleccionar la imagen.</p>
                 </div>
 
                 <div class="acciones-registro">

@@ -208,6 +208,11 @@ import logica.*;
     }
     }
 
+    public void altaProgramaFormacion(ProgramaFormacion programa, byte[] imagen) {
+        guardarConImagen(imagen, ImagenesEntidades.programas(), programa::setImagen,
+                () -> altaProgramaFormacion(programa));
+    }
+
     // Requerimiento: Agregar Curso a Programa de Formación
     public void agregarCursoAPrograma(String nombrePrograma, String nombreCurso) throws Exception {
         EntityManager em = emf.createEntityManager();

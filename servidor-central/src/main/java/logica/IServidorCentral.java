@@ -169,6 +169,9 @@ public interface IServidorCentral {
     void altaProgramaFormacion(String nombre, String descripcion,
             LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta);
 
+    void altaProgramaFormacion(String nombre, String descripcion,
+            LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta, byte[] imagen);
+
     void agregarCursoAPrograma(
         String nombrePrograma,
         String nombreCurso

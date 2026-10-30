@@ -13,6 +13,11 @@ public class ControladorProgramaFormacion {
 
     public void altaProgramaFormacion(String nombre, String descripcion,
             LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta) {
+        altaProgramaFormacion(nombre, descripcion, fechaInicio, fechaFin, fechaAlta, null);
+    }
+
+    public void altaProgramaFormacion(String nombre, String descripcion,
+            LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta, byte[] imagen) {
         if (nombre == null || nombre.isBlank()
                 || descripcion == null || descripcion.isBlank()) {
             throw new IllegalArgumentException("Complete nombre y descripción.");
@@ -39,6 +44,7 @@ public class ControladorProgramaFormacion {
         }
         ProgramaFormacion programa = new ProgramaFormacion(nombreNormalizado,
                 descripcion.trim(), fechaInicio, fechaFin, fechaAlta);
-        persistencia.altaProgramaFormacion(programa);
+        if (imagen == null) persistencia.altaProgramaFormacion(programa);
+        else persistencia.altaProgramaFormacion(programa, imagen);
     }
 }

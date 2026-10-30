@@ -10,6 +10,7 @@ package web;
  */
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ import java.time.format.DateTimeParseException;
 import logica.IServidorCentral;
 
 @WebServlet(name = "AltaProgramaServlet", urlPatterns = {"/alta-programa"})
+@MultipartConfig(maxFileSize = 5 * 1024 * 1024, maxRequestSize = 6 * 1024 * 1024)
 public class AltaProgramaServlet extends HttpServlet {
 
     private static final String VISTA =
@@ -47,6 +49,17 @@ public class AltaProgramaServlet extends HttpServlet {
             return;
         }
 
+        request.setCharacterEncoding("UTF-8");
+        byte[] imagen;
+        try {
+            imagen = ImagenFormulario.leer(request);
+        } catch (IllegalStateException e) {
+            response.sendError(413, "El archivo supera los 5 MB o el formulario supera los 6 MB. Volvé a elegir una imagen más pequeña.");
+            return;
+        } catch (ServletException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No se pudo recibir la imagen. Volvé a enviar el formulario.");
+            return;
+        }
         String nombre = FormulariosDocente.valor(request, "nombre").trim();
         String descripcion = FormulariosDocente.valor(request, "descripcion").trim();
 
@@ -63,7 +76,7 @@ public class AltaProgramaServlet extends HttpServlet {
                     InicializadorAplicacion.getServidor(getServletContext());
 
             servidor.altaProgramaFormacion(
-                    nombre, descripcion, fechaInicio, fechaFin, fechaAlta);
+                    nombre, descripcion, fechaInicio, fechaFin, fechaAlta, imagen);
 
             response.sendRedirect(
                     request.getContextPath()
