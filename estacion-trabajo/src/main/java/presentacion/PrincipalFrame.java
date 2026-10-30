@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package presentacion;
-
+import soap.PublicadorSoap;
 
 import javax.swing.*;
 import logica.IServidorCentral;
@@ -62,16 +62,20 @@ public class PrincipalFrame extends javax.swing.JFrame {
     private IServidorCentral servidorCentral;
 
     public PrincipalFrame() {
+        this(new ServidorCentral());
+    }
+    
+    public PrincipalFrame(IServidorCentral servidorCentral) {
+        this.servidorCentral =
+                java.util.Objects.requireNonNull(servidorCentral);
+
         initComponents();
-        
-    servidorCentral = new ServidorCentral();
-  
 
         setTitle("edEXT - Plataforma Educativa");
         setLocationRelativeTo(null);
 
-        // Apariencia del escritorio
-        jDesktopPane1.setBackground(new java.awt.Color(245, 247, 250));
+        jDesktopPane1.setBackground(
+                new java.awt.Color(245, 247, 250));
 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
@@ -80,9 +84,42 @@ public class PrincipalFrame extends javax.swing.JFrame {
 
     // Método Main para iniciar la aplicación
     public static void main(String[] args) {
+        ServidorCentral central = new ServidorCentral();
+        PublicadorSoap publicador;
+
+        try {
+            publicador = new PublicadorSoap(central);
+        } catch (Exception error) {
+            central.close();
+            error.printStackTrace();
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "No se pudo publicar SOAP. Revisá la consola.",
+                    "Error de inicio",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(() -> {
+                    try {
+                        publicador.close();
+                    } finally {
+                        central.close();
+                    }
+                }, "edext-cierre")
+        );
+
         SwingUtilities.invokeLater(() -> {
-            PrincipalFrame ventanaPrincipal = new PrincipalFrame();
-            ventanaPrincipal.setVisible(true);
+            try {
+                PrincipalFrame ventana = new PrincipalFrame(central);
+                ventana.setVisible(true);
+            } catch (RuntimeException error) {
+                error.printStackTrace();
+                System.exit(1);
+            }
         });
     }
     
