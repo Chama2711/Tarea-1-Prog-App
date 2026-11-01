@@ -1,6 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.List"%>
-<%@page import="logica.EdicionCurso"%>
+<%@page import="logica.DTEdicionConsulta"%>
 <%@page import="logica.DTInscripcion"%>
 
 <%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
@@ -10,7 +10,7 @@
 
     List<String> cursos = (List<String>) request.getAttribute("cursos");
 
-    List<EdicionCurso> ediciones = (List<EdicionCurso>) request.getAttribute("ediciones");
+    List<DTEdicionConsulta> ediciones = (List<DTEdicionConsulta>) request.getAttribute("ediciones");
 
     List<DTInscripcion> aceptados = (List<DTInscripcion>) request.getAttribute("aceptados");
     
@@ -20,7 +20,7 @@
 
     String edicionSeleccionada = (String) request.getAttribute("edicionSeleccionada");
 
-    EdicionCurso edicionElegida = (EdicionCurso) request.getAttribute("edicionElegida");
+    DTEdicionConsulta edicionElegida = (DTEdicionConsulta) request.getAttribute("edicionElegida");
     
     
     String tituloPagina = "Estudiantes aceptados";
@@ -128,13 +128,13 @@
 
                                     <tbody>
 
-                                        <% for (EdicionCurso edicion : ediciones) { %>
+                                        <% for (DTEdicionConsulta edicion : ediciones) { %>
 
                                             <tr>
-                                                <td><%= escapar(edicion.getNombre()) %></td>
-                                                <td><%= edicion.getFechaInicio() %></td>
-                                                <td><%= edicion.getFechaFin() %></td>
-                                                <td><%= edicion.getCupo() == -1 ? "Sin limite" : edicion.getCupo() %></td>
+                                                <td><%= escapar(edicion.nombre()) %></td>
+                                                <td><%= edicion.inicio() %></td>
+                                                <td><%= edicion.fin() %></td>
+                                                <td><%= edicion.cupo() == -1 ? "Sin limite" : edicion.cupo() %></td>
                                             </tr>
 
                                         <% } %>
@@ -163,11 +163,11 @@
                                     <select name="edicion" id="edicion" required>
                                         <option value="">Seleccione una edición</option>
 
-                                        <% for (EdicionCurso edicion : ediciones) { %>
+                                        <% for (DTEdicionConsulta edicion : ediciones) { %>
 
-                                            <option value="<%= escapar(edicion.getNombre()) %>"
-                                                <%= edicion.getNombre().equals(edicionSeleccionada) ? "selected" : "" %>>
-                                                <%= escapar(edicion.getNombre()) %>
+                                            <option value="<%= escapar(edicion.nombre()) %>"
+                                                <%= edicion.nombre().equals(edicionSeleccionada) ? "selected" : "" %>>
+                                                <%= escapar(edicion.nombre()) %>
                                             </option>
 
                                         <% } %>
@@ -187,7 +187,7 @@
                     
                     <% if (edicionElegida != null) { %>
 
-                        <h2>Estudiantes aceptados en <%= escapar(edicionElegida.getNombre()) %></h2>
+                        <h2>Estudiantes aceptados en <%= escapar(edicionElegida.nombre()) %></h2>
                         
                         <% if (aceptados.isEmpty()) { %>
 

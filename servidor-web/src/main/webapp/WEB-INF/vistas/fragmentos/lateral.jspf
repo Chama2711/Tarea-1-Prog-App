@@ -11,7 +11,7 @@
         <a href="${pageContext.request.contextPath}/alta-programa">Crear programa</a>
         <a href="${pageContext.request.contextPath}/seleccion-estudiantes">Seleccionar estudiantes</a>
         <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>#perfil-ediciones">Mis ediciones</a>
-        <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>#perfil-aceptados">Estudiantes aceptados</a>
+        <a href="${pageContext.request.contextPath}/listar-aceptados">Estudiantes aceptados</a>
         <% } %>
     </nav>
     <% } %>
