@@ -170,9 +170,36 @@
 
                                 </div>
 
-                                <p class="ayuda">
-                                    Ingreso de nota pendiente de implementación.
-                                </p>
+
+                                <div class="campo">
+                                    <label for="nota-<%= inscripcion.getId() %>">
+                                        Calificación del estudiante
+                                    </label>
+
+                                    <select
+                                        id="nota-<%= inscripcion.getId() %>"
+                                        name="nota-<%= inscripcion.getId() %>"
+                                        disabled>
+
+                                        <option value="">
+                                            Sin calificación
+                                        </option>
+
+                                        <% for (int nota = 1; nota <= 12; nota++) { %>
+                                            <option value="<%= nota %>">
+                                                <%= nota %>
+                                            </option>
+                                        <% } %>
+
+                                    </select>
+
+                                    <p class="ayuda">
+                                        Las calificaciones válidas van de 1 a 12.
+                                        El registro de notas estará disponible
+                                        cuando se integre el Servidor Central.
+                                    </p>
+                                </div>
+
 
                             </article>
 
