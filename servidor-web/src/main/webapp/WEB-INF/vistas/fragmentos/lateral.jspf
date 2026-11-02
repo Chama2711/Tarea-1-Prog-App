@@ -14,8 +14,6 @@
         <a href="${pageContext.request.contextPath}/listar-aceptados">Estudiantes aceptados</a>
         <a href="${pageContext.request.contextPath}/ingresar-evaluaciones">Ingresar evaluaciones</a>
         <% } %>
-
-        <% } %>
     </nav>
     <% } %>
     <nav aria-labelledby="nav-institutos">
