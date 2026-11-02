@@ -64,6 +64,56 @@
                 <% } %>
             </div>
         <% } %>
+        
+        <% if (usuarioSesion != null
+                && usuarioSesion.getRol() == DTAutenticacion.Rol.ESTUDIANTE) { %>
+
+            <section class="panel" aria-labelledby="titulo-valoracion">
+
+                <h2 id="titulo-valoracion">Valorar este curso</h2>
+
+                <p class="texto-secundario">
+                    La valoración de cursos estará disponible
+                    cuando se complete la integración
+                    con el Servidor Central.
+                </p>
+
+                <div class="campo">
+                    <label for="valoracionCurso">
+                        Puntuación
+                    </label>
+
+                    <select id="valoracionCurso"
+                            name="valoracion"
+                            disabled>
+
+                        <option value="">
+                            Seleccioná una puntuación
+                        </option>
+
+                        <% for (int puntuacion = 1;
+                                puntuacion <= 5;
+                                puntuacion++) { %>
+
+                            <option value="<%= puntuacion %>">
+                                <%= puntuacion %>
+                            </option>
+
+                        <% } %>
+
+                    </select>
+                </div>
+
+                <button type="button"
+                        class="boton"
+                        disabled>
+                    Guardar valoración
+                </button>
+
+            </section>
+
+        <% } %>
+
         <h3>Previas</h3>
         <% if (curso.getPrevias().isEmpty()) { %><p class="texto-secundario">Este curso no tiene previas.</p><% } %>
         <ul><% for (Curso previa : curso.getPrevias()) { %><li><a href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(previa.getNombre()) %>"><%= escapar(previa.getNombre()) %></a></li><% } %></ul>
