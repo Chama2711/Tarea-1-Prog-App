@@ -102,6 +102,7 @@ public class ValorarCursoServletTest {
 
                         case "sendRedirect" -> {
                             redireccion = (String) argumentos[0];
+                            estado = HttpServletResponse.SC_FOUND;
                             yield null;
                         }
 
@@ -146,7 +147,7 @@ public class ValorarCursoServletTest {
         e.ejecutar();
 
         assertEquals("/edext/login", e.redireccion);
-        assertEquals(200, e.estado);
+        assertEquals(302, e.estado);
     }
 
     @Test
@@ -159,7 +160,7 @@ public class ValorarCursoServletTest {
         e.ejecutar();
 
         assertEquals("/edext/login", e.redireccion);
-        assertEquals(200, e.estado);
+        assertEquals(302, e.estado);
     }
 
     @Test
