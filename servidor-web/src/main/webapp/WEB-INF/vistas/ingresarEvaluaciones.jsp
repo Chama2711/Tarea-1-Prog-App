@@ -1,4 +1,4 @@
-<%-- 
+<%--
     Document   : ingresarEvaluaciones
     Created on : 31 oct 2026, 19:43:44
     Author     : elizeth
@@ -208,6 +208,50 @@
                     </div>
 
                 <% } %>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Cierre de edición y acta</h2>
+
+                <p>
+                    Edición seleccionada:
+                    <strong><%= escapar(edicion) %></strong>
+                </p>
+
+                <p class="texto-secundario">
+                    El cierre de la edición estará disponible
+                    cuando se integren las calificaciones
+                    y la validación del Servidor Central.
+                </p>
+
+                <div class="campo">
+                    <button type="button"
+                            class="boton"
+                            disabled>
+                        Cerrar edición
+                    </button>
+                </div>
+
+                <p class="ayuda">
+                    Para cerrar una edición será necesario
+                    verificar que todos los estudiantes
+                    aceptados tengan su calificación.
+                </p>
+
+                <div class="campo">
+                    <button type="button"
+                            class="boton"
+                            disabled>
+                        Consultar acta docente
+                    </button>
+                </div>
+
+                <p class="ayuda">
+                    El acta podrá consultarse una vez
+                    que la edición esté cerrada.
+                </p>
 
             </section>
 
