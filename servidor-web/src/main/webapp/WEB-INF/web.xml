@@ -44,16 +44,16 @@
     </error-page>
     
     <context-param>
-    <param-name>edext.jdbc.url</param-name>
-    <param-value>jdbc:mysql://localhost:3306/edext_web</param-value>
-</context-param>
-<context-param>
-    <param-name>edext.jdbc.usuario</param-name>
-    <param-value>root</param-value>
-</context-param>
-<context-param>
-    <param-name>edext.jdbc.contrasena</param-name>
-    <param-value></param-value>
-</context-param>
+        <param-name>edext.jdbc.url</param-name>
+        <param-value>jdbc:mysql://localhost:3306/edext_web</param-value>
+    </context-param>
+    <context-param>
+        <param-name>edext.jdbc.usuario</param-name>
+        <param-value>root</param-value>
+    </context-param>
+    <context-param>
+        <param-name>edext.jdbc.contrasena</param-name>
+        <param-value></param-value>
+    </context-param>
     
 </web-app>

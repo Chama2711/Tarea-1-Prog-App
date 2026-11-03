@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import javax.xml.namespace.QName;
+import logica.DTActaEstudio;
 
 /** Consulta institutos mediante el servicio SOAP publicado por el central. */
 public final class ClienteInstitutosSoap {
@@ -53,5 +54,9 @@ public final class ClienteInstitutosSoap {
             throw new IllegalArgumentException("soap.institutos.wsdl debe ser una URL HTTP o HTTPS válida.");
         }
         return direccion.toURL();
+    }
+
+    public DTActaEstudio obtenerActaEstudio(String nicknameEstudiante, String nombrePrograma) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
