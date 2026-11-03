@@ -49,8 +49,22 @@ public class Inscripcion {
     @Column(name = "ESTADO", nullable = false, length = 20)
     private EstadoInscripcion estado = EstadoInscripcion.INSCRIPTO;
 
+    @Column(name = "CALIFICACION")
+    private Integer calificacion;
+
+    @Column(name = "FECHA_CALIFICACION")
+    private LocalDate fechaCalificacion;
+
     public EstadoInscripcion getEstado() {
         return estado;
+    }
+
+    public Integer getCalificacion() {
+        return calificacion;
+    }
+
+    public LocalDate getFechaCalificacion() {
+        return fechaCalificacion;
     }
 
     public void cambiarEstado(EstadoInscripcion nuevoEstado) {
