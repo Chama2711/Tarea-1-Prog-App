@@ -12,6 +12,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import logica.IServidorCentral;
+import java.util.List;
+import jakarta.xml.ws.WebServiceException;
+
 
 @WebServlet(name = "RegistroServlet", urlPatterns = {"/registro"})
 @MultipartConfig(maxFileSize = 5 * 1024 * 1024, maxRequestSize = 6 * 1024 * 1024)
@@ -95,12 +98,35 @@ public class RegistroServlet extends HttpServlet {
     }
 
     private void mostrarFormulario(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
-        request.setAttribute("institutos", servidor.listarNombresInstitutos());
+        throws ServletException, IOException {
+
+        try {
+            request.setAttribute(
+                    "institutos",
+                    InicializadorAplicacion
+                            .getClienteInstitutos(getServletContext())
+                            .listarInstitutos()
+            );
+
+        } catch (WebServiceException error) {
+            getServletContext().log(
+                    "No se pudieron consultar los institutos por SOAP.",
+                    error
+            );
+
+            request.setAttribute("institutos", List.of());
+
+            if (request.getAttribute("error") == null) {
+                request.setAttribute(
+                        "error",
+                        "No se pudieron cargar los institutos. Intentá nuevamente más tarde."
+                );
+            }
+        }
+
         request.getRequestDispatcher(VISTA).forward(request, response);
     }
-
+    
     private boolean redirigirAutenticado(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         HttpSession sesion = request.getSession(false);
