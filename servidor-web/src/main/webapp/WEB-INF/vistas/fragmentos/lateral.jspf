@@ -18,9 +18,12 @@
     <% } %>
     <nav aria-labelledby="nav-institutos">
         <h2 id="nav-institutos">Institutos</h2>
+        <% if (request.getAttribute("errorInstitutos") != null) { %>
+        <p role="alert"><%= escapar(request.getAttribute("errorInstitutos")) %></p>
+        <% } %>
         <% if (request.getAttribute("navInstitutos") != null) {
-            for (logica.Instituto item : (java.util.List<logica.Instituto>) request.getAttribute("navInstitutos")) { %>
-        <a href="${pageContext.request.contextPath}/busqueda?instituto=<%= parametro(item.getNombre()) %>" <%= item.getNombre().equals(request.getParameter("instituto")) ? "aria-current=\"true\"" : "" %>><%= escapar(item.getNombre()) %></a>
+            for (String item : (java.util.List<String>) request.getAttribute("navInstitutos")) { %>
+        <a href="${pageContext.request.contextPath}/busqueda?instituto=<%= parametro(item) %>" <%= item.equals(request.getParameter("instituto")) ? "aria-current=\"true\"" : "" %>><%= escapar(item) %></a>
         <% } } %>
     </nav>
     <nav aria-labelledby="nav-categorias">

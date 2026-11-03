@@ -51,6 +51,14 @@ Queda en `/home/SU_USUARIO/.edEXT/central.properties`. El programa encuentra esa
 
 Cada compañero debe crear este archivo; no viene con Git.
 
+Para el cliente SOAP de la web, creen también `web.properties` en esa misma carpeta `.edEXT`, con:
+
+```properties
+soap.institutos.wsdl=http://127.0.0.1:18083/edext/institutos?wsdl
+```
+
+Hay una plantilla en `configuracion-ejemplo/web.properties.example`. La aplicación web crea el cliente SOAP al arrancar y lo usa para consultar los institutos del menú lateral. Si cambian la dirección, reinicien la aplicación web; no necesitan recompilar.
+
 ## 3. Ejecutar
 
 1. Abran el proyecto raíz en NetBeans y hagan **Clean and Build**.
@@ -59,6 +67,10 @@ Cada compañero debe crear este archivo; no viene con Git.
 4. Abran [el WSDL](http://127.0.0.1:18083/edext/institutos?wsdl): debe aparecer XML.
 
 Al cerrar Swing también se detiene SOAP. La dirección funciona en la misma PC donde ejecutan el proyecto.
+
+Para probar el menú web, dejen el central abierto y después inicien Tomcat con el WAR actualizado. Los institutos del menú se consultan por SOAP; las demás consultas mantienen su acceso actual a MySQL. El usuario que ejecuta Tomcat debe tener el archivo `.edEXT/web.properties` en su carpeta personal.
+
+Si apagan el central con la web ya iniciada, el menú muestra un aviso en lugar de los institutos. Al volver a iniciar el central y recargar la página, el listado se recupera.
 
 ## Datos adicionales de Tarea 2
 
