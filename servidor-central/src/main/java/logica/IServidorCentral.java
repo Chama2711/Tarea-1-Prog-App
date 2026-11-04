@@ -49,6 +49,8 @@ public interface IServidorCentral {
 
     Curso buscarCurso(String nombre);
 
+    soap.dto.DTCursoConsulta consultarCurso(String nombre);
+
     Curso buscarCursoInstituto(
             String nombre,
             Instituto instituto

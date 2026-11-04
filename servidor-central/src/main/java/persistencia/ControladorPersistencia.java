@@ -1106,6 +1106,32 @@ public Curso buscarCursoInstituto(String nombre, Instituto instituto) {
     }
 }  
     
+    /** Copiar las relaciones al DTO mientras la consulta JPA sigue abierta. */
+    public soap.dto.DTCursoConsulta consultarCurso(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (nombre == null || nombre.isBlank()) return null;
+            List<Curso> encontrados = em.createQuery(
+                    "SELECT c FROM Curso c WHERE LOWER(c.nombre) = LOWER(:nombre)", Curso.class)
+                    .setParameter("nombre", nombre).getResultList();
+            if (encontrados.isEmpty()) return null;
+            Curso curso = encontrados.get(0);
+            List<soap.dto.DTEdicionResumen> ediciones = curso.getEdiciones().stream()
+                    .map(e -> new soap.dto.DTEdicionResumen(e.getNombre(), e.getFechaInicio(),
+                            e.getFechaFin(), e.getCupo(), e.getImagen() != null && !e.getImagen().isBlank()))
+                    .toList();
+            return new soap.dto.DTCursoConsulta(curso.getNombre(), curso.getDescripcion(),
+                    curso.getDuracion(), curso.getCantidadHoras(), curso.getCreditos(), curso.getUrl(),
+                    curso.getFechaRegistro(), curso.getInstituto() == null ? null : curso.getInstituto().getNombre(),
+                    curso.getImagen() != null && !curso.getImagen().isBlank(),
+                    curso.getPrevias().stream().map(Curso::getNombre).toList(),
+                    curso.getCategorias().stream().map(Categoria::getNombre).toList(),
+                    curso.getProgramasFormacion().stream().map(ProgramaFormacion::getNombre).toList(), ediciones);
+        } finally {
+            em.close();
+        }
+    }
+
     public Curso buscarCurso(String nombre)
     {
         EntityManager em = emf.createEntityManager();

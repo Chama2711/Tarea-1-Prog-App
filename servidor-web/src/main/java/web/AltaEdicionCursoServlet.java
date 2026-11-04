@@ -1,6 +1,7 @@
 package web;
 
 import jakarta.servlet.ServletException;
+import jakarta.xml.ws.WebServiceException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
@@ -72,7 +73,8 @@ public class AltaEdicionCursoServlet extends HttpServlet {
             DTAutenticacion docente) throws ServletException, IOException {
         IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
         try {
-            List<String> institutos = servidor.listarNombresInstitutosDocente(docente.getNick());
+            List<String> institutos = InicializadorAplicacion.getClienteCatalogo(getServletContext())
+                    .listarInstitutosDocente(docente.getNick());
             String instituto = FormulariosDocente.valor(request, "instituto").trim();
             if (instituto.isEmpty() && institutos.size() == 1) instituto = institutos.get(0);
             if (!instituto.isEmpty() && !institutos.contains(instituto)) {
@@ -90,6 +92,10 @@ public class AltaEdicionCursoServlet extends HttpServlet {
             }
             request.setAttribute("docentesSeleccionados", FormulariosDocente.seleccion(request, "docentes"));
             request.getRequestDispatcher(VISTA).forward(request, response);
+        } catch (WebServiceException e) {
+            getServletContext().log("No se pudieron consultar los institutos por SOAP.", e);
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No se pudieron cargar los institutos. Intentá nuevamente más tarde.");
         } catch (SecurityException e) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
         }

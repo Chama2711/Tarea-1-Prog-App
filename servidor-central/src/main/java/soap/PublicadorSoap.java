@@ -56,7 +56,7 @@ public class PublicadorSoap implements AutoCloseable {
 
         try {
             servicio = Endpoint.create(
-                    new ServicioInstitutos(central));
+                    new ServicioCatalogo(central));
 
             servicio.publish(http.createContext(ruta));
             http.start();

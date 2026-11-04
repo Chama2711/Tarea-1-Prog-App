@@ -35,12 +35,18 @@ public class ListarAceptadosServletTest {
         List<DTInscripcion> aceptados = List.of(new DTInscripcion(1L, "alumno", "Alumno",
                 "Edicion finalizada", "Curso", LocalDate.of(2020, 1, 2), EstadoInscripcion.ACEPTADA));
         RuntimeException fallo;
+        boolean falloInstitutos;
         int estado = 200, consultas, consultasAceptados, logs;
         String redireccion, vista, mensaje, cache;
 
         final IServidorCentral central = proxy(IServidorCentral.class, (p, m, a) -> {
+            if (falloInstitutos && (m.getName().equals("listarNombresInstitutos")
+                    || m.getName().equals("listarNombresInstitutosDocente"))) {
+                throw new IllegalStateException("Detalle privado de conexión SOAP");
+            }
+
             consultas++;
-            if (fallo != null) throw fallo;
+            if (fallo != null && !m.getName().equals("listarNombresInstitutosDocente")) throw fallo;
             return switch (m.getName()) {
                 case "listarNombresInstitutosDocente" -> {
                     assertEquals("docente", a[0]); yield List.of("INCO");
@@ -62,8 +68,17 @@ public class ListarAceptadosServletTest {
                 default -> throw new AssertionError("Consulta inesperada o acceso a entidades: " + m.getName());
             };
         });
+        web.soap.ClienteCatalogoSoap clienteCatalogo;
+        final IServidorCentral localSinInstitutos = proxy(IServidorCentral.class, (p, m, a) -> {
+            if (m.getName().equals("listarNombresInstitutos")
+                    || m.getName().equals("listarNombresInstitutosDocente")) {
+                throw new AssertionError("Consulta local de institutos: " + m.getName());
+            }
+            try { return m.invoke(central, a); }
+            catch (java.lang.reflect.InvocationTargetException e) { throw e.getCause(); }
+        });
         final ServletContext contexto = proxy(ServletContext.class, (p, m, a) -> switch (m.getName()) {
-            case "getAttribute" -> central;
+            case "getAttribute" -> ((String) a[0]).endsWith(".clienteCatalogo") ? clienteCatalogo : localSinInstitutos;
             case "log" -> { logs++; yield null; }
             default -> throw new AssertionError(m.getName());
         });
@@ -100,7 +115,11 @@ public class ListarAceptadosServletTest {
                 case "getInitParameter" -> null;
                 default -> throw new AssertionError(m.getName());
             }));
+            try (var soap = new CatalogoSoapPrueba(central)) {
+                clienteCatalogo = soap.cliente;
             servlet.doGet(request, response);
+            }
+
         }
     }
 
@@ -151,8 +170,15 @@ public class ListarAceptadosServletTest {
         assertEquals(0, s.consultasAceptados);
     }
     @Test public void falloInternoSeRegistraSinExponerDetalles() throws Exception {
-        var s = new Escenario(); s.fallo = new IllegalStateException("Detalle privado JDBC"); s.ejecutar();
+        var s = new Escenario(); s.seleccionar(); s.fallo = new IllegalStateException("Detalle privado JDBC"); s.ejecutar();
         assertEquals(500, s.estado); assertEquals(1, s.logs); assertNull(s.vista);
         assertEquals("No se pudo cargar el listado. Intentá nuevamente.", s.mensaje);
+    }
+
+    @Test public void falloSoapNoConsultaAceptadosNiExponeDetalles() throws Exception {
+        var s = new Escenario(); s.seleccionar(); s.falloInstitutos = true; s.ejecutar();
+        assertEquals(503, s.estado); assertEquals(0, s.consultasAceptados);
+        assertEquals(1, s.logs); assertNull(s.vista);
+        assertEquals("No se pudieron cargar los institutos. Intentá nuevamente más tarde.", s.mensaje);
     }
 }

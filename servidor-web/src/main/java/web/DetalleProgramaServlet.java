@@ -7,6 +7,7 @@ package web;
 import java.io.IOException;
 
 import jakarta.servlet.ServletException;
+import jakarta.xml.ws.WebServiceException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -68,7 +69,15 @@ public class DetalleProgramaServlet extends HttpServlet {
         }
 
         request.setAttribute("programa", programa);
-        request.setAttribute("categorias", servidor.listarNombresCategoriasPrograma(programa.getNombre()));
+        try {
+            request.setAttribute("categorias", InicializadorAplicacion.getClienteCatalogo(getServletContext())
+                    .listarCategoriasPrograma(programa.getNombre()));
+        } catch (WebServiceException error) {
+            getServletContext().log("No se pudieron consultar las categorías del programa por SOAP.", error);
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No se pudieron cargar las categorías. Intentá nuevamente más tarde.");
+            return;
+        }
         request.setAttribute("yaInscripto", yaInscripto);
         request.getRequestDispatcher(
                 "/WEB-INF/vistas/detallePrograma.jsp"

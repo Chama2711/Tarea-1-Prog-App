@@ -12,12 +12,12 @@ import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 import logica.IServidorCentral;
 import logica.ServidorCentral;
-import web.soap.ClienteInstitutosSoap;
+import web.soap.ClienteCatalogoSoap;
 
 @WebListener
 public class InicializadorAplicacion implements ServletContextListener {
     private static final String SERVIDOR = InicializadorAplicacion.class.getName() + ".servidor";
-    private static final String CLIENTE_INSTITUTOS = InicializadorAplicacion.class.getName() + ".clienteInstitutos";
+    private static final String CLIENTE_CATALOGO = InicializadorAplicacion.class.getName() + ".clienteCatalogo";
 
     @Override
     public void contextInitialized(ServletContextEvent evento) {
@@ -28,10 +28,10 @@ public class InicializadorAplicacion implements ServletContextListener {
         ServidorCentral servidor = ServidorCentral.conectarBaseExistente(url, usuario, contrasena);
         try {
             // La fábrica JPA puede conectar de forma diferida; comprobar el acceso al arrancar.
-            servidor.listarCategorias();
-            ClienteInstitutosSoap clienteInstitutos = new ClienteInstitutosSoap();
+            servidor.listarNombresProgramas();
+            ClienteCatalogoSoap clienteCatalogo = new ClienteCatalogoSoap();
             contexto.setAttribute(SERVIDOR, servidor);
-            contexto.setAttribute(CLIENTE_INSTITUTOS, clienteInstitutos);
+            contexto.setAttribute(CLIENTE_CATALOGO, clienteCatalogo);
             contexto.log("edEXT: servidor central iniciado para la aplicación web.");
         } catch (IOException | RuntimeException error) {
             try {
@@ -59,12 +59,12 @@ public class InicializadorAplicacion implements ServletContextListener {
         return (IServidorCentral) servidor;
     }
 
-    public static ClienteInstitutosSoap getClienteInstitutos(ServletContext contexto) {
-        Object cliente = contexto.getAttribute(CLIENTE_INSTITUTOS);
-        if (!(cliente instanceof ClienteInstitutosSoap)) {
-            throw new IllegalStateException("El cliente SOAP de institutos no está disponible.");
+    public static ClienteCatalogoSoap getClienteCatalogo(ServletContext contexto) {
+        Object cliente = contexto.getAttribute(CLIENTE_CATALOGO);
+        if (!(cliente instanceof ClienteCatalogoSoap)) {
+            throw new IllegalStateException("El cliente SOAP de catálogo no está disponible.");
         }
-        return (ClienteInstitutosSoap) cliente;
+        return (ClienteCatalogoSoap) cliente;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class InicializadorAplicacion implements ServletContextListener {
         ServletContext contexto = evento.getServletContext();
         Object servidor = contexto.getAttribute(SERVIDOR);
         contexto.removeAttribute(SERVIDOR);
-        contexto.removeAttribute(CLIENTE_INSTITUTOS);
+        contexto.removeAttribute(CLIENTE_CATALOGO);
         try {
             if (servidor instanceof ServidorCentral) {
                 ((ServidorCentral) servidor).close();

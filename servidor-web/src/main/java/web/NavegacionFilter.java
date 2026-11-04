@@ -16,17 +16,23 @@ public class NavegacionFilter implements Filter {
         String ruta = ((HttpServletRequest) request).getServletPath();
         if (!ruta.startsWith("/css/") && !ruta.startsWith("/js/")
                 && !ruta.startsWith("/imagenes/") && !ruta.equals("/imagen-usuario")) {
-            var servidor = InicializadorAplicacion.getServidor(request.getServletContext());
-            var clienteInstitutos = InicializadorAplicacion.getClienteInstitutos(request.getServletContext());
+            var clienteCatalogo = InicializadorAplicacion.getClienteCatalogo(request.getServletContext());
             try {
-                request.setAttribute("navInstitutos", clienteInstitutos.listarInstitutos());
+                request.setAttribute("navInstitutos", clienteCatalogo.listarInstitutos());
             } catch (WebServiceException error) {
                 request.getServletContext().log("No se pudieron consultar los institutos por SOAP.", error);
                 request.setAttribute("navInstitutos", List.of());
                 request.setAttribute("errorInstitutos",
                         "No se pudieron cargar los institutos. Intentá nuevamente más tarde.");
             }
-            request.setAttribute("navCategorias", servidor.listarCategorias());
+            try {
+                request.setAttribute("navCategorias", clienteCatalogo.listarCategorias());
+            } catch (WebServiceException error) {
+                request.getServletContext().log("No se pudieron consultar las categorías por SOAP.", error);
+                request.setAttribute("navCategorias", List.of());
+                request.setAttribute("errorCategorias",
+                        "No se pudieron cargar las categorías. Intentá nuevamente más tarde.");
+            }
         }
         chain.doFilter(request, response);
     }

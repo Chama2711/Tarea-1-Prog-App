@@ -166,6 +166,11 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
 
     @Override
+    public soap.dto.DTCursoConsulta consultarCurso(String nombre) {
+        return persistencia.consultarCurso(nombre);
+    }
+
+    @Override
     public Curso buscarCursoInstituto(
             String nombre,
             Instituto instituto) {

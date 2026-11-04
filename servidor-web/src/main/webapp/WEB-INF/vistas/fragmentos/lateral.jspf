@@ -28,9 +28,12 @@
     </nav>
     <nav aria-labelledby="nav-categorias">
         <h2 id="nav-categorias">Categorías</h2>
+        <% if (request.getAttribute("errorCategorias") != null) { %>
+        <p role="alert"><%= escapar(request.getAttribute("errorCategorias")) %></p>
+        <% } %>
         <% if (request.getAttribute("navCategorias") != null) {
-            for (logica.Categoria item : (java.util.List<logica.Categoria>) request.getAttribute("navCategorias")) { %>
-        <a href="${pageContext.request.contextPath}/busqueda?categoria=<%= parametro(item.getNombre()) %>" <%= item.getNombre().equals(request.getParameter("categoria")) ? "aria-current=\"true\"" : "" %>><%= escapar(item.getNombre()) %></a>
+            for (String item : (java.util.List<String>) request.getAttribute("navCategorias")) { %>
+        <a href="${pageContext.request.contextPath}/busqueda?categoria=<%= parametro(item) %>" <%= item.equals(request.getParameter("categoria")) ? "aria-current=\"true\"" : "" %>><%= escapar(item) %></a>
         <% } } %>
     </nav>
 </aside>

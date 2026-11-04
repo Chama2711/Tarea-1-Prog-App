@@ -104,7 +104,7 @@ public class RegistroServlet extends HttpServlet {
             request.setAttribute(
                     "institutos",
                     InicializadorAplicacion
-                            .getClienteInstitutos(getServletContext())
+                            .getClienteCatalogo(getServletContext())
                             .listarInstitutos()
             );
 

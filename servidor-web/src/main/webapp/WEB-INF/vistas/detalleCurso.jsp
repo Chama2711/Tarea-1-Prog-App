@@ -1,10 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="logica.*,java.util.*" %>
+<%@ page import="java.util.*,web.soap.generado.DtCursoConsulta,web.soap.generado.DtEdicionResumen" %>
 <%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
 <%
-    Curso curso = (Curso) request.getAttribute("curso");
-    List<Categoria> categorias = (List<Categoria>) request.getAttribute("categorias");
-    List<EdicionCurso> ediciones = (List<EdicionCurso>) request.getAttribute("ediciones");
+    DtCursoConsulta curso = (DtCursoConsulta) request.getAttribute("curso");
+    List<String> categorias = (List<String>) request.getAttribute("categorias");
+    List<DtEdicionResumen> ediciones = (List<DtEdicionResumen>) request.getAttribute("ediciones");
     String tituloPagina = curso.getNombre();
     String bajadaPagina = curso.getDescripcion();
     String paginaActiva = "cursos";
@@ -28,7 +28,7 @@
     <a class="volver" href="${pageContext.request.contextPath}/cursos">← Volver a cursos</a>
     <div class="consulta-curso">
     <section class="panel" aria-label="Información del curso">
-       <% if (curso.getImagen() != null && !curso.getImagen().isBlank()) { %>
+       <% if (curso.isTieneImagen()) { %>
 
            <img class="imagen-detalle"
                 src="${pageContext.request.contextPath}/imagen-curso?nombre=<%= parametro(curso.getNombre()) %>"
@@ -52,15 +52,15 @@
             <div class="dato"><span>Créditos</span><strong><%= curso.getCreditos() %></strong></div>
             <div class="dato"><span>Fecha de alta</span><strong><%= fecha(curso.getFechaRegistro()) %></strong></div>
         </div>
-        <% if (curso.getInstituto() != null) { %>
-            <div class="instituto"><%= escapar(curso.getInstituto().getNombre()) %></div>
+        <% if (curso.getNombreInstituto() != null) { %>
+            <div class="instituto"><%= escapar(curso.getNombreInstituto()) %></div>
         <% } %>
         <% if (categorias == null || categorias.isEmpty()) { %>
             <p class="texto-secundario">Este curso no tiene categorías asociadas.</p>
         <% } else { %>
             <div class="categorias" aria-label="Categorías del curso">
-                <% for (Categoria categoria : categorias) { %>
-                    <span class="categoria-chip"><%= escapar(categoria.getNombre()) %></span>
+                <% for (String categoria : categorias) { %>
+                    <span class="categoria-chip"><%= escapar(categoria) %></span>
                 <% } %>
             </div>
         <% } %>
@@ -115,8 +115,8 @@
         <% } %>
 
         <h3>Previas</h3>
-        <% if (curso.getPrevias().isEmpty()) { %><p class="texto-secundario">Este curso no tiene previas.</p><% } %>
-        <ul><% for (Curso previa : curso.getPrevias()) { %><li><a href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(previa.getNombre()) %>"><%= escapar(previa.getNombre()) %></a></li><% } %></ul>
+        <% if (curso.getPrevia().isEmpty()) { %><p class="texto-secundario">Este curso no tiene previas.</p><% } %>
+        <ul><% for (String previa : curso.getPrevia()) { %><li><a href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(previa) %>"><%= escapar(previa) %></a></li><% } %></ul>
     </section>
     <aside class="relaciones-curso">
     <section class="panel" aria-labelledby="titulo-ediciones">
@@ -125,7 +125,7 @@
             <p class="texto-secundario">No hay ediciones disponibles para este curso.</p>
         <% } else { %>
             <div class="ediciones">
-                <% for (EdicionCurso edicion : ediciones) { %>
+                <% for (DtEdicionResumen edicion : ediciones) { %>
                     <article class="edicion edicion-miniatura">
                         <img src="${pageContext.request.contextPath}/imagen-edicion?nombre=<%= parametro(edicion.getNombre()) %>" alt="Imagen de la edición <%= escapar(edicion.getNombre()) %>" width="100" height="76">
                         <div>
@@ -142,8 +142,8 @@
         <% } %>
     </section>
     <section class="panel"><h2>Programas de formación</h2>
-        <% if (curso.getProgramasFormacion().isEmpty()) { %><p class="texto-secundario">Este curso no integra programas.</p><% } %>
-        <ul class="lista-docentes"><% for (ProgramaFormacion programaCurso : curso.getProgramasFormacion()) { %><li><a href="${pageContext.request.contextPath}/programa?nombre=<%= parametro(programaCurso.getNombre()) %>"><%= escapar(programaCurso.getNombre()) %></a></li><% } %></ul>
+        <% if (curso.getPrograma().isEmpty()) { %><p class="texto-secundario">Este curso no integra programas.</p><% } %>
+        <ul class="lista-docentes"><% for (String programaCurso : curso.getPrograma()) { %><li><a href="${pageContext.request.contextPath}/programa?nombre=<%= parametro(programaCurso) %>"><%= escapar(programaCurso) %></a></li><% } %></ul>
     </section></aside></div>
 </div>
 </main>

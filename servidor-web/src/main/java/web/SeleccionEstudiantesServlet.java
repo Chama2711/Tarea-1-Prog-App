@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import jakarta.servlet.ServletException;
+import jakarta.xml.ws.WebServiceException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import logica.*;
@@ -22,6 +23,11 @@ public class SeleccionEstudiantesServlet extends HttpServlet {
         try {
             preparar(request, docente);
             mostrar(request, response);
+        } catch (WebServiceException e) {
+            getServletContext().log("No se pudieron consultar los institutos por SOAP.", e);
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No se pudieron cargar los institutos. Intentá nuevamente más tarde.");
+            return;
         } catch (SecurityException e) {
             response.sendError(403, e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -38,6 +44,11 @@ public class SeleccionEstudiantesServlet extends HttpServlet {
         response.setHeader("Cache-Control", "no-store");
         try {
             preparar(request, docente);
+        } catch (WebServiceException e) {
+            getServletContext().log("No se pudieron consultar los institutos por SOAP.", e);
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No se pudieron cargar los institutos. Intentá nuevamente más tarde.");
+            return;
         } catch (SecurityException e) {
             response.sendError(403, e.getMessage()); return;
         } catch (IllegalArgumentException e) {
@@ -88,7 +99,7 @@ public class SeleccionEstudiantesServlet extends HttpServlet {
         OrdenInscripciones orden;
         try { orden = ordenTexto.isEmpty() ? OrdenInscripciones.FECHA : OrdenInscripciones.valueOf(ordenTexto); }
         catch (IllegalArgumentException e) { throw new IllegalArgumentException("Seleccione un orden válido."); }
-        var institutos = servidor.listarNombresInstitutos();
+        var institutos = InicializadorAplicacion.getClienteCatalogo(getServletContext()).listarInstitutos();
         if (!instituto.isEmpty() && !institutos.contains(instituto)) throw new IllegalArgumentException("El instituto no existe.");
         List<String> cursos = instituto.isEmpty() ? List.of() : servidor.listarNombresCursosPorInstituto(instituto);
         if (!curso.isEmpty() && !cursos.contains(curso)) throw new IllegalArgumentException("El curso no pertenece al instituto.");

@@ -33,7 +33,7 @@ Dejen las dos propiedades de creación de tablas en `none`.
 ```properties
 soap.host=127.0.0.1
 soap.port=18083
-soap.path=/edext/institutos
+soap.path=/edext/catalogo
 ```
 
 4. En el Bloc de notas, elijan **Guardar como** y seleccionen la carpeta `.edEXT` que crearon.
@@ -54,23 +54,25 @@ Cada compañero debe crear este archivo; no viene con Git.
 Para el cliente SOAP de la web, creen también `web.properties` en esa misma carpeta `.edEXT`, con:
 
 ```properties
-soap.institutos.wsdl=http://127.0.0.1:18083/edext/institutos?wsdl
+soap.catalogo.wsdl=http://127.0.0.1:18083/edext/catalogo?wsdl
 ```
 
-Hay una plantilla en `configuracion-ejemplo/web.properties.example`. La aplicación web crea el cliente SOAP al arrancar y lo usa para consultar los institutos del menú lateral. Si cambian la dirección, reinicien la aplicación web; no necesitan recompilar.
+Hay una plantilla en `configuracion-ejemplo/web.properties.example`. La aplicación web crea el cliente SOAP al arrancar. Consulta los institutos del menú, registro, selección, altas y aceptados; también las categorías del menú, alta de curso, búsqueda y detalles de cursos y programas. Si cambian la dirección, reinicien la aplicación web; no necesitan recompilar.
 
 ## 3. Ejecutar
 
 1. Abran el proyecto raíz en NetBeans y hagan **Clean and Build**.
 2. Dentro de `estacion-trabajo`, ejecuten `presentacion.PrincipalFrame`.
 3. Se abre Swing y se publica SOAP. No hace falta iniciar Tomcat.
-4. Abran [el WSDL](http://127.0.0.1:18083/edext/institutos?wsdl): debe aparecer XML.
+4. Abran [el WSDL](http://127.0.0.1:18083/edext/catalogo?wsdl): debe aparecer XML.
 
 Al cerrar Swing también se detiene SOAP. La dirección funciona en la misma PC donde ejecutan el proyecto.
 
-Para probar el menú web, dejen el central abierto y después inicien Tomcat con el WAR actualizado. Los institutos del menú se consultan por SOAP; las demás consultas mantienen su acceso actual a MySQL. El usuario que ejecuta Tomcat debe tener el archivo `.edEXT/web.properties` en su carpeta personal.
+Para probar el menú web, dejen el central abierto y después inicien Tomcat con el WAR actualizado. Los listados de institutos y categorías de la web se consultan por SOAP, incluidos los institutos del docente autenticado. Las categorías usan el mismo servicio y la misma configuración de conexión. Inicio, listado, búsqueda, detalle e imagen de cursos también usan SOAP. Los selectores de cursos en formularios, las altas, las consultas de programas y docentes y las demás operaciones mantienen su acceso actual a MySQL. El usuario que ejecuta Tomcat debe tener el archivo `.edEXT/web.properties` en su carpeta personal.
 
-Si apagan el central con la web ya iniciada, el menú muestra un aviso en lugar de los institutos. Al volver a iniciar el central y recargar la página, el listado se recupera.
+Después de actualizar las operaciones SOAP, reinicien el central y vuelvan a desplegar el WAR actualizado. Maven regenera el cliente desde el WSDL incluido en el proyecto.
+
+Si apagan el central con la web ya iniciada, el menú muestra avisos en lugar de los institutos y las categorías. Al volver a iniciar el central y recargar la página, el listado se recupera.
 
 ## Datos adicionales de Tarea 2
 

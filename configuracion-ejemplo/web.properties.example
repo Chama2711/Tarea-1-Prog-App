@@ -1,1 +1,1 @@
-soap.institutos.wsdl=http://127.0.0.1:18083/edext/institutos?wsdl
+soap.catalogo.wsdl=http://127.0.0.1:18083/edext/catalogo?wsdl
