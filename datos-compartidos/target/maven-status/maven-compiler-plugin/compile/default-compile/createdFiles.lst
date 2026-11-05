@@ -1,0 +1,10 @@
+logica\RecursoNoEncontradoException.class
+logica\DTRankingInscripcion.class
+logica\DTEdicionConsulta.class
+logica\DTAutenticacion.class
+logica\EstadoInscripcion.class
+logica\OrdenInscripciones.class
+logica\DTInscripcion.class
+logica\DTPerfilUsuario.class
+logica\DTUsuarioConsulta.class
+logica\DTAutenticacion$Rol.class

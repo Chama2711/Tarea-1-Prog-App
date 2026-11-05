@@ -222,6 +222,8 @@ public class ServicioCatalogo {
     }
 
     @WebMethod(operationName = "listarEdicionesDocente")
+    @jakarta.xml.ws.RequestWrapper(className = "soap.catalogo.jaxws.ListarEdicionesDocente")
+    @jakarta.xml.ws.ResponseWrapper(className = "soap.catalogo.jaxws.ListarEdicionesDocenteResponse")
     public String[] listarEdicionesDocente(@WebParam(name = "nickDocente") String nickDocente) throws OperacionRechazada {
         return ejecutar(() -> central.listarEdicionesDocente(nickDocente).toArray(String[]::new));
     }
@@ -242,6 +244,8 @@ public class ServicioCatalogo {
     }
 
     @WebMethod(operationName = "listarAceptadosEdicion")
+    @jakarta.xml.ws.RequestWrapper(className = "soap.catalogo.jaxws.ListarAceptadosEdicion")
+    @jakarta.xml.ws.ResponseWrapper(className = "soap.catalogo.jaxws.ListarAceptadosEdicionResponse")
     public soap.dto.DTInscripcionConsulta[] listarAceptadosEdicion(@WebParam(name = "nickDocente") String nickDocente, @WebParam(name = "edicion") String edicion) throws OperacionRechazada {
         return ejecutar(() -> central.listarAceptadosEdicion(nickDocente, edicion).stream().map(soap.dto.DTInscripcionConsulta::new).toArray(soap.dto.DTInscripcionConsulta[]::new));
     }

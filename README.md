@@ -55,6 +55,7 @@ Para el cliente SOAP de la web, creen también `web.properties` en esa misma car
 
 ```properties
 soap.catalogo.wsdl=http://127.0.0.1:18083/edext/catalogo?wsdl
+soap.evaluaciones.wsdl=http://127.0.0.1:18083/edext/evaluaciones?wsdl
 ```
 
 Hay una plantilla en `configuracion-ejemplo/web.properties.example`. La aplicación web crea el cliente SOAP al arrancar. Consulta los institutos del menú, registro, selección, altas y aceptados; también las categorías del menú, alta de curso, búsqueda y detalles de cursos y programas. Si cambian la dirección, reinicien la aplicación web; no necesitan recompilar.
@@ -68,7 +69,9 @@ Hay una plantilla en `configuracion-ejemplo/web.properties.example`. La aplicaci
 
 Al cerrar Swing también se detiene SOAP. La dirección funciona en la misma PC donde ejecutan el proyecto.
 
-Para probar la web, dejen el central abierto y después inicien Tomcat con el WAR actualizado. Las consultas y acciones de los servlets usan SOAP: catálogo, usuarios, login, registro, perfiles, imágenes, seguimiento, altas, agregar cursos a programas, inscripciones, selección, ranking, aceptados y selectores de formularios. Todo usa el mismo servicio y la misma configuración. Aún queda retirar la inicialización local del central y la conexión MySQL del arranque de la web; por ahora se conserva su configuración JDBC. El usuario que ejecuta Tomcat debe tener el archivo `.edEXT/web.properties` en su carpeta personal.
+Para probar la web, dejen el central abierto y después inicien Tomcat con el WAR actualizado. Las consultas y acciones de los servlets usan SOAP: catálogo, usuarios, login, registro, perfiles, imágenes, seguimiento, altas, agregar cursos a programas, inscripciones, selección, ranking, aceptados y selectores de formularios. El catálogo y las evaluaciones usan sus respectivos clientes SOAP, configurados en el mismo archivo. Tomcat ya no crea un central local ni se conecta a MySQL: la base de datos la utiliza únicamente el central externo. El usuario que ejecuta Tomcat debe tener el archivo `.edEXT/web.properties` en su carpeta personal.
+
+El módulo `datos-compartidos` contiene los DTO y enumeraciones que usan la web y el central; mantiene el paquete `logica`. Compilen desde el proyecto raíz para generar todos los módulos.
 
 Después de actualizar las operaciones SOAP, reinicien el central y vuelvan a desplegar el WAR actualizado. Maven regenera el cliente desde el WSDL incluido en el proyecto.
 
