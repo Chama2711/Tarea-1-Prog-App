@@ -20,13 +20,9 @@ import java.util.List;
 
 import logica.DTAutenticacion;
 import logica.DTInscripcion;
-<<<<<<< HEAD
-import web.soap.ClienteCatalogoSoap;
-=======
 import java.time.LocalDate;
 import jakarta.xml.ws.WebServiceException;
 import logica.EstadoInscripcion;
->>>>>>> be1a875fce9b23b64c7167af09cf9afcd3bccde2
 
 @WebServlet("/ingresar-evaluaciones")
 public class IngresarEvaluacionesServlet extends HttpServlet {
@@ -49,19 +45,9 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
 
         response.setHeader("Cache-Control", "no-store");
 
-<<<<<<< HEAD
-        // 2. Obtener el acceso actual al Servidor Central.
-        // Más adelante se adaptará a SOAP.
-        ClienteCatalogoSoap servidor =
-                InicializadorAplicacion.getClienteCatalogo(getServletContext());
-=======
- 
->>>>>>> be1a875fce9b23b64c7167af09cf9afcd3bccde2
-
-       
         try {
             // Obtener todas las ediciones del docente.
-           List<String> ediciones = consultarEdiciones(docente.getNick());
+            List<String> ediciones = consultarEdiciones(docente.getNick());
 
             //  Leer la edición seleccionada.
             String nombreEdicion =  FormulariosDocente.valor(request, "edicion").trim();
