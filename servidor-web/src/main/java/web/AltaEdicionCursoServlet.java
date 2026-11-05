@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import logica.DTAutenticacion;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
 
 @WebServlet(name = "AltaEdicionCursoServlet", urlPatterns = {"/alta-edicion-curso"})
 @MultipartConfig(maxFileSize = 5 * 1024 * 1024, maxRequestSize = 6 * 1024 * 1024)
@@ -42,7 +42,7 @@ public class AltaEdicionCursoServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No se pudo recibir la imagen. Volvé a enviar el formulario.");
             return;
         }
-        IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+        ClienteCatalogoSoap servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
         try {
             LocalDate inicio = LocalDate.parse(FormulariosDocente.valor(request, "fechaInicio"));
             LocalDate fin = LocalDate.parse(FormulariosDocente.valor(request, "fechaFin"));
@@ -71,7 +71,7 @@ public class AltaEdicionCursoServlet extends HttpServlet {
 
     private void mostrarFormulario(HttpServletRequest request, HttpServletResponse response,
             DTAutenticacion docente) throws ServletException, IOException {
-        IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+        ClienteCatalogoSoap servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
         try {
             List<String> institutos = InicializadorAplicacion.getClienteCatalogo(getServletContext())
                     .listarInstitutosDocente(docente.getNick());

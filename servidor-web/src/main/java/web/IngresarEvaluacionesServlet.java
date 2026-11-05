@@ -20,7 +20,7 @@ import java.util.List;
 
 import logica.DTAutenticacion;
 import logica.DTInscripcion;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
 
 @WebServlet("/ingresar-evaluaciones")
 public class IngresarEvaluacionesServlet extends HttpServlet {
@@ -45,8 +45,8 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
 
         // 2. Obtener el acceso actual al Servidor Central.
         // Más adelante se adaptará a SOAP.
-        IServidorCentral servidor =
-                InicializadorAplicacion.getServidor(getServletContext());
+        ClienteCatalogoSoap servidor =
+                InicializadorAplicacion.getClienteCatalogo(getServletContext());
 
         try {
             // 3. Obtener todas las ediciones del docente.

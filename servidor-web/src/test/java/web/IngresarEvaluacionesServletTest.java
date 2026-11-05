@@ -126,13 +126,14 @@ public class IngresarEvaluacionesServletTest {
                 }
         );
 
+        web.soap.ClienteCatalogoSoap cliente;
         final ServletContext contexto = proxy(
                 ServletContext.class,
                 (p, metodo, argumentos) -> {
 
                     return switch (metodo.getName()) {
 
-                        case "getAttribute" -> central;
+                        case "getAttribute" -> cliente;
 
                         case "log" -> {
                             logs++;
@@ -264,7 +265,10 @@ public class IngresarEvaluacionesServletTest {
                     }
             ));
 
-            servlet.doGet(request, response);
+            try (var soap = new CatalogoSoapPrueba(central)) {
+                cliente = soap.cliente;
+                servlet.doGet(request, response);
+            }
         }
     }
 
@@ -353,10 +357,12 @@ public class IngresarEvaluacionesServletTest {
                 escenario.consultasAceptados
         );
 
-        assertEquals(
-                escenario.aceptados,
-                escenario.atributos.get("aceptados")
-        );
+        var recibidos = (List<DTInscripcion>) escenario.atributos.get("aceptados");
+        assertEquals(escenario.aceptados.size(), recibidos.size());
+        assertNotSame(escenario.aceptados.get(0), recibidos.get(0));
+        assertEquals(escenario.aceptados.get(0).getNicknameEstudiante(), recibidos.get(0).getNicknameEstudiante());
+        assertEquals(escenario.aceptados.get(0).getEstado(), recibidos.get(0).getEstado());
+        assertEquals(escenario.aceptados.get(0).getFechaInscripcion(), recibidos.get(0).getFechaInscripcion());
 
         assertEquals(
                 "Edicion 2025",

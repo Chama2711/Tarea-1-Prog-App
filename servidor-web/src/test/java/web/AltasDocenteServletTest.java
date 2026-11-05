@@ -66,6 +66,7 @@ public class AltasDocenteServletTest {
                 if (fallo != null) throw fallo;
                 return null;
             }
+            if (m.getName().equals("obtenerUsuario")) return new logica.Docente("docente", "docente@test", "Docente", "Uno", java.time.LocalDate.of(2000, 1, 1));
             consultas++;
             return switch (m.getName()) {
                 case "listarNombresInstitutosDocente" -> {

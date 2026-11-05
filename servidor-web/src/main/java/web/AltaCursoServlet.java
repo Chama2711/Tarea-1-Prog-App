@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import logica.DTAutenticacion;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
 
 @WebServlet(name = "AltaCursoServlet", urlPatterns = {"/alta-curso"})
 @MultipartConfig(maxFileSize = 5 * 1024 * 1024, maxRequestSize = 6 * 1024 * 1024)
@@ -45,7 +45,7 @@ public class AltaCursoServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No se pudo recibir la imagen. Volvé a enviar el formulario.");
             return;
         }
-        IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+        ClienteCatalogoSoap servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
         try {
             int horas = FormulariosDocente.entero(FormulariosDocente.valor(request, "horas"), "horas");
             int creditos = FormulariosDocente.entero(FormulariosDocente.valor(request, "creditos"), "créditos");
@@ -71,7 +71,7 @@ public class AltaCursoServlet extends HttpServlet {
 
     private void mostrarFormulario(HttpServletRequest request, HttpServletResponse response,
             DTAutenticacion docente) throws ServletException, IOException {
-        IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+        ClienteCatalogoSoap servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
         try {
             List<String> institutos = InicializadorAplicacion.getClienteCatalogo(getServletContext())
                     .listarInstitutosDocente(docente.getNick());

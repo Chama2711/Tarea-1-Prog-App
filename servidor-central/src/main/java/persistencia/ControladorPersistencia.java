@@ -559,6 +559,29 @@ public void editarUsuario(Usuario usuario) throws Exception {
         cambiarSeguimiento(nickSeguidor, nickSeguido, true);
     }
 
+    public List<DTUsuarioConsulta> listarSeguidosConsulta(String nick) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT s FROM Usuario u JOIN u.seguidos s WHERE u.nick = :nick ORDER BY s.nick",
+                    Usuario.class).setParameter("nick", nick).getResultList().stream()
+                    .map(u -> datosUsuario(em, u, false)).toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean esSeguidor(String nickSeguidor, String nickSeguido) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT COUNT(s) FROM Usuario u JOIN u.seguidos s "
+                    + "WHERE u.nick = :seguidor AND LOWER(s.nick) = LOWER(:seguido)", Long.class)
+                    .setParameter("seguidor", nickSeguidor).setParameter("seguido", nickSeguido)
+                    .getSingleResult() > 0;
+        } finally {
+            em.close();
+        }
+    }
+
     public void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) {
         cambiarSeguimiento(nickSeguidor, nickSeguido, false);
     }

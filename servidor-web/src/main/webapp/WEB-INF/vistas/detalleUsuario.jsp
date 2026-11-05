@@ -15,7 +15,7 @@
     // Obtención de datos para la funcionalidad Seguir/Seguidos
     Boolean esSeguidorObj = (Boolean) request.getAttribute("esSeguidor");
     boolean esSeguidor = esSeguidorObj != null && esSeguidorObj;
-    List<Usuario> listaSeguidos = (List<Usuario>) request.getAttribute("listaSeguidos");
+    List<DTUsuarioConsulta> listaSeguidos = (List<DTUsuarioConsulta>) request.getAttribute("listaSeguidos");
     if (listaSeguidos == null) {
         listaSeguidos = new ArrayList<>();
     }
@@ -247,14 +247,14 @@
                 <p class="texto-secundario">Este usuario no sigue a nadie actualmente.</p>
             <% } else { %>
                 <div class="ediciones">
-                <% for (Usuario uSeguido : listaSeguidos) { %>
+                <% for (DTUsuarioConsulta uSeguido : listaSeguidos) { %>
                     <article class="edicion">
                         <h4>
-                            <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(uSeguido.getNick()) %>">
-                                <%= escapar(uSeguido.getNombre()) %> <%= escapar(uSeguido.getApellido()) %>
+                            <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(uSeguido.nick()) %>">
+                                <%= escapar(uSeguido.nombre()) %> <%= escapar(uSeguido.apellido()) %>
                             </a>
                         </h4>
-                        <p class="texto-secundario">@<%= escapar(uSeguido.getNick()) %></p>
+                        <p class="texto-secundario">@<%= escapar(uSeguido.nick()) %></p>
                     </article>
                 <% } %>
                 </div>

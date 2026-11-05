@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import logica.DTAutenticacion;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
 
 @WebServlet(name = "Seguir", urlPatterns = {"/Seguir"})
 public class Seguir extends HttpServlet {
@@ -39,7 +39,7 @@ public class Seguir extends HttpServlet {
         session.removeAttribute("mensajeError");
         String destino = nickDestino;
         try {
-            IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+            ClienteCatalogoSoap servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
             if ("seguir".equals(accion)) {
                 servidor.seguirUsuario(autenticado.getNick(), nickDestino);
                 session.setAttribute("mensajeExito", "Ahora seguís a @" + nickDestino);

@@ -140,9 +140,17 @@ public class ListarAceptadosServletTest {
     @Test public void consultaEdicionFinalizadaSoloConDatosDeConsulta() throws Exception {
         var s = new Escenario(); s.seleccionar(); s.parametros.put("nick", "otroDocente"); s.ejecutar();
         assertEquals(200, s.estado); assertEquals(1, s.consultasAceptados);
-        assertEquals(s.aceptados, s.atributos.get("aceptados"));
-        assertEquals(List.of(s.ediciones.get(0)), s.atributos.get("ediciones"));
-        assertSame(s.ediciones.get(0), s.atributos.get("edicionElegida"));
+        var recibidos = (List<DTInscripcion>) s.atributos.get("aceptados");
+        assertEquals(s.aceptados.size(), recibidos.size());
+        assertNotSame(s.aceptados.get(0), recibidos.get(0));
+        assertEquals(s.aceptados.get(0).getNicknameEstudiante(), recibidos.get(0).getNicknameEstudiante());
+        assertEquals(s.aceptados.get(0).getEstado(), recibidos.get(0).getEstado());
+        var ediciones = (List<DTEdicionConsulta>) s.atributos.get("ediciones");
+        assertEquals(1, ediciones.size());
+        assertEquals(s.ediciones.get(0).nombre(), ediciones.get(0).nombre());
+        assertEquals(s.ediciones.get(0).nombreCurso(), ediciones.get(0).nombreCurso());
+        assertFalse(ediciones.get(0).vigente());
+        assertSame(ediciones.get(0), s.atributos.get("edicionElegida"));
     }
     @Test public void institutoAjenoYCursoFueraDelInstitutoSeRechazan() throws Exception {
         var s = new Escenario(); s.seleccionar(); s.parametros.put("instituto", "Ajeno"); s.ejecutar();
@@ -171,14 +179,14 @@ public class ListarAceptadosServletTest {
     }
     @Test public void falloInternoSeRegistraSinExponerDetalles() throws Exception {
         var s = new Escenario(); s.seleccionar(); s.fallo = new IllegalStateException("Detalle privado JDBC"); s.ejecutar();
-        assertEquals(500, s.estado); assertEquals(1, s.logs); assertNull(s.vista);
-        assertEquals("No se pudo cargar el listado. Intentá nuevamente.", s.mensaje);
+        assertEquals(503, s.estado); assertEquals(1, s.logs); assertNull(s.vista);
+        assertEquals("No se pudo cargar el listado. Intentá nuevamente más tarde.", s.mensaje);
     }
 
     @Test public void falloSoapNoConsultaAceptadosNiExponeDetalles() throws Exception {
         var s = new Escenario(); s.seleccionar(); s.falloInstitutos = true; s.ejecutar();
         assertEquals(503, s.estado); assertEquals(0, s.consultasAceptados);
         assertEquals(1, s.logs); assertNull(s.vista);
-        assertEquals("No se pudieron cargar los institutos. Intentá nuevamente más tarde.", s.mensaje);
+        assertEquals("No se pudo cargar el listado. Intentá nuevamente más tarde.", s.mensaje);
     }
 }

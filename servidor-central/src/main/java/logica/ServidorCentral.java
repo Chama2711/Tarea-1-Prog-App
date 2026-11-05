@@ -21,6 +21,43 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
 
     @Override
+    public List<DTUsuarioConsulta> listarSeguidosConsulta(String nick) {
+        return persistencia.listarSeguidosConsulta(nick);
+    }
+
+    @Override
+    public boolean esSeguidor(String nickSeguidor, String nickSeguido) {
+        return persistencia.esSeguidor(nickSeguidor, nickSeguido);
+    }
+
+    @Override
+    public void inscribirEstudianteAEdicion(String nickEstudiante, String nombreEdicion) {
+        if (nickEstudiante == null || nickEstudiante.isBlank()) throw new SecurityException("Se requiere un estudiante registrado.");
+        if (nombreEdicion == null || nombreEdicion.isBlank()) throw new IllegalArgumentException("Debe seleccionar una edición.");
+        Usuario usuario = obtenerUsuario(nickEstudiante);
+        if (!(usuario instanceof Estudiante estudiante)) {
+            throw new SecurityException("El usuario autenticado no es un estudiante.");
+        }
+        EdicionCurso edicion = buscarEdicion(nombreEdicion);
+        if (edicion == null) throw new RecursoNoEncontradoException("La edición solicitada no existe.");
+        inscriboAEdicionCurso(estudiante, edicion, LocalDate.now());
+    }
+
+    @Override
+    public void inscribirEstudianteAPrograma(String nickEstudiante, String nombrePrograma) {
+        if (nickEstudiante == null || nickEstudiante.isBlank()) throw new SecurityException("Se requiere un estudiante registrado.");
+        if (nombrePrograma == null || nombrePrograma.isBlank()) throw new IllegalArgumentException("Debe seleccionar un programa.");
+        Usuario usuario = obtenerUsuario(nickEstudiante);
+        if (!(usuario instanceof Estudiante estudiante)) {
+            throw new SecurityException("El usuario autenticado no es un estudiante.");
+        }
+        if (consultarPrograma(nombrePrograma) == null) {
+            throw new RecursoNoEncontradoException("El programa solicitado no existe.");
+        }
+        inscriboAProgramaFormacion(estudiante, obtenerDetallePrograma(nombrePrograma), LocalDate.now());
+    }
+
+    @Override
     public DTEdicionConsulta consultarEdicion(String nombre) {
         return persistencia.consultarEdicion(nombre);
     }

@@ -12,7 +12,7 @@ import logica.DTAutenticacion;
 import logica.DTEdicionConsulta;
 import logica.DTInscripcion;
 import logica.DTPerfilUsuario;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
 
 /**
  * @author Chama
@@ -36,9 +36,9 @@ public class ListarAceptadosServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, error.getMessage());
             return;
         } catch (WebServiceException error) {
-            getServletContext().log("No se pudieron consultar los institutos por SOAP.", error);
+            getServletContext().log("No se pudo consultar el listado de aceptados por SOAP.", error);
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-                    "No se pudieron cargar los institutos. Intentá nuevamente más tarde.");
+                    "No se pudo cargar el listado. Intentá nuevamente más tarde.");
             return;
         } catch (RuntimeException error) {
             getServletContext().log("No se pudo consultar el listado de aceptados.", error);
@@ -52,7 +52,7 @@ public class ListarAceptadosServlet extends HttpServlet {
     }
 
     private void prepararConsulta(HttpServletRequest request, DTAutenticacion docente) {
-        IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+        ClienteCatalogoSoap servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
         String instituto = FormulariosDocente.valor(request, "instituto").trim();
         String curso = FormulariosDocente.valor(request, "curso").trim();
         String edicion = FormulariosDocente.valor(request, "edicion").trim();
