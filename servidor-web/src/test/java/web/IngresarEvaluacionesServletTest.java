@@ -242,7 +242,28 @@ public class IngresarEvaluacionesServletTest {
 
         void ejecutar() throws Exception {
 
-            var servlet = new IngresarEvaluacionesServlet();
+           
+        var servlet = new IngresarEvaluacionesServlet() {
+
+            @Override
+            protected List<String> consultarEdiciones(
+                    String nickDocente) {
+
+                return central.listarEdicionesDocente(nickDocente);
+            }
+
+            @Override
+            protected List<DTInscripcion> consultarAceptados(
+                    String nickDocente,
+                    String nombreEdicion) {
+
+                return central.listarAceptadosEdicion(
+                        nickDocente,
+                        nombreEdicion
+                );
+            }
+        };
+
 
             servlet.init(proxy(
                     ServletConfig.class,
