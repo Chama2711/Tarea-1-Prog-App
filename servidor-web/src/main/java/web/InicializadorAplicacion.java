@@ -13,11 +13,13 @@ import jakarta.servlet.annotation.WebListener;
 import logica.IServidorCentral;
 import logica.ServidorCentral;
 import web.soap.ClienteCatalogoSoap;
+import web.soap.ClienteEvaluacionesSoap;
 
 @WebListener
 public class InicializadorAplicacion implements ServletContextListener {
     private static final String SERVIDOR = InicializadorAplicacion.class.getName() + ".servidor";
     private static final String CLIENTE_CATALOGO = InicializadorAplicacion.class.getName() + ".clienteCatalogo";
+    private static final String CLIENTE_EVALUACIONES = InicializadorAplicacion.class.getName() + ".clienteEvaluaciones";
 
     @Override
     public void contextInitialized(ServletContextEvent evento) {
@@ -28,10 +30,20 @@ public class InicializadorAplicacion implements ServletContextListener {
         ServidorCentral servidor = ServidorCentral.conectarBaseExistente(url, usuario, contrasena);
         try {
             // La fábrica JPA puede conectar de forma diferida; comprobar el acceso al arrancar.
+            
             servidor.listarNombresProgramas();
+
             ClienteCatalogoSoap clienteCatalogo = new ClienteCatalogoSoap();
+
+            ClienteEvaluacionesSoap clienteEvaluaciones = new ClienteEvaluacionesSoap();
+
             contexto.setAttribute(SERVIDOR, servidor);
             contexto.setAttribute(CLIENTE_CATALOGO, clienteCatalogo);
+            contexto.setAttribute(
+                    CLIENTE_EVALUACIONES,
+                    clienteEvaluaciones
+            );
+
             contexto.log("edEXT: servidor central iniciado para la aplicación web.");
         } catch (IOException | RuntimeException error) {
             try {
@@ -67,12 +79,28 @@ public class InicializadorAplicacion implements ServletContextListener {
         return (ClienteCatalogoSoap) cliente;
     }
 
+    public static ClienteEvaluacionesSoap getClienteEvaluaciones(
+            ServletContext contexto) {
+
+        Object cliente =
+                contexto.getAttribute(CLIENTE_EVALUACIONES);
+
+        if (!(cliente instanceof ClienteEvaluacionesSoap)) {
+            throw new IllegalStateException(
+                    "El cliente SOAP de evaluaciones no está disponible."
+            );
+        }
+
+        return (ClienteEvaluacionesSoap) cliente;
+    }
+
     @Override
     public void contextDestroyed(ServletContextEvent evento) {
         ServletContext contexto = evento.getServletContext();
         Object servidor = contexto.getAttribute(SERVIDOR);
         contexto.removeAttribute(SERVIDOR);
         contexto.removeAttribute(CLIENTE_CATALOGO);
+        contexto.removeAttribute(CLIENTE_EVALUACIONES);
         try {
             if (servidor instanceof ServidorCentral) {
                 ((ServidorCentral) servidor).close();

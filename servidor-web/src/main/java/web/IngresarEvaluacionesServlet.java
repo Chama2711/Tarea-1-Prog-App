@@ -20,7 +20,13 @@ import java.util.List;
 
 import logica.DTAutenticacion;
 import logica.DTInscripcion;
+<<<<<<< HEAD
 import web.soap.ClienteCatalogoSoap;
+=======
+import java.time.LocalDate;
+import jakarta.xml.ws.WebServiceException;
+import logica.EstadoInscripcion;
+>>>>>>> be1a875fce9b23b64c7167af09cf9afcd3bccde2
 
 @WebServlet("/ingresar-evaluaciones")
 public class IngresarEvaluacionesServlet extends HttpServlet {
@@ -33,7 +39,7 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Verificar que el usuario sea docente.
+        // Verificar que el usuario sea docente.
         DTAutenticacion docente =
                 FormulariosDocente.exigirDocente(request, response);
 
@@ -43,23 +49,26 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
 
         response.setHeader("Cache-Control", "no-store");
 
+<<<<<<< HEAD
         // 2. Obtener el acceso actual al Servidor Central.
         // Más adelante se adaptará a SOAP.
         ClienteCatalogoSoap servidor =
                 InicializadorAplicacion.getClienteCatalogo(getServletContext());
+=======
+ 
+>>>>>>> be1a875fce9b23b64c7167af09cf9afcd3bccde2
 
+       
         try {
-            // 3. Obtener todas las ediciones del docente.
-            List<String> ediciones =
-                    servidor.listarEdicionesDocente(docente.getNick());
+            // Obtener todas las ediciones del docente.
+           List<String> ediciones = consultarEdiciones(docente.getNick());
 
-            // 4. Leer la edición seleccionada.
-            String nombreEdicion =
-                    FormulariosDocente.valor(request, "edicion").trim();
+            //  Leer la edición seleccionada.
+            String nombreEdicion =  FormulariosDocente.valor(request, "edicion").trim();
 
             List<DTInscripcion> aceptados = List.of();
 
-            // 5. Consultar los estudiantes aceptados.
+            //  Consultar los estudiantes aceptados.
             if (!nombreEdicion.isEmpty()) {
 
                 if (!ediciones.contains(nombreEdicion)) {
@@ -70,13 +79,10 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                     return;
                 }
 
-                aceptados = servidor.listarAceptadosEdicion(
-                        docente.getNick(),
-                        nombreEdicion
-                );
+                aceptados = consultarAceptados(docente.getNick(),nombreEdicion);
             }
 
-            // 6. Enviar los datos a la JSP.
+            //  Enviar los datos a la JSP.
             request.setAttribute("ediciones", ediciones);
             request.setAttribute("edicion", nombreEdicion);
             request.setAttribute("aceptados", aceptados);
@@ -95,7 +101,17 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                     HttpServletResponse.SC_BAD_REQUEST,
                     e.getMessage()
             );
+            
+        } catch (WebServiceException e) {
+            getServletContext().log(
+                    "No se pudo consultar evaluaciones por SOAP.", e
+            );
 
+            response.sendError(
+                    HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "El servicio de evaluaciones no está disponible."
+            );
+            
         } catch (RuntimeException e) {
             getServletContext().log(
                     "Error al consultar las evaluaciones.", e
@@ -107,5 +123,47 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
             );
         }
     }
+    
+    
+    protected List<String> consultarEdiciones(String nickDocente) {
+        return InicializadorAplicacion
+                .getClienteEvaluaciones(getServletContext())
+                .listarEdicionesDocente(nickDocente);
+    }
+
+    protected List<DTInscripcion> consultarAceptados(
+            String nickDocente,
+            String nombreEdicion) {
+
+        var inscripcionesSoap = InicializadorAplicacion
+                .getClienteEvaluaciones(getServletContext())
+                .listarAceptadosEdicion(
+                        nickDocente,
+                        nombreEdicion
+                );
+
+        return inscripcionesSoap.stream()
+                .map(dto -> new DTInscripcion(
+                        dto.getId(),
+                        dto.getNicknameEstudiante(),
+                        dto.getNombreEstudiante(),
+                        dto.getNombreEdicion(),
+                        dto.getNombreCurso(),
+                        dto.getFechaInscripcion() == null
+                                || dto.getFechaInscripcion().isBlank()
+                                ? null
+                                : LocalDate.parse(
+                                        dto.getFechaInscripcion()
+                                ),
+                        dto.getEstado() == null
+                                || dto.getEstado().isBlank()
+                                ? null
+                                : EstadoInscripcion.valueOf(
+                                        dto.getEstado()
+                                )
+                ))
+                .toList();
+    }
+  
 }
 
