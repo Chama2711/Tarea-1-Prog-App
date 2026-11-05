@@ -168,6 +168,14 @@ public interface IServidorCentral {
         LocalDate fecha
     );
     
+    void registrarCalificacion(
+        String nickDocente,
+        String nombreEdicion,
+        Long idInscripcion,
+        int nota
+    );
+    
+    
     // ========================
     //  PROGRAMAS DE FORMACIÓN 
     //=========================

@@ -72,6 +72,24 @@ public class ControladorInscripcion {
         validarIdentificadores(nickDocente, nombreEdicion);
         return persistencia.listarAceptadosEdicion(nickDocente, nombreEdicion);
     }
+    
+    public void registrarCalificacion(String nickDocente,String nombreEdicion,Long idInscripcion,int nota) {
+
+        validarIdentificadores(nickDocente, nombreEdicion);
+
+        if (idInscripcion == null || idInscripcion <= 0) {
+            throw new IllegalArgumentException(
+                    "Seleccione una inscripción válida."
+            );
+        }
+
+        persistencia.registrarCalificacion(
+                nickDocente,
+                nombreEdicion,
+                idInscripcion,
+                nota
+        );
+    }
 
     public List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante) {
         if (nickEstudiante == null || nickEstudiante.isBlank()) {

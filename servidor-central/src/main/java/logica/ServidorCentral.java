@@ -365,6 +365,21 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
             fechaInscripcion
     );
     }
+   
+    @Override
+    public void registrarCalificacion(
+            String nickDocente,
+            String nombreEdicion,
+            Long idInscripcion,
+            int nota) {
+
+        controladorInscripcion.registrarCalificacion(
+                nickDocente,
+                nombreEdicion,
+                idInscripcion,
+                nota
+        );
+    }
 
     // ==================== PROGRAMAS DE FORMACIÓN ====================
 

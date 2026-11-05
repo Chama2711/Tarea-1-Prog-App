@@ -8,6 +8,10 @@
 
 <xs:element name="listarEdicionesDocenteResponse" type="tns:listarEdicionesDocenteResponse"/>
 
+<xs:element name="registrarCalificacion" type="tns:registrarCalificacion"/>
+
+<xs:element name="registrarCalificacionResponse" type="tns:registrarCalificacionResponse"/>
+
 <xs:complexType name="listarAceptadosEdicion">
 <xs:sequence>
 <xs:element name="nickDocente" type="xs:string" minOccurs="0"/>
@@ -43,5 +47,18 @@
 <xs:sequence>
 <xs:element name="return" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
 </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="registrarCalificacion">
+<xs:sequence>
+<xs:element name="nickDocente" type="xs:string" minOccurs="0"/>
+<xs:element name="nombreEdicion" type="xs:string" minOccurs="0"/>
+<xs:element name="idInscripcion" type="xs:long" minOccurs="0"/>
+<xs:element name="nota" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="registrarCalificacionResponse">
+<xs:sequence/>
 </xs:complexType>
 </xs:schema>

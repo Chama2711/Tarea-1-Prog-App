@@ -66,6 +66,43 @@ public class Inscripcion {
     public LocalDate getFechaCalificacion() {
         return fechaCalificacion;
     }
+    
+
+    public void registrarCalificacion(
+            int nota,
+            LocalDate fecha) {
+
+        // Solo pueden calificarse inscripciones a ediciones.
+        if (edicion == null) {
+            throw new IllegalStateException(
+                    "La inscripción no pertenece a una edición."
+            );
+        }
+
+        // El estudiante debe haber sido aceptado.
+        if (estado != EstadoInscripcion.ACEPTADA) {
+            throw new IllegalStateException(
+                    "Solo se pueden calificar estudiantes aceptados."
+            );
+        }
+
+        // Escala de calificaciones de 1 a 12.
+        if (nota < 1 || nota > 12) {
+            throw new IllegalArgumentException(
+                    "La calificación debe estar entre 1 y 12."
+            );
+        }
+
+        if (fecha == null) {
+            throw new IllegalArgumentException(
+                    "La fecha de calificación es obligatoria."
+            );
+        }
+
+        this.calificacion = nota;
+        this.fechaCalificacion = fecha;
+    }
+
 
     public void cambiarEstado(EstadoInscripcion nuevoEstado) {
         if (nuevoEstado != EstadoInscripcion.ACEPTADA && nuevoEstado != EstadoInscripcion.RECHAZADA) {

@@ -48,5 +48,29 @@ public class ServicioEvaluaciones {
          .map(DTInscripcionSoap::desde)
          .toArray(DTInscripcionSoap[]::new);
     }
+    
+    
+    @WebMethod(operationName = "registrarCalificacion")
+    public void registrarCalificacion(
+            @WebParam(name = "nickDocente")
+            String nickDocente,
+
+            @WebParam(name = "nombreEdicion")
+            String nombreEdicion,
+
+            @WebParam(name = "idInscripcion")
+            Long idInscripcion,
+
+            @WebParam(name = "nota")
+            int nota) {
+
+        central.registrarCalificacion(
+                nickDocente,
+                nombreEdicion,
+                idInscripcion,
+                nota
+        );
+    }
+
 
 }

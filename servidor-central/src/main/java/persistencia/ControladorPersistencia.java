@@ -853,6 +853,75 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
         }
     }
 
+    public void registrarCalificacion(
+            String nickDocente,
+            String nombreEdicion,
+            Long idInscripcion,
+            int nota) {
+
+        if (nickDocente == null || nickDocente.isBlank()
+                || nombreEdicion == null || nombreEdicion.isBlank()
+                || idInscripcion == null || idInscripcion <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Indique docente, edición e inscripción válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            // 1. Verificar que el docente pueda evaluar esta edición.
+            validarDocenteEdicion(
+                    em,
+                    nickDocente,
+                    nombreEdicion
+            );
+
+            // 2. Buscar la inscripción por su clave primaria.
+            Inscripcion inscripcion = em.find(
+                    Inscripcion.class,
+                    idInscripcion,
+                    LockModeType.PESSIMISTIC_WRITE
+            );
+
+            // 3. Comprobar que pertenece a la edición seleccionada.
+            if (inscripcion == null
+                    || inscripcion.getEdicionCurso() == null
+                    || !nombreEdicion.equals(
+                            inscripcion.getEdicionCurso().getNombre()
+                    )) {
+
+                throw new IllegalArgumentException(
+                        "La inscripción no pertenece a esta edición."
+                );
+            }
+
+            // 4. Validar la nota y actualizar la entidad.
+            inscripcion.registrarCalificacion(
+                    nota,
+                    LocalDate.now()
+            );
+
+            // 5. Guardar los cambios.
+            tx.commit();
+
+        } catch (RuntimeException e) {
+
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+
+            throw e;
+
+        } finally {
+            em.close();
+        }
+    }
+
     public List<DTEdicionConsulta> listarEdicionesParaSeleccion(String nickDocente,
             String nombreInstituto, String nombreCurso, LocalDate referencia) {
         EntityManager em = emf.createEntityManager();
