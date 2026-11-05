@@ -272,6 +272,42 @@ import logica.*;
         }
     }
     
+    /** Materializar cursos y categorías antes de cerrar la consulta JPA. */
+    private soap.dto.DTProgramaConsulta datosPrograma(ProgramaFormacion programa) {
+        List<Curso> cursos = new ArrayList<>(programa.getCursos().values());
+        cursos.sort(java.util.Comparator.comparing(Curso::getNombre));
+        List<String> categorias = cursos.stream().flatMap(c -> c.getCategorias().stream())
+                .map(Categoria::getNombre).distinct().sorted().toList();
+        return new soap.dto.DTProgramaConsulta(programa.getId(), programa.getNombre(),
+                programa.getDescripcion(), programa.getFechaInicio(), programa.getFechaFin(),
+                programa.getFechaAlta(), programa.getImagen() != null && !programa.getImagen().isBlank(),
+                cursos.stream().map(c -> new soap.dto.DTCursoResumen(c.getNombre(), c.getDescripcion())).toList(),
+                categorias);
+    }
+
+    public List<soap.dto.DTProgramaConsulta> listarProgramasConsulta() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT p FROM ProgramaFormacion p ORDER BY p.nombre", ProgramaFormacion.class)
+                    .getResultList().stream().map(this::datosPrograma).toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public soap.dto.DTProgramaConsulta consultarPrograma(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (nombre == null || nombre.isBlank()) return null;
+            List<ProgramaFormacion> encontrados = em.createQuery(
+                    "SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre", ProgramaFormacion.class)
+                    .setParameter("nombre", nombre).getResultList();
+            return encontrados.isEmpty() ? null : datosPrograma(encontrados.get(0));
+        } finally {
+            em.close();
+        }
+    }
+
     public List<ProgramaFormacion> obtenerProgramas() {
     EntityManager em = emf.createEntityManager();
 

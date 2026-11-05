@@ -80,4 +80,44 @@ public class ServicioCatalogo {
             throw new IllegalStateException("No se pudo consultar la imagen del curso.", error);
         }
     }
+
+    @WebMethod(operationName = "listarProgramas")
+    public soap.dto.DTProgramaConsulta[] listarProgramas() {
+        return central.listarProgramasConsulta().toArray(soap.dto.DTProgramaConsulta[]::new);
+    }
+
+    @WebMethod(operationName = "consultarPrograma")
+    public soap.dto.DTProgramaConsulta consultarPrograma(@WebParam(name = "nombrePrograma") String nombrePrograma) {
+        return central.consultarPrograma(nombrePrograma);
+    }
+
+    @WebMethod(operationName = "estaInscriptoAPrograma")
+    public boolean estaInscriptoAPrograma(@WebParam(name = "nickEstudiante") String nickEstudiante,
+            @WebParam(name = "programaId") Long programaId) {
+        return central.estaInscriptoAPrograma(nickEstudiante, programaId);
+    }
+
+    @WebMethod(operationName = "consultarEdicion")
+    public soap.dto.DTEdicionConsulta consultarEdicion(@WebParam(name = "nombreEdicion") String nombreEdicion) {
+        var edicion = central.consultarEdicion(nombreEdicion);
+        return edicion == null ? null : new soap.dto.DTEdicionConsulta(edicion);
+    }
+
+    @WebMethod(operationName = "obtenerImagenPrograma")
+    public byte[] obtenerImagenPrograma(@WebParam(name = "nombrePrograma") String nombrePrograma) {
+        try {
+            return central.obtenerImagenPrograma(nombrePrograma);
+        } catch (Exception error) {
+            throw new IllegalStateException("No se pudo consultar la imagen del programa.", error);
+        }
+    }
+
+    @WebMethod(operationName = "obtenerImagenEdicion")
+    public byte[] obtenerImagenEdicion(@WebParam(name = "nombreEdicion") String nombreEdicion) {
+        try {
+            return central.obtenerImagenEdicion(nombreEdicion);
+        } catch (Exception error) {
+            throw new IllegalStateException("No se pudo consultar la imagen de la edición.", error);
+        }
+    }
 }

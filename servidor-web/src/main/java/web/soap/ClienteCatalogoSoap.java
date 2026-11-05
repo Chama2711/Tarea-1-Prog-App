@@ -12,8 +12,10 @@ import java.util.Properties;
 import web.soap.generado.CatalogoService;
 import web.soap.generado.ServicioCatalogo;
 import web.soap.generado.DtCursoConsulta;
+import web.soap.generado.DtProgramaConsulta;
+import web.soap.generado.DtEdicionConsulta;
 
-/** Consulta institutos, categorías y cursos mediante el servicio SOAP del central. */
+/** Consulta el catálogo mediante el servicio SOAP del central. */
 public final class ClienteCatalogoSoap {
     private final CatalogoService servicio;
 
@@ -72,6 +74,31 @@ public final class ClienteCatalogoSoap {
 
     public byte[] obtenerImagenCurso(String nombreCurso) {
         return servicio.getCatalogoPort().obtenerImagenCurso(nombreCurso);
+    }
+
+    public List<DtProgramaConsulta> listarProgramas() {
+        var programas = servicio.getCatalogoPort().listarProgramas();
+        return programas == null ? List.of() : List.copyOf(programas);
+    }
+
+    public DtProgramaConsulta consultarPrograma(String nombrePrograma) {
+        return servicio.getCatalogoPort().consultarPrograma(nombrePrograma);
+    }
+
+    public boolean estaInscriptoAPrograma(String nickEstudiante, Long programaId) {
+        return servicio.getCatalogoPort().estaInscriptoAPrograma(nickEstudiante, programaId);
+    }
+
+    public DtEdicionConsulta consultarEdicion(String nombreEdicion) {
+        return servicio.getCatalogoPort().consultarEdicion(nombreEdicion);
+    }
+
+    public byte[] obtenerImagenPrograma(String nombrePrograma) {
+        return servicio.getCatalogoPort().obtenerImagenPrograma(nombrePrograma);
+    }
+
+    public byte[] obtenerImagenEdicion(String nombreEdicion) {
+        return servicio.getCatalogoPort().obtenerImagenEdicion(nombreEdicion);
     }
 
     private static URL leerWsdl(Path archivo) throws IOException {
