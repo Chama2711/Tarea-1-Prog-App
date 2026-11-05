@@ -7,25 +7,26 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import logica.IServidorCentral;
+
 
 @WebServlet(name = "InicioServlet", urlPatterns = {"", "/inicio"})
 public class InicioServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
         try {
+            var cliente = InicializadorAplicacion.getClienteCatalogo(getServletContext());
             request.setAttribute("cursos", ConsultasCursos.listar(
-                    InicializadorAplicacion.getClienteCatalogo(getServletContext()), null));
+                    cliente, null));
+            var programas = cliente.listarProgramas();
+            request.setAttribute("programas", programas);
+            request.setAttribute("cantidadProgramas", programas.size());
         } catch (WebServiceException error) {
-            getServletContext().log("No se pudieron consultar los cursos por SOAP.", error);
+            getServletContext().log("No se pudo consultar el catálogo por SOAP.", error);
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-                    "No se pudieron cargar los cursos. Intentá nuevamente más tarde.");
+                    "No se pudo cargar el catálogo. Intentá nuevamente más tarde.");
             return;
         }
-        request.setAttribute("programas", servidor.obtenerProgramas());
-        request.setAttribute("cantidadProgramas", servidor.listarNombresProgramas().size());
         // La navegación ya consultó las categorías por SOAP en esta petición.
         var categorias = (java.util.List<?>) request.getAttribute("navCategorias");
         request.setAttribute("cantidadCategorias", categorias == null ? 0 : categorias.size());

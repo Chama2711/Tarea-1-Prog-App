@@ -7,7 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.xml.ws.WebServiceException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import logica.ProgramaFormacion;
+
 import web.soap.generado.DtCursoConsulta;
 
 @WebServlet("/busqueda")
@@ -22,11 +22,11 @@ public class BusquedaServlet extends HttpServlet {
         String orden = valor(request, "orden");
         String instituto = valor(request, "instituto");
         String categoria = valor(request, "categoria");
-        var servidor = InicializadorAplicacion.getServidor(getServletContext());
         try {
+            var cliente = InicializadorAplicacion.getClienteCatalogo(getServletContext());
             List<Resultado> resultados = new ArrayList<>();
             List<DtCursoConsulta> cursos = ConsultasCursos.listar(
-                    InicializadorAplicacion.getClienteCatalogo(getServletContext()), instituto);
+                    cliente, instituto);
             Map<String, DtCursoConsulta> cursosPorNombre = new HashMap<>();
             for (var curso : cursos) cursosPorNombre.put(curso.getNombre(), curso);
             if (!tipo.equals("programas")) {
@@ -36,13 +36,13 @@ public class BusquedaServlet extends HttpServlet {
                 }
             }
             if (!tipo.equals("cursos")) {
-                for (ProgramaFormacion programa : servidor.obtenerProgramas()) {
+                for (var programa : cliente.listarProgramas()) {
                     boolean filtro = instituto.isEmpty() && categoria.isEmpty()
-                            || programa.getCursos().keySet().stream()
+                            || programa.getCurso().stream().map(web.soap.generado.DtCursoResumen::getNombre)
                                     .map(cursosPorNombre::get).filter(Objects::nonNull)
                                     .anyMatch(c -> coincide(c, instituto, categoria));
                     if (filtro && contiene(programa.getNombre(), programa.getDescripcion(), consulta))
-                        resultados.add(new Resultado(programa.getNombre(), programa.getDescripcion(), "programa", programa.getFechaAlta()));
+                        resultados.add(new Resultado(programa.getNombre(), programa.getDescripcion(), "programa", ConsultasCursos.fecha(programa.getFechaAlta())));
                 }
             }
             Comparator<Resultado> porNombre = Comparator.comparing(Resultado::nombre, String.CASE_INSENSITIVE_ORDER);
@@ -52,9 +52,9 @@ public class BusquedaServlet extends HttpServlet {
             request.setAttribute("resultados", resultados);
             request.getRequestDispatcher("/WEB-INF/vistas/busqueda.jsp").forward(request, response);
         } catch (WebServiceException error) {
-            getServletContext().log("No se pudieron consultar los cursos de búsqueda por SOAP.", error);
+            getServletContext().log("No se pudo consultar el catálogo de búsqueda por SOAP.", error);
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-                    "No se pudieron cargar los cursos. Intentá nuevamente más tarde.");
+                    "No se pudo cargar el catálogo. Intentá nuevamente más tarde.");
         }
     }
 

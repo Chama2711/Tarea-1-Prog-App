@@ -8,7 +8,7 @@ import logica.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/** Comprueba las consultas del catálogo por HTTP/SOAP y las consultas de programas aún locales. */
+/** Comprueba las consultas del catálogo por HTTP/SOAP sin recurrir a consultas locales. */
 public class CategoriasServletTest {
     private static <T> T proxy(Class<T> tipo, InvocationHandler h) {
         return tipo.cast(Proxy.newProxyInstance(tipo.getClassLoader(), new Class<?>[]{tipo}, h));
@@ -29,16 +29,15 @@ public class CategoriasServletTest {
         int estado = 200, consultasRemotas, logs;
         web.soap.ClienteCatalogoSoap cliente;
 
-        final IServidorCentral local = proxy(IServidorCentral.class, (p, m, a) -> switch (m.getName()) {
-            case "obtenerDetallePrograma" -> programa;
-            case "obtenerProgramas" -> List.of(programa);
-            case "listarNombresProgramas" -> List.of();
-            default -> throw new AssertionError("Consulta local inesperada: " + m.getName());
+        final IServidorCentral local = proxy(IServidorCentral.class, (p, m, a) -> {
+            throw new AssertionError("Consulta local inesperada: " + m.getName());
         });
         final IServidorCentral remoto = proxy(IServidorCentral.class, (p, m, a) -> {
             consultasRemotas++;
             if (falloSoap) throw new IllegalStateException("Detalle privado JDBC");
             return switch (m.getName()) {
+                case "listarProgramasConsulta" -> List.of(programaRemoto());
+                case "consultarPrograma" -> programaRemoto();
                 case "listarNombresCursos" -> listadoVacio ? List.of() : List.of(nombre);
                 case "listarNombresCursosPorInstituto" -> {
                     institutoConsultado = (String) a[0];
@@ -94,6 +93,13 @@ public class CategoriasServletTest {
             }
             return null;
         });
+
+        soap.dto.DTProgramaConsulta programaRemoto() {
+            return new soap.dto.DTProgramaConsulta(7L, nombre, "Descripción del programa",
+                    java.time.LocalDate.of(2026, 11, 1), java.time.LocalDate.of(2026, 12, 1),
+                    java.time.LocalDate.of(2026, 10, 1), false,
+                    List.of(new soap.dto.DTCursoResumen(nombre, "Descripción remota")), categorias);
+        }
 
         Escenario() {
             curso.setNombre(nombre); programa.setNombre(nombre);

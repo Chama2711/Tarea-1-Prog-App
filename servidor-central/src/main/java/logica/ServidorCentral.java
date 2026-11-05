@@ -26,6 +26,16 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
 
     @Override
+    public List<soap.dto.DTProgramaConsulta> listarProgramasConsulta() {
+        return persistencia.listarProgramasConsulta();
+    }
+
+    @Override
+    public soap.dto.DTProgramaConsulta consultarPrograma(String nombre) {
+        return persistencia.consultarPrograma(nombre);
+    }
+
+    @Override
     public EdicionCurso buscarEdicion(String nombre) {
         return persistencia.buscarEdicion(nombre);
     }

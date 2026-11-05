@@ -14,6 +14,10 @@ public interface IServidorCentral {
     DTPerfilUsuario consultarPerfilUsuario(String nick, String nickConsultante);
 
     DTEdicionConsulta consultarEdicion(String nombre);
+
+    List<soap.dto.DTProgramaConsulta> listarProgramasConsulta();
+
+    soap.dto.DTProgramaConsulta consultarPrograma(String nombre);
     
     EdicionCurso buscarEdicion(String nombre);
 

@@ -8,9 +8,9 @@ import jakarta.servlet.http.HttpServletRequest;
 public class ImagenFormacionServlet extends ImagenCursoServlet {
     @Override
     protected byte[] obtenerImagen(HttpServletRequest request, String nombre) throws Exception {
-        var servidor = InicializadorAplicacion.getServidor(getServletContext());
+        var cliente = InicializadorAplicacion.getClienteCatalogo(getServletContext());
         return "/imagen-edicion".equals(request.getServletPath())
-                ? servidor.obtenerImagenEdicion(nombre)
-                : servidor.obtenerImagenPrograma(nombre);
+                ? cliente.obtenerImagenEdicion(nombre)
+                : cliente.obtenerImagenPrograma(nombre);
     }
 }

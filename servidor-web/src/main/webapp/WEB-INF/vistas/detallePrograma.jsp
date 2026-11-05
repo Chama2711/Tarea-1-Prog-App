@@ -1,9 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="logica.*,java.util.*" %>
+<%@ page import="web.soap.generado.DtProgramaConsulta,web.soap.generado.DtCursoResumen,logica.*,java.util.*" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
 <%
-    ProgramaFormacion programa = (ProgramaFormacion) request.getAttribute("programa");
+    DtProgramaConsulta programa = (DtProgramaConsulta) request.getAttribute("programa");
     List<String> categorias = (List<String>) request.getAttribute("categorias");
     String tituloPagina = programa.getNombre();
     String bajadaPagina = programa.getDescripcion();
@@ -24,9 +24,9 @@
     LocalDate hoy = LocalDate.now();
 
     boolean inscripcionAbierta =
-        !hoy.isAfter(programa.getFechaFin())
+        !hoy.isAfter(LocalDate.parse(programa.getFechaFin()))
         && !hoy.isAfter(
-                programa.getFechaInicio().plusDays(14)
+                LocalDate.parse(programa.getFechaInicio()).plusDays(14)
     );
     
     boolean yaInscripto =
@@ -86,7 +86,7 @@
             <h1><%= escapar(programa.getNombre()) %></h1>
             <p><%= escapar(programa.getDescripcion()) %></p>
 
-            <% if (programa.getImagen() != null && !programa.getImagen().isBlank()) { %>
+            <% if (programa.isTieneImagen()) { %>
                 <img class="imagen-detalle"
                      src="${pageContext.request.contextPath}/imagen-programa?nombre=<%= parametro(programa.getNombre()) %>"
                      alt="Imagen del programa <%= escapar(programa.getNombre()) %>">
@@ -100,7 +100,7 @@
             <div class="dato"><span>Fecha de inicio</span><strong><%= fecha(programa.getFechaInicio()) %></strong></div>
             <div class="dato"><span>Fecha de finalización</span><strong><%= fecha(programa.getFechaFin()) %></strong></div>
             <div class="dato"><span>Fecha de alta</span><strong><%= fecha(programa.getFechaAlta()) %></strong></div>
-            <div class="dato"><span>Cursos</span><strong><%= programa.getCursos() == null ? 0 : programa.getCursos().size() %></strong></div>
+            <div class="dato"><span>Cursos</span><strong><%= programa.getCurso() == null ? 0 : programa.getCurso().size() %></strong></div>
         </div>
         <h3>Categorías</h3>
         <% if (categorias == null || categorias.isEmpty()) { %>
@@ -163,11 +163,11 @@
 
     <section aria-labelledby="titulo-cursos-programa">
         <h2 id="titulo-cursos-programa">Cursos del programa</h2>
-        <% if (programa.getCursos() == null || programa.getCursos().isEmpty()) { %>
+        <% if (programa.getCurso() == null || programa.getCurso().isEmpty()) { %>
             <div class="aviso">Este programa todavía no tiene cursos asociados.</div>
         <% } else { %>
             <div class="cursos-programa">
-                <% for (Curso curso : programa.getCursos().values()) { %>
+                <% for (DtCursoResumen curso : programa.getCurso()) { %>
                     <article class="curso-programa">
                         <div><h3><%= escapar(curso.getNombre()) %></h3><p><%= escapar(curso.getDescripcion()) %></p></div>
                         <a class="enlace-detalle" href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(curso.getNombre()) %>" aria-label="Ver curso <%= escapar(curso.getNombre()) %>">Ver curso →</a>

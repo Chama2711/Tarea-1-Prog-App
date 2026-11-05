@@ -68,7 +68,7 @@ Hay una plantilla en `configuracion-ejemplo/web.properties.example`. La aplicaci
 
 Al cerrar Swing también se detiene SOAP. La dirección funciona en la misma PC donde ejecutan el proyecto.
 
-Para probar el menú web, dejen el central abierto y después inicien Tomcat con el WAR actualizado. Los listados de institutos y categorías de la web se consultan por SOAP, incluidos los institutos del docente autenticado. Las categorías usan el mismo servicio y la misma configuración de conexión. Inicio, listado, búsqueda, detalle e imagen de cursos también usan SOAP. Los selectores de cursos en formularios, las altas, las consultas de programas y docentes y las demás operaciones mantienen su acceso actual a MySQL. El usuario que ejecuta Tomcat debe tener el archivo `.edEXT/web.properties` en su carpeta personal.
+Para probar la web, dejen el central abierto y después inicien Tomcat con el WAR actualizado. Por SOAP se consultan institutos, categorías, cursos y programas (inicio, listados, búsqueda, detalles e imágenes), además del detalle de las ediciones con sus docentes e imágenes. El detalle del programa también consulta por SOAP si el estudiante de la sesión ya está inscripto. Todo usa el mismo servicio de catálogo y la misma configuración. Las altas, inscripciones, selección de estudiantes, usuarios y los selectores de formularios que aún no se migraron conservan su acceso actual a MySQL. El usuario que ejecuta Tomcat debe tener el archivo `.edEXT/web.properties` en su carpeta personal.
 
 Después de actualizar las operaciones SOAP, reinicien el central y vuelvan a desplegar el WAR actualizado. Maven regenera el cliente desde el WSDL incluido en el proyecto.
 

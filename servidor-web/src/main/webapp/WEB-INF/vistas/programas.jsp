@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="logica.*,java.util.*" %>
+<%@ page import="web.soap.generado.DtProgramaConsulta,web.soap.generado.DtCursoResumen,logica.*,java.util.*" %>
 <%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
 <%
-    List<ProgramaFormacion> programas = (List<ProgramaFormacion>) request.getAttribute("programas");
+    List<DtProgramaConsulta> programas = (List<DtProgramaConsulta>) request.getAttribute("programas");
     String tituloPagina = "Un recorrido para seguir creciendo.";
     String bajadaPagina = "Conocé los programas y los cursos que forman cada propuesta.";
     String paginaActiva = "programas";
@@ -28,10 +28,10 @@
         <div class="aviso">No hay programas de formación disponibles.</div>
     <% } else { %>
         <section class="grilla-programas" aria-label="Programas de formación">
-            <% for (ProgramaFormacion programa : programas) { %>
+            <% for (DtProgramaConsulta programa : programas) { %>
                 <article class="programa-tarjeta">
 
-                        <% if (programa.getImagen() != null && !programa.getImagen().isBlank()) { %>
+                        <% if (programa.isTieneImagen()) { %>
                             <img class="imagen-oferta"
                                  src="${pageContext.request.contextPath}/imagen-programa?nombre=<%= parametro(programa.getNombre()) %>"
                                  alt="Imagen del programa <%= escapar(programa.getNombre()) %>">

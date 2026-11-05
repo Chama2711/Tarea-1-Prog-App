@@ -4,11 +4,11 @@
 <xsd:import namespace="http://soap.edext/" schemaLocation="http://127.0.0.1:18083/edext/catalogo?xsd=1"/>
 </xsd:schema>
 </types>
-<message name="listarCategoriasCurso">
-<part name="parameters" element="tns:listarCategoriasCurso"/>
+<message name="estaInscriptoAPrograma">
+<part name="parameters" element="tns:estaInscriptoAPrograma"/>
 </message>
-<message name="listarCategoriasCursoResponse">
-<part name="parameters" element="tns:listarCategoriasCursoResponse"/>
+<message name="estaInscriptoAProgramaResponse">
+<part name="parameters" element="tns:estaInscriptoAProgramaResponse"/>
 </message>
 <message name="listarCursosPorInstituto">
 <part name="parameters" element="tns:listarCursosPorInstituto"/>
@@ -16,35 +16,23 @@
 <message name="listarCursosPorInstitutoResponse">
 <part name="parameters" element="tns:listarCursosPorInstitutoResponse"/>
 </message>
-<message name="listarCategorias">
-<part name="parameters" element="tns:listarCategorias"/>
+<message name="obtenerImagenPrograma">
+<part name="parameters" element="tns:obtenerImagenPrograma"/>
 </message>
-<message name="listarCategoriasResponse">
-<part name="parameters" element="tns:listarCategoriasResponse"/>
+<message name="obtenerImagenProgramaResponse">
+<part name="parameters" element="tns:obtenerImagenProgramaResponse"/>
 </message>
-<message name="listarInstitutos">
-<part name="parameters" element="tns:listarInstitutos"/>
+<message name="listarCategoriasCurso">
+<part name="parameters" element="tns:listarCategoriasCurso"/>
 </message>
-<message name="listarInstitutosResponse">
-<part name="parameters" element="tns:listarInstitutosResponse"/>
+<message name="listarCategoriasCursoResponse">
+<part name="parameters" element="tns:listarCategoriasCursoResponse"/>
 </message>
-<message name="obtenerImagenCurso">
-<part name="parameters" element="tns:obtenerImagenCurso"/>
+<message name="obtenerImagenEdicion">
+<part name="parameters" element="tns:obtenerImagenEdicion"/>
 </message>
-<message name="obtenerImagenCursoResponse">
-<part name="parameters" element="tns:obtenerImagenCursoResponse"/>
-</message>
-<message name="listarCursos">
-<part name="parameters" element="tns:listarCursos"/>
-</message>
-<message name="listarCursosResponse">
-<part name="parameters" element="tns:listarCursosResponse"/>
-</message>
-<message name="consultarCurso">
-<part name="parameters" element="tns:consultarCurso"/>
-</message>
-<message name="consultarCursoResponse">
-<part name="parameters" element="tns:consultarCursoResponse"/>
+<message name="obtenerImagenEdicionResponse">
+<part name="parameters" element="tns:obtenerImagenEdicionResponse"/>
 </message>
 <message name="listarCategoriasPrograma">
 <part name="parameters" element="tns:listarCategoriasPrograma"/>
@@ -58,34 +46,74 @@
 <message name="listarInstitutosDocenteResponse">
 <part name="parameters" element="tns:listarInstitutosDocenteResponse"/>
 </message>
+<message name="consultarEdicion">
+<part name="parameters" element="tns:consultarEdicion"/>
+</message>
+<message name="consultarEdicionResponse">
+<part name="parameters" element="tns:consultarEdicionResponse"/>
+</message>
+<message name="consultarPrograma">
+<part name="parameters" element="tns:consultarPrograma"/>
+</message>
+<message name="consultarProgramaResponse">
+<part name="parameters" element="tns:consultarProgramaResponse"/>
+</message>
+<message name="listarCursos">
+<part name="parameters" element="tns:listarCursos"/>
+</message>
+<message name="listarCursosResponse">
+<part name="parameters" element="tns:listarCursosResponse"/>
+</message>
+<message name="listarCategorias">
+<part name="parameters" element="tns:listarCategorias"/>
+</message>
+<message name="listarCategoriasResponse">
+<part name="parameters" element="tns:listarCategoriasResponse"/>
+</message>
+<message name="consultarCurso">
+<part name="parameters" element="tns:consultarCurso"/>
+</message>
+<message name="consultarCursoResponse">
+<part name="parameters" element="tns:consultarCursoResponse"/>
+</message>
+<message name="listarInstitutos">
+<part name="parameters" element="tns:listarInstitutos"/>
+</message>
+<message name="listarInstitutosResponse">
+<part name="parameters" element="tns:listarInstitutosResponse"/>
+</message>
+<message name="obtenerImagenCurso">
+<part name="parameters" element="tns:obtenerImagenCurso"/>
+</message>
+<message name="obtenerImagenCursoResponse">
+<part name="parameters" element="tns:obtenerImagenCursoResponse"/>
+</message>
+<message name="listarProgramas">
+<part name="parameters" element="tns:listarProgramas"/>
+</message>
+<message name="listarProgramasResponse">
+<part name="parameters" element="tns:listarProgramasResponse"/>
+</message>
 <portType name="ServicioCatalogo">
-<operation name="listarCategoriasCurso">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasCursoRequest" message="tns:listarCategoriasCurso"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasCursoResponse" message="tns:listarCategoriasCursoResponse"/>
+<operation name="estaInscriptoAPrograma">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/estaInscriptoAProgramaRequest" message="tns:estaInscriptoAPrograma"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/estaInscriptoAProgramaResponse" message="tns:estaInscriptoAProgramaResponse"/>
 </operation>
 <operation name="listarCursosPorInstituto">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosPorInstitutoRequest" message="tns:listarCursosPorInstituto"/>
 <output wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosPorInstitutoResponse" message="tns:listarCursosPorInstitutoResponse"/>
 </operation>
-<operation name="listarCategorias">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasRequest" message="tns:listarCategorias"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasResponse" message="tns:listarCategoriasResponse"/>
+<operation name="obtenerImagenPrograma">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenProgramaRequest" message="tns:obtenerImagenPrograma"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenProgramaResponse" message="tns:obtenerImagenProgramaResponse"/>
 </operation>
-<operation name="listarInstitutos">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosRequest" message="tns:listarInstitutos"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosResponse" message="tns:listarInstitutosResponse"/>
+<operation name="listarCategoriasCurso">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasCursoRequest" message="tns:listarCategoriasCurso"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasCursoResponse" message="tns:listarCategoriasCursoResponse"/>
 </operation>
-<operation name="obtenerImagenCurso">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenCursoRequest" message="tns:obtenerImagenCurso"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenCursoResponse" message="tns:obtenerImagenCursoResponse"/>
-</operation>
-<operation name="listarCursos">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosRequest" message="tns:listarCursos"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosResponse" message="tns:listarCursosResponse"/>
-</operation>
-<operation name="consultarCurso">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarCursoRequest" message="tns:consultarCurso"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarCursoResponse" message="tns:consultarCursoResponse"/>
+<operation name="obtenerImagenEdicion">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenEdicionRequest" message="tns:obtenerImagenEdicion"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenEdicionResponse" message="tns:obtenerImagenEdicionResponse"/>
 </operation>
 <operation name="listarCategoriasPrograma">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasProgramaRequest" message="tns:listarCategoriasPrograma"/>
@@ -95,10 +123,42 @@
 <input wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosDocenteRequest" message="tns:listarInstitutosDocente"/>
 <output wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosDocenteResponse" message="tns:listarInstitutosDocenteResponse"/>
 </operation>
+<operation name="consultarEdicion">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarEdicionRequest" message="tns:consultarEdicion"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarEdicionResponse" message="tns:consultarEdicionResponse"/>
+</operation>
+<operation name="consultarPrograma">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarProgramaRequest" message="tns:consultarPrograma"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarProgramaResponse" message="tns:consultarProgramaResponse"/>
+</operation>
+<operation name="listarCursos">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosRequest" message="tns:listarCursos"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosResponse" message="tns:listarCursosResponse"/>
+</operation>
+<operation name="listarCategorias">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasRequest" message="tns:listarCategorias"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasResponse" message="tns:listarCategoriasResponse"/>
+</operation>
+<operation name="consultarCurso">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarCursoRequest" message="tns:consultarCurso"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarCursoResponse" message="tns:consultarCursoResponse"/>
+</operation>
+<operation name="listarInstitutos">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosRequest" message="tns:listarInstitutos"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosResponse" message="tns:listarInstitutosResponse"/>
+</operation>
+<operation name="obtenerImagenCurso">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenCursoRequest" message="tns:obtenerImagenCurso"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenCursoResponse" message="tns:obtenerImagenCursoResponse"/>
+</operation>
+<operation name="listarProgramas">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarProgramasRequest" message="tns:listarProgramas"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarProgramasResponse" message="tns:listarProgramasResponse"/>
+</operation>
 </portType>
 <binding name="CatalogoPortBinding" type="tns:ServicioCatalogo">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-<operation name="listarCategoriasCurso">
+<operation name="estaInscriptoAPrograma">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -116,7 +176,88 @@
 <soap:body use="literal"/>
 </output>
 </operation>
+<operation name="obtenerImagenPrograma">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="listarCategoriasCurso">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="obtenerImagenEdicion">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="listarCategoriasPrograma">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="listarInstitutosDocente">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="consultarEdicion">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="consultarPrograma">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="listarCursos">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
 <operation name="listarCategorias">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="consultarCurso">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -143,34 +284,7 @@
 <soap:body use="literal"/>
 </output>
 </operation>
-<operation name="listarCursos">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="consultarCurso">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="listarCategoriasPrograma">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="listarInstitutosDocente">
+<operation name="listarProgramas">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
