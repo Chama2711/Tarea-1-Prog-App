@@ -252,5 +252,8 @@ public interface IServidorCentral {
     void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) throws Exception;
     
     
+    void valorarCurso(String nicknameEstudiante, String nombreCurso, int puntuacion);
+
+    float obtenerPromedioCurso(String nombreCurso);
     
 }

@@ -128,4 +128,23 @@ class PersistenciaLogicaPrueba extends ControladorPersistencia {
     @Override public byte[] obtenerImagenCurso(String n) { ultimaEdicion = n; return ultimaImagen; }
     @Override public byte[] obtenerImagenEdicion(String n) { ultimaEdicion = n; return ultimaImagen; }
     @Override public byte[] obtenerImagenPrograma(String n) { ultimaEdicion = n; return ultimaImagen; }
+
+    public String ultimoEstudianteValoracion;
+    public String ultimoCursoValoracion;
+    public int ultimaPuntuacion = 0;
+
+    public void valorarCurso(String nick, String curso, int puntuacion) {
+        this.ultimoEstudianteValoracion = nick;
+        this.ultimoCursoValoracion = curso;
+        this.ultimaPuntuacion = puntuacion;
+    }
+
+    public float obtenerPromedioCurso(String curso) {
+        this.ultimoCursoValoracion = curso;
+        if (curso == null || curso.isBlank()) {
+            return 0.0f;
+        }
+        return (ultimaPuntuacion > 0) ? (float) ultimaPuntuacion : 0.0f;
+    }
+
 }

@@ -163,4 +163,7 @@ public class Curso implements Serializable {
     public void setImagen(String imagen) {
         this.imagen = imagen;
     }
+    
+    
+
 }

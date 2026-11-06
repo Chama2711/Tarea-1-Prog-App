@@ -19,6 +19,14 @@ public class InicializadorAplicacion implements ServletContextListener {
     private static final String SERVIDOR = InicializadorAplicacion.class.getName() + ".servidor";
     private static final String CLIENTE_INSTITUTOS = InicializadorAplicacion.class.getName() + ".clienteInstitutos";
 
+    public static IServidorCentral getServidorCentral(ServletContext contexto) {
+        Object atributo = contexto.getAttribute(SERVIDOR);
+        if (atributo instanceof IServidorCentral servidor) {
+            return servidor;
+        }
+        throw new IllegalStateException("El Servidor Central no ha sido inicializado en el ServletContext.");
+    }
+
     @Override
     public void contextInitialized(ServletContextEvent evento) {
         ServletContext contexto = evento.getServletContext();

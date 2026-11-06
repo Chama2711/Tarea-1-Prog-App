@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 import logica.DTAutenticacion;
+import logica.IServidorCentral;
 
 @WebServlet("/valorar-curso")
 public class ValorarCursoServlet extends HttpServlet {
@@ -101,9 +102,18 @@ public class ValorarCursoServlet extends HttpServlet {
         // El nickname deberá obtenerse de autenticado.getNick().
         // A deberá comprobar la elegibilidad y registrar la valoración.
 
-        response.sendError(
-                HttpServletResponse.SC_NOT_IMPLEMENTED,
-                "El registro de valoraciones todavía no está disponible."
-        );
+        // 6. Registrar valoración en el Servidor Central
+        try {
+            IServidorCentral servidor = InicializadorAplicacion.getServidorCentral(getServletContext());
+            servidor.valorarCurso(autenticado.getNick(), nombreCurso, puntuacion);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("Valoración registrada correctamente.");
+        } catch (Exception e) {
+            response.sendError(
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Error al registrar la valoración: " + e.getMessage()
+            );
+        }
     }
 }

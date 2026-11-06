@@ -108,4 +108,15 @@ public class Inscripcion {
         this.programa = programa;
     }
     
+    
+    @Column(name = "valoracion")
+    private Integer valoracion = 0;
+
+    public Integer getValoracion() {
+        return valoracion;
+    }
+
+    public void setValoracion(Integer valoracion) {
+        this.valoracion = valoracion;
+    }
 }

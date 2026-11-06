@@ -65,52 +65,44 @@
             </div>
         <% } %>
         
-        <% if (usuarioSesion != null
-                && usuarioSesion.getRol() == DTAutenticacion.Rol.ESTUDIANTE) { %>
+        <% if (usuarioSesion != null && usuarioSesion.getRol() == DTAutenticacion.Rol.ESTUDIANTE) { 
+        // Si esta disponible la valoración previa del usuario en el DTO/request
+        Integer miValoracion = (Integer) request.getAttribute("miValoracion");
+        if (miValoracion == null) miValoracion = 0;
+        %>
 
-            <section class="panel" aria-labelledby="titulo-valoracion">
+        <section class="panel" aria-labelledby="titulo-valoracion">
+            <h2 id="titulo-valoracion">Valorar este curso</h2>
 
-                <h2 id="titulo-valoracion">Valorar este curso</h2>
-
-                <p class="texto-secundario">
-                    La valoración de cursos estará disponible
-                    cuando se complete la integración
-                    con el Servidor Central.
-                </p>
+            <form id="formValoracion">
+                <input type="hidden" name="curso" value="<%= curso != null ? curso.getNombre() : request.getParameter("nombre")%>">
 
                 <div class="campo">
-                    <label for="valoracionCurso">
-                        Puntuación
-                    </label>
-
-                    <select id="valoracionCurso"
-                            name="valoracion"
-                            disabled>
-
-                        <option value="">
-                            Seleccioná una puntuación
-                        </option>
-
-                        <% for (int puntuacion = 1;
-                                puntuacion <= 5;
-                                puntuacion++) { %>
-
-                            <option value="<%= puntuacion %>">
-                                <%= puntuacion %>
-                            </option>
-
-                        <% } %>
-
-                    </select>
+                    <label>Seleccioná tu puntuación</label>
+                    <div class="rating-input">
+                        <% for (int puntuacion = 5; puntuacion >= 1; puntuacion--) {%>
+                        <input type="radio" 
+                               id="star<%= puntuacion%>" 
+                               name="puntaje" 
+                               value="<%= puntuacion%>" 
+                               <%= (miValoracion == puntuacion) ? "checked" : ""%> />
+                        <label for="star<%= puntuacion%>" title="<%= puntuacion%> estrellas">★</label>
+                        <% }%>
+                    </div>
                 </div>
 
-                <button type="button"
-                        class="boton"
-                        disabled>
+                <button type="button" 
+                        class="boton" 
+                        onclick="enviarValoracion()">
                     Guardar valoración
                 </button>
 
-            </section>
+                <div id="mensajeValoracion" style="margin-top: 10px; font-weight: bold;"></div>
+            </form>
+        </section>
+
+        <!-- Importar el script JS de valoración al final del panel -->
+        <script src="<%= request.getContextPath()%>/js/valoracion.js"></script>
 
         <% } %>
 

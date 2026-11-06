@@ -7,6 +7,8 @@ package logica;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import persistencia.ControladorPersistencia;
 
 public class ServidorCentral implements IServidorCentral, AutoCloseable {
@@ -557,7 +559,21 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
     
 
+    @Override
+    public void valorarCurso(String nicknameEstudiante, String nombreCurso, int puntuacion) {
+        if (puntuacion < 1 || puntuacion > 5) {
+            throw new IllegalArgumentException("La puntuación debe estar comprendida entre 1 y 5.");
+        }
+        persistencia.valorarCurso(nicknameEstudiante, nombreCurso, puntuacion);
+    }
 
+    @Override
+    public float obtenerPromedioCurso(String nombreCurso) {
+        if (nombreCurso == null || nombreCurso.isBlank()) {
+            return 0.0f;
+        }
+        return persistencia.obtenerPromedioCurso(nombreCurso);
+    }
 
 
 

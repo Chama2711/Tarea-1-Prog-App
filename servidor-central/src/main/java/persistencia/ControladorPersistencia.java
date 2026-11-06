@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 import logica.*;
 
 /**
@@ -1579,6 +1580,61 @@ public Categoria buscarCategoria(String nombre) {
         em.close();
     }
 }
+
+
+public float obtenerPromedioCurso(String nombreCurso) {
+    EntityManager em = emf.createEntityManager(); 
+    try {
+        TypedQuery<Double> query = em.createQuery(
+            "SELECT AVG(i.valoracion) FROM Inscripcion i " +
+            "WHERE i.edicionCurso.curso.nombre = :curso AND i.valoracion > 0", 
+            Double.class
+        );
+        query.setParameter("curso", nombreCurso);
+
+        Double promedio = query.getSingleResult();
+        return (promedio != null) ? Math.round(promedio.floatValue() * 10.0f) / 10.0f : 0.0f;
+    } catch (Exception e) {
+        return 0.0f;
+    } finally {
+        em.close();
+    }
+}
+
+public void valorarCurso(String nicknameEstudiante, String nombreCurso, int puntuacion) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        em.getTransaction().begin();
+
+        TypedQuery<Inscripcion> query = em.createQuery(
+            "SELECT i FROM Inscripcion i " +
+            "WHERE i.estudiante.nickname = :nick " +
+            "AND i.edicionCurso.curso.nombre = :curso", 
+            Inscripcion.class
+        );
+        query.setParameter("nick", nicknameEstudiante);
+        query.setParameter("curso", nombreCurso);
+
+        List<Inscripcion> resultados = query.getResultList();
+
+        if (resultados.isEmpty()) {
+            throw new IllegalStateException("El estudiante no posee una inscripción activa en este curso.");
+        }
+
+        Inscripcion inscripcion = resultados.get(0);
+        inscripcion.setValoracion(puntuacion);
+
+        em.getTransaction().commit();
+    } catch (Exception e) {
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+        throw new RuntimeException("Error al guardar la valoración: " + e.getMessage(), e);
+    } finally {
+        em.close();
+    }
+}
+
 
 }
 
