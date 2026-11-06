@@ -35,7 +35,7 @@ public final class DTEdicionConsulta {
         cupo = edicion.cupo();
         vigente = edicion.vigente();
         tieneImagen = edicion.tieneImagen();
-        edicion.docentes().forEach(d -> docentes.add(new DTDocenteResumen(d.nick(), d.nombreCompleto())));
+        edicion.docentes().forEach(d -> docentes.add(new DTDocenteResumen(d.nick(), d.nombre(), d.apellido())));
     }
     public String getNombre() { return nombre; }
     public String getNombreCurso() { return nombreCurso; }

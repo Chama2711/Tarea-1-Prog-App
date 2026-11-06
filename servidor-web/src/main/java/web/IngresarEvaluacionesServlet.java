@@ -45,12 +45,12 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
 
         response.setHeader("Cache-Control", "no-store");
 
- 
 
-       
         try {
-            // Obtener todas las ediciones del docente.
-           List<String> ediciones = consultarEdiciones(docente.getNick());
+            // Obtener todas las ediciones del docente mediante SOAP.
+            List<String> ediciones =
+                    consultarEdiciones(docente.getNick());
+
 
             //  Leer la edición seleccionada.
             String nombreEdicion =  FormulariosDocente.valor(request, "edicion").trim();

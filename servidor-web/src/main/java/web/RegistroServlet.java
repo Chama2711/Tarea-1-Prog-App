@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
 import java.util.List;
 import jakarta.xml.ws.WebServiceException;
 
@@ -70,7 +70,7 @@ public class RegistroServlet extends HttpServlet {
                     imagen = entrada.readAllBytes();
                 }
             }
-            IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+            ClienteCatalogoSoap servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
             String nick = request.getParameter("nick");
             String correo = request.getParameter("correo");
             String nombre = request.getParameter("nombre");
@@ -86,6 +86,12 @@ public class RegistroServlet extends HttpServlet {
             }
         } catch (IllegalArgumentException e) {
             request.setAttribute("error", e.getMessage());
+            mostrarFormulario(request, response);
+            return;
+        } catch (WebServiceException error) {
+            getServletContext().log("No se pudo registrar el usuario por SOAP.", error);
+            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+            request.setAttribute("error", "No se pudo confirmar el registro. Comprobá si la cuenta existe antes de volver a enviarlo.");
             mostrarFormulario(request, response);
             return;
         } catch (IllegalStateException e) {

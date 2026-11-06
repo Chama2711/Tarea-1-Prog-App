@@ -75,7 +75,7 @@ public class SeleccionEstudiantesServlet extends HttpServlet {
                 }
             }
             request.setAttribute("decisiones", decisiones);
-            InicializadorAplicacion.getServidor(getServletContext()).seleccionarEstudiantes(
+            InicializadorAplicacion.getClienteCatalogo(getServletContext()).seleccionarEstudiantes(
                     docente.getNick(), valor(request, "edicion"), decisiones);
             response.sendRedirect(request.getContextPath() + "/seleccion-estudiantes?instituto="
                     + url(valor(request, "instituto")) + "&curso=" + url(valor(request, "curso"))
@@ -93,7 +93,7 @@ public class SeleccionEstudiantesServlet extends HttpServlet {
     }
 
     private void preparar(HttpServletRequest request, DTAutenticacion docente) {
-        var servidor = InicializadorAplicacion.getServidor(getServletContext());
+        var servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
         String instituto = valor(request, "instituto"), curso = valor(request, "curso"), edicion = valor(request, "edicion");
         String ordenTexto = valor(request, "orden");
         OrdenInscripciones orden;

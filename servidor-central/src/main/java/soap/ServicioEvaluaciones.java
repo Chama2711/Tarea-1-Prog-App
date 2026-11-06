@@ -11,7 +11,6 @@ import jakarta.jws.WebService;
 
 import java.util.Objects;
 import logica.IServidorCentral;
-import jakarta.jws.WebParam;
 import soap.dto.DTInscripcionSoap;
 
 @WebService(
@@ -48,8 +47,7 @@ public class ServicioEvaluaciones {
          .map(DTInscripcionSoap::desde)
          .toArray(DTInscripcionSoap[]::new);
     }
-    
-    
+   
     @WebMethod(operationName = "registrarCalificacion")
     public void registrarCalificacion(
             @WebParam(name = "nickDocente")
@@ -71,6 +69,5 @@ public class ServicioEvaluaciones {
                 nota
         );
     }
-
 
 }

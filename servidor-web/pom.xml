@@ -27,8 +27,15 @@
         </dependency>
         <dependency>
             <groupId>com.mycompany</groupId>
+            <artifactId>datos-compartidos</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- Solo las pruebas levantan un central simulado; no se incluye en el WAR. -->
+        <dependency>
+            <groupId>com.mycompany</groupId>
             <artifactId>servidor-central</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <!-- Tomcat 10.1 proporciona Servlet 6; no se incluye en el WAR. -->
         <dependency>

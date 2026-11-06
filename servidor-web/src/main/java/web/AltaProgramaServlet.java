@@ -19,7 +19,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
 
 @WebServlet(name = "AltaProgramaServlet", urlPatterns = {"/alta-programa"})
 @MultipartConfig(maxFileSize = 5 * 1024 * 1024, maxRequestSize = 6 * 1024 * 1024)
@@ -33,7 +33,8 @@ public class AltaProgramaServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        if (FormulariosDocente.exigirDocente(request, response) == null) {
+        var docente = FormulariosDocente.exigirDocente(request, response);
+        if (docente == null) {
             return;
         }
 
@@ -45,7 +46,8 @@ public class AltaProgramaServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        if (FormulariosDocente.exigirDocente(request, response) == null) {
+        var docente = FormulariosDocente.exigirDocente(request, response);
+        if (docente == null) {
             return;
         }
 
@@ -72,10 +74,11 @@ public class AltaProgramaServlet extends HttpServlet {
 
             LocalDate fechaAlta = LocalDate.now();
 
-            IServidorCentral servidor =
-                    InicializadorAplicacion.getServidor(getServletContext());
+            ClienteCatalogoSoap servidor =
+                    InicializadorAplicacion.getClienteCatalogo(getServletContext());
 
             servidor.altaProgramaFormacion(
+                    docente.getNick(),
                     nombre, descripcion, fechaInicio, fechaFin, fechaAlta, imagen);
 
             response.sendRedirect(

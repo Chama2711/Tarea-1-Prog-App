@@ -33,6 +33,8 @@ public class ModificarUsuarioServletTest {
                     yield null;
                 }
                 case "obtenerUsuario" -> estudiante;
+                case "listarSeguidosConsulta" -> List.of();
+                case "esSeguidor" -> false;
                 case "editarUsuario" -> {
                     if (fallarGuardado) throw new IllegalStateException("detalle interno de conexión");
                     escrituras++; yield null;
@@ -44,8 +46,11 @@ public class ModificarUsuarioServletTest {
                 default -> throw new AssertionError(m.getName());
             };
         });
+        web.soap.ClienteCatalogoSoap cliente;
         final ServletContext contexto = proxy(ServletContext.class, (p, m, a) -> switch (m.getName()) {
-            case "getAttribute" -> central;
+            case "getAttribute" -> {
+                assertTrue(((String) a[0]).endsWith(".clienteCatalogo")); yield cliente;
+            }
             case "log" -> null;
             default -> throw new AssertionError(m.getName());
         });
@@ -88,11 +93,17 @@ public class ModificarUsuarioServletTest {
             }));
         }
         void guardar() throws Exception {
-            var servlet = new ModificarUsuarioServlet(); iniciar(servlet); servlet.doPost(request, response);
+            try (var soap = new CatalogoSoapPrueba(central)) {
+                cliente = soap.cliente;
+                var servlet = new ModificarUsuarioServlet(); iniciar(servlet); servlet.doPost(request, response);
+            }
         }
         void consultar(String nick) throws Exception {
             parametros.put("nick", nick);
-            var servlet = new DetalleUsuarioServlet(); iniciar(servlet); servlet.doGet(request, response);
+            try (var soap = new CatalogoSoapPrueba(central)) {
+                cliente = soap.cliente;
+                var servlet = new DetalleUsuarioServlet(); iniciar(servlet); servlet.doGet(request, response);
+            }
         }
     }
 

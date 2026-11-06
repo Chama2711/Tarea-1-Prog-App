@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
 
 public class AgregarCursoProgramaServlet extends HttpServlet {
 
@@ -25,12 +25,14 @@ public class AgregarCursoProgramaServlet extends HttpServlet {
              HttpServletResponse response)
              throws ServletException, IOException {
 
-        if (FormulariosDocente.exigirDocente(request, response) == null) {
+        var docente = FormulariosDocente.exigirDocente(request, response);
+        if (docente == null) {
              return;
         }
 
-        IServidorCentral servidor =
-                InicializadorAplicacion.getServidor(getServletContext());
+        try {
+        ClienteCatalogoSoap servidor =
+                InicializadorAplicacion.getClienteCatalogo(getServletContext());
 
         List<String> programas = servidor.listarNombresProgramas();
         List<String> cursos = servidor.listarNombresCursos();
@@ -43,6 +45,11 @@ public class AgregarCursoProgramaServlet extends HttpServlet {
         request.setAttribute("programaSeleccionado", programaSeleccionado);
 
         request.getRequestDispatcher("/WEB-INF/vistas/agregarCursoPrograma.jsp").forward(request, response);
+        } catch (jakarta.xml.ws.WebServiceException error) {
+            getServletContext().log("No se pudieron consultar los cursos y programas por SOAP.", error);
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No se pudieron cargar los cursos y programas. Intentá nuevamente más tarde.");
+        }
     }
     
     @Override
@@ -52,7 +59,8 @@ public class AgregarCursoProgramaServlet extends HttpServlet {
         throws ServletException, IOException {
 
         // 1. Verificar que sea docente
-        if (FormulariosDocente.exigirDocente(request, response) == null) {
+        var docente = FormulariosDocente.exigirDocente(request, response);
+        if (docente == null) {
             return;
         }
 
@@ -72,12 +80,12 @@ public class AgregarCursoProgramaServlet extends HttpServlet {
         }
 
         // 4. Obtener el servidor central
-        IServidorCentral servidor =
-                InicializadorAplicacion.getServidor(getServletContext());
+        ClienteCatalogoSoap servidor =
+                InicializadorAplicacion.getClienteCatalogo(getServletContext());
 
         try {
             // 5. Ejecutar la operación
-            servidor.agregarCursoAPrograma(nombrePrograma, nombreCurso);
+            servidor.agregarCursoAPrograma(docente.getNick(), nombrePrograma, nombreCurso);
 
             // 6. Volver al detalle del programa
             response.sendRedirect(
@@ -89,6 +97,12 @@ public class AgregarCursoProgramaServlet extends HttpServlet {
                     + "&cursoAgregado=ok"
             );
 
+        } catch (jakarta.xml.ws.WebServiceException error) {
+            getServletContext().log("No se pudo agregar el curso al programa por SOAP.", error);
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No se pudo confirmar el cambio. Revisá el programa antes de volver a enviarlo.");
+        } catch (SecurityException error) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, error.getMessage());
         } catch (Exception e) {
         request.setAttribute("error",
                 "No se pudo agregar el curso: " + e.getMessage());

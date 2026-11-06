@@ -28,13 +28,17 @@ public class SeguimientoYProgramasServletTest {
                     if (fallo != null) throw fallo;
                     cambios++; yield null;
                 }
+                case "obtenerUsuario" -> new Docente("ana", "ana@test", "Ana", "Pérez", java.time.LocalDate.of(2000, 1, 1));
                 case "listarNombresProgramas" -> List.of("Programa\nUno");
                 case "listarNombresCursos" -> List.of("Curso\nUno");
                 default -> throw new AssertionError(m.getName());
             };
         });
+        web.soap.ClienteCatalogoSoap cliente;
         final ServletContext contexto = proxy(ServletContext.class, (p, m, a) -> switch (m.getName()) {
-            case "getAttribute" -> central;
+            case "getAttribute" -> {
+                assertTrue(((String) a[0]).endsWith(".clienteCatalogo")); yield cliente;
+            }
             case "log" -> { logs++; yield null; }
             default -> throw new AssertionError(m.getName());
         });
@@ -72,9 +76,12 @@ public class SeguimientoYProgramasServletTest {
                 case "getInitParameter" -> null;
                 default -> throw new AssertionError(m.getName());
             }));
-            if (servlet instanceof Seguir s) s.doPost(request, response);
-            else if (post) ((AgregarCursoProgramaServlet) servlet).doPost(request, response);
-            else ((AgregarCursoProgramaServlet) servlet).doGet(request, response);
+            try (var soap = new CatalogoSoapPrueba(central)) {
+                cliente = soap.cliente;
+                if (servlet instanceof Seguir s) s.doPost(request, response);
+                else if (post) ((AgregarCursoProgramaServlet) servlet).doPost(request, response);
+                else ((AgregarCursoProgramaServlet) servlet).doGet(request, response);
+            }
         }
     }
 

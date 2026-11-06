@@ -13,6 +13,14 @@ public interface IServidorCentral {
 
     DTPerfilUsuario consultarPerfilUsuario(String nick, String nickConsultante);
 
+    List<DTUsuarioConsulta> listarSeguidosConsulta(String nick);
+
+    boolean esSeguidor(String nickSeguidor, String nickSeguido);
+
+    void inscribirEstudianteAEdicion(String nickEstudiante, String nombreEdicion);
+
+    void inscribirEstudianteAPrograma(String nickEstudiante, String nombrePrograma);
+
     DTEdicionConsulta consultarEdicion(String nombre);
 
     List<soap.dto.DTProgramaConsulta> listarProgramasConsulta();
