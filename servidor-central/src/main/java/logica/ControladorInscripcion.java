@@ -90,6 +90,25 @@ public class ControladorInscripcion {
                 nota
         );
     }
+    
+    
+    
+    public void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        validarIdentificadores(
+                nickDocente,
+                nombreEdicion
+        );
+
+        persistencia.cerrarEdicion(
+                nickDocente,
+                nombreEdicion
+        );
+    }
+
+    
 
     public List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante) {
         if (nickEstudiante == null || nickEstudiante.isBlank()) {

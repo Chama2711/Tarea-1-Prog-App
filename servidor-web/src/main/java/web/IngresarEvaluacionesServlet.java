@@ -24,6 +24,10 @@ import java.time.LocalDate;
 import jakarta.xml.ws.WebServiceException;
 import logica.EstadoInscripcion;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+
 @WebServlet("/ingresar-evaluaciones")
 public class IngresarEvaluacionesServlet extends HttpServlet {
 
@@ -114,6 +118,134 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
     }
     
     
+    @Override
+    protected void doPost(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+        request.setCharacterEncoding("UTF-8");
+
+        // 1. Verificar que el usuario sea docente.
+        DTAutenticacion docente =
+                FormulariosDocente.exigirDocente(request, response);
+
+        if (docente == null) {
+            return;
+        }
+
+        response.setHeader("Cache-Control", "no-store");
+
+        // 2. Leer los datos enviados por la JSP.
+        String edicionParametro = request.getParameter("edicion");
+        String idParametro = request.getParameter("idInscripcion");
+        String notaParametro = request.getParameter("nota");
+
+        if (edicionParametro == null || edicionParametro.isBlank()
+                || idParametro == null || notaParametro == null) {
+
+            response.sendError(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Faltan datos para registrar la calificación."
+            );
+            return;
+        }
+
+        String nombreEdicion = edicionParametro.trim();
+
+        try {
+            // 3. Validar el ID y la nota.
+            Long idInscripcion = Long.valueOf(idParametro.trim());
+            int nota = Integer.parseInt(notaParametro.trim());
+
+            if (idInscripcion <= 0 || nota < 1 || nota > 12) {
+                throw new IllegalArgumentException(
+                        "La inscripción o la calificación es inválida."
+                );
+            }
+
+            // 4. Verificar que la edición pertenezca al docente.
+            List<String> ediciones =
+                    consultarEdiciones(docente.getNick());
+
+            if (!ediciones.contains(nombreEdicion)) {
+                response.sendError(
+                        HttpServletResponse.SC_FORBIDDEN,
+                        "No participás en la edición seleccionada."
+                );
+                return;
+            }
+
+            // 5. Verificar que la inscripción esté aceptada.
+            List<DTInscripcion> aceptados =
+                    consultarAceptados(docente.getNick(), nombreEdicion);
+
+            boolean inscripcionValida = aceptados.stream()
+                    .anyMatch(i -> Objects.equals(
+                            i.getId(), idInscripcion
+                    ));
+
+            if (!inscripcionValida) {
+                response.sendError(
+                        HttpServletResponse.SC_FORBIDDEN,
+                        "La inscripción no pertenece a los estudiantes aceptados."
+                );
+                return;
+            }
+
+            // 6. Registrar la nota mediante SOAP.
+            registrarCalificacion(
+                    docente.getNick(),
+                    nombreEdicion,
+                    idInscripcion,
+                    nota
+            );
+
+            // 7. Volver a la edición seleccionada.
+            String destino = request.getContextPath()
+                    + "/ingresar-evaluaciones?edicion="
+                    + URLEncoder.encode(
+                            nombreEdicion,
+                            StandardCharsets.UTF_8
+                    )
+                    + "&guardada=1";
+
+            response.sendRedirect(
+                    response.encodeRedirectURL(destino)
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            response.sendError(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Los datos de la calificación no son válidos."
+            );
+
+        } catch (WebServiceException e) {
+
+            getServletContext().log(
+                    "Error al registrar la calificación por SOAP.", e
+            );
+
+            response.sendError(
+                    HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No se pudo registrar la calificación."
+            );
+
+        } catch (RuntimeException e) {
+
+            getServletContext().log(
+                    "Error inesperado al registrar la calificación.", e
+            );
+
+            response.sendError(
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Ocurrió un error al registrar la calificación."
+            );
+        }
+    }
+
+    
     protected List<String> consultarEdiciones(String nickDocente) {
         return InicializadorAplicacion
                 .getClienteEvaluaciones(getServletContext())
@@ -154,5 +286,22 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                 .toList();
     }
   
+    
+    protected void registrarCalificacion(
+            String nickDocente,
+            String nombreEdicion,
+            Long idInscripcion,
+            int nota) {
+
+        InicializadorAplicacion
+                .getClienteEvaluaciones(getServletContext())
+                .registrarCalificacion(
+                        nickDocente,
+                        nombreEdicion,
+                        idInscripcion,
+                        nota
+                );
+    }
+
 }
 

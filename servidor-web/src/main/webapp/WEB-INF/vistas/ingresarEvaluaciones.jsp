@@ -169,37 +169,54 @@
                                     </span>
 
                                 </div>
+                           
+                                <form method="post"
+                                      action="${pageContext.request.contextPath}/ingresar-evaluaciones">
 
+                                    <input type="hidden"
+                                           name="edicion"
+                                           value="<%= escapar(edicion) %>">
 
-                                <div class="campo">
-                                    <label for="nota-<%= inscripcion.getId() %>">
-                                        Calificación del estudiante
-                                    </label>
+                                    <input type="hidden"
+                                           name="idInscripcion"
+                                           value="<%= inscripcion.getId() %>">
 
-                                    <select
-                                        id="nota-<%= inscripcion.getId() %>"
-                                        name="nota-<%= inscripcion.getId() %>"
-                                        disabled>
+                                    <div class="campo">
 
-                                        <option value="">
-                                            Sin calificación
-                                        </option>
+                                        <label for="nota-<%= inscripcion.getId() %>">
+                                            Calificación del estudiante
+                                        </label>
 
-                                        <% for (int nota = 1; nota <= 12; nota++) { %>
-                                            <option value="<%= nota %>">
-                                                <%= nota %>
+                                        <select
+                                            id="nota-<%= inscripcion.getId() %>"
+                                            name="nota"
+                                            required>
+
+                                            <option value="" selected disabled>
+                                                Seleccioná una calificación
                                             </option>
-                                        <% } %>
 
-                                    </select>
+                                            <% for (int nota = 1; nota <= 12; nota++) { %>
 
-                                    <p class="ayuda">
-                                        Las calificaciones válidas van de 1 a 12.
-                                        El registro de notas estará disponible
-                                        cuando se integre el Servidor Central.
-                                    </p>
-                                </div>
+                                                <option value="<%= nota %>">
+                                                    <%= nota %>
+                                                </option>
 
+                                            <% } %>
+
+                                        </select>
+
+                                        <p class="ayuda">
+                                            Las calificaciones válidas van de 1 a 12.
+                                        </p>
+
+                                    </div>
+
+                                    <button type="submit" class="boton">
+                                        Guardar nota
+                                    </button>
+
+                                </form>
 
                             </article>
 

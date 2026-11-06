@@ -78,6 +78,16 @@ public class Inscripcion {
                     "La inscripción no pertenece a una edición."
             );
         }
+        
+        
+        // Una edición cerrada no admite cambios de calificación.
+        if (edicion.isCerrada()) {
+            throw new IllegalStateException(
+                    "No se pueden modificar calificaciones "
+                    + "de una edición cerrada."
+            );
+        }
+
 
         // El estudiante debe haber sido aceptado.
         if (estado != EstadoInscripcion.ACEPTADA) {

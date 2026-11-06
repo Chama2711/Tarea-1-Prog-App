@@ -417,6 +417,20 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
                 nota
         );
     }
+    
+    
+    
+    @Override
+    public void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        controladorInscripcion.cerrarEdicion(
+                nickDocente,
+                nombreEdicion
+        );
+    }
+
 
     // ==================== PROGRAMAS DE FORMACIÓN ====================
 

@@ -184,6 +184,13 @@ public interface IServidorCentral {
     );
     
     
+    void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion
+    );
+
+    
+    
     // ========================
     //  PROGRAMAS DE FORMACIÓN 
     //=========================

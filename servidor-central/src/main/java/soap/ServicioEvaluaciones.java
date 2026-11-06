@@ -70,4 +70,19 @@ public class ServicioEvaluaciones {
         );
     }
 
+    
+    @WebMethod(operationName = "cerrarEdicion")
+    public void cerrarEdicion(
+            @WebParam(name = "nickDocente")
+            String nickDocente,
+
+            @WebParam(name = "nombreEdicion")
+            String nombreEdicion) {
+
+        central.cerrarEdicion(
+                nickDocente,
+                nombreEdicion
+        );
+    }
+
 }
