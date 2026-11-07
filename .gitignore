@@ -2,5 +2,6 @@
 /estacion-trabajo/target/
 /servidor-central/target/
 /servidor-web/target/
+/datos-compartidos/target/
 pom.xml.backup
 respaldo-migracion/
