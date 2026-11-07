@@ -26,6 +26,10 @@ import logica.EstadoInscripcion;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import jakarta.xml.soap.SOAPFactory;
+import jakarta.xml.ws.soap.SOAPFaultException;
+import javax.xml.namespace.QName;
+
     
 public class IngresarEvaluacionesServletTest {
 
@@ -63,7 +67,11 @@ public class IngresarEvaluacionesServletTest {
         RuntimeException falloEdiciones;
         RuntimeException falloAceptados;
         RuntimeException falloRegistro;
+        RuntimeException falloCierre;
 
+        int cierres;
+        String nickCierre;
+        String edicionCierre;
         int estado = 200;
         int consultasEdiciones;
         int consultasAceptados;
@@ -177,6 +185,13 @@ public class IngresarEvaluacionesServletTest {
             parametros.put("idInscripcion", "15");
             parametros.put("nota", "10");
         }
+        
+        
+        void seleccionarCierre() {
+            seleccionarEdicion();
+            parametros.put("accion", "cerrar");
+        }
+
 
         void ejecutarGet() throws Exception {
             ejecutar(false);
@@ -223,6 +238,22 @@ public class IngresarEvaluacionesServletTest {
                         throw falloRegistro;
                     }
                 }
+                
+                
+                @Override
+                protected void cerrarEdicion(
+                        String nickDocente,
+                        String nombreEdicion) {
+
+                    cierres++;
+                    nickCierre = nickDocente;
+                    edicionCierre = nombreEdicion;
+
+                    if (falloCierre != null) {
+                        throw falloCierre;
+                    }
+                }
+
             };
 
             servlet.init(proxy(
@@ -473,4 +504,158 @@ public class IngresarEvaluacionesServletTest {
         assertEquals(500, escenario.estado);
         assertEquals(1, escenario.logs);
     }
+    
+    
+    @Test
+    public void docenteCierraEdicionAutorizada() throws Exception {
+        var escenario = new Escenario();
+        escenario.seleccionarCierre();
+
+        escenario.ejecutarPost();
+
+        assertEquals(302, escenario.estado);
+        assertEquals(1, escenario.cierres);
+        assertEquals("docente", escenario.nickCierre);
+        assertEquals("Edicion 2025", escenario.edicionCierre);
+
+        assertEquals(
+                "/edext/ingresar-evaluaciones"
+                + "?edicion=Edicion+2025&cerrada=1",
+                escenario.redireccion
+        );
+
+        assertEquals(1, escenario.consultasEdiciones);
+        assertEquals(0, escenario.consultasAceptados);
+        assertEquals(0, escenario.registrosCalificacion);
+        assertEquals("no-store", escenario.cache);
+    }
+
+    @Test
+    public void cierreSinEdicionDevuelve400() throws Exception {
+        var escenario = new Escenario();
+        escenario.parametros.put("accion", "cerrar");
+
+        escenario.ejecutarPost();
+
+        assertEquals(400, escenario.estado);
+        assertEquals(0, escenario.cierres);
+        assertEquals(0, escenario.consultasEdiciones);
+    }
+
+    @Test
+    public void visitanteNoPuedeCerrar() throws Exception {
+        var escenario = new Escenario();
+        escenario.usuario = null;
+        escenario.seleccionarCierre();
+
+        escenario.ejecutarPost();
+
+        assertEquals(302, escenario.estado);
+        assertEquals("/edext/login", escenario.redireccion);
+        assertEquals(0, escenario.cierres);
+    }
+
+    @Test
+    public void estudianteNoPuedeCerrar() throws Exception {
+        var escenario = new Escenario();
+        escenario.usuario = new DTAutenticacion(
+                "estudiante",
+                "Estudiante",
+                DTAutenticacion.Rol.ESTUDIANTE
+        );
+        escenario.seleccionarCierre();
+
+        escenario.ejecutarPost();
+
+        assertEquals(403, escenario.estado);
+        assertEquals(0, escenario.cierres);
+    }
+
+    @Test
+    public void docenteNoPuedeCerrarEdicionAjena() throws Exception {
+        var escenario = new Escenario();
+        escenario.seleccionarCierre();
+        escenario.parametros.put("edicion", "Edicion ajena");
+
+        escenario.ejecutarPost();
+
+        assertEquals(403, escenario.estado);
+        assertEquals(0, escenario.cierres);
+        assertEquals(1, escenario.consultasEdiciones);
+    }
+
+    @Test
+    public void rechazoSoapAlCerrarDevuelve409() throws Exception {
+        var escenario = new Escenario();
+        escenario.seleccionarCierre();
+
+        escenario.falloCierre = new SOAPFaultException(
+                SOAPFactory.newInstance().createFault(
+                        "Hay estudiantes sin calificación",
+                        new QName(
+                                "http://schemas.xmlsoap.org/soap/envelope/",
+                                "Server"
+                        )
+                )
+        );
+
+        escenario.ejecutarPost();
+
+        assertEquals(409, escenario.estado);
+        assertEquals(1, escenario.cierres);
+        assertEquals(1, escenario.logs);
+        assertNull(escenario.redireccion);
+    }
+
+    @Test
+    public void servicioSoapNoDisponibleAlCerrarDevuelve503()
+            throws Exception {
+
+        var escenario = new Escenario();
+        escenario.seleccionarCierre();
+        escenario.falloCierre = new WebServiceException(
+                "Servicio no disponible"
+        );
+
+        escenario.ejecutarPost();
+
+        assertEquals(503, escenario.estado);
+        assertEquals(1, escenario.cierres);
+        assertEquals(1, escenario.logs);
+    }
+
+    @Test
+    public void datosInvalidosAlCerrarDevuelven400()
+            throws Exception {
+
+        var escenario = new Escenario();
+        escenario.seleccionarCierre();
+        escenario.falloCierre = new IllegalArgumentException(
+                "Edición inválida"
+        );
+
+        escenario.ejecutarPost();
+
+        assertEquals(400, escenario.estado);
+        assertEquals(1, escenario.cierres);
+        assertEquals(0, escenario.logs);
+    }
+
+    @Test
+    public void errorInternoAlCerrarDevuelve500()
+            throws Exception {
+
+        var escenario = new Escenario();
+        escenario.seleccionarCierre();
+        escenario.falloCierre = new IllegalStateException(
+                "Error interno simulado"
+        );
+
+        escenario.ejecutarPost();
+
+        assertEquals(500, escenario.estado);
+        assertEquals(1, escenario.cierres);
+        assertEquals(1, escenario.logs);
+    }
+
 }

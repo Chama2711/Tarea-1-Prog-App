@@ -124,6 +124,20 @@ public final class ClienteEvaluacionesSoap {
         );
     }
     
+    // Solicita el cierre de una edición al Servidor Central.
+    public void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        ServicioEvaluaciones puerto =
+                servicio.getEvaluacionesPort();
+
+        puerto.cerrarEdicion(
+                nickDocente,
+                nombreEdicion
+        );
+    }
+
     
 }
 

@@ -237,19 +237,36 @@
                     <strong><%= escapar(edicion) %></strong>
                 </p>
 
+               
                 <p class="texto-secundario">
-                    El cierre de la edición estará disponible
-                    cuando se integren las calificaciones
-                    y la validación del Servidor Central.
+                    Podés cerrar la edición cuando todos los
+                    estudiantes aceptados tengan calificación.
+                    Una vez cerrada, las notas no podrán modificarse.
                 </p>
 
-                <div class="campo">
-                    <button type="button"
-                            class="boton"
-                            disabled>
+                <% if ("1".equals(request.getParameter("cerrada"))) { %>
+                    <p class="aviso" role="status">
+                        Se procesó correctamente la solicitud de cierre.
+                    </p>
+                <% } %>
+
+                <form method="post"
+                      action="${pageContext.request.contextPath}/ingresar-evaluaciones"
+                      onsubmit="return confirm('¿Confirmás el cierre de esta edición? No podrás modificar las calificaciones después.');">
+
+                    <input type="hidden"
+                           name="accion"
+                           value="cerrar">
+
+                    <input type="hidden"
+                           name="edicion"
+                           value="<%= escapar(edicion) %>">
+
+                    <button type="submit" class="boton">
                         Cerrar edición
                     </button>
-                </div>
+                </form>
+
 
                 <p class="ayuda">
                     Para cerrar una edición será necesario

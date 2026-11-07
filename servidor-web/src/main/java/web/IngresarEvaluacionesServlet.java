@@ -22,6 +22,7 @@ import logica.DTAutenticacion;
 import logica.DTInscripcion;
 import java.time.LocalDate;
 import jakarta.xml.ws.WebServiceException;
+import jakarta.xml.ws.soap.SOAPFaultException;
 import logica.EstadoInscripcion;
 
 import java.net.URLEncoder;
@@ -136,6 +137,19 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
 
         response.setHeader("Cache-Control", "no-store");
 
+
+        response.setHeader("Cache-Control", "no-store");
+
+        // Identificar si el docente quiere cerrar la edición.
+        if ("cerrar".equals(request.getParameter("accion"))) {
+            procesarCierre(
+                    request,
+                    response,
+                    docente.getNick()
+            );
+            return;
+        }
+
         // 2. Leer los datos enviados por la JSP.
         String edicionParametro = request.getParameter("edicion");
         String idParametro = request.getParameter("idInscripcion");
@@ -245,6 +259,106 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
         }
     }
 
+    
+        private void procesarCierre(
+                HttpServletRequest request,
+                HttpServletResponse response,
+                String nickDocente) throws IOException {
+
+            String parametro = request.getParameter("edicion");
+
+            if (parametro == null || parametro.isBlank()) {
+                response.sendError(
+                        HttpServletResponse.SC_BAD_REQUEST,
+                        "Seleccione una edición para cerrar."
+                );
+                return;
+            }
+
+            String nombreEdicion = parametro.trim();
+
+            try {
+                // Verificar que la edición corresponde al docente.
+                List<String> ediciones =
+                        consultarEdiciones(nickDocente);
+
+                if (!ediciones.contains(nombreEdicion)) {
+                    response.sendError(
+                            HttpServletResponse.SC_FORBIDDEN,
+                            "No participás en la edición seleccionada."
+                    );
+                    return;
+                }
+
+                // Solicitar el cierre al Servidor Central mediante SOAP.
+                cerrarEdicion(nickDocente, nombreEdicion);
+
+                // Redirigir para evitar repetir el POST al actualizar.
+                String destino = request.getContextPath()
+                        + "/ingresar-evaluaciones?edicion="
+                        + URLEncoder.encode(
+                                nombreEdicion,
+                                StandardCharsets.UTF_8
+                        )
+                        + "&cerrada=1";
+
+                response.sendRedirect(
+                        response.encodeRedirectURL(destino)
+                );
+
+            } catch (SOAPFaultException e) {
+                getServletContext().log(
+                        "El servicio SOAP rechazó el cierre.", e
+                );
+
+                response.sendError(
+                        HttpServletResponse.SC_CONFLICT,
+                        "No se pudo cerrar la edición. "
+                        + "Comprobá que todos los estudiantes "
+                        + "aceptados tengan calificación y "
+                        + "que la edición no esté cerrada."
+                );
+
+            } catch (WebServiceException e) {
+                getServletContext().log(
+                        "Error de comunicación al cerrar la edición.", e
+                );
+
+                response.sendError(
+                        HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                        "El servicio de evaluaciones no está disponible."
+                );
+
+            } catch (IllegalArgumentException e) {
+                response.sendError(
+                        HttpServletResponse.SC_BAD_REQUEST,
+                        "La edición seleccionada no es válida."
+                );
+
+            } catch (RuntimeException e) {
+                getServletContext().log(
+                        "Error inesperado al cerrar la edición.", e
+                );
+
+                response.sendError(
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "No se pudo completar el cierre."
+                );
+            }
+        }
+
+        // Facilita probar la llamada sin conectarse a SOAP.
+        protected void cerrarEdicion(
+                String nickDocente,
+                String nombreEdicion) {
+
+            InicializadorAplicacion
+                    .getClienteEvaluaciones(getServletContext())
+                    .cerrarEdicion(nickDocente, nombreEdicion);
+        }
+
+    
+    
     
     protected List<String> consultarEdiciones(String nickDocente) {
         return InicializadorAplicacion
