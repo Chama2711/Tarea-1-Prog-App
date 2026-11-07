@@ -169,37 +169,54 @@
                                     </span>
 
                                 </div>
+                           
+                                <form method="post"
+                                      action="${pageContext.request.contextPath}/ingresar-evaluaciones">
 
+                                    <input type="hidden"
+                                           name="edicion"
+                                           value="<%= escapar(edicion) %>">
 
-                                <div class="campo">
-                                    <label for="nota-<%= inscripcion.getId() %>">
-                                        Calificación del estudiante
-                                    </label>
+                                    <input type="hidden"
+                                           name="idInscripcion"
+                                           value="<%= inscripcion.getId() %>">
 
-                                    <select
-                                        id="nota-<%= inscripcion.getId() %>"
-                                        name="nota-<%= inscripcion.getId() %>"
-                                        disabled>
+                                    <div class="campo">
 
-                                        <option value="">
-                                            Sin calificación
-                                        </option>
+                                        <label for="nota-<%= inscripcion.getId() %>">
+                                            Calificación del estudiante
+                                        </label>
 
-                                        <% for (int nota = 1; nota <= 12; nota++) { %>
-                                            <option value="<%= nota %>">
-                                                <%= nota %>
+                                        <select
+                                            id="nota-<%= inscripcion.getId() %>"
+                                            name="nota"
+                                            required>
+
+                                            <option value="" selected disabled>
+                                                Seleccioná una calificación
                                             </option>
-                                        <% } %>
 
-                                    </select>
+                                            <% for (int nota = 1; nota <= 12; nota++) { %>
 
-                                    <p class="ayuda">
-                                        Las calificaciones válidas van de 1 a 12.
-                                        El registro de notas estará disponible
-                                        cuando se integre el Servidor Central.
-                                    </p>
-                                </div>
+                                                <option value="<%= nota %>">
+                                                    <%= nota %>
+                                                </option>
 
+                                            <% } %>
+
+                                        </select>
+
+                                        <p class="ayuda">
+                                            Las calificaciones válidas van de 1 a 12.
+                                        </p>
+
+                                    </div>
+
+                                    <button type="submit" class="boton">
+                                        Guardar nota
+                                    </button>
+
+                                </form>
 
                             </article>
 
@@ -220,19 +237,36 @@
                     <strong><%= escapar(edicion) %></strong>
                 </p>
 
+               
                 <p class="texto-secundario">
-                    El cierre de la edición estará disponible
-                    cuando se integren las calificaciones
-                    y la validación del Servidor Central.
+                    Podés cerrar la edición cuando todos los
+                    estudiantes aceptados tengan calificación.
+                    Una vez cerrada, las notas no podrán modificarse.
                 </p>
 
-                <div class="campo">
-                    <button type="button"
-                            class="boton"
-                            disabled>
+                <% if ("1".equals(request.getParameter("cerrada"))) { %>
+                    <p class="aviso" role="status">
+                        Se procesó correctamente la solicitud de cierre.
+                    </p>
+                <% } %>
+
+                <form method="post"
+                      action="${pageContext.request.contextPath}/ingresar-evaluaciones"
+                      onsubmit="return confirm('¿Confirmás el cierre de esta edición? No podrás modificar las calificaciones después.');">
+
+                    <input type="hidden"
+                           name="accion"
+                           value="cerrar">
+
+                    <input type="hidden"
+                           name="edicion"
+                           value="<%= escapar(edicion) %>">
+
+                    <button type="submit" class="boton">
                         Cerrar edición
                     </button>
-                </div>
+                </form>
+
 
                 <p class="ayuda">
                     Para cerrar una edición será necesario

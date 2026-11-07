@@ -876,6 +876,167 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
         }
     }
 
+    public void registrarCalificacion(
+            String nickDocente,
+            String nombreEdicion,
+            Long idInscripcion,
+            int nota) {
+
+        if (nickDocente == null || nickDocente.isBlank()
+                || nombreEdicion == null || nombreEdicion.isBlank()
+                || idInscripcion == null || idInscripcion <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Indique docente, edición e inscripción válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            
+            tx.begin();
+
+            // 1. Verificar que el docente participa en la edición.
+            EdicionCurso edicion = validarDocenteEdicion(
+                    em,
+                    nickDocente,
+                    nombreEdicion
+            );
+
+            // 2. Bloquear la edición y actualizar su estado desde MySQL.
+            em.refresh(edicion, LockModeType.PESSIMISTIC_WRITE);
+
+            // 3. No permitir cambios si la edición está cerrada.
+            if (edicion.isCerrada()) {
+                throw new IllegalStateException(
+                        "No se pueden registrar calificaciones "
+                        + "en una edición cerrada."
+                );
+            }
+
+            // 4. Buscar y bloquear la inscripción.
+            Inscripcion inscripcion = em.find(
+                    Inscripcion.class,
+                    idInscripcion,
+                    LockModeType.PESSIMISTIC_WRITE
+            );
+
+
+            // 5. Comprobar que pertenece a la edición seleccionada.
+            if (inscripcion == null
+                    || inscripcion.getEdicionCurso() == null
+                    || !nombreEdicion.equals(
+                            inscripcion.getEdicionCurso().getNombre()
+                    )) {
+
+                throw new IllegalArgumentException(
+                        "La inscripción no pertenece a esta edición."
+                );
+            }
+
+            // 6. Validar la nota y actualizar la entidad.
+            inscripcion.registrarCalificacion(
+                    nota,
+                    LocalDate.now()
+            );
+
+            // 7. Guardar los cambios.
+            tx.commit();
+
+        } catch (RuntimeException e) {
+
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+
+            throw e;
+
+        } finally {
+            em.close();
+        }
+    }
+
+    
+    public void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        if (nickDocente == null || nickDocente.isBlank()
+                || nombreEdicion == null || nombreEdicion.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Indique un docente y una edición válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            // 1. Verificar que el docente participa en la edición.
+            EdicionCurso edicion = validarDocenteEdicion(
+                    em,
+                    nickDocente,
+                    nombreEdicion
+            );
+
+            // 2. Bloquear la edición y recuperar su estado actual.
+            em.refresh(edicion, LockModeType.PESSIMISTIC_WRITE);
+
+            // 3. Evitar cerrar dos veces la misma edición.
+            if (edicion.isCerrada()) {
+                throw new IllegalStateException(
+                        "La edición ya se encuentra cerrada."
+                );
+            }
+
+            // 4. Contar estudiantes aceptados que todavía no tienen nota.
+            Long pendientes = em.createQuery(
+                    "SELECT COUNT(i) FROM Inscripcion i "
+                    + "WHERE i.edicion = :edicion "
+                    + "AND i.estado = :estado "
+                    + "AND i.calificacion IS NULL",
+                    Long.class
+            )
+                    .setParameter("edicion", edicion)
+                    .setParameter("estado", EstadoInscripcion.ACEPTADA)
+                    .getSingleResult();
+
+            // 5. No cerrar si faltan evaluaciones.
+            if (pendientes > 0) {
+                throw new IllegalStateException(
+                        "No se puede cerrar la edición. "
+                        + "Hay " + pendientes
+                        + " estudiante(s) aceptado(s) sin calificación."
+                );
+            }
+
+            // 6. Cerrar la edición.
+            edicion.cerrar();
+
+            // 7. Confirmar los cambios.
+            tx.commit();
+
+        } catch (RuntimeException e) {
+
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+
+            throw e;
+
+        } finally {
+            em.close();
+        }
+    }
+
+
+    
+    
     public List<DTEdicionConsulta> listarEdicionesParaSeleccion(String nickDocente,
             String nombreInstituto, String nombreCurso, LocalDate referencia) {
         EntityManager em = emf.createEntityManager();

@@ -11,7 +11,6 @@ import jakarta.jws.WebService;
 
 import java.util.Objects;
 import logica.IServidorCentral;
-import jakarta.jws.WebParam;
 import soap.dto.DTInscripcionSoap;
 
 @WebService(
@@ -47,6 +46,43 @@ public class ServicioEvaluaciones {
         ).stream()
          .map(DTInscripcionSoap::desde)
          .toArray(DTInscripcionSoap[]::new);
+    }
+   
+    @WebMethod(operationName = "registrarCalificacion")
+    public void registrarCalificacion(
+            @WebParam(name = "nickDocente")
+            String nickDocente,
+
+            @WebParam(name = "nombreEdicion")
+            String nombreEdicion,
+
+            @WebParam(name = "idInscripcion")
+            Long idInscripcion,
+
+            @WebParam(name = "nota")
+            int nota) {
+
+        central.registrarCalificacion(
+                nickDocente,
+                nombreEdicion,
+                idInscripcion,
+                nota
+        );
+    }
+
+    
+    @WebMethod(operationName = "cerrarEdicion")
+    public void cerrarEdicion(
+            @WebParam(name = "nickDocente")
+            String nickDocente,
+
+            @WebParam(name = "nombreEdicion")
+            String nombreEdicion) {
+
+        central.cerrarEdicion(
+                nickDocente,
+                nombreEdicion
+        );
     }
 
 }

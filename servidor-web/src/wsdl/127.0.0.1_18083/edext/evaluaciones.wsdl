@@ -16,6 +16,18 @@
 <message name="listarAceptadosEdicionResponse">
 <part name="parameters" element="tns:listarAceptadosEdicionResponse"/>
 </message>
+<message name="registrarCalificacion">
+<part name="parameters" element="tns:registrarCalificacion"/>
+</message>
+<message name="registrarCalificacionResponse">
+<part name="parameters" element="tns:registrarCalificacionResponse"/>
+</message>
+<message name="cerrarEdicion">
+<part name="parameters" element="tns:cerrarEdicion"/>
+</message>
+<message name="cerrarEdicionResponse">
+<part name="parameters" element="tns:cerrarEdicionResponse"/>
+</message>
 <portType name="ServicioEvaluaciones">
 <operation name="listarEdicionesDocente">
 <input wsam:Action="http://soap.edext/ServicioEvaluaciones/listarEdicionesDocenteRequest" message="tns:listarEdicionesDocente"/>
@@ -24,6 +36,14 @@
 <operation name="listarAceptadosEdicion">
 <input wsam:Action="http://soap.edext/ServicioEvaluaciones/listarAceptadosEdicionRequest" message="tns:listarAceptadosEdicion"/>
 <output wsam:Action="http://soap.edext/ServicioEvaluaciones/listarAceptadosEdicionResponse" message="tns:listarAceptadosEdicionResponse"/>
+</operation>
+<operation name="registrarCalificacion">
+<input wsam:Action="http://soap.edext/ServicioEvaluaciones/registrarCalificacionRequest" message="tns:registrarCalificacion"/>
+<output wsam:Action="http://soap.edext/ServicioEvaluaciones/registrarCalificacionResponse" message="tns:registrarCalificacionResponse"/>
+</operation>
+<operation name="cerrarEdicion">
+<input wsam:Action="http://soap.edext/ServicioEvaluaciones/cerrarEdicionRequest" message="tns:cerrarEdicion"/>
+<output wsam:Action="http://soap.edext/ServicioEvaluaciones/cerrarEdicionResponse" message="tns:cerrarEdicionResponse"/>
 </operation>
 </portType>
 <binding name="EvaluacionesPortBinding" type="tns:ServicioEvaluaciones">
@@ -38,6 +58,24 @@
 </output>
 </operation>
 <operation name="listarAceptadosEdicion">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="registrarCalificacion">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="cerrarEdicion">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>

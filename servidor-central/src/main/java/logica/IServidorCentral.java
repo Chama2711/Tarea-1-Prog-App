@@ -176,6 +176,21 @@ public interface IServidorCentral {
         LocalDate fecha
     );
     
+    void registrarCalificacion(
+        String nickDocente,
+        String nombreEdicion,
+        Long idInscripcion,
+        int nota
+    );
+    
+    
+    void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion
+    );
+
+    
+    
     // ========================
     //  PROGRAMAS DE FORMACIÓN 
     //=========================
