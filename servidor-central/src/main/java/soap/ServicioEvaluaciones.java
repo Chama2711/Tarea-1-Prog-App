@@ -12,6 +12,7 @@ import jakarta.jws.WebService;
 import java.util.Objects;
 import logica.IServidorCentral;
 import soap.dto.DTInscripcionSoap;
+import soap.dto.DTResultadoEvaluacionSoap;
 
 @WebService(
         serviceName = "EvaluacionesService",
@@ -47,7 +48,23 @@ public class ServicioEvaluaciones {
          .map(DTInscripcionSoap::desde)
          .toArray(DTInscripcionSoap[]::new);
     }
-   
+
+    @WebMethod(operationName = "consultarResultadosEdicion")
+    public DTResultadoEvaluacionSoap[] consultarResultadosEdicion(
+            @WebParam(name = "nickDocente")
+            String nickDocente,
+
+            @WebParam(name = "nombreEdicion")
+            String nombreEdicion) {
+
+        return central.consultarResultadosEdicion(
+                nickDocente,
+                nombreEdicion
+        ).stream()
+         .map(DTResultadoEvaluacionSoap::desde)
+         .toArray(DTResultadoEvaluacionSoap[]::new);
+    }
+
     @WebMethod(operationName = "registrarCalificacion")
     public void registrarCalificacion(
             @WebParam(name = "nickDocente")

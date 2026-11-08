@@ -73,6 +73,20 @@ public class ControladorInscripcion {
         return persistencia.listarAceptadosEdicion(nickDocente, nombreEdicion);
     }
     
+    public List<DTResultadoEvaluacion> consultarResultadosEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        // Validar que se recibieron los identificadores.
+        validarIdentificadores(nickDocente, nombreEdicion);
+
+        // Delegar la consulta a persistencia.
+        return persistencia.consultarResultadosEdicion(
+                nickDocente,
+                nombreEdicion
+        );
+    }
+
     public void registrarCalificacion(String nickDocente,String nombreEdicion,Long idInscripcion,int nota) {
 
         validarIdentificadores(nickDocente, nombreEdicion);

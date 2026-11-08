@@ -168,6 +168,11 @@ public interface IServidorCentral {
 
     List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion);
 
+    List<DTResultadoEvaluacion> consultarResultadosEdicion(
+            String nickDocente,
+            String nombreEdicion
+    );
+
     List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante);
 
     void inscriboAEdicionCurso(

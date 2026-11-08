@@ -4,6 +4,10 @@
 
 <xs:element name="cerrarEdicionResponse" type="tns:cerrarEdicionResponse"/>
 
+<xs:element name="consultarResultadosEdicion" type="tns:consultarResultadosEdicion"/>
+
+<xs:element name="consultarResultadosEdicionResponse" type="tns:consultarResultadosEdicionResponse"/>
+
 <xs:element name="listarAceptadosEdicion" type="tns:listarAceptadosEdicion"/>
 
 <xs:element name="listarAceptadosEdicionResponse" type="tns:listarAceptadosEdicionResponse"/>
@@ -49,6 +53,29 @@
 <xs:element name="nombreCurso" type="xs:string" minOccurs="0"/>
 <xs:element name="fechaInscripcion" type="xs:string" minOccurs="0"/>
 <xs:element name="estado" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="consultarResultadosEdicion">
+<xs:sequence>
+<xs:element name="nickDocente" type="xs:string" minOccurs="0"/>
+<xs:element name="nombreEdicion" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="consultarResultadosEdicionResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:dtResultadoEvaluacionSoap" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="dtResultadoEvaluacionSoap">
+<xs:sequence>
+<xs:element name="idInscripcion" type="xs:long" minOccurs="0"/>
+<xs:element name="nicknameEstudiante" type="xs:string" minOccurs="0"/>
+<xs:element name="nombreEstudiante" type="xs:string" minOccurs="0"/>
+<xs:element name="calificacion" type="xs:int" minOccurs="0"/>
+<xs:element name="fechaCalificacion" type="xs:string" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 

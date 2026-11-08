@@ -39,7 +39,6 @@ import logica.*;
         }
     }
 
-    /** Materializar los datos de consulta antes de cerrar JPA, sin exponer entidades a la web. */
     private DTUsuarioConsulta datosUsuario(EntityManager em, Usuario usuario, boolean incluirInstitutos) {
         boolean docente = usuario instanceof Docente;
         List<String> institutos = docente && incluirInstitutos ? em.createQuery(
@@ -272,7 +271,6 @@ import logica.*;
         }
     }
     
-    /** Materializar cursos y categorías antes de cerrar la consulta JPA. */
     private soap.dto.DTProgramaConsulta datosPrograma(ProgramaFormacion programa) {
         List<Curso> cursos = new ArrayList<>(programa.getCursos().values());
         cursos.sort(java.util.Comparator.comparing(Curso::getNombre));
@@ -875,6 +873,67 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
             em.close();
         }
     }
+
+    public List<DTResultadoEvaluacion> consultarResultadosEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        if (nickDocente == null || nickDocente.isBlank()
+                || nombreEdicion == null || nombreEdicion.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar un docente y una edición válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            // 1. Comprobar que existe la edición
+            // y que el docente participa en ella.
+            EdicionCurso edicion = validarDocenteEdicion(
+                    em,
+                    nickDocente,
+                    nombreEdicion
+            );
+
+            // 2. Los resultados definitivos solo
+            // pueden consultarse con la edición cerrada.
+            if (!edicion.isCerrada()) {
+                throw new IllegalStateException(
+                        "No se pueden consultar los resultados "
+                        + "de una edición que todavía está abierta."
+                );
+            }
+
+            // 3. Recuperar las calificaciones
+            // de los estudiantes aceptados.
+            String jpql =
+                    "SELECT new logica.DTResultadoEvaluacion("
+                    + "i.id, "
+                    + "e.nick, "
+                    + "CONCAT(CONCAT(e.nombre, ' '), e.apellido), "
+                    + "i.calificacion, "
+                    + "i.fechaCalificacion) "
+                    + "FROM Estudiante e "
+                    + "JOIN e.inscripciones i "
+                    + "WHERE i.edicion.nombre = :edicion "
+                    + "AND i.estado = :estado "
+                    + "ORDER BY e.apellido, e.nombre, e.nick, i.id";
+
+            return em.createQuery(
+                    jpql,
+                    DTResultadoEvaluacion.class
+            )
+            .setParameter("edicion", nombreEdicion)
+            .setParameter("estado", EstadoInscripcion.ACEPTADA)
+            .getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+
 
     public void registrarCalificacion(
             String nickDocente,
