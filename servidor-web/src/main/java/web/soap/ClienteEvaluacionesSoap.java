@@ -18,6 +18,7 @@ import java.util.Properties;
 import web.soap.evaluaciones.generado.EvaluacionesService;
 import web.soap.evaluaciones.generado.ServicioEvaluaciones;
 import web.soap.evaluaciones.generado.DtInscripcionSoap;
+import web.soap.evaluaciones.generado.DtResultadoEvaluacionSoap;
 
 public final class ClienteEvaluacionesSoap {
 
@@ -70,6 +71,26 @@ public final class ClienteEvaluacionesSoap {
         return resultado == null
                 ? List.of()
                 : List.copyOf(resultado);
+    }
+
+    // Consulta los resultados definitivos de una edición
+    // mediante el servicio SOAP del Servidor Central.
+    public List<DtResultadoEvaluacionSoap> consultarResultadosEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        ServicioEvaluaciones puerto =
+                servicio.getEvaluacionesPort();
+
+        List<DtResultadoEvaluacionSoap> resultados =
+                puerto.consultarResultadosEdicion(
+                        nickDocente,
+                        nombreEdicion
+                );
+
+        return resultados == null
+                ? List.of()
+                : List.copyOf(resultados);
     }
 
     // Lee la dirección del servicio desde web.properties.

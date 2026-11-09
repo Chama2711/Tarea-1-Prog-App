@@ -63,9 +63,12 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
             List<DTInscripcion> aceptados = List.of();
 
             //  Consultar los estudiantes aceptados.
-            if (!nombreEdicion.isEmpty()) {
+          if (!nombreEdicion.isEmpty()) {
 
-                if (!ediciones.contains(nombreEdicion)) {
+                String edicionAutorizada =
+                        resolverEdicionAutorizada(ediciones, nombreEdicion);
+
+                if (edicionAutorizada == null) {
                     response.sendError(
                             HttpServletResponse.SC_FORBIDDEN,
                             "No participás en la edición seleccionada."
@@ -73,7 +76,12 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                     return;
                 }
 
-                aceptados = consultarAceptados(docente.getNick(),nombreEdicion);
+                nombreEdicion = edicionAutorizada;
+
+                aceptados = consultarAceptados(
+                        docente.getNick(),
+                        nombreEdicion
+                );
             }
 
             //  Enviar los datos a la JSP.
@@ -95,7 +103,7 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                     HttpServletResponse.SC_BAD_REQUEST,
                     e.getMessage()
             );
-            
+
         } catch (WebServiceException e) {
             getServletContext().log(
                     "No se pudo consultar evaluaciones por SOAP.", e
@@ -105,7 +113,7 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                     HttpServletResponse.SC_SERVICE_UNAVAILABLE,
                     "El servicio de evaluaciones no está disponible."
             );
-            
+
         } catch (RuntimeException e) {
             getServletContext().log(
                     "Error al consultar las evaluaciones.", e
@@ -117,8 +125,8 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
             );
         }
     }
-    
-    
+
+
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -178,11 +186,13 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                 );
             }
 
-            // 4. Verificar que la edición pertenezca al docente.
             List<String> ediciones =
                     consultarEdiciones(docente.getNick());
 
-            if (!ediciones.contains(nombreEdicion)) {
+            String edicionAutorizada =
+                    resolverEdicionAutorizada(ediciones, nombreEdicion);
+
+            if (edicionAutorizada == null) {
                 response.sendError(
                         HttpServletResponse.SC_FORBIDDEN,
                         "No participás en la edición seleccionada."
@@ -191,9 +201,7 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
             }
 
             // 5. Verificar que la inscripción esté aceptada.
-            List<DTInscripcion> aceptados =
-                    consultarAceptados(docente.getNick(), nombreEdicion);
-
+            List<DTInscripcion> aceptados = consultarAceptados(docente.getNick(), edicionAutorizada);
             boolean inscripcionValida = aceptados.stream()
                     .anyMatch(i -> Objects.equals(
                             i.getId(), idInscripcion
@@ -210,19 +218,19 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
             // 6. Registrar la nota mediante SOAP.
             registrarCalificacion(
                     docente.getNick(),
-                    nombreEdicion,
+                    edicionAutorizada,
                     idInscripcion,
                     nota
             );
 
             // 7. Volver a la edición seleccionada.
-            String destino = request.getContextPath()
-                    + "/ingresar-evaluaciones?edicion="
-                    + URLEncoder.encode(
-                            nombreEdicion,
-                            StandardCharsets.UTF_8
-                    )
-                    + "&guardada=1";
+           String destino = request.getContextPath()
+                + "/ingresar-evaluaciones?edicion="
+                + URLEncoder.encode(
+                        edicionAutorizada,
+                        StandardCharsets.UTF_8
+                )
+                + "&guardada=1";
 
             response.sendRedirect(
                     response.encodeRedirectURL(destino)
@@ -259,7 +267,7 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
         }
     }
 
-    
+
         private void procesarCierre(
                 HttpServletRequest request,
                 HttpServletResponse response,
@@ -275,29 +283,48 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                 return;
             }
 
-            String nombreEdicion = parametro.trim();
+           String nombreEdicion = parametro.trim();
 
             try {
-                // Verificar que la edición corresponde al docente.
-                List<String> ediciones =
-                        consultarEdiciones(nickDocente);
+                // Obtener las ediciones autorizadas para el docente.
+                List<String> ediciones = consultarEdiciones(nickDocente);
 
-                if (!ediciones.contains(nombreEdicion)) {
-                    response.sendError(
-                            HttpServletResponse.SC_FORBIDDEN,
-                            "No participás en la edición seleccionada."
-                    );
-                    return;
+            // Primero intentar una coincidencia exacta.
+            String edicionAutorizada = ediciones.contains(nombreEdicion)
+                    ? nombreEdicion
+                    : null;
+
+            // Si no coincide exactamente, comprobar diferencias
+            // de espacios y saltos de línea.
+            if (edicionAutorizada == null) {
+
+                List<String> coincidencias = ediciones.stream()
+                        .filter(e -> normalizarNombreEdicion(e)
+                                .equals(normalizarNombreEdicion(nombreEdicion)))
+                        .toList();
+
+                // Solo aceptamos una coincidencia inequívoca.
+                if (coincidencias.size() == 1) {
+                    edicionAutorizada = coincidencias.get(0);
                 }
+            }
+
+            if (edicionAutorizada == null) {
+                response.sendError(
+                        HttpServletResponse.SC_FORBIDDEN,
+                        "No participás en la edición seleccionada."
+                );
+                return;
+            }
 
                 // Solicitar el cierre al Servidor Central mediante SOAP.
-                cerrarEdicion(nickDocente, nombreEdicion);
+                cerrarEdicion(nickDocente, edicionAutorizada);
 
                 // Redirigir para evitar repetir el POST al actualizar.
                 String destino = request.getContextPath()
                         + "/ingresar-evaluaciones?edicion="
                         + URLEncoder.encode(
-                                nombreEdicion,
+                                edicionAutorizada,
                                 StandardCharsets.UTF_8
                         )
                         + "&cerrada=1";
@@ -345,7 +372,8 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                         "No se pudo completar el cierre."
                 );
             }
-        }
+
+        } // Fin de procesarCierre()
 
         // Facilita probar la llamada sin conectarse a SOAP.
         protected void cerrarEdicion(
@@ -357,9 +385,6 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                     .cerrarEdicion(nickDocente, nombreEdicion);
         }
 
-    
-    
-    
     protected List<String> consultarEdiciones(String nickDocente) {
         return InicializadorAplicacion
                 .getClienteEvaluaciones(getServletContext())
@@ -399,8 +424,8 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                 ))
                 .toList();
     }
-  
-    
+
+
     protected void registrarCalificacion(
             String nickDocente,
             String nombreEdicion,
@@ -417,5 +442,43 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                 );
     }
 
-}
+    private static String resolverEdicionAutorizada(
+            List<String> ediciones,
+            String nombreSolicitado) {
 
+        if (nombreSolicitado == null || nombreSolicitado.isBlank()) {
+            return null;
+        }
+
+        // Priorizar una coincidencia exacta.
+        for (String edicion : ediciones) {
+            if (nombreSolicitado.equals(edicion)) {
+                return edicion;
+            }
+        }
+
+        // Comparar normalizando los espacios y saltos de línea.
+        List<String> coincidencias = ediciones.stream()
+                .filter(Objects::nonNull)
+                .filter(edicion ->
+                        normalizarNombreEdicion(edicion)
+                                .equals(normalizarNombreEdicion(nombreSolicitado)))
+                .toList();
+
+        // No autorizar si hay cero o varias coincidencias.
+        return coincidencias.size() == 1
+                ? coincidencias.get(0)
+                : null;
+    }
+
+    private static String normalizarNombreEdicion(String nombre) {
+        if (nombre == null) {
+            return "";
+        }
+
+        return nombre.replace('\u00A0', ' ')
+                .replaceAll("(?U)\\s+", " ")
+                .trim();
+    }
+
+}

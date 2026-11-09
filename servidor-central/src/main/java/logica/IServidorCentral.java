@@ -168,6 +168,11 @@ public interface IServidorCentral {
 
     List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion);
 
+    List<DTResultadoEvaluacion> consultarResultadosEdicion(
+            String nickDocente,
+            String nombreEdicion
+    );
+
     List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante);
 
     void inscriboAEdicionCurso(
@@ -183,7 +188,19 @@ public interface IServidorCentral {
         int nota
     );
     
+    void registrarValoracionCurso(
+        String nickEstudiante,
+        Long idCurso,
+        int puntuacion
+    );
     
+    double obtenerPromedioValoraciones(Long idCurso);
+
+    Integer obtenerValoracionEstudiante(
+            String nickEstudiante,
+            Long idCurso
+    );
+
     void cerrarEdicion(
             String nickDocente,
             String nombreEdicion

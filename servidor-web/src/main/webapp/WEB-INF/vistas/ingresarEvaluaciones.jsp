@@ -275,11 +275,10 @@
                 </p>
 
                 <div class="campo">
-                    <button type="button"
-                            class="boton"
-                            disabled>
-                        Consultar acta docente
-                    </button>
+                    <a class="boton"
+                        href="${pageContext.request.contextPath}/ver-resultados-evaluaciones">
+                         Ver resultados definitivos
+                    </a>
                 </div>
 
                 <p class="ayuda">
