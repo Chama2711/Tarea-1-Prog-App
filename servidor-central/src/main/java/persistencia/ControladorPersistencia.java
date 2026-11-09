@@ -1016,6 +1016,109 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
             em.close();
         }
     }
+    
+    public void registrarValoracionCurso(
+            String nickEstudiante,
+            Long idCurso,
+            int puntuacion) {
+
+        if (nickEstudiante == null || nickEstudiante.isBlank()
+                || idCurso == null || idCurso <= 0) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un estudiante y un curso válidos."
+            );
+        }
+
+        if (puntuacion < 1 || puntuacion > 5) {
+            throw new IllegalArgumentException(
+                    "La puntuación debe estar entre 1 y 5."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            // 1. Buscar al estudiante y al curso.
+            Estudiante estudiante =
+                    em.find(Estudiante.class, nickEstudiante);
+
+            Curso curso = em.find(Curso.class, idCurso);
+
+            if (estudiante == null) {
+                throw new SecurityException(
+                        "El estudiante no existe."
+                );
+            }
+
+            if (curso == null) {
+                throw new IllegalArgumentException(
+                        "El curso no existe."
+                );
+            }
+
+            // 2. Verificar que participe en alguna edición del curso.
+            Long participaciones = em.createQuery(
+                    "SELECT COUNT(i) "
+                    + "FROM Estudiante e JOIN e.inscripciones i "
+                    + "WHERE e.nick = :nick "
+                    + "AND i.edicion.curso = :curso "
+                    + "AND i.estado = :estado",
+                    Long.class
+            )
+            .setParameter("nick", nickEstudiante)
+            .setParameter("curso", curso)
+            .setParameter("estado", EstadoInscripcion.ACEPTADA)
+            .getSingleResult();
+
+            if (participaciones == 0) {
+                throw new SecurityException(
+                        "El estudiante no participa en este curso."
+                );
+            }
+
+            // 3. Comprobar que no haya valorado antes el curso.
+            Long existentes = em.createQuery(
+                    "SELECT COUNT(v) FROM ValoracionCurso v "
+                    + "WHERE v.estudiante = :estudiante "
+                    + "AND v.curso = :curso",
+                    Long.class
+            )
+            .setParameter("estudiante", estudiante)
+            .setParameter("curso", curso)
+            .getSingleResult();
+
+            if (existentes > 0) {
+                throw new IllegalStateException(
+                        "Ya valoraste este curso."
+                );
+            }
+
+            // 4. Crear y guardar la valoración.
+            ValoracionCurso valoracion = new ValoracionCurso(
+                    estudiante,
+                    curso,
+                    puntuacion,
+                    LocalDate.now()
+            );
+
+            em.persist(valoracion);
+
+            // 5. Confirmar la transacción.
+            tx.commit();
+
+        } catch (RuntimeException e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw e;
+
+        } finally {
+            em.close();
+        }
+    }
 
     
     public void cerrarEdicion(
@@ -1884,6 +1987,69 @@ public Categoria buscarCategoria(String nombre) {
         em.close();
     }
 }
+
+    public double obtenerPromedioValoraciones(Long idCurso) {
+
+        if (idCurso == null || idCurso <= 0) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un curso válido."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            Double promedio = em.createQuery(
+                    "SELECT AVG(v.puntuacion) "
+                    + "FROM ValoracionCurso v "
+                    + "WHERE v.curso.id = :idCurso",
+                    Double.class
+            )
+            .setParameter("idCurso", idCurso)
+            .getSingleResult();
+
+            return promedio != null ? promedio : 0.0;
+
+        } finally {
+            em.close();
+        }
+    }
+    
+    public Integer obtenerValoracionEstudiante(
+        String nickEstudiante,
+        Long idCurso) {
+
+    if (nickEstudiante == null || nickEstudiante.isBlank()
+            || idCurso == null || idCurso <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar un estudiante y un curso válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            List<Integer> resultados = em.createQuery(
+                    "SELECT v.puntuacion "
+                    + "FROM ValoracionCurso v "
+                    + "WHERE v.estudiante.nick = :nick "
+                    + "AND v.curso.id = :idCurso",
+                    Integer.class
+            )
+            .setParameter("nick", nickEstudiante)
+            .setParameter("idCurso", idCurso)
+            .setMaxResults(1)
+            .getResultList();
+
+            return resultados.isEmpty()
+                    ? null
+                    : resultados.get(0);
+
+        } finally {
+            em.close();
+        }
+    }
 
 }
 

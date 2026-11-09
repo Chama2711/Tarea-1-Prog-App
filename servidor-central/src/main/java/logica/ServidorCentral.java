@@ -429,7 +429,18 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
         );
     }
     
-    
+    @Override
+    public void registrarValoracionCurso(
+            String nickEstudiante,
+            Long idCurso,
+            int puntuacion) {
+
+        persistencia.registrarValoracionCurso(
+                nickEstudiante,
+                idCurso,
+                puntuacion
+        );
+    }
     
     @Override
     public void cerrarEdicion(
@@ -650,7 +661,21 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     
 
 
+    @Override
+    public double obtenerPromedioValoraciones(Long idCurso) {
+        return persistencia.obtenerPromedioValoraciones(idCurso);
+    }
 
+    @Override
+    public Integer obtenerValoracionEstudiante(
+            String nickEstudiante,
+            Long idCurso) {
+
+        return persistencia.obtenerValoracionEstudiante(
+                nickEstudiante,
+                idCurso
+        );
+    }
 
 
 }
