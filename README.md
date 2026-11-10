@@ -2,6 +2,8 @@
 
 Necesitan **Java 21, NetBeans y MySQL iniciado**.
 
+Para compilar y ejecutar **sin NetBeans**, en Ubuntu o Windows, sigan [EJECUTAR.md](EJECUTAR.md). Los scripts generan `servidor.jar` y `web.war`.
+
 ## 1. Preparar la base
 
 Si ya tienen `edext_web` con los datos, salteen este paso.
@@ -14,13 +16,13 @@ CREATE DATABASE edext_web;
 
 En NetBeans, dentro de `servidor-central`, ejecuten `persistencia.CargarDatosPruebaWeb`. Crea las tablas y carga los datos iniciales. Por defecto usa `root` sin contraseña; si usan otras credenciales, recibe usuario y contraseña como argumentos.
 
-Revisen también el usuario y la contraseña de su MySQL en:
+Revisen la conexión de MySQL en el archivo externo:
 
 ```text
-servidor-central/src/main/resources/META-INF/persistence.xml
+~/.edEXT/central.properties
 ```
 
-Dejen las dos propiedades de creación de tablas en `none`.
+Agreguen `jdbc.url`, `jdbc.usuario` y `jdbc.contrasena` según la plantilla `configuracion-ejemplo/central.properties.example`. La contraseña puede quedar vacía. El arranque normal utiliza las tablas existentes.
 
 ## 2. Configurar SOAP
 
@@ -34,6 +36,9 @@ Dejen las dos propiedades de creación de tablas en `none`.
 soap.host=127.0.0.1
 soap.port=18083
 soap.path=/edext/catalogo
+jdbc.url=jdbc:mysql://localhost:3306/edext_web?zeroDateTimeBehavior=CONVERT_TO_NULL
+jdbc.usuario=root
+jdbc.contrasena=
 ```
 
 4. En el Bloc de notas, elijan **Guardar como** y seleccionen la carpeta `.edEXT` que crearon.
@@ -44,7 +49,7 @@ soap.path=/edext/catalogo
 1. Abran **Archivos → Carpeta personal**.
 2. Presionen **Ctrl + H** para mostrar las carpetas ocultas.
 3. Creen una carpeta llamada `.edEXT`.
-4. Abran el editor de texto y peguen las mismas tres líneas de configuración de arriba.
+4. Abran el editor de texto y peguen las mismas líneas de configuración de arriba.
 5. Guarden el archivo como `central.properties` dentro de `.edEXT`, sin extensión `.txt`.
 
 Queda en `/home/SU_USUARIO/.edEXT/central.properties`. El programa encuentra esa carpeta automáticamente; el resto de los pasos es el mismo.

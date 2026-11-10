@@ -25,7 +25,7 @@ public class ValoracionCursoIntegracionTest {
         );
 
         EntityManagerFactory emf =
-                Persistence.createEntityManagerFactory("edEXTPU");
+                Persistence.createEntityManagerFactory("edEXTPU", ConfiguracionBaseDatos.leer());
 
         try {
             EntityManager em = emf.createEntityManager();

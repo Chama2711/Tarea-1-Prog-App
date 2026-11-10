@@ -132,7 +132,7 @@ import logica.*;
     }
 
     public ControladorPersistencia() {
-        this(Persistence.createEntityManagerFactory("edEXTPU"));
+        this(Persistence.createEntityManagerFactory("edEXTPU", ConfiguracionBaseDatos.leer()));
     }
 
     public ControladorPersistencia(EntityManagerFactory emf) {

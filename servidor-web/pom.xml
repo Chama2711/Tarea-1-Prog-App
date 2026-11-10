@@ -47,7 +47,7 @@
     </dependencies>
 
     <build>
-        <finalName>edext</finalName>
+        <finalName>web</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
