@@ -11,6 +11,15 @@ import persistencia.ControladorPersistencia;
 
 public class ServidorCentral implements IServidorCentral, AutoCloseable {
     @Override
+    public byte[] generarCertificadoPrograma(String nickEstudiante, String nombrePrograma) {
+        var datos = persistencia.consultarCertificadoPrograma(nickEstudiante, nombrePrograma);
+        try {
+            return documentos.CertificadoProgramaPdf.generar(datos);
+        } catch (java.io.IOException error) {
+            throw new IllegalStateException("No se pudo generar el certificado PDF.", error);
+        }
+    }
+    @Override
     public List<DTUsuarioConsulta> listarUsuariosConsulta() {
         return persistencia.listarUsuariosConsulta();
     }

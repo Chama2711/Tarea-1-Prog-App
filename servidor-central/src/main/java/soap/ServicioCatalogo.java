@@ -27,8 +27,14 @@
 
         @WebMethod(operationName = "listarInstitutos")
         public String[] listarInstitutos() {
-            return central.listarNombresInstitutos()
-                    .toArray(String[]::new);
+            return central.listarNombresInstitutos().toArray(String[]::new);
+        }
+
+        @WebMethod(operationName = "generarCertificadoPrograma")
+        public byte[] generarCertificadoPrograma(
+                @WebParam(name = "nickEstudiante") String nickEstudiante,
+                @WebParam(name = "nombrePrograma") String nombrePrograma) throws OperacionRechazada {
+            return ejecutar(() -> central.generarCertificadoPrograma(nickEstudiante, nombrePrograma));
         }
 
         @WebMethod(operationName = "listarInstitutosDocente")
@@ -386,6 +392,8 @@
                 return consulta.realizar();
             } catch (SecurityException error) {
                 throw new OperacionRechazada(error.getMessage(), new soap.dto.DetalleRechazo("ACCESO", error.getMessage()));
+            } catch (logica.ValoracionDuplicadaException error) {
+                throw new OperacionRechazada(error.getMessage(), new soap.dto.DetalleRechazo("VALORACION_DUPLICADA", error.getMessage()));
             } catch (logica.RecursoNoEncontradoException error) {
                 throw new OperacionRechazada(error.getMessage(), new soap.dto.DetalleRechazo("NO_ENCONTRADO", error.getMessage()));
             } catch (IllegalArgumentException error) {

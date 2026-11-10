@@ -22,6 +22,48 @@ import logica.*;
 
     private final EntityManagerFactory emf;
 
+    /** Solo resultados definitivos aprobados, una edición por cada curso del programa. */
+    public DTCertificadoPrograma consultarCertificadoPrograma(String nick, String nombrePrograma) {
+        if (nick == null || nick.isBlank()) throw new SecurityException("Debe iniciar sesión como estudiante.");
+        if (nombrePrograma == null || nombrePrograma.isBlank()) {
+            throw new IllegalArgumentException("Seleccione un programa de formación.");
+        }
+        EntityManager em = emf.createEntityManager();
+        try {
+            Usuario usuario = em.find(Usuario.class, nick);
+            if (!(usuario instanceof Estudiante estudiante)) {
+                throw new SecurityException("Solo los estudiantes pueden tramitar certificados.");
+            }
+            var programas = em.createQuery("SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre", ProgramaFormacion.class)
+                    .setParameter("nombre", nombrePrograma.trim()).getResultList();
+            if (programas.isEmpty()) throw new RecursoNoEncontradoException("El programa solicitado no existe.");
+            var programa = programas.getFirst();
+            if (programa.getCursos().isEmpty()) {
+                throw new IllegalArgumentException("No se puede certificar un programa sin cursos.");
+            }
+            var resultados = new ArrayList<DTCertificadoPrograma.Resultado>();
+            for (Curso curso : programa.getCursos().values().stream()
+                    .sorted(java.util.Comparator.comparing(Curso::getNombre)).toList()) {
+                Inscripcion aprobada = estudiante.getInscripciones().stream()
+                        .filter(i -> i.getEdicionCurso() != null && i.getEdicionCurso().getCurso() != null)
+                        .filter(i -> java.util.Objects.equals(curso.getId(), i.getEdicionCurso().getCurso().getId()))
+                        .filter(i -> i.getEstado() == EstadoInscripcion.ACEPTADA && i.getEdicionCurso().isCerrada())
+                        .filter(i -> i.getCalificacion() != null && i.getCalificacion() >= 6
+                                && i.getCalificacion() <= 12 && i.getFechaCalificacion() != null)
+                        .max(java.util.Comparator.comparing(Inscripcion::getFechaCalificacion)
+                                .thenComparing(i -> i.getEdicionCurso().getNombre())).orElse(null);
+                if (aprobada == null) {
+                    throw new IllegalArgumentException("Todavía no tenés aprobado el curso «" + curso.getNombre()
+                            + "» en una edición cerrada. Se aprueba con 6 o más.");
+                }
+                resultados.add(new DTCertificadoPrograma.Resultado(curso.getNombre(),
+                        aprobada.getEdicionCurso().getNombre(), aprobada.getCalificacion(), aprobada.getFechaCalificacion()));
+            }
+            return new DTCertificadoPrograma(nick, estudiante.getNombre() + " " + estudiante.getApellido(),
+                    programa.getNombre(), LocalDate.now(), resultados);
+        } finally { em.close(); }
+    }
+
     public List<String> listarNombresInstitutosDocente(String nickDocente) {
         if (nickDocente == null || nickDocente.isBlank()) {
             throw new SecurityException("Se requiere un docente registrado.");
@@ -1091,7 +1133,7 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
             .getSingleResult();
 
             if (existentes > 0) {
-                throw new IllegalStateException(
+                throw new ValoracionDuplicadaException(
                         "Ya valoraste este curso."
                 );
             }
@@ -1112,6 +1154,12 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
         } catch (RuntimeException e) {
             if (tx.isActive()) {
                 tx.rollback();
+            }
+            // La restricción única también protege dos envíos concurrentes.
+            for (Throwable causa = e; causa != null; causa = causa.getCause()) {
+                if (causa instanceof java.sql.SQLException sql && sql.getErrorCode() == 1062) {
+                    throw new ValoracionDuplicadaException("Ya valoraste este curso.", e);
+                }
             }
             throw e;
 
@@ -1502,13 +1550,23 @@ public Curso buscarCursoInstituto(String nombre, Instituto instituto) {
                     .map(e -> new soap.dto.DTEdicionResumen(e.getNombre(), e.getFechaInicio(),
                             e.getFechaFin(), e.getCupo(), e.getImagen() != null && !e.getImagen().isBlank()))
                     .toList();
-            return new soap.dto.DTCursoConsulta(curso.getNombre(), curso.getDescripcion(),
+            var datos = new soap.dto.DTCursoConsulta(curso.getNombre(), curso.getDescripcion(),
                     curso.getDuracion(), curso.getCantidadHoras(), curso.getCreditos(), curso.getUrl(),
                     curso.getFechaRegistro(), curso.getInstituto() == null ? null : curso.getInstituto().getNombre(),
                     curso.getImagen() != null && !curso.getImagen().isBlank(),
                     curso.getPrevias().stream().map(Curso::getNombre).toList(),
                     curso.getCategorias().stream().map(Categoria::getNombre).toList(),
                     curso.getProgramasFormacion().stream().map(ProgramaFormacion::getNombre).toList(), ediciones);
+            var cantidades = new ArrayList<Long>(java.util.Collections.nCopies(5, 0L));
+            var grupos = em.createQuery("SELECT v.puntuacion, COUNT(v) FROM ValoracionCurso v "
+                    + "WHERE v.curso.id = :curso GROUP BY v.puntuacion", Object[].class)
+                    .setParameter("curso", curso.getId()).getResultList();
+            for (Object[] grupo : grupos) {
+                int puntuacion = ((Number) grupo[0]).intValue();
+                if (puntuacion >= 1 && puntuacion <= 5) cantidades.set(puntuacion - 1, ((Number) grupo[1]).longValue());
+            }
+            datos.asignarValoraciones(cantidades);
+            return datos;
         } finally {
             em.close();
         }

@@ -20,6 +20,13 @@
 
     <dependencies>
 
+        <!-- DTO y enumeraciones utilizados directamente por los formularios Swing. -->
+        <dependency>
+            <groupId>com.mycompany</groupId>
+            <artifactId>datos-compartidos</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Servidor Central -->
         <dependency>
             <groupId>com.mycompany</groupId>

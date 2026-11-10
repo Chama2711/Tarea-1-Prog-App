@@ -1,13 +1,16 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.*,web.BusquedaServlet.Resultado" %>
+<%@ taglib prefix="ed" tagdir="/WEB-INF/tags" %>
 <%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
 <%
     List<Resultado> resultados = (List<Resultado>) request.getAttribute("resultados");
+    Map<String, web.soap.generado.DtCursoConsulta> cursosPorNombre =
+            (Map<String, web.soap.generado.DtCursoConsulta>) request.getAttribute("cursosPorNombre");
     String tituloPagina = "Resultados de búsqueda";
     String bajadaPagina = resultados.size() + " resultados";
     String paginaActiva = "busqueda";
 %>
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Búsqueda | edEXT</title><link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5"></head><body>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Búsqueda | edEXT</title><link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=6"></head><body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
 <main id="contenido" class="contenedor contenido disposicion-web">
 <%@ include file="/WEB-INF/vistas/fragmentos/lateral.jspf" %>
@@ -35,6 +38,9 @@
     <article class="oferta-fila"><img src="${pageContext.request.contextPath}/imagen-<%= resultado.tipo() %>?nombre=<%= parametro(resultado.nombre()) %>" alt="Imagen de <%= escapar(resultado.nombre()) %>"><div>
         <span class="categoria-chip"><%= resultado.tipo().equals("curso") ? "Curso" : "Programa" %></span>
         <h2><%= escapar(resultado.nombre()) %></h2><p><%= escapar(resultado.descripcion()) %></p>
+        <% if (resultado.tipo().equals("curso")) { var puntajeCurso = cursosPorNombre.get(resultado.nombre()); %>
+        <ed:puntaje promedio="<%= puntajeCurso.getPromedioValoraciones() %>" total="<%= puntajeCurso.getTotalValoraciones() %>" />
+        <% } %>
         <p class="texto-secundario">Publicado: <%= fecha(resultado.publicacion()) %></p>
         <a class="boton boton-pequeno" href="${pageContext.request.contextPath}/<%= resultado.tipo() %>?nombre=<%= parametro(resultado.nombre()) %>">Ver detalle</a>
     </div></article>
