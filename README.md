@@ -77,6 +77,14 @@ Después de actualizar las operaciones SOAP, reinicien el central y vuelvan a de
 
 Si apagan el central con la web ya iniciada, el menú muestra avisos en lugar de los institutos y las categorías. Al volver a iniciar el central y recargar la página, el listado se recupera.
 
+## Valoraciones de cursos (Tarea 3)
+
+Como estudiante, entren en **Valorar un curso** desde el menú. Aparecen los cursos en los que tienen una inscripción aceptada; cada curso admite una única puntuación del 1 al 5. La consulta muestra el promedio numérico y la puntuación propia.
+
+Después de actualizar el proyecto, compilen desde la raíz, reinicien el central y desplieguen el WAR actualizado. Si usan una base anterior y todavía no existe `VALORACION_CURSO`, apliquen una vez `migraciones/2026-11-09-valoraciones.sql`.
+
+Para integrar la interfaz de Adriano, `ClienteCatalogoSoap` ofrece `registrarValoracionCurso`, `obtenerPromedioValoraciones` y `obtenerValoracionEstudiante`. La consulta del curso también devuelve el promedio, el total y `cantidadPorPuntuacion` (cantidades ordenadas de 1 a 5). La presentación con estrellas y barras queda pendiente de su interfaz.
+
 ## Datos adicionales de Tarea 2
 
 Para esta prueba de institutos alcanza la carga inicial. Si necesitan los datos adicionales, ejecuten después `persistencia.CargarDatosPruebaTarea2`: requiere la variable `EDEXT_DB_PASSWORD` y las imágenes originales en `%USERPROFILE%\Descargas\edext-imagenes-tarea2`, con sus subcarpetas. Ese cargador rechaza una variable no definida, incluso si MySQL usa contraseña vacía.

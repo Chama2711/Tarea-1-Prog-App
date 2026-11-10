@@ -10,6 +10,16 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class DTCursoConsultaTest {
+    @Test public void resumenViajaPorXmlYConservaLosCincoPuntajes() throws Exception {
+        var original = new DTCursoConsulta();
+        original.asignarValoraciones(List.of(0L, 1L, 0L, 0L, 3L));
+        var copia = idaYVuelta(original);
+        assertEquals(4, copia.getTotalValoraciones());
+        assertEquals(4.25, copia.getPromedioValoraciones(), .001);
+        assertEquals(original.getValoracionesPorPuntuacion(), copia.getValoracionesPorPuntuacion());
+        original.asignarValoraciones(List.of(0L, 0L, 0L, 0L, 0L));
+        assertEquals(0, original.getPromedioValoraciones(), .001);
+    }
     private DTCursoConsulta idaYVuelta(DTCursoConsulta curso) throws Exception {
         var contexto = JAXBContext.newInstance(DTCursoConsulta.class);
         var salida = new StringWriter();

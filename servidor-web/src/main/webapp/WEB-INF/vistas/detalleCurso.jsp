@@ -69,47 +69,9 @@
                 && usuarioSesion.getRol() == DTAutenticacion.Rol.ESTUDIANTE) { %>
 
             <section class="panel" aria-labelledby="titulo-valoracion">
-
-                <h2 id="titulo-valoracion">Valorar este curso</h2>
-
-                <p class="texto-secundario">
-                    La valoración de cursos estará disponible
-                    cuando se complete la integración
-                    con el Servidor Central.
-                </p>
-
-                <div class="campo">
-                    <label for="valoracionCurso">
-                        Puntuación
-                    </label>
-
-                    <select id="valoracionCurso"
-                            name="valoracion"
-                            disabled>
-
-                        <option value="">
-                            Seleccioná una puntuación
-                        </option>
-
-                        <% for (int puntuacion = 1;
-                                puntuacion <= 5;
-                                puntuacion++) { %>
-
-                            <option value="<%= puntuacion %>">
-                                <%= puntuacion %>
-                            </option>
-
-                        <% } %>
-
-                    </select>
-                </div>
-
-                <button type="button"
-                        class="boton"
-                        disabled>
-                    Guardar valoración
-                </button>
-
+                <h2 id="titulo-valoracion">Valoración de cursos</h2>
+                <p class="texto-secundario">Elegí uno de los cursos en los que participás para consultar su promedio y dejar tu puntuación.</p>
+                <a class="boton" href="${pageContext.request.contextPath}/valorar-curso">Ver cursos para valorar</a>
             </section>
 
         <% } %>

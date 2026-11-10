@@ -23,6 +23,10 @@ public final class DTCursoConsulta {
     private LocalDate fechaRegistro;
     private String nombreInstituto;
     private boolean tieneImagen;
+    private double promedioValoraciones;
+    private long totalValoraciones;
+    @XmlElement(name = "cantidadPorPuntuacion")
+    private List<Long> valoracionesPorPuntuacion = new ArrayList<>(List.of(0L, 0L, 0L, 0L, 0L));
     @XmlElement(name = "previa")
     private List<String> previas = new ArrayList<>();
     @XmlElement(name = "categoria")
@@ -55,6 +59,20 @@ public final class DTCursoConsulta {
     }
 
     public String getNombre() { return nombre; }
+    public double getPromedioValoraciones() { return promedioValoraciones; }
+    public long getTotalValoraciones() { return totalValoraciones; }
+    public List<Long> getValoracionesPorPuntuacion() { return List.copyOf(valoracionesPorPuntuacion); }
+
+    public void asignarValoraciones(List<Long> cantidades) {
+        if (cantidades.size() != 5 || cantidades.stream().anyMatch(n -> n == null || n < 0)) {
+            throw new IllegalArgumentException("Se requieren cinco cantidades no negativas.");
+        }
+        valoracionesPorPuntuacion = new ArrayList<>(cantidades);
+        totalValoraciones = cantidades.stream().mapToLong(Long::longValue).sum();
+        double suma = 0;
+        for (int i = 0; i < 5; i++) suma += (i + 1.0) * cantidades.get(i);
+        promedioValoraciones = totalValoraciones == 0 ? 0 : suma / totalValoraciones;
+    }
     public String getDescripcion() { return descripcion; }
     public String getDuracion() { return duracion; }
     public int getCantidadHoras() { return cantidadHoras; }

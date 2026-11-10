@@ -1091,7 +1091,7 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
             .getSingleResult();
 
             if (existentes > 0) {
-                throw new IllegalStateException(
+                throw new ValoracionDuplicadaException(
                         "Ya valoraste este curso."
                 );
             }
@@ -1112,6 +1112,12 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
         } catch (RuntimeException e) {
             if (tx.isActive()) {
                 tx.rollback();
+            }
+            // La restricción única también protege dos envíos concurrentes.
+            for (Throwable causa = e; causa != null; causa = causa.getCause()) {
+                if (causa instanceof java.sql.SQLException sql && sql.getErrorCode() == 1062) {
+                    throw new ValoracionDuplicadaException("Ya valoraste este curso.", e);
+                }
             }
             throw e;
 
@@ -1502,13 +1508,23 @@ public Curso buscarCursoInstituto(String nombre, Instituto instituto) {
                     .map(e -> new soap.dto.DTEdicionResumen(e.getNombre(), e.getFechaInicio(),
                             e.getFechaFin(), e.getCupo(), e.getImagen() != null && !e.getImagen().isBlank()))
                     .toList();
-            return new soap.dto.DTCursoConsulta(curso.getNombre(), curso.getDescripcion(),
+            var datos = new soap.dto.DTCursoConsulta(curso.getNombre(), curso.getDescripcion(),
                     curso.getDuracion(), curso.getCantidadHoras(), curso.getCreditos(), curso.getUrl(),
                     curso.getFechaRegistro(), curso.getInstituto() == null ? null : curso.getInstituto().getNombre(),
                     curso.getImagen() != null && !curso.getImagen().isBlank(),
                     curso.getPrevias().stream().map(Curso::getNombre).toList(),
                     curso.getCategorias().stream().map(Categoria::getNombre).toList(),
                     curso.getProgramasFormacion().stream().map(ProgramaFormacion::getNombre).toList(), ediciones);
+            var cantidades = new ArrayList<Long>(java.util.Collections.nCopies(5, 0L));
+            var grupos = em.createQuery("SELECT v.puntuacion, COUNT(v) FROM ValoracionCurso v "
+                    + "WHERE v.curso.id = :curso GROUP BY v.puntuacion", Object[].class)
+                    .setParameter("curso", curso.getId()).getResultList();
+            for (Object[] grupo : grupos) {
+                int puntuacion = ((Number) grupo[0]).intValue();
+                if (puntuacion >= 1 && puntuacion <= 5) cantidades.set(puntuacion - 1, ((Number) grupo[1]).longValue());
+            }
+            datos.asignarValoraciones(cantidades);
+            return datos;
         } finally {
             em.close();
         }
