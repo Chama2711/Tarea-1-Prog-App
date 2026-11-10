@@ -1,5 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?><!-- Published by XML-WS Runtime (https://github.com/eclipse-ee4j/metro-jax-ws). Runtime's version is XML-WS Runtime 4.0.5 git-revision#c828e2e. --><xs:schema xmlns:tns="http://soap.edext/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://soap.edext/">
 
+<xs:element name="cerrarEdicion" type="tns:cerrarEdicion"/>
+
+<xs:element name="cerrarEdicionResponse" type="tns:cerrarEdicionResponse"/>
+
+<xs:element name="consultarResultadosEdicion" type="tns:consultarResultadosEdicion"/>
+
+<xs:element name="consultarResultadosEdicionResponse" type="tns:consultarResultadosEdicionResponse"/>
+
 <xs:element name="listarAceptadosEdicion" type="tns:listarAceptadosEdicion"/>
 
 <xs:element name="listarAceptadosEdicionResponse" type="tns:listarAceptadosEdicionResponse"/>
@@ -7,6 +15,21 @@
 <xs:element name="listarEdicionesDocente" type="tns:listarEdicionesDocente"/>
 
 <xs:element name="listarEdicionesDocenteResponse" type="tns:listarEdicionesDocenteResponse"/>
+
+<xs:element name="registrarCalificacion" type="tns:registrarCalificacion"/>
+
+<xs:element name="registrarCalificacionResponse" type="tns:registrarCalificacionResponse"/>
+
+<xs:complexType name="cerrarEdicion">
+<xs:sequence>
+<xs:element name="nickDocente" type="xs:string" minOccurs="0"/>
+<xs:element name="nombreEdicion" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="cerrarEdicionResponse">
+<xs:sequence/>
+</xs:complexType>
 
 <xs:complexType name="listarAceptadosEdicion">
 <xs:sequence>
@@ -33,6 +56,29 @@
 </xs:sequence>
 </xs:complexType>
 
+<xs:complexType name="consultarResultadosEdicion">
+<xs:sequence>
+<xs:element name="nickDocente" type="xs:string" minOccurs="0"/>
+<xs:element name="nombreEdicion" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="consultarResultadosEdicionResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:dtResultadoEvaluacionSoap" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="dtResultadoEvaluacionSoap">
+<xs:sequence>
+<xs:element name="idInscripcion" type="xs:long" minOccurs="0"/>
+<xs:element name="nicknameEstudiante" type="xs:string" minOccurs="0"/>
+<xs:element name="nombreEstudiante" type="xs:string" minOccurs="0"/>
+<xs:element name="calificacion" type="xs:int" minOccurs="0"/>
+<xs:element name="fechaCalificacion" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
 <xs:complexType name="listarEdicionesDocente">
 <xs:sequence>
 <xs:element name="nickDocente" type="xs:string" minOccurs="0"/>
@@ -43,5 +89,18 @@
 <xs:sequence>
 <xs:element name="return" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
 </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="registrarCalificacion">
+<xs:sequence>
+<xs:element name="nickDocente" type="xs:string" minOccurs="0"/>
+<xs:element name="nombreEdicion" type="xs:string" minOccurs="0"/>
+<xs:element name="idInscripcion" type="xs:long" minOccurs="0"/>
+<xs:element name="nota" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="registrarCalificacionResponse">
+<xs:sequence/>
 </xs:complexType>
 </xs:schema>

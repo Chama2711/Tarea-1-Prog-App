@@ -1,6 +1,7 @@
 package web;
 
 import jakarta.servlet.ServletException;
+import jakarta.xml.ws.WebServiceException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
@@ -11,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import logica.DTAutenticacion;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
 
 @WebServlet(name = "AltaCursoServlet", urlPatterns = {"/alta-curso"})
 @MultipartConfig(maxFileSize = 5 * 1024 * 1024, maxRequestSize = 6 * 1024 * 1024)
@@ -44,7 +45,7 @@ public class AltaCursoServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No se pudo recibir la imagen. Volvé a enviar el formulario.");
             return;
         }
-        IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+        ClienteCatalogoSoap servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
         try {
             int horas = FormulariosDocente.entero(FormulariosDocente.valor(request, "horas"), "horas");
             int creditos = FormulariosDocente.entero(FormulariosDocente.valor(request, "creditos"), "créditos");
@@ -70,9 +71,10 @@ public class AltaCursoServlet extends HttpServlet {
 
     private void mostrarFormulario(HttpServletRequest request, HttpServletResponse response,
             DTAutenticacion docente) throws ServletException, IOException {
-        IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+        ClienteCatalogoSoap servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
         try {
-            List<String> institutos = servidor.listarNombresInstitutosDocente(docente.getNick());
+            List<String> institutos = InicializadorAplicacion.getClienteCatalogo(getServletContext())
+                    .listarInstitutosDocente(docente.getNick());
             String instituto = FormulariosDocente.valor(request, "instituto").trim();
             if (instituto.isEmpty() && institutos.size() == 1) instituto = institutos.get(0);
             if (!instituto.isEmpty() && !institutos.contains(instituto)) {
@@ -80,7 +82,7 @@ public class AltaCursoServlet extends HttpServlet {
                 return;
             }
             request.setAttribute("institutos", institutos);
-            request.setAttribute("categorias", servidor.listarNombresCategorias());
+            request.setAttribute("categorias", InicializadorAplicacion.getClienteCatalogo(getServletContext()).listarCategorias());
             Map<String, List<String>> previasPorInstituto = new LinkedHashMap<>();
             for (String nombre : institutos) {
                 previasPorInstituto.put(nombre, servidor.listarNombresCursosPorInstituto(nombre));
@@ -91,6 +93,10 @@ public class AltaCursoServlet extends HttpServlet {
             request.setAttribute("categoriasSeleccionadas", FormulariosDocente.seleccion(request, "categorias"));
             request.setAttribute("previasSeleccionadas", FormulariosDocente.seleccion(request, "previas"));
             request.getRequestDispatcher(VISTA).forward(request, response);
+        } catch (WebServiceException e) {
+            getServletContext().log("No se pudieron consultar los institutos o las categorías por SOAP.", e);
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No se pudieron cargar los institutos o las categorías. Intentá nuevamente más tarde.");
         } catch (SecurityException e) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
         }

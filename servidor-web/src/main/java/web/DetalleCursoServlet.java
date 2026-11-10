@@ -7,13 +7,12 @@ package web;
 import java.io.IOException;
 
 import jakarta.servlet.ServletException;
+import jakarta.xml.ws.WebServiceException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import logica.Curso;
-import logica.IServidorCentral;
 
 @WebServlet(name = "DetalleCursoServlet", urlPatterns = {"/curso"})
 public class DetalleCursoServlet extends HttpServlet {
@@ -33,39 +32,20 @@ public class DetalleCursoServlet extends HttpServlet {
             return;
         }
 
-        IServidorCentral servidor =
-                InicializadorAplicacion.getServidor(getServletContext());
-
-        Curso curso = servidor.buscarCurso(nombre);
-
-        if (curso == null) {
-            response.sendError(
-                    HttpServletResponse.SC_NOT_FOUND,
-                    "El curso solicitado no existe."
-            );
-            return;
-        }
-
-        request.setAttribute("curso", curso);
-        
         try {
-
-            request.setAttribute(
-                    "categorias",
-                    servidor.listarCategoriasCurso(curso.getNombre())
-            );
-
-            request.setAttribute(
-                    "ediciones",
-                    servidor.listarEdicionesCurso(curso)
-            );
-
-        } catch (Exception e) {
-
-            throw new ServletException(
-                    "Error al obtener los datos del curso.",
-                    e
-            );
+            var curso = InicializadorAplicacion.getClienteCatalogo(getServletContext()).consultarCurso(nombre);
+            if (curso == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "El curso solicitado no existe.");
+                return;
+            }
+            request.setAttribute("curso", curso);
+            request.setAttribute("categorias", curso.getCategoria());
+            request.setAttribute("ediciones", curso.getEdicion());
+        } catch (WebServiceException error) {
+            getServletContext().log("No se pudo consultar el detalle del curso por SOAP.", error);
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No se pudo cargar el curso. Intentá nuevamente más tarde.");
+            return;
         }
 
         request.getRequestDispatcher(

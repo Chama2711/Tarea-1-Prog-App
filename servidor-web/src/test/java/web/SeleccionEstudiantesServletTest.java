@@ -21,12 +21,18 @@ public class SeleccionEstudiantesServletTest {
                 LocalDate.now().plusDays(1),LocalDate.now(),1,true,false,List.of());
         List<DTEdicionConsulta> ediciones=List.of(edicion);
         RuntimeException fallo;
+        boolean falloInstitutos;
         int estado=200,guardados,consultas;
         String vista,redireccion,actor;
         OrdenInscripciones orden;
         String nombreCurso="Curso";
         Map<Long,EstadoInscripcion> decisiones;
         final IServidorCentral central=proxy(IServidorCentral.class,(p,m,a)-> {
+            if (falloInstitutos && (m.getName().equals("listarNombresInstitutos")
+                    || m.getName().equals("listarNombresInstitutosDocente"))) {
+                throw new IllegalStateException("Detalle privado de conexión SOAP");
+            }
+
             consultas++;
             return switch(m.getName()) {
                 case "listarNombresInstitutos" -> List.of("INCO");
@@ -44,8 +50,17 @@ public class SeleccionEstudiantesServletTest {
                 default -> throw new AssertionError(m.getName());
             };
         });
+        web.soap.ClienteCatalogoSoap clienteCatalogo;
+        final IServidorCentral localSinInstitutos = proxy(IServidorCentral.class, (p, m, a) -> {
+            if (m.getName().equals("listarNombresInstitutos")
+                    || m.getName().equals("listarNombresInstitutosDocente")) {
+                throw new AssertionError("Consulta local de institutos: " + m.getName());
+            }
+            try { return m.invoke(central, a); }
+            catch (java.lang.reflect.InvocationTargetException e) { throw e.getCause(); }
+        });
         final ServletContext contexto=proxy(ServletContext.class,(p,m,a)->switch(m.getName()) {
-            case "getAttribute" -> central;case "log" -> null;default -> throw new AssertionError(m.getName());
+            case "getAttribute" -> ((String) a[0]).endsWith(".clienteCatalogo") ? clienteCatalogo : localSinInstitutos;case "log" -> null;default -> throw new AssertionError(m.getName());
         });
         final HttpSession sesion=proxy(HttpSession.class,(p,m,a)->usuario);
         final HttpServletRequest request=proxy(HttpServletRequest.class,(p,m,a)->switch(m.getName()) {
@@ -75,7 +90,11 @@ public class SeleccionEstudiantesServletTest {
                 case "getServletContext" -> contexto;case "getServletName" -> "seleccion-test";
                 case "getInitParameter" -> null;default -> throw new AssertionError(m.getName());
             }));
+            try (var soap = new CatalogoSoapPrueba(central)) {
+                clienteCatalogo = soap.cliente;
             if(post)servlet.doPost(request,response);else servlet.doGet(request,response);
+            }
+
         }
     }
     @Test public void visitanteYEstudianteNoConsultanNiGuardan()throws Exception {
@@ -140,5 +159,13 @@ public class SeleccionEstudiantesServletTest {
         s.ejecutar(true);assertEquals(0,s.guardados);assertNotNull(s.vista);
         assertEquals(Map.of(1L,EstadoInscripcion.ACEPTADA),s.atributos.get("decisiones"));
         assertEquals("No quedan plazas.",s.atributos.get("error"));
+    }
+
+    @Test public void falloSoapImpideConsultarYGuardarSeleccion() throws Exception {
+        for (boolean post : List.of(false, true)) {
+            var s = new Escenario(); s.falloInstitutos = true;
+            s.valor("decision_1", "ACEPTADA"); s.ejecutar(post);
+            assertEquals(503, s.estado); assertEquals(0, s.guardados); assertNull(s.vista);
+        }
     }
 }

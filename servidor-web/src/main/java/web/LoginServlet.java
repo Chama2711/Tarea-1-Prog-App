@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import logica.DTAutenticacion;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
@@ -37,8 +37,8 @@ public class LoginServlet extends HttpServlet {
         String clave = request.getParameter("clave");
 
         try {
-            IServidorCentral servidor =
-                    InicializadorAplicacion.getServidor(getServletContext());
+            ClienteCatalogoSoap servidor =
+                    InicializadorAplicacion.getClienteCatalogo(getServletContext());
 
             DTAutenticacion usuario =
                     servidor.autenticarUsuario(identificador, clave);
@@ -50,6 +50,12 @@ public class LoginServlet extends HttpServlet {
                     request.getContextPath() + "/inicio"
             );
 
+        } catch (jakarta.xml.ws.WebServiceException error) {
+            getServletContext().log("No se pudo iniciar sesión por SOAP.", error);
+            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+            request.setAttribute("error", "El servidor central no está disponible. Intentá nuevamente más tarde.");
+            request.setAttribute("identificador", identificador);
+            request.getRequestDispatcher("/WEB-INF/vistas/login.jsp").forward(request, response);
         } catch (IllegalArgumentException e) {
 
             request.setAttribute("error", e.getMessage());

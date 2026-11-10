@@ -21,8 +21,8 @@ public class ImagenUsuarioServlet extends HttpServlet {
         }
         byte[] imagen;
         try {
-            imagen = InicializadorAplicacion.getServidor(getServletContext()).obtenerImagenUsuario(nick);
-        } catch (IOException e) {
+            imagen = InicializadorAplicacion.getClienteCatalogo(getServletContext()).obtenerImagenUsuario(nick);
+        } catch (jakarta.xml.ws.WebServiceException e) {
             getServletContext().log("No se pudo leer la imagen del usuario solicitado.", e);
             response.sendRedirect(request.getContextPath() + "/imagenes/avatar.svg");
             return;

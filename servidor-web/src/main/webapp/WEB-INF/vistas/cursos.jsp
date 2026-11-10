@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="logica.*,java.util.*" %>
+<%@ page import="web.soap.generado.DtCursoConsulta,java.util.*" %>
 <%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
 <%
-    List<Curso> cursos = (List<Curso>) request.getAttribute("cursos");
+    List<DtCursoConsulta> cursos = (List<DtCursoConsulta>) request.getAttribute("cursos");
     String tituloPagina = "Encontrá tu próximo curso.";
     String bajadaPagina = "Explorá propuestas para ampliar tus conocimientos.";
     String paginaActiva = "cursos";
@@ -28,9 +28,9 @@
         <div class="aviso">No hay cursos disponibles actualmente.</div>
     <% } else { %>
         <section class="grilla-cursos" aria-label="Cursos disponibles">
-            <% for (Curso curso : cursos) { %>
+            <% for (DtCursoConsulta curso : cursos) { %>
                 <article class="curso-tarjeta">
-                    <% if (curso.getImagen() != null && !curso.getImagen().isBlank()) { %>
+                    <% if (curso.isTieneImagen()) { %>
 
                             <img class="imagen-oferta"
                                  src="${pageContext.request.contextPath}/imagen-curso?nombre=<%= parametro(curso.getNombre()) %>"

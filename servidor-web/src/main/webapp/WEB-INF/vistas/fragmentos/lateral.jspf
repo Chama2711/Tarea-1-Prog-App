@@ -5,6 +5,7 @@
         <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>">Mi perfil</a>
         <% if (usuarioSesion.getRol() == DTAutenticacion.Rol.ESTUDIANTE) { %>
         <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>#perfil-ediciones">Mis inscripciones</a>
+        <a href="${pageContext.request.contextPath}/valorar-curso">Valorar un curso</a>
         <% } else { %>
         <a href="${pageContext.request.contextPath}/alta-curso">Crear curso</a>
         <a href="${pageContext.request.contextPath}/alta-edicion-curso">Crear edición</a>
@@ -13,6 +14,7 @@
         <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>#perfil-ediciones">Mis ediciones</a>
         <a href="${pageContext.request.contextPath}/listar-aceptados">Estudiantes aceptados</a>
         <a href="${pageContext.request.contextPath}/ingresar-evaluaciones">Ingresar evaluaciones</a>
+        <a href="${pageContext.request.contextPath}/ver-resultados-evaluaciones">Ver resultados de evaluaciones</a>
         <% } %>
     </nav>
     <% } %>
@@ -28,9 +30,12 @@
     </nav>
     <nav aria-labelledby="nav-categorias">
         <h2 id="nav-categorias">Categorías</h2>
+        <% if (request.getAttribute("errorCategorias") != null) { %>
+        <p role="alert"><%= escapar(request.getAttribute("errorCategorias")) %></p>
+        <% } %>
         <% if (request.getAttribute("navCategorias") != null) {
-            for (logica.Categoria item : (java.util.List<logica.Categoria>) request.getAttribute("navCategorias")) { %>
-        <a href="${pageContext.request.contextPath}/busqueda?categoria=<%= parametro(item.getNombre()) %>" <%= item.getNombre().equals(request.getParameter("categoria")) ? "aria-current=\"true\"" : "" %>><%= escapar(item.getNombre()) %></a>
+            for (String item : (java.util.List<String>) request.getAttribute("navCategorias")) { %>
+        <a href="${pageContext.request.contextPath}/busqueda?categoria=<%= parametro(item) %>" <%= item.equals(request.getParameter("categoria")) ? "aria-current=\"true\"" : "" %>><%= escapar(item) %></a>
         <% } } %>
     </nav>
 </aside>

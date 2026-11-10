@@ -30,6 +30,8 @@ public class EdicionCurso {
     private LocalDate fechaFin;
     private LocalDate fechaPublicacion;
     private int cupo;
+    @Column(name = "CERRADA", nullable = false)
+    private boolean cerrada = false;
     @Column(name = "IMAGEN", length = 255)
     private String imagen;
     
@@ -157,5 +159,22 @@ public void validarSeleccion(Inscripcion inscripcion, EstadoInscripcion destino,
     public void setImagen(String imagen) {
         this.imagen = imagen;
     }
+    
+    
+    public boolean isCerrada() {
+        return cerrada;
+    }
+
+    public void cerrar() {
+
+        if (cerrada) {
+            throw new IllegalStateException(
+                    "La edición ya se encuentra cerrada."
+            );
+        }
+
+        cerrada = true;
+    }
+
     
 }
