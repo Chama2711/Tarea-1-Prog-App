@@ -36,7 +36,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=6">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
     <script src="${pageContext.request.contextPath}/js/perfil.js?v=4" defer></script>
 </head>
 <body>
@@ -216,15 +216,10 @@
         <% if (!docente) { %>
         <section id="perfil-programas" class="perfil-panel" aria-labelledby="titulo-programas-usuario">
             <h3 id="titulo-programas-usuario">Programas en los que está inscripto</h3>
-            <% if (perfil.propio()) { %>
-            <p><a class="boton" href="${pageContext.request.contextPath}/certificado-programa">Tramitar certificado de programa</a></p>
-            <% } %>
             <% if (perfil.programas().isEmpty()) { %><p class="texto-secundario">No hay inscripciones a programas para mostrar.</p><% } %>
             <div class="ediciones">
             <% for (String programa : perfil.programas()) { %>
-                <article class="edicion"><h4><a href="${pageContext.request.contextPath}/programa?nombre=<%= parametro(programa) %>"><%= escapar(programa) %></a></h4>
-                    <% if (perfil.propio()) { %><a href="${pageContext.request.contextPath}/certificado-programa?programa=<%= parametro(programa) %>">Tramitar certificado</a><% } %>
-                </article>
+                <article class="edicion"><h4><a href="${pageContext.request.contextPath}/programa?nombre=<%= parametro(programa) %>"><%= escapar(programa) %></a></h4></article>
             <% } %>
             </div>
         </section>

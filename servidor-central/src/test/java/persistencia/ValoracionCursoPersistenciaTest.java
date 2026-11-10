@@ -38,7 +38,6 @@ public class ValoracionCursoPersistenciaTest {
         int conexiones;
 
         ValoracionCurso guardada;
-        RuntimeException falloCommit;
 
         final EntityTransaction tx = proxy(
                 EntityTransaction.class,
@@ -52,7 +51,6 @@ public class ValoracionCursoPersistenciaTest {
                     case "isActive" -> activa;
 
                     case "commit" -> {
-                        if (falloCommit != null) throw falloCommit;
                         commits++;
                         activa = false;
                         yield null;
@@ -195,7 +193,7 @@ public class ValoracionCursoPersistenciaTest {
         s.valoracionesExistentes = 1L;
 
         assertThrows(
-                ValoracionDuplicadaException.class,
+                IllegalStateException.class,
                 () -> s.valorar(3)
         );
 
@@ -217,20 +215,5 @@ public class ValoracionCursoPersistenciaTest {
 
         assertEquals(0, s.conexiones);
         assertNull(s.guardada);
-    }
-    @Test
-    public void duplicadoDetectadoPorMySQLTambienEsUnRechazoDeNegocio() {
-        var s = new Escenario();
-        s.falloCommit = new RollbackException(new java.sql.SQLException("Duplicate entry", "23000", 1062));
-        assertThrows(ValoracionDuplicadaException.class, () -> s.valorar(4));
-        assertEquals(0, s.commits); assertEquals(1, s.rollbacks); assertTrue(s.cerrado);
-    }
-
-    @Test
-    public void otroErrorDeBaseNoSeConfundeConUnaValoracionDuplicada() {
-        var s = new Escenario();
-        s.falloCommit = new RollbackException(new java.sql.SQLException("Fallo de conexión", "08000", 2006));
-        var error = assertThrows(RollbackException.class, () -> s.valorar(4));
-        assertSame(s.falloCommit, error); assertEquals(1, s.rollbacks); assertTrue(s.cerrado);
     }
 }

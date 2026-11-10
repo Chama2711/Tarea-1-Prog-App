@@ -38,13 +38,6 @@ public class ConsultaCursoTest {
             EntityManager em = proxy(EntityManager.class, (p, m, a) -> switch (m.getName()) {
                 case "close" -> { cerrada = true; yield null; }
                 case "createQuery" -> {
-                    if (a[1] == Object[].class) {
-                        yield proxy(TypedQuery.class, (q, n, b) -> switch (n.getName()) {
-                            case "setParameter" -> q;
-                            case "getResultList" -> List.of(new Object[]{2, 1L}, new Object[]{5, 3L});
-                            default -> throw new AssertionError(n.getName());
-                        });
-                    }
                     consultas++;
                     assertEquals(Curso.class, a[1]);
                     assertTrue(((String) a[0]).contains("LOWER(c.nombre) = LOWER(:nombre)"));
@@ -78,9 +71,6 @@ public class ConsultaCursoTest {
         assertEquals(List.of("Previa"), dto.getPrevias());
         assertEquals(List.of("Tecnología"), dto.getCategorias());
         assertEquals(List.of("Programa ñ"), dto.getProgramas());
-        assertEquals(4, dto.getTotalValoraciones());
-        assertEquals(4.25, dto.getPromedioValoraciones(), 0.001);
-        assertEquals(List.of(0L, 1L, 0L, 0L, 3L), dto.getValoracionesPorPuntuacion());
         var edicion = dto.getEdiciones().get(0);
         assertEquals("Edición 2026", edicion.getNombre()); assertEquals(-1, edicion.getCupo());
         assertEquals(LocalDate.of(2026, 11, 5), edicion.getFechaInicio());

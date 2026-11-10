@@ -77,14 +77,6 @@ Después de actualizar las operaciones SOAP, reinicien el central y vuelvan a de
 
 Si apagan el central con la web ya iniciada, el menú muestra avisos en lugar de los institutos y las categorías. Al volver a iniciar el central y recargar la página, el listado se recupera.
 
-## Valoraciones y certificados (Tarea 3)
-
-- Estudiante: **Valorar un curso** en el menú. Solo aparecen cursos con inscripciones aceptadas; se permite un voto del 1 al 5 por curso.
-- La búsqueda y el detalle del curso muestran el promedio con estrellas. El detalle incluye la cantidad de votos de cada puntuación.
-- En **Mi perfil → Programas**, elijan **Tramitar certificado**. Se descarga un PDF si todos los cursos del programa están aprobados con **6 o más** en ediciones cerradas.
-- Después de actualizar el proyecto, compilen desde la raíz, reinicien el central y desplieguen el WAR nuevo. Maven descarga automáticamente la biblioteca PDFBox; no deben instalar un programa para generar PDF.
-- Para una base anterior a estas funciones, apliquen una sola vez los scripts de `migraciones/2026-11-07-evaluaciones.sql` y `migraciones/2026-11-09-valoraciones.sql` si todavía faltan esas columnas o la tabla. No es necesario borrar los datos.
-
 ## Datos adicionales de Tarea 2
 
 Para esta prueba de institutos alcanza la carga inicial. Si necesitan los datos adicionales, ejecuten después `persistencia.CargarDatosPruebaTarea2`: requiere la variable `EDEXT_DB_PASSWORD` y las imágenes originales en `%USERPROFILE%\Descargas\edext-imagenes-tarea2`, con sus subcarpetas. Ese cargador rechaza una variable no definida, incluso si MySQL usa contraseña vacía.

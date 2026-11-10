@@ -1,6 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.*,web.soap.generado.DtCursoConsulta,web.soap.generado.DtEdicionResumen" %>
-<%@ taglib prefix="ed" tagdir="/WEB-INF/tags" %>
 <%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
 <%
     DtCursoConsulta curso = (DtCursoConsulta) request.getAttribute("curso");
@@ -16,7 +15,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=6">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/fragmentos/cabecera.jspf" %>
@@ -44,18 +43,6 @@
 
 
         <h1><%= escapar(curso.getNombre()) %></h1>
-        <ed:puntaje promedio="<%= curso.getPromedioValoraciones() %>" total="<%= curso.getTotalValoraciones() %>" />
-        <section class="resumen-puntajes" aria-labelledby="titulo-resumen-puntajes">
-            <h2 id="titulo-resumen-puntajes">Valoraciones de estudiantes</h2>
-            <% for (int puntuacion = 5; puntuacion >= 1; puntuacion--) {
-                long cantidad = curso.getCantidadPorPuntuacion().size() == 5
-                        ? curso.getCantidadPorPuntuacion().get(puntuacion - 1) : 0;
-            %>
-            <div class="fila-puntaje"><label for="puntaje-<%= puntuacion %>"><%= puntuacion %> <%= puntuacion == 1 ? "estrella" : "estrellas" %></label>
-                <meter id="puntaje-<%= puntuacion %>" min="0" max="<%= Math.max(1, curso.getTotalValoraciones()) %>" value="<%= cantidad %>"><%= cantidad %></meter>
-                <span><%= cantidad %></span>
-            </div><% } %>
-        </section>
         <p><%= escapar(curso.getDescripcion()) %></p>
         <% String urlCurso = curso.getUrl(); if (urlCurso != null && (urlCurso.startsWith("https://") || urlCurso.startsWith("http://"))) { %>
         <p><a href="<%= escapar(urlCurso) %>" target="_blank" rel="noopener">Acceder al sitio del curso</a></p><% } %>
@@ -82,9 +69,47 @@
                 && usuarioSesion.getRol() == DTAutenticacion.Rol.ESTUDIANTE) { %>
 
             <section class="panel" aria-labelledby="titulo-valoracion">
-                <h2 id="titulo-valoracion">Valoración de cursos</h2>
-                <p class="texto-secundario">Elegí uno de los cursos en los que participás para consultar su promedio y dejar tu puntuación.</p>
-                <a class="boton" href="${pageContext.request.contextPath}/valorar-curso">Ver cursos para valorar</a>
+
+                <h2 id="titulo-valoracion">Valorar este curso</h2>
+
+                <p class="texto-secundario">
+                    La valoración de cursos estará disponible
+                    cuando se complete la integración
+                    con el Servidor Central.
+                </p>
+
+                <div class="campo">
+                    <label for="valoracionCurso">
+                        Puntuación
+                    </label>
+
+                    <select id="valoracionCurso"
+                            name="valoracion"
+                            disabled>
+
+                        <option value="">
+                            Seleccioná una puntuación
+                        </option>
+
+                        <% for (int puntuacion = 1;
+                                puntuacion <= 5;
+                                puntuacion++) { %>
+
+                            <option value="<%= puntuacion %>">
+                                <%= puntuacion %>
+                            </option>
+
+                        <% } %>
+
+                    </select>
+                </div>
+
+                <button type="button"
+                        class="boton"
+                        disabled>
+                    Guardar valoración
+                </button>
+
             </section>
 
         <% } %>

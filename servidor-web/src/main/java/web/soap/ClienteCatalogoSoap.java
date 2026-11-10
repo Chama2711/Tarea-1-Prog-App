@@ -72,10 +72,6 @@ public final class ClienteCatalogoSoap {
         return servicio.getCatalogoPort().consultarCurso(nombreCurso);
     }
 
-    public byte[] generarCertificadoPrograma(String nickEstudiante, String nombrePrograma) {
-        return ejecutar(() -> servicio.getCatalogoPort().generarCertificadoPrograma(nickEstudiante, nombrePrograma));
-    }
-
     public byte[] obtenerImagenCurso(String nombreCurso) {
         return servicio.getCatalogoPort().obtenerImagenCurso(nombreCurso);
     }
@@ -232,36 +228,6 @@ public final class ClienteCatalogoSoap {
         ejecutar(() -> { servicio.getCatalogoPort().seleccionarEstudiantes(nick, nombreEdicion, datos); return null; });
     }
 
-    public void registrarValoracionCurso(String nickEstudiante, String nombreCurso, int puntuacion) {
-        ejecutar(() -> {
-            servicio.getCatalogoPort().registrarValoracionCurso(
-                    nickEstudiante,
-                    nombreCurso,
-                    puntuacion
-            );
-            return null;
-        });
-    }
-
-    public double obtenerPromedioValoraciones(String nombreCurso) {
-        return ejecutar(() ->
-                servicio.getCatalogoPort()
-                        .obtenerPromedioValoraciones(nombreCurso)
-        );
-    }
-
-    public Integer obtenerValoracionEstudiante(
-            String nickEstudiante,
-            String nombreCurso) {
-
-        return ejecutar(() ->
-                servicio.getCatalogoPort().obtenerValoracionEstudiante(
-                        nickEstudiante,
-                        nombreCurso
-                )
-        );
-    }
-
     private static logica.DTUsuarioConsulta usuario(web.soap.generado.DtUsuarioConsulta d) {
         return new logica.DTUsuarioConsulta(d.getNick(), d.getNombre(), d.getApellido(), d.getCorreo(),
                 fecha(d.getFechaNacimiento()), logica.DTAutenticacion.Rol.valueOf(d.getRol()), d.isTieneImagen(), d.getInstitutos());
@@ -298,7 +264,6 @@ public final class ClienteCatalogoSoap {
                 case "ACCESO" -> throw new SecurityException(detalle.getMensaje(), error);
                 case "NO_ENCONTRADO" -> throw new logica.RecursoNoEncontradoException(detalle.getMensaje());
                 case "VALIDACION" -> throw new IllegalArgumentException(detalle.getMensaje(), error);
-                case "VALORACION_DUPLICADA" -> throw new logica.ValoracionDuplicadaException(detalle.getMensaje(), error);
                 default -> throw new jakarta.xml.ws.WebServiceException("No se pudo completar la operación SOAP.", error);
             }
         }

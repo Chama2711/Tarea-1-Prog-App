@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface IServidorCentral {
-    byte[] generarCertificadoPrograma(String nickEstudiante, String nombrePrograma);
     List<DTUsuarioConsulta> listarUsuariosConsulta();
 
     DTPerfilUsuario consultarPerfilUsuario(String nick, String nickConsultante);

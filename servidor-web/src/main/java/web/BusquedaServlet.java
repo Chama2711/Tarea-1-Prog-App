@@ -50,7 +50,6 @@ public class BusquedaServlet extends HttpServlet {
                     ? Comparator.comparing(Resultado::publicacion, Comparator.nullsLast(Comparator.reverseOrder())).thenComparing(porNombre)
                     : porNombre);
             request.setAttribute("resultados", resultados);
-            request.setAttribute("cursosPorNombre", cursosPorNombre);
             request.getRequestDispatcher("/WEB-INF/vistas/busqueda.jsp").forward(request, response);
         } catch (WebServiceException error) {
             getServletContext().log("No se pudo consultar el catálogo de búsqueda por SOAP.", error);

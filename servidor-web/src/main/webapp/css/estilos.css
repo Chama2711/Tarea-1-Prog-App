@@ -475,10 +475,3 @@ h3 { margin-bottom:12px; font-size:21px; letter-spacing:-.4px; }
 .tabla-contenedor tbody tr:hover {
     background-color: #f8fafc;
 }
-/* Promedio y distribución de valoraciones (requisito 7.6). */
-.puntaje-curso { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: .7rem 0; }
-.puntaje-estrellas { position: relative; display: inline-block; color: #a5a5a5; font-size: 1.5rem; line-height: 1; white-space: nowrap; }
-.puntaje-relleno { position: absolute; inset: 0 auto 0 0; overflow: hidden; color: #a86400; }
-.resumen-puntajes { margin: 1.2rem 0; }
-.fila-puntaje { display: grid; grid-template-columns: 6rem minmax(5rem, 1fr) 3rem; gap: .7rem; align-items: center; margin: .4rem 0; }
-.fila-puntaje meter { width: 100%; height: 1.1rem; accent-color: #a86400; }

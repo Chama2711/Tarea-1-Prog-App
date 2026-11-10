@@ -4,20 +4,32 @@
 <xsd:import namespace="http://soap.edext/" schemaLocation="http://127.0.0.1:18083/edext/catalogo?xsd=1"/>
 </xsd:schema>
 </types>
-<message name="listarNicknamesDocentesPorInstituto">
-<part name="parameters" element="tns:listarNicknamesDocentesPorInstituto"/>
+<message name="listarEdicionesDocente">
+<part name="parameters" element="tns:listarEdicionesDocente"/>
 </message>
-<message name="listarNicknamesDocentesPorInstitutoResponse">
-<part name="parameters" element="tns:listarNicknamesDocentesPorInstitutoResponse"/>
+<message name="listarEdicionesDocenteResponse">
+<part name="parameters" element="tns:listarEdicionesDocenteResponse"/>
 </message>
 <message name="OperacionRechazada">
 <part name="fault" element="tns:OperacionRechazada"/>
 </message>
-<message name="consultarPerfilUsuario">
-<part name="parameters" element="tns:consultarPerfilUsuario"/>
+<message name="obtenerImagenPrograma">
+<part name="parameters" element="tns:obtenerImagenPrograma"/>
 </message>
-<message name="consultarPerfilUsuarioResponse">
-<part name="parameters" element="tns:consultarPerfilUsuarioResponse"/>
+<message name="obtenerImagenProgramaResponse">
+<part name="parameters" element="tns:obtenerImagenProgramaResponse"/>
+</message>
+<message name="obtenerImagenUsuario">
+<part name="parameters" element="tns:obtenerImagenUsuario"/>
+</message>
+<message name="obtenerImagenUsuarioResponse">
+<part name="parameters" element="tns:obtenerImagenUsuarioResponse"/>
+</message>
+<message name="listarNombresProgramas">
+<part name="parameters" element="tns:listarNombresProgramas"/>
+</message>
+<message name="listarNombresProgramasResponse">
+<part name="parameters" element="tns:listarNombresProgramasResponse"/>
 </message>
 <message name="listarAceptadosEdicion">
 <part name="parameters" element="tns:listarAceptadosEdicion"/>
@@ -25,23 +37,17 @@
 <message name="listarAceptadosEdicionResponse">
 <part name="parameters" element="tns:listarAceptadosEdicionResponse"/>
 </message>
-<message name="seleccionarEstudiantes">
-<part name="parameters" element="tns:seleccionarEstudiantes"/>
-</message>
-<message name="seleccionarEstudiantesResponse">
-<part name="parameters" element="tns:seleccionarEstudiantesResponse"/>
-</message>
-<message name="listarSeguidosConsulta">
-<part name="parameters" element="tns:listarSeguidosConsulta"/>
-</message>
-<message name="listarSeguidosConsultaResponse">
-<part name="parameters" element="tns:listarSeguidosConsultaResponse"/>
-</message>
 <message name="estaInscriptoAPrograma">
 <part name="parameters" element="tns:estaInscriptoAPrograma"/>
 </message>
 <message name="estaInscriptoAProgramaResponse">
 <part name="parameters" element="tns:estaInscriptoAProgramaResponse"/>
+</message>
+<message name="listarUsuariosConsulta">
+<part name="parameters" element="tns:listarUsuariosConsulta"/>
+</message>
+<message name="listarUsuariosConsultaResponse">
+<part name="parameters" element="tns:listarUsuariosConsultaResponse"/>
 </message>
 <message name="listarCategoriasCurso">
 <part name="parameters" element="tns:listarCategoriasCurso"/>
@@ -49,23 +55,35 @@
 <message name="listarCategoriasCursoResponse">
 <part name="parameters" element="tns:listarCategoriasCursoResponse"/>
 </message>
+<message name="listarSeguidosConsulta">
+<part name="parameters" element="tns:listarSeguidosConsulta"/>
+</message>
+<message name="listarSeguidosConsultaResponse">
+<part name="parameters" element="tns:listarSeguidosConsultaResponse"/>
+</message>
+<message name="consultarPerfilUsuario">
+<part name="parameters" element="tns:consultarPerfilUsuario"/>
+</message>
+<message name="consultarPerfilUsuarioResponse">
+<part name="parameters" element="tns:consultarPerfilUsuarioResponse"/>
+</message>
+<message name="listarCursosPorInstituto">
+<part name="parameters" element="tns:listarCursosPorInstituto"/>
+</message>
+<message name="listarCursosPorInstitutoResponse">
+<part name="parameters" element="tns:listarCursosPorInstitutoResponse"/>
+</message>
+<message name="seleccionarEstudiantes">
+<part name="parameters" element="tns:seleccionarEstudiantes"/>
+</message>
+<message name="seleccionarEstudiantesResponse">
+<part name="parameters" element="tns:seleccionarEstudiantesResponse"/>
+</message>
 <message name="altaEdicionCursoDocente">
 <part name="parameters" element="tns:altaEdicionCursoDocente"/>
 </message>
 <message name="altaEdicionCursoDocenteResponse">
 <part name="parameters" element="tns:altaEdicionCursoDocenteResponse"/>
-</message>
-<message name="altaProgramaFormacion">
-<part name="parameters" element="tns:altaProgramaFormacion"/>
-</message>
-<message name="altaProgramaFormacionResponse">
-<part name="parameters" element="tns:altaProgramaFormacionResponse"/>
-</message>
-<message name="generarCertificadoPrograma">
-<part name="parameters" element="tns:generarCertificadoPrograma"/>
-</message>
-<message name="generarCertificadoProgramaResponse">
-<part name="parameters" element="tns:generarCertificadoProgramaResponse"/>
 </message>
 <message name="agregarCursoAPrograma">
 <part name="parameters" element="tns:agregarCursoAPrograma"/>
@@ -79,41 +97,11 @@
 <message name="registrarEstudianteResponse">
 <part name="parameters" element="tns:registrarEstudianteResponse"/>
 </message>
-<message name="listarUsuariosConsulta">
-<part name="parameters" element="tns:listarUsuariosConsulta"/>
-</message>
-<message name="listarUsuariosConsultaResponse">
-<part name="parameters" element="tns:listarUsuariosConsultaResponse"/>
-</message>
-<message name="registrarValoracionCurso">
-<part name="parameters" element="tns:registrarValoracionCurso"/>
-</message>
-<message name="registrarValoracionCursoResponse">
-<part name="parameters" element="tns:registrarValoracionCursoResponse"/>
-</message>
 <message name="obtenerImagenEdicion">
 <part name="parameters" element="tns:obtenerImagenEdicion"/>
 </message>
 <message name="obtenerImagenEdicionResponse">
 <part name="parameters" element="tns:obtenerImagenEdicionResponse"/>
-</message>
-<message name="obtenerImagenUsuario">
-<part name="parameters" element="tns:obtenerImagenUsuario"/>
-</message>
-<message name="obtenerImagenUsuarioResponse">
-<part name="parameters" element="tns:obtenerImagenUsuarioResponse"/>
-</message>
-<message name="listarEdicionesDocente">
-<part name="parameters" element="tns:listarEdicionesDocente"/>
-</message>
-<message name="listarEdicionesDocenteResponse">
-<part name="parameters" element="tns:listarEdicionesDocenteResponse"/>
-</message>
-<message name="listarCursosPorInstituto">
-<part name="parameters" element="tns:listarCursosPorInstituto"/>
-</message>
-<message name="listarCursosPorInstitutoResponse">
-<part name="parameters" element="tns:listarCursosPorInstitutoResponse"/>
 </message>
 <message name="dejarDeSeguirUsuario">
 <part name="parameters" element="tns:dejarDeSeguirUsuario"/>
@@ -121,17 +109,11 @@
 <message name="dejarDeSeguirUsuarioResponse">
 <part name="parameters" element="tns:dejarDeSeguirUsuarioResponse"/>
 </message>
-<message name="listarNombresProgramas">
-<part name="parameters" element="tns:listarNombresProgramas"/>
+<message name="altaProgramaFormacion">
+<part name="parameters" element="tns:altaProgramaFormacion"/>
 </message>
-<message name="listarNombresProgramasResponse">
-<part name="parameters" element="tns:listarNombresProgramasResponse"/>
-</message>
-<message name="obtenerImagenPrograma">
-<part name="parameters" element="tns:obtenerImagenPrograma"/>
-</message>
-<message name="obtenerImagenProgramaResponse">
-<part name="parameters" element="tns:obtenerImagenProgramaResponse"/>
+<message name="altaProgramaFormacionResponse">
+<part name="parameters" element="tns:altaProgramaFormacionResponse"/>
 </message>
 <message name="esSeguidor">
 <part name="parameters" element="tns:esSeguidor"/>
@@ -139,77 +121,11 @@
 <message name="esSeguidorResponse">
 <part name="parameters" element="tns:esSeguidorResponse"/>
 </message>
-<message name="consultarEdicion">
-<part name="parameters" element="tns:consultarEdicion"/>
+<message name="listarInstitutosDocente">
+<part name="parameters" element="tns:listarInstitutosDocente"/>
 </message>
-<message name="consultarEdicionResponse">
-<part name="parameters" element="tns:consultarEdicionResponse"/>
-</message>
-<message name="consultarPrograma">
-<part name="parameters" element="tns:consultarPrograma"/>
-</message>
-<message name="consultarProgramaResponse">
-<part name="parameters" element="tns:consultarProgramaResponse"/>
-</message>
-<message name="altaCursoDocente">
-<part name="parameters" element="tns:altaCursoDocente"/>
-</message>
-<message name="altaCursoDocenteResponse">
-<part name="parameters" element="tns:altaCursoDocenteResponse"/>
-</message>
-<message name="modificarUsuario">
-<part name="parameters" element="tns:modificarUsuario"/>
-</message>
-<message name="modificarUsuarioResponse">
-<part name="parameters" element="tns:modificarUsuarioResponse"/>
-</message>
-<message name="consultarCurso">
-<part name="parameters" element="tns:consultarCurso"/>
-</message>
-<message name="consultarCursoResponse">
-<part name="parameters" element="tns:consultarCursoResponse"/>
-</message>
-<message name="obtenerImagenCurso">
-<part name="parameters" element="tns:obtenerImagenCurso"/>
-</message>
-<message name="obtenerImagenCursoResponse">
-<part name="parameters" element="tns:obtenerImagenCursoResponse"/>
-</message>
-<message name="seguirUsuario">
-<part name="parameters" element="tns:seguirUsuario"/>
-</message>
-<message name="seguirUsuarioResponse">
-<part name="parameters" element="tns:seguirUsuarioResponse"/>
-</message>
-<message name="registrarDocente">
-<part name="parameters" element="tns:registrarDocente"/>
-</message>
-<message name="registrarDocenteResponse">
-<part name="parameters" element="tns:registrarDocenteResponse"/>
-</message>
-<message name="listarCategorias">
-<part name="parameters" element="tns:listarCategorias"/>
-</message>
-<message name="listarCategoriasResponse">
-<part name="parameters" element="tns:listarCategoriasResponse"/>
-</message>
-<message name="listarInstitutos">
-<part name="parameters" element="tns:listarInstitutos"/>
-</message>
-<message name="listarInstitutosResponse">
-<part name="parameters" element="tns:listarInstitutosResponse"/>
-</message>
-<message name="autenticarUsuario">
-<part name="parameters" element="tns:autenticarUsuario"/>
-</message>
-<message name="autenticarUsuarioResponse">
-<part name="parameters" element="tns:autenticarUsuarioResponse"/>
-</message>
-<message name="listarCursos">
-<part name="parameters" element="tns:listarCursos"/>
-</message>
-<message name="listarCursosResponse">
-<part name="parameters" element="tns:listarCursosResponse"/>
+<message name="listarInstitutosDocenteResponse">
+<part name="parameters" element="tns:listarInstitutosDocenteResponse"/>
 </message>
 <message name="listarCategoriasPrograma">
 <part name="parameters" element="tns:listarCategoriasPrograma"/>
@@ -217,17 +133,11 @@
 <message name="listarCategoriasProgramaResponse">
 <part name="parameters" element="tns:listarCategoriasProgramaResponse"/>
 </message>
-<message name="listarInstitutosDocente">
-<part name="parameters" element="tns:listarInstitutosDocente"/>
+<message name="listarProgramas">
+<part name="parameters" element="tns:listarProgramas"/>
 </message>
-<message name="listarInstitutosDocenteResponse">
-<part name="parameters" element="tns:listarInstitutosDocenteResponse"/>
-</message>
-<message name="inscribirEstudianteAEdicion">
-<part name="parameters" element="tns:inscribirEstudianteAEdicion"/>
-</message>
-<message name="inscribirEstudianteAEdicionResponse">
-<part name="parameters" element="tns:inscribirEstudianteAEdicionResponse"/>
+<message name="listarProgramasResponse">
+<part name="parameters" element="tns:listarProgramasResponse"/>
 </message>
 <message name="inscribirEstudianteAPrograma">
 <part name="parameters" element="tns:inscribirEstudianteAPrograma"/>
@@ -235,84 +145,163 @@
 <message name="inscribirEstudianteAProgramaResponse">
 <part name="parameters" element="tns:inscribirEstudianteAProgramaResponse"/>
 </message>
-<message name="listarInscripcionesParaSeleccion">
-<part name="parameters" element="tns:listarInscripcionesParaSeleccion"/>
-</message>
-<message name="listarInscripcionesParaSeleccionResponse">
-<part name="parameters" element="tns:listarInscripcionesParaSeleccionResponse"/>
-</message>
-<message name="obtenerPromedioValoraciones">
-<part name="parameters" element="tns:obtenerPromedioValoraciones"/>
-</message>
-<message name="obtenerPromedioValoracionesResponse">
-<part name="parameters" element="tns:obtenerPromedioValoracionesResponse"/>
-</message>
-<message name="obtenerValoracionEstudiante">
-<part name="parameters" element="tns:obtenerValoracionEstudiante"/>
-</message>
-<message name="obtenerValoracionEstudianteResponse">
-<part name="parameters" element="tns:obtenerValoracionEstudianteResponse"/>
-</message>
 <message name="listarEdicionesParaSeleccion">
 <part name="parameters" element="tns:listarEdicionesParaSeleccion"/>
 </message>
 <message name="listarEdicionesParaSeleccionResponse">
 <part name="parameters" element="tns:listarEdicionesParaSeleccionResponse"/>
 </message>
-<message name="listarProgramas">
-<part name="parameters" element="tns:listarProgramas"/>
+<message name="inscribirEstudianteAEdicion">
+<part name="parameters" element="tns:inscribirEstudianteAEdicion"/>
 </message>
-<message name="listarProgramasResponse">
-<part name="parameters" element="tns:listarProgramasResponse"/>
+<message name="inscribirEstudianteAEdicionResponse">
+<part name="parameters" element="tns:inscribirEstudianteAEdicionResponse"/>
+</message>
+<message name="listarInscripcionesParaSeleccion">
+<part name="parameters" element="tns:listarInscripcionesParaSeleccion"/>
+</message>
+<message name="listarInscripcionesParaSeleccionResponse">
+<part name="parameters" element="tns:listarInscripcionesParaSeleccionResponse"/>
+</message>
+<message name="listarNicknamesDocentesPorInstituto">
+<part name="parameters" element="tns:listarNicknamesDocentesPorInstituto"/>
+</message>
+<message name="listarNicknamesDocentesPorInstitutoResponse">
+<part name="parameters" element="tns:listarNicknamesDocentesPorInstitutoResponse"/>
+</message>
+<message name="seguirUsuario">
+<part name="parameters" element="tns:seguirUsuario"/>
+</message>
+<message name="seguirUsuarioResponse">
+<part name="parameters" element="tns:seguirUsuarioResponse"/>
+</message>
+<message name="autenticarUsuario">
+<part name="parameters" element="tns:autenticarUsuario"/>
+</message>
+<message name="autenticarUsuarioResponse">
+<part name="parameters" element="tns:autenticarUsuarioResponse"/>
+</message>
+<message name="altaCursoDocente">
+<part name="parameters" element="tns:altaCursoDocente"/>
+</message>
+<message name="altaCursoDocenteResponse">
+<part name="parameters" element="tns:altaCursoDocenteResponse"/>
+</message>
+<message name="listarInstitutos">
+<part name="parameters" element="tns:listarInstitutos"/>
+</message>
+<message name="listarInstitutosResponse">
+<part name="parameters" element="tns:listarInstitutosResponse"/>
+</message>
+<message name="registrarDocente">
+<part name="parameters" element="tns:registrarDocente"/>
+</message>
+<message name="registrarDocenteResponse">
+<part name="parameters" element="tns:registrarDocenteResponse"/>
+</message>
+<message name="obtenerImagenCurso">
+<part name="parameters" element="tns:obtenerImagenCurso"/>
+</message>
+<message name="obtenerImagenCursoResponse">
+<part name="parameters" element="tns:obtenerImagenCursoResponse"/>
+</message>
+<message name="modificarUsuario">
+<part name="parameters" element="tns:modificarUsuario"/>
+</message>
+<message name="modificarUsuarioResponse">
+<part name="parameters" element="tns:modificarUsuarioResponse"/>
+</message>
+<message name="consultarPrograma">
+<part name="parameters" element="tns:consultarPrograma"/>
+</message>
+<message name="consultarProgramaResponse">
+<part name="parameters" element="tns:consultarProgramaResponse"/>
+</message>
+<message name="listarCategorias">
+<part name="parameters" element="tns:listarCategorias"/>
+</message>
+<message name="listarCategoriasResponse">
+<part name="parameters" element="tns:listarCategoriasResponse"/>
+</message>
+<message name="listarCursos">
+<part name="parameters" element="tns:listarCursos"/>
+</message>
+<message name="listarCursosResponse">
+<part name="parameters" element="tns:listarCursosResponse"/>
+</message>
+<message name="consultarCurso">
+<part name="parameters" element="tns:consultarCurso"/>
+</message>
+<message name="consultarCursoResponse">
+<part name="parameters" element="tns:consultarCursoResponse"/>
+</message>
+<message name="consultarEdicion">
+<part name="parameters" element="tns:consultarEdicion"/>
+</message>
+<message name="consultarEdicionResponse">
+<part name="parameters" element="tns:consultarEdicionResponse"/>
 </message>
 <portType name="ServicioCatalogo">
-<operation name="listarNicknamesDocentesPorInstituto">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarNicknamesDocentesPorInstitutoRequest" message="tns:listarNicknamesDocentesPorInstituto"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarNicknamesDocentesPorInstitutoResponse" message="tns:listarNicknamesDocentesPorInstitutoResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarNicknamesDocentesPorInstituto/Fault/OperacionRechazada"/>
+<operation name="listarEdicionesDocente">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarEdicionesDocenteRequest" message="tns:listarEdicionesDocente"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarEdicionesDocenteResponse" message="tns:listarEdicionesDocenteResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarEdicionesDocente/Fault/OperacionRechazada"/>
 </operation>
-<operation name="consultarPerfilUsuario">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarPerfilUsuarioRequest" message="tns:consultarPerfilUsuario"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarPerfilUsuarioResponse" message="tns:consultarPerfilUsuarioResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/consultarPerfilUsuario/Fault/OperacionRechazada"/>
+<operation name="obtenerImagenPrograma">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenProgramaRequest" message="tns:obtenerImagenPrograma"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenProgramaResponse" message="tns:obtenerImagenProgramaResponse"/>
+</operation>
+<operation name="obtenerImagenUsuario">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenUsuarioRequest" message="tns:obtenerImagenUsuario"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenUsuarioResponse" message="tns:obtenerImagenUsuarioResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenUsuario/Fault/OperacionRechazada"/>
+</operation>
+<operation name="listarNombresProgramas">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarNombresProgramasRequest" message="tns:listarNombresProgramas"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarNombresProgramasResponse" message="tns:listarNombresProgramasResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarNombresProgramas/Fault/OperacionRechazada"/>
 </operation>
 <operation name="listarAceptadosEdicion">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/listarAceptadosEdicionRequest" message="tns:listarAceptadosEdicion"/>
 <output wsam:Action="http://soap.edext/ServicioCatalogo/listarAceptadosEdicionResponse" message="tns:listarAceptadosEdicionResponse"/>
 <fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarAceptadosEdicion/Fault/OperacionRechazada"/>
 </operation>
-<operation name="seleccionarEstudiantes">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/seleccionarEstudiantesRequest" message="tns:seleccionarEstudiantes"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/seleccionarEstudiantesResponse" message="tns:seleccionarEstudiantesResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/seleccionarEstudiantes/Fault/OperacionRechazada"/>
+<operation name="estaInscriptoAPrograma">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/estaInscriptoAProgramaRequest" message="tns:estaInscriptoAPrograma"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/estaInscriptoAProgramaResponse" message="tns:estaInscriptoAProgramaResponse"/>
+</operation>
+<operation name="listarUsuariosConsulta">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarUsuariosConsultaRequest" message="tns:listarUsuariosConsulta"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarUsuariosConsultaResponse" message="tns:listarUsuariosConsultaResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarUsuariosConsulta/Fault/OperacionRechazada"/>
+</operation>
+<operation name="listarCategoriasCurso">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasCursoRequest" message="tns:listarCategoriasCurso"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasCursoResponse" message="tns:listarCategoriasCursoResponse"/>
 </operation>
 <operation name="listarSeguidosConsulta">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/listarSeguidosConsultaRequest" message="tns:listarSeguidosConsulta"/>
 <output wsam:Action="http://soap.edext/ServicioCatalogo/listarSeguidosConsultaResponse" message="tns:listarSeguidosConsultaResponse"/>
 <fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarSeguidosConsulta/Fault/OperacionRechazada"/>
 </operation>
-<operation name="estaInscriptoAPrograma">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/estaInscriptoAProgramaRequest" message="tns:estaInscriptoAPrograma"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/estaInscriptoAProgramaResponse" message="tns:estaInscriptoAProgramaResponse"/>
+<operation name="consultarPerfilUsuario">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarPerfilUsuarioRequest" message="tns:consultarPerfilUsuario"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarPerfilUsuarioResponse" message="tns:consultarPerfilUsuarioResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/consultarPerfilUsuario/Fault/OperacionRechazada"/>
 </operation>
-<operation name="listarCategoriasCurso">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasCursoRequest" message="tns:listarCategoriasCurso"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasCursoResponse" message="tns:listarCategoriasCursoResponse"/>
+<operation name="listarCursosPorInstituto">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosPorInstitutoRequest" message="tns:listarCursosPorInstituto"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosPorInstitutoResponse" message="tns:listarCursosPorInstitutoResponse"/>
+</operation>
+<operation name="seleccionarEstudiantes">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/seleccionarEstudiantesRequest" message="tns:seleccionarEstudiantes"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/seleccionarEstudiantesResponse" message="tns:seleccionarEstudiantesResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/seleccionarEstudiantes/Fault/OperacionRechazada"/>
 </operation>
 <operation name="altaEdicionCursoDocente">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/altaEdicionCursoDocenteRequest" message="tns:altaEdicionCursoDocente"/>
 <output wsam:Action="http://soap.edext/ServicioCatalogo/altaEdicionCursoDocenteResponse" message="tns:altaEdicionCursoDocenteResponse"/>
 <fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/altaEdicionCursoDocente/Fault/OperacionRechazada"/>
-</operation>
-<operation name="altaProgramaFormacion">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/altaProgramaFormacionRequest" message="tns:altaProgramaFormacion"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/altaProgramaFormacionResponse" message="tns:altaProgramaFormacionResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/altaProgramaFormacion/Fault/OperacionRechazada"/>
-</operation>
-<operation name="generarCertificadoPrograma">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/generarCertificadoProgramaRequest" message="tns:generarCertificadoPrograma"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/generarCertificadoProgramaResponse" message="tns:generarCertificadoProgramaResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/generarCertificadoPrograma/Fault/OperacionRechazada"/>
 </operation>
 <operation name="agregarCursoAPrograma">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/agregarCursoAProgramaRequest" message="tns:agregarCursoAPrograma"/>
@@ -324,152 +313,119 @@
 <output wsam:Action="http://soap.edext/ServicioCatalogo/registrarEstudianteResponse" message="tns:registrarEstudianteResponse"/>
 <fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/registrarEstudiante/Fault/OperacionRechazada"/>
 </operation>
-<operation name="listarUsuariosConsulta">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarUsuariosConsultaRequest" message="tns:listarUsuariosConsulta"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarUsuariosConsultaResponse" message="tns:listarUsuariosConsultaResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarUsuariosConsulta/Fault/OperacionRechazada"/>
-</operation>
-<operation name="registrarValoracionCurso">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/registrarValoracionCursoRequest" message="tns:registrarValoracionCurso"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/registrarValoracionCursoResponse" message="tns:registrarValoracionCursoResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/registrarValoracionCurso/Fault/OperacionRechazada"/>
-</operation>
 <operation name="obtenerImagenEdicion">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenEdicionRequest" message="tns:obtenerImagenEdicion"/>
 <output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenEdicionResponse" message="tns:obtenerImagenEdicionResponse"/>
-</operation>
-<operation name="obtenerImagenUsuario">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenUsuarioRequest" message="tns:obtenerImagenUsuario"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenUsuarioResponse" message="tns:obtenerImagenUsuarioResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenUsuario/Fault/OperacionRechazada"/>
-</operation>
-<operation name="listarEdicionesDocente">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarEdicionesDocenteRequest" message="tns:listarEdicionesDocente"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarEdicionesDocenteResponse" message="tns:listarEdicionesDocenteResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarEdicionesDocente/Fault/OperacionRechazada"/>
-</operation>
-<operation name="listarCursosPorInstituto">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosPorInstitutoRequest" message="tns:listarCursosPorInstituto"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosPorInstitutoResponse" message="tns:listarCursosPorInstitutoResponse"/>
 </operation>
 <operation name="dejarDeSeguirUsuario">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/dejarDeSeguirUsuarioRequest" message="tns:dejarDeSeguirUsuario"/>
 <output wsam:Action="http://soap.edext/ServicioCatalogo/dejarDeSeguirUsuarioResponse" message="tns:dejarDeSeguirUsuarioResponse"/>
 <fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/dejarDeSeguirUsuario/Fault/OperacionRechazada"/>
 </operation>
-<operation name="listarNombresProgramas">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarNombresProgramasRequest" message="tns:listarNombresProgramas"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarNombresProgramasResponse" message="tns:listarNombresProgramasResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarNombresProgramas/Fault/OperacionRechazada"/>
-</operation>
-<operation name="obtenerImagenPrograma">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenProgramaRequest" message="tns:obtenerImagenPrograma"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenProgramaResponse" message="tns:obtenerImagenProgramaResponse"/>
+<operation name="altaProgramaFormacion">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/altaProgramaFormacionRequest" message="tns:altaProgramaFormacion"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/altaProgramaFormacionResponse" message="tns:altaProgramaFormacionResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/altaProgramaFormacion/Fault/OperacionRechazada"/>
 </operation>
 <operation name="esSeguidor">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/esSeguidorRequest" message="tns:esSeguidor"/>
 <output wsam:Action="http://soap.edext/ServicioCatalogo/esSeguidorResponse" message="tns:esSeguidorResponse"/>
 <fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/esSeguidor/Fault/OperacionRechazada"/>
 </operation>
-<operation name="consultarEdicion">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarEdicionRequest" message="tns:consultarEdicion"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarEdicionResponse" message="tns:consultarEdicionResponse"/>
-</operation>
-<operation name="consultarPrograma">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarProgramaRequest" message="tns:consultarPrograma"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarProgramaResponse" message="tns:consultarProgramaResponse"/>
-</operation>
-<operation name="altaCursoDocente">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/altaCursoDocenteRequest" message="tns:altaCursoDocente"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/altaCursoDocenteResponse" message="tns:altaCursoDocenteResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/altaCursoDocente/Fault/OperacionRechazada"/>
-</operation>
-<operation name="modificarUsuario">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/modificarUsuarioRequest" message="tns:modificarUsuario"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/modificarUsuarioResponse" message="tns:modificarUsuarioResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/modificarUsuario/Fault/OperacionRechazada"/>
-</operation>
-<operation name="consultarCurso">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarCursoRequest" message="tns:consultarCurso"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarCursoResponse" message="tns:consultarCursoResponse"/>
-</operation>
-<operation name="obtenerImagenCurso">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenCursoRequest" message="tns:obtenerImagenCurso"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenCursoResponse" message="tns:obtenerImagenCursoResponse"/>
-</operation>
-<operation name="seguirUsuario">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/seguirUsuarioRequest" message="tns:seguirUsuario"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/seguirUsuarioResponse" message="tns:seguirUsuarioResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/seguirUsuario/Fault/OperacionRechazada"/>
-</operation>
-<operation name="registrarDocente">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/registrarDocenteRequest" message="tns:registrarDocente"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/registrarDocenteResponse" message="tns:registrarDocenteResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/registrarDocente/Fault/OperacionRechazada"/>
-</operation>
-<operation name="listarCategorias">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasRequest" message="tns:listarCategorias"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasResponse" message="tns:listarCategoriasResponse"/>
-</operation>
-<operation name="listarInstitutos">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosRequest" message="tns:listarInstitutos"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosResponse" message="tns:listarInstitutosResponse"/>
-</operation>
-<operation name="autenticarUsuario">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/autenticarUsuarioRequest" message="tns:autenticarUsuario"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/autenticarUsuarioResponse" message="tns:autenticarUsuarioResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/autenticarUsuario/Fault/OperacionRechazada"/>
-</operation>
-<operation name="listarCursos">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosRequest" message="tns:listarCursos"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosResponse" message="tns:listarCursosResponse"/>
+<operation name="listarInstitutosDocente">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosDocenteRequest" message="tns:listarInstitutosDocente"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosDocenteResponse" message="tns:listarInstitutosDocenteResponse"/>
 </operation>
 <operation name="listarCategoriasPrograma">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasProgramaRequest" message="tns:listarCategoriasPrograma"/>
 <output wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasProgramaResponse" message="tns:listarCategoriasProgramaResponse"/>
 </operation>
-<operation name="listarInstitutosDocente">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosDocenteRequest" message="tns:listarInstitutosDocente"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosDocenteResponse" message="tns:listarInstitutosDocenteResponse"/>
-</operation>
-<operation name="inscribirEstudianteAEdicion">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/inscribirEstudianteAEdicionRequest" message="tns:inscribirEstudianteAEdicion"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/inscribirEstudianteAEdicionResponse" message="tns:inscribirEstudianteAEdicionResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/inscribirEstudianteAEdicion/Fault/OperacionRechazada"/>
+<operation name="listarProgramas">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarProgramasRequest" message="tns:listarProgramas"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarProgramasResponse" message="tns:listarProgramasResponse"/>
 </operation>
 <operation name="inscribirEstudianteAPrograma">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/inscribirEstudianteAProgramaRequest" message="tns:inscribirEstudianteAPrograma"/>
 <output wsam:Action="http://soap.edext/ServicioCatalogo/inscribirEstudianteAProgramaResponse" message="tns:inscribirEstudianteAProgramaResponse"/>
 <fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/inscribirEstudianteAPrograma/Fault/OperacionRechazada"/>
 </operation>
-<operation name="listarInscripcionesParaSeleccion">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarInscripcionesParaSeleccionRequest" message="tns:listarInscripcionesParaSeleccion"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarInscripcionesParaSeleccionResponse" message="tns:listarInscripcionesParaSeleccionResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarInscripcionesParaSeleccion/Fault/OperacionRechazada"/>
-</operation>
-<operation name="obtenerPromedioValoraciones">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerPromedioValoracionesRequest" message="tns:obtenerPromedioValoraciones"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerPromedioValoracionesResponse" message="tns:obtenerPromedioValoracionesResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/obtenerPromedioValoraciones/Fault/OperacionRechazada"/>
-</operation>
-<operation name="obtenerValoracionEstudiante">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerValoracionEstudianteRequest" message="tns:obtenerValoracionEstudiante"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerValoracionEstudianteResponse" message="tns:obtenerValoracionEstudianteResponse"/>
-<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/obtenerValoracionEstudiante/Fault/OperacionRechazada"/>
-</operation>
 <operation name="listarEdicionesParaSeleccion">
 <input wsam:Action="http://soap.edext/ServicioCatalogo/listarEdicionesParaSeleccionRequest" message="tns:listarEdicionesParaSeleccion"/>
 <output wsam:Action="http://soap.edext/ServicioCatalogo/listarEdicionesParaSeleccionResponse" message="tns:listarEdicionesParaSeleccionResponse"/>
 <fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarEdicionesParaSeleccion/Fault/OperacionRechazada"/>
 </operation>
-<operation name="listarProgramas">
-<input wsam:Action="http://soap.edext/ServicioCatalogo/listarProgramasRequest" message="tns:listarProgramas"/>
-<output wsam:Action="http://soap.edext/ServicioCatalogo/listarProgramasResponse" message="tns:listarProgramasResponse"/>
+<operation name="inscribirEstudianteAEdicion">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/inscribirEstudianteAEdicionRequest" message="tns:inscribirEstudianteAEdicion"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/inscribirEstudianteAEdicionResponse" message="tns:inscribirEstudianteAEdicionResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/inscribirEstudianteAEdicion/Fault/OperacionRechazada"/>
+</operation>
+<operation name="listarInscripcionesParaSeleccion">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarInscripcionesParaSeleccionRequest" message="tns:listarInscripcionesParaSeleccion"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarInscripcionesParaSeleccionResponse" message="tns:listarInscripcionesParaSeleccionResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarInscripcionesParaSeleccion/Fault/OperacionRechazada"/>
+</operation>
+<operation name="listarNicknamesDocentesPorInstituto">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarNicknamesDocentesPorInstitutoRequest" message="tns:listarNicknamesDocentesPorInstituto"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarNicknamesDocentesPorInstitutoResponse" message="tns:listarNicknamesDocentesPorInstitutoResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/listarNicknamesDocentesPorInstituto/Fault/OperacionRechazada"/>
+</operation>
+<operation name="seguirUsuario">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/seguirUsuarioRequest" message="tns:seguirUsuario"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/seguirUsuarioResponse" message="tns:seguirUsuarioResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/seguirUsuario/Fault/OperacionRechazada"/>
+</operation>
+<operation name="autenticarUsuario">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/autenticarUsuarioRequest" message="tns:autenticarUsuario"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/autenticarUsuarioResponse" message="tns:autenticarUsuarioResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/autenticarUsuario/Fault/OperacionRechazada"/>
+</operation>
+<operation name="altaCursoDocente">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/altaCursoDocenteRequest" message="tns:altaCursoDocente"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/altaCursoDocenteResponse" message="tns:altaCursoDocenteResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/altaCursoDocente/Fault/OperacionRechazada"/>
+</operation>
+<operation name="listarInstitutos">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosRequest" message="tns:listarInstitutos"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarInstitutosResponse" message="tns:listarInstitutosResponse"/>
+</operation>
+<operation name="registrarDocente">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/registrarDocenteRequest" message="tns:registrarDocente"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/registrarDocenteResponse" message="tns:registrarDocenteResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/registrarDocente/Fault/OperacionRechazada"/>
+</operation>
+<operation name="obtenerImagenCurso">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenCursoRequest" message="tns:obtenerImagenCurso"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/obtenerImagenCursoResponse" message="tns:obtenerImagenCursoResponse"/>
+</operation>
+<operation name="modificarUsuario">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/modificarUsuarioRequest" message="tns:modificarUsuario"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/modificarUsuarioResponse" message="tns:modificarUsuarioResponse"/>
+<fault message="tns:OperacionRechazada" name="OperacionRechazada" wsam:Action="http://soap.edext/ServicioCatalogo/modificarUsuario/Fault/OperacionRechazada"/>
+</operation>
+<operation name="consultarPrograma">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarProgramaRequest" message="tns:consultarPrograma"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarProgramaResponse" message="tns:consultarProgramaResponse"/>
+</operation>
+<operation name="listarCategorias">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasRequest" message="tns:listarCategorias"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCategoriasResponse" message="tns:listarCategoriasResponse"/>
+</operation>
+<operation name="listarCursos">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosRequest" message="tns:listarCursos"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/listarCursosResponse" message="tns:listarCursosResponse"/>
+</operation>
+<operation name="consultarCurso">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarCursoRequest" message="tns:consultarCurso"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarCursoResponse" message="tns:consultarCursoResponse"/>
+</operation>
+<operation name="consultarEdicion">
+<input wsam:Action="http://soap.edext/ServicioCatalogo/consultarEdicionRequest" message="tns:consultarEdicion"/>
+<output wsam:Action="http://soap.edext/ServicioCatalogo/consultarEdicionResponse" message="tns:consultarEdicionResponse"/>
 </operation>
 </portType>
 <binding name="CatalogoPortBinding" type="tns:ServicioCatalogo">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-<operation name="listarNicknamesDocentesPorInstituto">
+<operation name="listarEdicionesDocente">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -481,7 +437,28 @@
 <soap:fault name="OperacionRechazada" use="literal"/>
 </fault>
 </operation>
-<operation name="consultarPerfilUsuario">
+<operation name="obtenerImagenPrograma">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="obtenerImagenUsuario">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="OperacionRechazada">
+<soap:fault name="OperacionRechazada" use="literal"/>
+</fault>
+</operation>
+<operation name="listarNombresProgramas">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -505,7 +482,16 @@
 <soap:fault name="OperacionRechazada" use="literal"/>
 </fault>
 </operation>
-<operation name="seleccionarEstudiantes">
+<operation name="estaInscriptoAPrograma">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="listarUsuariosConsulta">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -516,6 +502,15 @@
 <fault name="OperacionRechazada">
 <soap:fault name="OperacionRechazada" use="literal"/>
 </fault>
+</operation>
+<operation name="listarCategoriasCurso">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
 </operation>
 <operation name="listarSeguidosConsulta">
 <soap:operation soapAction=""/>
@@ -529,7 +524,19 @@
 <soap:fault name="OperacionRechazada" use="literal"/>
 </fault>
 </operation>
-<operation name="estaInscriptoAPrograma">
+<operation name="consultarPerfilUsuario">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="OperacionRechazada">
+<soap:fault name="OperacionRechazada" use="literal"/>
+</fault>
+</operation>
+<operation name="listarCursosPorInstituto">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -538,7 +545,7 @@
 <soap:body use="literal"/>
 </output>
 </operation>
-<operation name="listarCategoriasCurso">
+<operation name="seleccionarEstudiantes">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -546,32 +553,11 @@
 <output>
 <soap:body use="literal"/>
 </output>
+<fault name="OperacionRechazada">
+<soap:fault name="OperacionRechazada" use="literal"/>
+</fault>
 </operation>
 <operation name="altaEdicionCursoDocente">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="altaProgramaFormacion">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="generarCertificadoPrograma">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -607,64 +593,7 @@
 <soap:fault name="OperacionRechazada" use="literal"/>
 </fault>
 </operation>
-<operation name="listarUsuariosConsulta">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="registrarValoracionCurso">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
 <operation name="obtenerImagenEdicion">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="obtenerImagenUsuario">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="listarEdicionesDocente">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="listarCursosPorInstituto">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -685,7 +614,7 @@
 <soap:fault name="OperacionRechazada" use="literal"/>
 </fault>
 </operation>
-<operation name="listarNombresProgramas">
+<operation name="altaProgramaFormacion">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -696,15 +625,6 @@
 <fault name="OperacionRechazada">
 <soap:fault name="OperacionRechazada" use="literal"/>
 </fault>
-</operation>
-<operation name="obtenerImagenPrograma">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
 </operation>
 <operation name="esSeguidor">
 <soap:operation soapAction=""/>
@@ -718,121 +638,7 @@
 <soap:fault name="OperacionRechazada" use="literal"/>
 </fault>
 </operation>
-<operation name="consultarEdicion">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="consultarPrograma">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="altaCursoDocente">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="modificarUsuario">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="consultarCurso">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="obtenerImagenCurso">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="seguirUsuario">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="registrarDocente">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="listarCategorias">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="listarInstitutos">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
-<operation name="autenticarUsuario">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="listarCursos">
+<operation name="listarInstitutosDocente">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -850,7 +656,7 @@
 <soap:body use="literal"/>
 </output>
 </operation>
-<operation name="listarInstitutosDocente">
+<operation name="listarProgramas">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -858,56 +664,8 @@
 <output>
 <soap:body use="literal"/>
 </output>
-</operation>
-<operation name="inscribirEstudianteAEdicion">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
 </operation>
 <operation name="inscribirEstudianteAPrograma">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="listarInscripcionesParaSeleccion">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="obtenerPromedioValoraciones">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="OperacionRechazada">
-<soap:fault name="OperacionRechazada" use="literal"/>
-</fault>
-</operation>
-<operation name="obtenerValoracionEstudiante">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -931,7 +689,157 @@
 <soap:fault name="OperacionRechazada" use="literal"/>
 </fault>
 </operation>
-<operation name="listarProgramas">
+<operation name="inscribirEstudianteAEdicion">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="OperacionRechazada">
+<soap:fault name="OperacionRechazada" use="literal"/>
+</fault>
+</operation>
+<operation name="listarInscripcionesParaSeleccion">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="OperacionRechazada">
+<soap:fault name="OperacionRechazada" use="literal"/>
+</fault>
+</operation>
+<operation name="listarNicknamesDocentesPorInstituto">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="OperacionRechazada">
+<soap:fault name="OperacionRechazada" use="literal"/>
+</fault>
+</operation>
+<operation name="seguirUsuario">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="OperacionRechazada">
+<soap:fault name="OperacionRechazada" use="literal"/>
+</fault>
+</operation>
+<operation name="autenticarUsuario">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="OperacionRechazada">
+<soap:fault name="OperacionRechazada" use="literal"/>
+</fault>
+</operation>
+<operation name="altaCursoDocente">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="OperacionRechazada">
+<soap:fault name="OperacionRechazada" use="literal"/>
+</fault>
+</operation>
+<operation name="listarInstitutos">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="registrarDocente">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="OperacionRechazada">
+<soap:fault name="OperacionRechazada" use="literal"/>
+</fault>
+</operation>
+<operation name="obtenerImagenCurso">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="modificarUsuario">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="OperacionRechazada">
+<soap:fault name="OperacionRechazada" use="literal"/>
+</fault>
+</operation>
+<operation name="consultarPrograma">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="listarCategorias">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="listarCursos">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="consultarCurso">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="consultarEdicion">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
