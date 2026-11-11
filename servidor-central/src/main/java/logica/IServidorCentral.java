@@ -297,6 +297,10 @@ public interface IServidorCentral {
     void seguirUsuario(String nickSeguidor, String nickSeguido) throws Exception;
     void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) throws Exception;
     
-    
+    ValidadorAprobacionPrograma.ResultadoPrograma
+        validarAprobacionPrograma(
+                String nickEstudiante,
+                String nombrePrograma,
+                int notaMinima);
     
 }

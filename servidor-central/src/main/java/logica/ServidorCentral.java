@@ -677,5 +677,54 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
         );
     }
 
+    
+    public ValidadorAprobacionPrograma.ResultadoPrograma
+            validarAprobacionPrograma(
+                    String nickEstudiante,
+                    String nombrePrograma,
+                    int notaMinima) {
+
+        if (nickEstudiante == null || nickEstudiante.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un estudiante.");
+        }
+
+        if (nombrePrograma == null || nombrePrograma.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un programa.");
+        }
+
+        ProgramaFormacion programa =
+                persistencia.obtenerDetallePrograma(nombrePrograma);
+
+        if (programa == null) {
+            throw new RecursoNoEncontradoException(
+                    "El programa no existe.");
+        }
+
+        Estudiante estudiante =
+                persistencia.obtenerEstudianteConEvaluaciones(nickEstudiante);
+
+        if (estudiante == null) {
+            throw new RecursoNoEncontradoException(
+                    "El estudiante no existe.");
+        }
+
+        if (!persistencia.estaInscriptoAPrograma(
+                nickEstudiante, programa.getId())) {
+
+            throw new IllegalStateException(
+                    "El estudiante no está inscripto al programa.");
+        }
+
+        ValidadorAprobacionPrograma validador =
+                new ValidadorAprobacionPrograma();
+
+        return validador.validar(
+                estudiante,
+                programa,
+                notaMinima);
+    }
+
 
 }

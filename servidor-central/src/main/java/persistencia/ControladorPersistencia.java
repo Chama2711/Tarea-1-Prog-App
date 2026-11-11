@@ -318,16 +318,28 @@ import logica.*;
     }
     }
 
-    public ProgramaFormacion obtenerDetallePrograma(String nombrePrograma) {
+
+    public ProgramaFormacion obtenerDetallePrograma(
+            String nombrePrograma) {
+
         EntityManager em = emf.createEntityManager();
+
         try {
-            return em.createQuery("SELECT DISTINCT p FROM ProgramaFormacion p LEFT JOIN FETCH p.cursos WHERE p.nombre = :nombre", ProgramaFormacion.class)
+            return em.createQuery(
+                    "SELECT DISTINCT p FROM ProgramaFormacion p "
+                    + "LEFT JOIN FETCH p.cursos "
+                    + "WHERE p.nombre = :nombre",
+                    ProgramaFormacion.class)
                     .setParameter("nombre", nombrePrograma)
-                    .getSingleResult();
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+
         } finally {
             em.close();
         }
     }
+
     
     // Requerimiento : Alta de Instituto
     public void altaInstituto(String nombreInstituto) throws Exception {
@@ -2061,6 +2073,29 @@ public Categoria buscarCategoria(String nombre) {
             return resultados.isEmpty()
                     ? null
                     : resultados.get(0);
+
+        } finally {
+            em.close();
+        }
+    }
+    
+    
+    public Estudiante obtenerEstudianteConEvaluaciones(String nick) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            return em.createQuery(
+                    "SELECT DISTINCT e FROM Estudiante e "
+                    + "LEFT JOIN FETCH e.inscripciones i "
+                    + "LEFT JOIN FETCH i.edicion ed "
+                    + "LEFT JOIN FETCH ed.curso "
+                    + "WHERE e.nick = :nick",
+                    Estudiante.class
+            )
+            .setParameter("nick", nick)
+            .getResultStream()
+            .findFirst()
+            .orElse(null);
 
         } finally {
             em.close();
