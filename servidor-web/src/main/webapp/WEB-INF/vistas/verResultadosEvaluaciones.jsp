@@ -14,8 +14,8 @@
             "Consultá las calificaciones definitivas de tus ediciones.";
     String paginaActiva = "cursos";
 
-    List<String> ediciones =
-            (List<String>) request.getAttribute("ediciones");
+    String rutaEvaluaciones = "/ver-resultados-evaluaciones";
+    String mensajeSinEdiciones = "No participás en una edición cerrada de este curso.";
 
     String edicion =
             (String) request.getAttribute("edicion");
@@ -27,7 +27,6 @@
     String avisoResultados =
         (String) request.getAttribute("avisoResultados");
 
-    if (ediciones == null) ediciones = List.of();
     if (edicion == null) edicion = "";
     if (resultados == null) resultados = List.of();
 %>
@@ -59,63 +58,7 @@
 
         <%@ include file="/WEB-INF/vistas/fragmentos/intro.jspf" %>
 
-        <section class="panel">
-
-            <h2>Seleccionar edición</h2>
-
-            <p class="texto-secundario">
-                Los resultados definitivos se encuentran
-                disponibles cuando la edición está cerrada.
-            </p>
-
-            <form method="get"
-                  action="${pageContext.request.contextPath}/ver-resultados-evaluaciones">
-
-                <div class="campo">
-
-                    <label for="edicion">
-                        Edición de curso
-                    </label>
-
-                    <select id="edicion"
-                            name="edicion"
-                            required>
-
-                        <option value="">
-                            Seleccioná una edición
-                        </option>
-
-                        <% for (String item : ediciones) { %>
-
-                            <option value="<%= escapar(item) %>"
-                                <%= item.equals(edicion)
-                                        ? "selected" : "" %>>
-
-                                <%= escapar(item) %>
-
-                            </option>
-
-                        <% } %>
-
-                    </select>
-
-                </div>
-
-                <button type="submit" class="boton">
-                    Consultar resultados
-                </button>
-
-            </form>
-
-            <% if (ediciones.isEmpty()) { %>
-
-                <p class="aviso">
-                    No tenés ediciones de curso asignadas.
-                </p>
-
-            <% } %>
-
-        </section>
+        <%@ include file="/WEB-INF/vistas/fragmentos/seleccionEvaluaciones.jspf" %>
 
         <% if (!edicion.isEmpty()) { %>
 

@@ -200,6 +200,11 @@ public class VerResultadosEvaluacionesServletTest {
         void ejecutarGet() throws Exception {
 
             var servlet = new VerResultadosEvaluacionesServlet() {
+                @Override
+                protected String prepararSeleccion(HttpServletRequest request, String nickDocente,
+                        List<String> ediciones, String edicion) {
+                    return edicion;
+                }
 
                 @Override
                 protected List<String> consultarEdiciones(

@@ -14,6 +14,7 @@ public final class DTEdicionConsulta {
     private final int cupo;
     private final boolean vigente;
     private final boolean tieneImagen;
+    private final boolean cerrada;
     private final List<DTUsuarioConsulta> docentes;
 
     public DTEdicionConsulta(
@@ -26,7 +27,12 @@ public final class DTEdicionConsulta {
             boolean vigente,
             boolean tieneImagen,
             List<DTUsuarioConsulta> docentes) {
+        this(nombre, nombreCurso, inicio, fin, publicacion, cupo, vigente, tieneImagen, docentes, false);
+    }
 
+    public DTEdicionConsulta(String nombre, String nombreCurso, LocalDate inicio, LocalDate fin,
+            LocalDate publicacion, int cupo, boolean vigente, boolean tieneImagen,
+            List<DTUsuarioConsulta> docentes, boolean cerrada) {
         this.nombre = nombre;
         this.nombreCurso = nombreCurso;
         this.inicio = inicio;
@@ -36,6 +42,7 @@ public final class DTEdicionConsulta {
         this.vigente = vigente;
         this.tieneImagen = tieneImagen;
         this.docentes = List.copyOf(docentes);
+        this.cerrada = cerrada;
     }
 
     public String nombre() { return nombre; }
@@ -46,5 +53,6 @@ public final class DTEdicionConsulta {
     public int cupo() { return cupo; }
     public boolean vigente() { return vigente; }
     public boolean tieneImagen() { return tieneImagen; }
+    public boolean cerrada() { return cerrada; }
     public List<DTUsuarioConsulta> docentes() { return docentes; }
 }

@@ -94,6 +94,11 @@ public final class ClienteCatalogoSoap {
         return servicio.getCatalogoPort().consultarEdicion(nombreEdicion);
     }
 
+    public logica.DTEdicionConsulta consultarDetalleEdicion(String nombreEdicion) {
+        DtEdicionConsulta detalle = consultarEdicion(nombreEdicion);
+        return detalle == null ? null : edicion(detalle);
+    }
+
     public byte[] obtenerImagenPrograma(String nombrePrograma) {
         return servicio.getCatalogoPort().obtenerImagenPrograma(nombrePrograma);
     }
@@ -274,7 +279,8 @@ public final class ClienteCatalogoSoap {
         return new logica.DTEdicionConsulta(d.getNombre(), d.getNombreCurso(), fecha(d.getInicio()), fecha(d.getFin()),
                 fecha(d.getPublicacion()), d.getCupo(), d.isVigente(), d.isTieneImagen(),
                 d.getDocente().stream().map(doc -> new logica.DTUsuarioConsulta(doc.getNick(), doc.getNombre(),
-                        doc.getApellido(), null, null, logica.DTAutenticacion.Rol.DOCENTE, false, List.of())).toList());
+                        doc.getApellido(), null, null, logica.DTAutenticacion.Rol.DOCENTE, false, List.of())).toList(),
+                Boolean.TRUE.equals(d.isCerrada()));
     }
 
     private static String textoFecha(java.time.LocalDate fecha) { return fecha == null ? null : fecha.toString(); }

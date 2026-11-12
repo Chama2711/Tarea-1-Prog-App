@@ -15,8 +15,8 @@
             "Consultá los estudiantes aceptados de tus ediciones.";
     String paginaActiva = "cursos";
 
-    List<String> ediciones =
-            (List<String>) request.getAttribute("ediciones");
+    String rutaEvaluaciones = "/ingresar-evaluaciones";
+    String mensajeSinEdiciones = "No participás en una edición vigente de este curso.";
 
     String edicion =
             (String) request.getAttribute("edicion");
@@ -24,7 +24,6 @@
     List<DTInscripcion> aceptados =
             (List<DTInscripcion>) request.getAttribute("aceptados");
 
-    if (ediciones == null) ediciones = List.of();
     if (edicion == null) edicion = "";
     if (aceptados == null) aceptados = List.of();
 %>
@@ -55,63 +54,21 @@
 
         <%@ include file="/WEB-INF/vistas/fragmentos/intro.jspf" %>
 
-        <section class="panel">
+        <%@ include file="/WEB-INF/vistas/fragmentos/seleccionEvaluaciones.jspf" %>
 
-            <h2>Seleccionar edición</h2>
-
-            <form method="get"
-                  action="${pageContext.request.contextPath}/ingresar-evaluaciones">
-
-                <div class="campo">
-
-                    <label for="edicion">Edición de curso</label>
-
-                    <select id="edicion" name="edicion" required>
-
-                        <option value="">
-                            Seleccioná una edición
-                        </option>
-
-                        <% for (String item : ediciones) { %>
-
-                            <option value="<%= escapar(item) %>"
-                                <%= item.equals(edicion)
-                                        ? "selected" : "" %>>
-
-                                <%= escapar(item) %>
-
-                            </option>
-
-                        <% } %>
-
-                    </select>
-
-                </div>
-
-                <button type="submit" class="boton">
-                    Ver estudiantes aceptados
-                </button>
-
-            </form>
-
-            <% if (ediciones.isEmpty()) { %>
-
-                <p class="aviso">
-                    No tenés ediciones de curso asignadas.
-                </p>
-
-            <% } %>
-
-        </section>
-
-        <% if (!edicion.isEmpty()) { %>
+        <% if (!edicion.isEmpty()) {
+            boolean edicionCerrada = detalleEdicion != null && detalleEdicion.cerrada();
+        %>
 
             <section class="panel">
 
                 <h2>
-                    Evaluaciones:
-                    <%= escapar(edicion) %>
+                    Estudiantes aceptados
                 </h2>
+
+                <% if ("1".equals(request.getParameter("guardada"))) { %>
+                    <p class="aviso" role="status">Calificación guardada.</p>
+                <% } %>
 
                 <% if (aceptados.isEmpty()) { %>
 
@@ -170,9 +127,12 @@
 
                                 </div>
                            
+                                <% if (!edicionCerrada) { %>
                                 <form method="post"
                                       action="${pageContext.request.contextPath}/ingresar-evaluaciones">
 
+                                    <input type="hidden" name="instituto" value="<%= escapar(filtroInstituto) %>">
+                                    <input type="hidden" name="curso" value="<%= escapar(filtroCurso) %>">
                                     <input type="hidden"
                                            name="edicion"
                                            value="<%= escapar(edicion) %>">
@@ -217,6 +177,7 @@
                                     </button>
 
                                 </form>
+                                <% } %>
 
                             </article>
 
@@ -232,59 +193,31 @@
 
                 <h2>Cierre de edición y acta</h2>
 
-                <p>
-                    Edición seleccionada:
-                    <strong><%= escapar(edicion) %></strong>
-                </p>
-
-               
-                <p class="texto-secundario">
-                    Podés cerrar la edición cuando todos los
-                    estudiantes aceptados tengan calificación.
-                    Una vez cerrada, las notas no podrán modificarse.
-                </p>
-
-                <% if ("1".equals(request.getParameter("cerrada"))) { %>
+                <% if (edicionCerrada) { %>
+                    <% if ("1".equals(request.getParameter("cerrada"))) { %>
                     <p class="aviso" role="status">
-                        Se procesó correctamente la solicitud de cierre.
+                        Edición cerrada.
                     </p>
-                <% } %>
-
-                <form method="post"
-                      action="${pageContext.request.contextPath}/ingresar-evaluaciones"
-                      onsubmit="return confirm('¿Confirmás el cierre de esta edición? No podrás modificar las calificaciones después.');">
-
-                    <input type="hidden"
-                           name="accion"
-                           value="cerrar">
-
-                    <input type="hidden"
-                           name="edicion"
-                           value="<%= escapar(edicion) %>">
-
-                    <button type="submit" class="boton">
-                        Cerrar edición
-                    </button>
-                </form>
-
-
-                <p class="ayuda">
-                    Para cerrar una edición será necesario
-                    verificar que todos los estudiantes
-                    aceptados tengan su calificación.
-                </p>
-
-                <div class="campo">
+                    <% } %>
                     <a class="boton"
-                        href="${pageContext.request.contextPath}/ver-resultados-evaluaciones">
+                        href="${pageContext.request.contextPath}/ver-resultados-evaluaciones?edicion=<%= parametro(edicion) %><%= filtroCurso.isEmpty() ? "" : "&amp;instituto=" + parametro(filtroInstituto) + "&amp;curso=" + parametro(filtroCurso) %>">
                          Ver resultados definitivos
                     </a>
-                </div>
-
-                <p class="ayuda">
-                    El acta podrá consultarse una vez
-                    que la edición esté cerrada.
-                </p>
+                <% } else { %>
+                    <p class="texto-secundario">
+                        Podés cerrar la edición cuando todos los estudiantes aceptados tengan calificación.
+                        Una vez cerrada, las notas no podrán modificarse.
+                    </p>
+                    <form method="post"
+                          action="${pageContext.request.contextPath}/ingresar-evaluaciones"
+                          onsubmit="return confirm('¿Confirmás el cierre de esta edición? No podrás modificar las calificaciones después.');">
+                        <input type="hidden" name="accion" value="cerrar">
+                        <input type="hidden" name="instituto" value="<%= escapar(filtroInstituto) %>">
+                        <input type="hidden" name="curso" value="<%= escapar(filtroCurso) %>">
+                        <input type="hidden" name="edicion" value="<%= escapar(edicion) %>">
+                        <button type="submit" class="boton">Cerrar edición</button>
+                    </form>
+                <% } %>
 
             </section>
 

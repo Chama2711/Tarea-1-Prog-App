@@ -204,6 +204,12 @@ public class IngresarEvaluacionesServletTest {
         private void ejecutar(boolean post) throws Exception {
             var servlet = new IngresarEvaluacionesServlet() {
                 @Override
+                protected String prepararSeleccion(HttpServletRequest request, String nickDocente,
+                        List<String> ediciones, String edicion) {
+                    return edicion;
+                }
+
+                @Override
                 protected List<String> consultarEdiciones(String nickDocente) {
                     consultasEdiciones++;
                     assertEquals("docente", nickDocente);

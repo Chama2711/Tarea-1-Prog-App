@@ -60,19 +60,17 @@ public class VerResultadosEvaluacionesServlet
                     List.of();
             String avisoResultados = null;
 
-            // 3. Consultar solo si seleccionó una edición.
+            if (!nombreEdicion.isEmpty() && !ediciones.contains(nombreEdicion)) {
+                response.sendError(
+                        HttpServletResponse.SC_FORBIDDEN,
+                        "No participás en la edición seleccionada."
+                );
+                return;
+            }
+
+            nombreEdicion = prepararSeleccion(request, docente.getNick(), ediciones, nombreEdicion);
             if (!nombreEdicion.isEmpty()) {
-
-                // Validar que pertenece al docente.
-                if (!ediciones.contains(nombreEdicion)) {
-                    response.sendError(
-                            HttpServletResponse.SC_FORBIDDEN,
-                            "No participás en la edición seleccionada."
-                    );
-                    return;
-                }
-
-               try {
+                try {
                     resultados = consultarResultados(
                             docente.getNick(),
                             nombreEdicion
@@ -121,7 +119,7 @@ public class VerResultadosEvaluacionesServlet
         } catch (IllegalArgumentException e) {
             response.sendError(
                     HttpServletResponse.SC_BAD_REQUEST,
-                    "La edición seleccionada no es válida."
+                    e.getMessage()
             );
 
         } catch (SOAPFaultException e) {
@@ -155,6 +153,12 @@ public class VerResultadosEvaluacionesServlet
                     "No se pudieron consultar los resultados."
             );
         }
+    }
+
+    protected String prepararSeleccion(HttpServletRequest request, String nickDocente,
+            List<String> ediciones, String edicion) {
+        return SeleccionEvaluaciones.preparar(request, getServletContext(), nickDocente,
+                ediciones, edicion, true);
     }
 
     // Obtener las ediciones autorizadas mediante SOAP.

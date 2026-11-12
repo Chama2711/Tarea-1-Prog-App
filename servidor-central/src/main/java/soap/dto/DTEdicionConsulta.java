@@ -24,6 +24,7 @@ public final class DTEdicionConsulta {
     private boolean tieneImagen;
     @XmlElement(name = "docente")
     private List<DTDocenteResumen> docentes = new ArrayList<>();
+    private Boolean cerrada;
 
     public DTEdicionConsulta() { }
     public DTEdicionConsulta(logica.DTEdicionConsulta edicion) {
@@ -35,6 +36,7 @@ public final class DTEdicionConsulta {
         cupo = edicion.cupo();
         vigente = edicion.vigente();
         tieneImagen = edicion.tieneImagen();
+        cerrada = edicion.cerrada();
         edicion.docentes().forEach(d -> docentes.add(new DTDocenteResumen(d.nick(), d.nombre(), d.apellido())));
     }
     public String getNombre() { return nombre; }

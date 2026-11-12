@@ -74,7 +74,8 @@ import logica.*;
         edicion.getCupo(),
         edicion.esVigente(),
         edicion.getImagen() != null && !edicion.getImagen().isBlank(),
-        docentes
+        docentes,
+        edicion.isCerrada()
         );
     }
 

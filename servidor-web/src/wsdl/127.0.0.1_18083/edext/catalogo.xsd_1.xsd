@@ -267,6 +267,7 @@
 <xs:element name="vigente" type="xs:boolean"/>
 <xs:element name="tieneImagen" type="xs:boolean"/>
 <xs:element name="docente" type="tns:dtDocenteResumen" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="cerrada" type="xs:boolean" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="dtDocenteResumen" final="extension restriction">

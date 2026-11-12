@@ -63,8 +63,7 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
             List<DTInscripcion> aceptados = List.of();
 
             //  Consultar los estudiantes aceptados.
-          if (!nombreEdicion.isEmpty()) {
-
+            if (!nombreEdicion.isEmpty()) {
                 String edicionAutorizada =
                         resolverEdicionAutorizada(ediciones, nombreEdicion);
 
@@ -77,7 +76,10 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                 }
 
                 nombreEdicion = edicionAutorizada;
+            }
 
+            nombreEdicion = prepararSeleccion(request, docente.getNick(), ediciones, nombreEdicion);
+            if (!nombreEdicion.isEmpty()) {
                 aceptados = consultarAceptados(
                         docente.getNick(),
                         nombreEdicion
@@ -230,7 +232,7 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                         edicionAutorizada,
                         StandardCharsets.UTF_8
                 )
-                + "&guardada=1";
+                + SeleccionEvaluaciones.parametros(request) + "&guardada=1";
 
             response.sendRedirect(
                     response.encodeRedirectURL(destino)
@@ -327,7 +329,7 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                                 edicionAutorizada,
                                 StandardCharsets.UTF_8
                         )
-                        + "&cerrada=1";
+                        + SeleccionEvaluaciones.parametros(request) + "&cerrada=1";
 
                 response.sendRedirect(
                         response.encodeRedirectURL(destino)
@@ -384,6 +386,12 @@ public class IngresarEvaluacionesServlet extends HttpServlet {
                     .getClienteEvaluaciones(getServletContext())
                     .cerrarEdicion(nickDocente, nombreEdicion);
         }
+
+    protected String prepararSeleccion(HttpServletRequest request, String nickDocente,
+            List<String> ediciones, String edicion) {
+        return SeleccionEvaluaciones.preparar(request, getServletContext(), nickDocente,
+                ediciones, edicion, false);
+    }
 
     protected List<String> consultarEdiciones(String nickDocente) {
         return InicializadorAplicacion
