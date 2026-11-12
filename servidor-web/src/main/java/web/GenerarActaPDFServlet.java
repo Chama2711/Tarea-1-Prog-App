@@ -15,9 +15,11 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import logica.DTActaEstudio;
-import logica.DTCursoAprobado;
-import web.soap.ClienteInstitutosSoap;
+import web.soap.evaluaciones.generado.DtActaEstudio;
+import web.soap.evaluaciones.generado.DtCursoAprobado;
+        
+import web.soap.ClienteCatalogoSoap;
+import web.soap.ClienteEvaluacionesSoap;
 import web.InicializadorAplicacion;
 
 @WebServlet("/GenerarActaPDF")
@@ -43,14 +45,14 @@ public class GenerarActaPDFServlet extends HttpServlet {
         }
 
         // 2. Obtener datos desde el cliente SOAP del Integrante B
-        ClienteInstitutosSoap clienteSoap = (ClienteInstitutosSoap) getServletContext().getAttribute("CLIENTE_INSTITUTOS");
+        ClienteEvaluacionesSoap clienteSoap = (ClienteEvaluacionesSoap) getServletContext().getAttribute("CLIENTE_INSTITUTOS");
         
         if (clienteSoap == null) {
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "El servicio SOAP no está inicializado.");
             return;
         }
 
-        DTActaEstudio acta = clienteSoap.obtenerActaEstudio(nicknameEstudiante, nombrePrograma);
+        DtActaEstudio acta = clienteSoap.obtenerActaEstudio(nicknameEstudiante, nombrePrograma);
         
         if (acta == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "No se encontraron datos del acta solicitada.");
@@ -90,7 +92,7 @@ public class GenerarActaPDFServlet extends HttpServlet {
             addTableHeader(tabla, "Nota");
             addTableHeader(tabla, "Fecha Aprobación");
 
-            for (DTCursoAprobado curso : acta.getCursosAprobados()) {
+            for (DtCursoAprobado curso : acta.getCursosAprobados()) {
                 tabla.addCell(curso.getNombreCurso());
                 tabla.addCell(String.valueOf(curso.getNota()));
                 tabla.addCell(curso.getFechaAprobacion().toString());

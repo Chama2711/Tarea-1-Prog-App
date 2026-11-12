@@ -140,4 +140,22 @@ public class PublicadorSoap implements AutoCloseable {
             }
         }
     }
+    
+    public static void main(String[] args) {
+        try {
+            // Crea una implementación vacía de IServidorCentral al vuelo sin tocar la BD
+            IServidorCentral central = (IServidorCentral) java.lang.reflect.Proxy.newProxyInstance(
+                    IServidorCentral.class.getClassLoader(),
+                    new Class<?>[]{IServidorCentral.class},
+                    (proxy, method, methodArgs) -> null
+            );
+
+            PublicadorSoap publicador = new PublicadorSoap(central);
+            System.out.println("Servidor SOAP activo. Presiona el cuadrado rojo (Stop) para detenerlo.");
+            Thread.currentThread().join();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 }

@@ -1030,10 +1030,10 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
         }
     }
     
-    public void registrarValoracionCurso(
+    public void registrarValoracionCurso (
             String nickEstudiante,
             Long idCurso,
-            int puntuacion) {
+            int puntuacion) throws ValoracionDuplicadaException {
 
         if (nickEstudiante == null || nickEstudiante.isBlank()
                 || idCurso == null || idCurso <= 0) {

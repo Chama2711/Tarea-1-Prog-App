@@ -192,7 +192,7 @@ public interface IServidorCentral {
         String nickEstudiante,
         Long idCurso,
         int puntuacion
-    );
+    )throws ValoracionDuplicadaException;
     
     double obtenerPromedioValoraciones(Long idCurso);
 
@@ -303,8 +303,6 @@ public interface IServidorCentral {
                 String nombrePrograma,
                 int notaMinima);
     
-    void valorarCurso(String nicknameEstudiante, String nombreCurso, int puntuacion);
-
-    float obtenerPromedioCurso(String nombreCurso);
+    public logica.DTActaEstudio obtenerActaEstudio(String nickEstudiante, String nombrePrograma);
     
 }

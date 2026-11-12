@@ -7,6 +7,7 @@
     import jakarta.jws.WebMethod;
     import jakarta.jws.WebParam;
     import jakarta.jws.WebService;
+import java.util.List;
     import java.util.Objects;
     import logica.IServidorCentral;
 
@@ -59,7 +60,11 @@
 
         @WebMethod(operationName = "listarCursos")
         public String[] listarCursos() {
-            return central.listarNombresCursos().toArray(String[]::new);
+            List<String> cursos = central.listarNombresCursos();
+            if (cursos == null) {
+                return new String[0];
+            }
+            return cursos.toArray(String[]::new);
         }
 
         @WebMethod(operationName = "listarCursosPorInstituto")

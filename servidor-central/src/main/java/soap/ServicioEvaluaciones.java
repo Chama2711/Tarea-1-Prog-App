@@ -12,6 +12,7 @@ import jakarta.jws.WebService;
 import java.util.Objects;
 import logica.IServidorCentral;
 import soap.dto.DTInscripcionSoap;
+import logica.DTResultadoEvaluacion;
 import soap.dto.DTResultadoEvaluacionSoap;
 
 @WebService(
@@ -102,4 +103,13 @@ public class ServicioEvaluaciones {
         );
     }
 
+    @WebMethod(operationName = "obtenerActaEstudio")
+    public logica.DTActaEstudio obtenerActaEstudio(
+            @WebParam(name = "nickEstudiante") String nickEstudiante,
+            @WebParam(name = "nombrePrograma") String nombrePrograma) {
+
+        // Llamamos al método correspondiente en tu fachada IServidorCentral
+        return central.obtenerActaEstudio(nickEstudiante, nombrePrograma);
+    }
+    
 }

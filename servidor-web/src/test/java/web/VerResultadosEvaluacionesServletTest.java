@@ -25,7 +25,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import logica.DTAutenticacion;
-import logica.DTResultadoEvaluacion;
+import web.soap.evaluaciones.generado.DtResultadoEvaluacionSoap;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -44,6 +44,22 @@ public class VerResultadosEvaluacionesServletTest {
         ));
     }
 
+    private static DtResultadoEvaluacionSoap crearResultado(
+            Long idInscripcion,
+            String nicknameEstudiante,
+            String nombreEstudiante,
+            Integer calificacion,
+            String fechaCalificacion) {
+        DtResultadoEvaluacionSoap dto = new DtResultadoEvaluacionSoap();
+        dto.setIdInscripcion(idInscripcion);
+        dto.setNicknameEstudiante(nicknameEstudiante);
+        dto.setNombreEstudiante(nombreEstudiante);
+        dto.setCalificacion(calificacion);
+        dto.setFechaCalificacion(fechaCalificacion);
+        return dto;
+    }
+    
+    
     private static class Escenario {
 
         final Map<String, String> parametros = new HashMap<>();
@@ -58,14 +74,8 @@ public class VerResultadosEvaluacionesServletTest {
         List<String> ediciones =
                 List.of("Edicion 2025", "Edicion 2026");
 
-        List<DTResultadoEvaluacion> resultados = List.of(
-                new DTResultadoEvaluacion(
-                        15L,
-                        "alumno1",
-                        "Alumno Uno",
-                        10,
-                        LocalDate.of(2025, 11, 15)
-                )
+        List<DtResultadoEvaluacionSoap> resultados = List.of(
+                crearResultado(15L, "alumno1", "Alumno Uno", 10, "2025-11-15")
         );
 
         RuntimeException falloEdiciones;
@@ -216,7 +226,7 @@ public class VerResultadosEvaluacionesServletTest {
                 }
 
                 @Override
-                protected List<DTResultadoEvaluacion> consultarResultados(
+                protected List<DtResultadoEvaluacionSoap> consultarResultados(
                         String nickDocente,
                         String nombreEdicion) {
 
@@ -313,8 +323,8 @@ public class VerResultadosEvaluacionesServletTest {
         assertEquals("docente", e.nickConsultado);
         assertEquals("Edicion 2025", e.edicionConsultada);
 
-        List<DTResultadoEvaluacion> recibidos =
-                (List<DTResultadoEvaluacion>)
+        List<DtResultadoEvaluacionSoap> recibidos =
+                (List<DtResultadoEvaluacionSoap>)
                         e.atributos.get("resultados");
 
         assertEquals(1, recibidos.size());
@@ -322,8 +332,7 @@ public class VerResultadosEvaluacionesServletTest {
                 recibidos.get(0).getNicknameEstudiante());
         assertEquals(Integer.valueOf(10),
                 recibidos.get(0).getCalificacion());
-        assertEquals(LocalDate.of(2025, 11, 15),
-                recibidos.get(0).getFechaCalificacion());
+        assertEquals("2025-11-15", recibidos.get(0).getFechaCalificacion());
     }
 
     @Test

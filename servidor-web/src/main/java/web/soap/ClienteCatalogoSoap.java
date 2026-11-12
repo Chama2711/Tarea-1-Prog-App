@@ -15,6 +15,7 @@ import web.soap.generado.DtCursoConsulta;
 import web.soap.generado.DtProgramaConsulta;
 import web.soap.generado.DtEdicionConsulta;
 
+
 /** Consulta el catálogo mediante el servicio SOAP del central. */
 public final class ClienteCatalogoSoap {
     private final CatalogoService servicio;
@@ -294,7 +295,7 @@ public final class ClienteCatalogoSoap {
                 case "ACCESO" -> throw new SecurityException(detalle.getMensaje(), error);
                 case "NO_ENCONTRADO" -> throw new logica.RecursoNoEncontradoException(detalle.getMensaje());
                 case "VALIDACION" -> throw new IllegalArgumentException(detalle.getMensaje(), error);
-                case "VALORACION_DUPLICADA" -> throw new logica.ValoracionDuplicadaException(detalle.getMensaje(), error);
+                case "VALORACION_DUPLICADA" -> throw new IllegalStateException(detalle.getMensaje(), error);
                 default -> throw new jakarta.xml.ws.WebServiceException("No se pudo completar la operación SOAP.", error);
             }
         }

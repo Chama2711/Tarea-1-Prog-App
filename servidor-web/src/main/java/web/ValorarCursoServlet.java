@@ -11,7 +11,7 @@ import java.util.List;
 import logica.DTAutenticacion;
 import logica.EstadoInscripcion;
 import logica.RecursoNoEncontradoException;
-import logica.ValoracionDuplicadaException;
+import web.soap.generado.OperacionRechazada;
 
 @WebServlet("/valorar-curso")
 public class ValorarCursoServlet extends HttpServlet {
@@ -91,7 +91,7 @@ public class ValorarCursoServlet extends HttpServlet {
                     estudiante.getNick(), nombreCurso, puntuacion);
             response.sendRedirect(request.getContextPath() + "/valorar-curso?curso="
                     + URLEncoder.encode(nombreCurso, StandardCharsets.UTF_8) + "&guardada=1");
-        } catch (ValoracionDuplicadaException error) {
+        } catch (IllegalStateException error) {
             response.setStatus(HttpServletResponse.SC_CONFLICT);
             request.setAttribute("errorValoracion", error.getMessage());
             doGet(request, response);

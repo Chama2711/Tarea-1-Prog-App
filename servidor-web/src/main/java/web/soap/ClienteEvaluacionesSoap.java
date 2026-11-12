@@ -19,6 +19,7 @@ import web.soap.evaluaciones.generado.EvaluacionesService;
 import web.soap.evaluaciones.generado.ServicioEvaluaciones;
 import web.soap.evaluaciones.generado.DtInscripcionSoap;
 import web.soap.evaluaciones.generado.DtResultadoEvaluacionSoap;
+import web.soap.evaluaciones.generado.DtActaEstudio;
 
 public final class ClienteEvaluacionesSoap {
 
@@ -159,6 +160,21 @@ public final class ClienteEvaluacionesSoap {
         );
     }
 
+    
+   // Obtiene el acta de estudio de un estudiante en un programa mediante SOAP.
+    public DtActaEstudio obtenerActaEstudio(
+            String nickEstudiante,
+            String nombrePrograma) {
+
+        ServicioEvaluaciones puerto =
+                servicio.getEvaluacionesPort();
+
+        return puerto.obtenerActaEstudio(
+                nickEstudiante,
+                nombrePrograma
+        );
+    }
+    
     
 }
 

@@ -147,7 +147,8 @@ public class ValoracionCursoPersistenciaTest {
         final ControladorPersistencia persistencia =
                 new ControladorPersistencia(emf);
 
-        void valorar(int puntos) {
+        @Test
+        void valorar(int puntos) throws Exception{
             persistencia.registrarValoracionCurso(
                     "estudiante1", 1L, puntos
             );
@@ -155,7 +156,7 @@ public class ValoracionCursoPersistenciaTest {
     }
 
     @Test
-    public void guardaValoracionValida() {
+    public void guardaValoracionValida() throws Exception{
 
         Escenario s = new Escenario();
 
