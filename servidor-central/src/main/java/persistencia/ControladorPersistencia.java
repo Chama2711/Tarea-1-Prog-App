@@ -233,6 +233,7 @@ import logica.*;
             }
 
             pf.agregarCurso(curso);
+            curso.getProgramasFormacion().add(pf);
             em.getTransaction().commit();
         } catch (Exception e) {
             if (em.getTransaction().isActive()) em.getTransaction().rollback();
@@ -1627,6 +1628,7 @@ public void altaEdicionCurso(Curso curso, EdicionCurso edicion) {
         edicion.setCurso(cursoBD);
         edicion.setDocentes(docentes);
         em.persist(edicion);
+        cursoBD.agregoEdicion(edicion);
         em.getTransaction().commit();
     } catch (RuntimeException e) {
         if (em.getTransaction().isActive()) em.getTransaction().rollback();
