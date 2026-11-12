@@ -88,7 +88,7 @@ Como estudiante, entren en **Valorar un curso** desde el menú. Aparecen los cur
 
 Después de actualizar el proyecto, compilen desde la raíz, reinicien el central y desplieguen el WAR actualizado. Si usan una base anterior y todavía no existe `VALORACION_CURSO`, apliquen una vez `migraciones/2026-11-09-valoraciones.sql`.
 
-Para integrar la interfaz de Adriano, `ClienteCatalogoSoap` ofrece `registrarValoracionCurso`, `obtenerPromedioValoraciones` y `obtenerValoracionEstudiante`. La consulta del curso también devuelve el promedio, el total y `cantidadPorPuntuacion` (cantidades ordenadas de 1 a 5). La presentación con estrellas y barras queda pendiente de su interfaz.
+`ClienteCatalogoSoap` ofrece `registrarValoracionCurso`, `obtenerPromedioValoraciones` y `obtenerValoracionEstudiante`. La consulta del curso devuelve el promedio, el total y las cantidades por puntuación. La búsqueda y el detalle muestran el promedio con estrellas, y el detalle muestra la distribución de los votos.
 
 ## Datos adicionales de Tarea 2
 

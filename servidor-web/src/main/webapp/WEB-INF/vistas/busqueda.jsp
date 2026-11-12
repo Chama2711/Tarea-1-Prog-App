@@ -35,6 +35,12 @@
     <article class="oferta-fila"><img src="${pageContext.request.contextPath}/imagen-<%= resultado.tipo() %>?nombre=<%= parametro(resultado.nombre()) %>" alt="Imagen de <%= escapar(resultado.nombre()) %>"><div>
         <span class="categoria-chip"><%= resultado.tipo().equals("curso") ? "Curso" : "Programa" %></span>
         <h2><%= escapar(resultado.nombre()) %></h2><p><%= escapar(resultado.descripcion()) %></p>
+        <% if ("curso".equals(resultado.tipo())) {
+            double promedioValoraciones = resultado.promedioValoraciones();
+            long totalValoraciones = resultado.totalValoraciones();
+        %>
+            <%@ include file="/WEB-INF/vistas/fragmentos/estrellas.jspf" %>
+        <% } %>
         <p class="texto-secundario">Publicado: <%= fecha(resultado.publicacion()) %></p>
         <a class="boton boton-pequeno" href="${pageContext.request.contextPath}/<%= resultado.tipo() %>?nombre=<%= parametro(resultado.nombre()) %>">Ver detalle</a>
     </div></article>

@@ -19,7 +19,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import logica.DTAutenticacion;
-import web.soap.evaluaciones.generado.DtResultadoEvaluacionSoap;
+import logica.DTResultadoEvaluacion;
 
 @WebServlet("/ver-resultados-evaluaciones")
 public class VerResultadosEvaluacionesServlet
@@ -56,7 +56,7 @@ public class VerResultadosEvaluacionesServlet
                             request, "edicion"
                     ).trim();
 
-            List<DtResultadoEvaluacionSoap> resultados =
+            List<DTResultadoEvaluacion> resultados =
                     List.of();
             String avisoResultados = null;
 
@@ -168,7 +168,7 @@ public class VerResultadosEvaluacionesServlet
 
     // Recuperar los resultados desde SOAP y convertirlos
     // al DTO compartido utilizado por nuestra JSP.
-    protected List<DtResultadoEvaluacionSoap> consultarResultados(
+    protected List<DTResultadoEvaluacion> consultarResultados(
             String nickDocente,
             String nombreEdicion) {
 
@@ -179,6 +179,19 @@ public class VerResultadosEvaluacionesServlet
                         nombreEdicion
                 );
 
-        return resultadosSoap;
+        return resultadosSoap.stream()
+                .map(dto -> new DTResultadoEvaluacion(
+                        dto.getIdInscripcion(),
+                        dto.getNicknameEstudiante(),
+                        dto.getNombreEstudiante(),
+                        dto.getCalificacion(),
+                        dto.getFechaCalificacion() == null
+                                || dto.getFechaCalificacion().isBlank()
+                                ? null
+                                : LocalDate.parse(
+                                        dto.getFechaCalificacion()
+                                )
+                ))
+                .toList();
     }
 }

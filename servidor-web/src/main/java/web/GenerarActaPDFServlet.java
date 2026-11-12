@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.xml.ws.WebServiceException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,9 +19,7 @@ import java.io.OutputStream;
 import web.soap.evaluaciones.generado.DtActaEstudio;
 import web.soap.evaluaciones.generado.DtCursoAprobado;
         
-import web.soap.ClienteCatalogoSoap;
-import web.soap.ClienteEvaluacionesSoap;
-import web.InicializadorAplicacion;
+import logica.DTAutenticacion;
 
 @WebServlet("/GenerarActaPDF")
 public class GenerarActaPDFServlet extends HttpServlet {
@@ -29,12 +28,13 @@ public class GenerarActaPDFServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // 1. Validar sesión de usuario
         HttpSession session = request.getSession(false);
-        String nicknameEstudiante = (session != null) ? (String) session.getAttribute("usuario") : null;
-
-        if (nicknameEstudiante == null) {
+        if (session == null || !(session.getAttribute("usuario") instanceof DTAutenticacion usuario)) {
             response.sendRedirect(request.getContextPath() + "/inicio");
+            return;
+        }
+        if (usuario.getRol() != DTAutenticacion.Rol.ESTUDIANTE) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
@@ -44,24 +44,26 @@ public class GenerarActaPDFServlet extends HttpServlet {
             return;
         }
 
-        // 2. Obtener datos desde el cliente SOAP del Integrante B
-        ClienteEvaluacionesSoap clienteSoap = (ClienteEvaluacionesSoap) getServletContext().getAttribute("CLIENTE_INSTITUTOS");
-        
-        if (clienteSoap == null) {
-            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "El servicio SOAP no está inicializado.");
+        DtActaEstudio acta;
+        try {
+            acta = InicializadorAplicacion.getClienteEvaluaciones(getServletContext())
+                    .obtenerActaEstudio(usuario.getNick(), nombrePrograma.trim());
+        } catch (WebServiceException | IllegalStateException error) {
+            getServletContext().log("No se pudo solicitar el certificado por SOAP.", error);
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No se pudo generar el certificado. Intentá nuevamente más tarde.");
             return;
         }
-
-        DtActaEstudio acta = clienteSoap.obtenerActaEstudio(nicknameEstudiante, nombrePrograma);
         
         if (acta == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No se encontraron datos del acta solicitada.");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "El certificado está disponible cuando aprobás todos los cursos del programa.");
             return;
         }
 
-        // 3. Configurar respuesta HTTP para visor de PDF
+        response.setHeader("Cache-Control", "no-store");
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename=\"Acta_" + nombrePrograma + ".pdf\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"certificado-edEXT.pdf\"");
 
         // 4. Generar documento PDF con iText
         try (OutputStream out = response.getOutputStream()) {
@@ -89,12 +91,12 @@ public class GenerarActaPDFServlet extends HttpServlet {
             tabla.setWidths(new float[]{4, 2, 2});
 
             addTableHeader(tabla, "Curso");
-            addTableHeader(tabla, "Nota");
+            addTableHeader(tabla, "Resultado");
             addTableHeader(tabla, "Fecha Aprobación");
 
             for (DtCursoAprobado curso : acta.getCursosAprobados()) {
                 tabla.addCell(curso.getNombreCurso());
-                tabla.addCell(String.valueOf(curso.getNota()));
+                tabla.addCell("Aprobado (" + curso.getNota() + ")");
                 tabla.addCell(curso.getFechaAprobacion().toString());
             }
 

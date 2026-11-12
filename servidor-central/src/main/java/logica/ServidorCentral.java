@@ -733,9 +733,27 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
 
 
     @Override
-    public logica.DTActaEstudio obtenerActaEstudio(String nickEstudiante, String nombrePrograma) {
-        
-        return controladorUsuario.obtenerActaEstudio(nickEstudiante, nombrePrograma);
-    }     
+    public DTActaEstudio obtenerActaEstudio(String nickEstudiante, String nombrePrograma) {
+        final int notaMinima = 6;
+        ValidadorAprobacionPrograma.ResultadoPrograma resultado;
+        try {
+            resultado = validarAprobacionPrograma(nickEstudiante, nombrePrograma, notaMinima);
+        } catch (RecursoNoEncontradoException | IllegalStateException error) {
+            return null;
+        }
+        if (!resultado.aprobado()) {
+            return null;
+        }
+
+        Usuario estudiante = obtenerUsuario(resultado.estudiante());
+        if (estudiante == null) {
+            return null;
+        }
+        List<DTCursoAprobado> cursos = resultado.resultados().stream()
+                .map(curso -> new DTCursoAprobado(curso.curso(), curso.nota(), curso.fechaResultado()))
+                .toList();
+        return new DTActaEstudio(estudiante.getNombre() + " " + estudiante.getApellido(),
+                resultado.estudiante(), resultado.programa(), LocalDate.now(), cursos);
+    }
             
 }

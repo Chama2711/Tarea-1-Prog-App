@@ -4,6 +4,7 @@
 <%
     DTPerfilUsuario perfil = (DTPerfilUsuario) request.getAttribute("perfil");
     DTUsuarioConsulta usuario = perfil.usuario();
+    Set<?> programasAprobados = (Set<?>) request.getAttribute("programasAprobados");
     Map<String, String> datosEdicion = (Map<String, String>) request.getAttribute("datosEdicion");
     boolean recuperarEdicion = perfil.propio() && datosEdicion != null;
     boolean docente = usuario.rol() == DTAutenticacion.Rol.DOCENTE;
@@ -217,9 +218,17 @@
         <section id="perfil-programas" class="perfil-panel" aria-labelledby="titulo-programas-usuario">
             <h3 id="titulo-programas-usuario">Programas en los que está inscripto</h3>
             <% if (perfil.programas().isEmpty()) { %><p class="texto-secundario">No hay inscripciones a programas para mostrar.</p><% } %>
+            <% if (Boolean.TRUE.equals(request.getAttribute("certificadosNoDisponibles"))) { %>
+                <p class="texto-secundario">No se pudo consultar la disponibilidad de certificados.</p>
+            <% } %>
             <div class="ediciones">
             <% for (String programa : perfil.programas()) { %>
-                <article class="edicion"><h4><a href="${pageContext.request.contextPath}/programa?nombre=<%= parametro(programa) %>"><%= escapar(programa) %></a></h4></article>
+                <article class="edicion">
+                    <h4><a href="${pageContext.request.contextPath}/programa?nombre=<%= parametro(programa) %>"><%= escapar(programa) %></a></h4>
+                    <% if (programasAprobados != null && programasAprobados.contains(programa)) { %>
+                        <a href="${pageContext.request.contextPath}/GenerarActaPDF?programa=<%= parametro(programa) %>">Descargar certificado</a>
+                    <% } %>
+                </article>
             <% } %>
             </div>
         </section>

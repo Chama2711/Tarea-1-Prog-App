@@ -8,7 +8,7 @@ Necesitan **JDK 21 y Maven**. Desde la carpeta del proyecto:
 - Windows (CMD): `compilar.cmd`
 - Windows (PowerShell): `.\compilar.cmd`
 
-Los scripts ejecutan las pruebas y dejan `servidor.jar`, `web.war`, las plantillas y estas instrucciones en **`target/distribucion`**. Esa carpeta está ignorada por Git.
+Los scripts dejan `servidor.jar`, `web.war`, las plantillas y estas instrucciones en **`target/distribucion`**. Las pruebas y JaCoCo están desactivados por defecto. La carpeta `target/distribucion` está ignorada por Git.
 
 Si Maven no está en PATH, pueden indicar su ejecutable mediante `MVN`. Por ejemplo, en tu Windows, desde CMD:
 

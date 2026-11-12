@@ -2,6 +2,8 @@ package web;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -46,6 +48,23 @@ public class DetalleUsuarioServlet extends HttpServlet {
             request.setAttribute("esSeguidor", esSeguidor);
 
             request.setAttribute("perfil", perfil);
+            if (perfil.propio() && autenticado != null
+                    && autenticado.getRol() == DTAutenticacion.Rol.ESTUDIANTE
+                    && !perfil.programas().isEmpty()) {
+                try {
+                    var evaluaciones = InicializadorAplicacion.getClienteEvaluaciones(getServletContext());
+                    Set<String> programasAprobados = new HashSet<>();
+                    for (String programa : perfil.programas()) {
+                        if (evaluaciones.obtenerActaEstudio(autenticado.getNick(), programa) != null) {
+                            programasAprobados.add(programa);
+                        }
+                    }
+                    request.setAttribute("programasAprobados", programasAprobados);
+                } catch (WebServiceException | IllegalStateException error) {
+                    getServletContext().log("No se pudo consultar la disponibilidad de certificados.", error);
+                    request.setAttribute("certificadosNoDisponibles", true);
+                }
+            }
             if (perfil.propio() && sesion != null
                     && sesion.getAttribute(ModificarUsuarioServlet.BORRADOR_PERFIL) instanceof Map<?, ?> borrador
                     && nick.equals(borrador.get("nick"))) {

@@ -218,54 +218,6 @@ public List<String> obtenerNombresInstitutos() {
         return nombres;
     }
 
-    public logica.DTActaEstudio obtenerActaEstudio(String nickEstudiante, String nombrePrograma) {
-        // 1. Obtenemos el usuario y verificamos que sea un Estudiante
-        Usuario u = servidorCentral.obtenerUsuario(nickEstudiante);
-
-        if (!(u instanceof Estudiante)) {
-            throw new IllegalArgumentException("El usuario no existe o no es un estudiante.");
-        }
-
-        Estudiante estudiante = (Estudiante) u;
-        List<logica.DTCursoAprobado> cursosAprobados = new ArrayList<>();
-
-        // 2. Recorremos todas las inscripciones del estudiante
-        for (Inscripcion i : estudiante.getInscripciones()) {
-
-            // Verificamos que sea una inscripción a un curso (edición) y no a un programa
-            if (i.getEdicionCurso() != null) {
-
-                // Chequeamos estado ACEPTADA, que tenga nota asignada y esté aprobado (asumiendo >= 5)
-                if (i.getEstado() == EstadoInscripcion.ACEPTADA
-                        && i.getCalificacion() != null
-                        && i.getCalificacion() >= 5) {
-
-                    
-                    String nombreCurso = i.getEdicionCurso().getCurso().getNombre();
-                    int nota = i.getCalificacion();
-                    LocalDate fechaAprobacion = i.getFechaCalificacion();
-
-                    // Instanciamos el DTO del curso
-                    cursosAprobados.add(new logica.DTCursoAprobado(nombreCurso, nota, fechaAprobacion));
-                }
-            }
-        }
-
-        // 3. Construimos el DTActaEstudio final usando los datos del estudiante y la fecha actual
-        String nombreEstudiante = estudiante.getNombre();
-        String nick = estudiante.getNick();
-        LocalDate fechaEmision = LocalDate.now();
-
-        return new logica.DTActaEstudio(
-                nombreEstudiante,
-                nick,
-                nombrePrograma,
-                fechaEmision,
-                cursosAprobados
-        );
-    }
-
-
 }
 
 

@@ -8,6 +8,8 @@
     String tituloPagina = curso.getNombre();
     String bajadaPagina = curso.getDescripcion();
     String paginaActiva = "cursos";
+    double promedioValoraciones = curso.getPromedioValoraciones();
+    long totalValoraciones = curso.getTotalValoraciones();
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -43,6 +45,7 @@
 
 
         <h1><%= escapar(curso.getNombre()) %></h1>
+        <%@ include file="/WEB-INF/vistas/fragmentos/estrellas.jspf" %>
         <p><%= escapar(curso.getDescripcion()) %></p>
         <% String urlCurso = curso.getUrl(); if (urlCurso != null && (urlCurso.startsWith("https://") || urlCurso.startsWith("http://"))) { %>
         <p><a href="<%= escapar(urlCurso) %>" target="_blank" rel="noopener">Acceder al sitio del curso</a></p><% } %>
@@ -65,12 +68,25 @@
             </div>
         <% } %>
         
-        <% if (usuarioSesion != null && usuarioSesion.getRol() == DTAutenticacion.Rol.ESTUDIANTE) { 
-        // Si esta disponible la valoración previa del usuario en el DTO/request
-        Integer miValoracion = (Integer) request.getAttribute("miValoracion");
-        if (miValoracion == null) miValoracion = 0;
-        %>
-
+        <% if (totalValoraciones > 0) { %>
+            <section class="panel" aria-labelledby="titulo-puntajes">
+                <h2 id="titulo-puntajes">Distribución de puntuaciones</h2>
+                <ul class="distribucion-valoraciones">
+                    <% for (int puntaje = 5; puntaje >= 1; puntaje--) {
+                        long cantidad = curso.getCantidadPorPuntuacion().get(puntaje - 1);
+                    %>
+                        <li>
+                            <span><%= puntaje %> <%= puntaje == 1 ? "estrella" : "estrellas" %></span>
+                            <span class="barra-valoracion" aria-hidden="true">
+                                <span style="width: <%= cantidad * 100.0 / totalValoraciones %>%"></span>
+                            </span>
+                            <span><%= cantidad %> <%= cantidad == 1 ? "voto" : "votos" %></span>
+                        </li>
+                    <% } %>
+                </ul>
+            </section>
+        <% } %>
+        <% if (usuarioSesion != null && usuarioSesion.getRol() == DTAutenticacion.Rol.ESTUDIANTE) { %>
             <section class="panel" aria-labelledby="titulo-valoracion">
                 <h2 id="titulo-valoracion">Valoración de cursos</h2>
                 <p class="texto-secundario">Elegí uno de los cursos en los que participás para consultar su promedio y dejar tu puntuación.</p>

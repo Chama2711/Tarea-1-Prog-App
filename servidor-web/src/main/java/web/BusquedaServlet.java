@@ -12,7 +12,8 @@ import web.soap.generado.DtCursoConsulta;
 
 @WebServlet("/busqueda")
 public class BusquedaServlet extends HttpServlet {
-    public record Resultado(String nombre, String descripcion, String tipo, LocalDate publicacion) { }
+    public record Resultado(String nombre, String descripcion, String tipo, LocalDate publicacion,
+            double promedioValoraciones, long totalValoraciones) { }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -32,7 +33,9 @@ public class BusquedaServlet extends HttpServlet {
             if (!tipo.equals("programas")) {
                 for (DtCursoConsulta curso : cursos) {
                     if (coincide(curso, instituto, categoria) && contiene(curso.getNombre(), curso.getDescripcion(), consulta))
-                        resultados.add(new Resultado(curso.getNombre(), curso.getDescripcion(), "curso", ConsultasCursos.fecha(curso.getFechaRegistro())));
+                        resultados.add(new Resultado(curso.getNombre(), curso.getDescripcion(), "curso",
+                                ConsultasCursos.fecha(curso.getFechaRegistro()),
+                                curso.getPromedioValoraciones(), curso.getTotalValoraciones()));
                 }
             }
             if (!tipo.equals("cursos")) {
@@ -42,7 +45,8 @@ public class BusquedaServlet extends HttpServlet {
                                     .map(cursosPorNombre::get).filter(Objects::nonNull)
                                     .anyMatch(c -> coincide(c, instituto, categoria));
                     if (filtro && contiene(programa.getNombre(), programa.getDescripcion(), consulta))
-                        resultados.add(new Resultado(programa.getNombre(), programa.getDescripcion(), "programa", ConsultasCursos.fecha(programa.getFechaAlta())));
+                        resultados.add(new Resultado(programa.getNombre(), programa.getDescripcion(), "programa",
+                                ConsultasCursos.fecha(programa.getFechaAlta()), 0, 0));
                 }
             }
             Comparator<Resultado> porNombre = Comparator.comparing(Resultado::nombre, String.CASE_INSENSITIVE_ORDER);
