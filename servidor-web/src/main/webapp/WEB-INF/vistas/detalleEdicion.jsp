@@ -1,19 +1,19 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="logica.*,java.util.*" %>
+<%@ page import="web.soap.generado.DtEdicionConsulta,web.soap.generado.DtDocenteResumen,logica.*,java.util.*" %>
 <%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
 <%
-    DTEdicionConsulta edicion =
-            (DTEdicionConsulta) request.getAttribute("edicion");
+    DtEdicionConsulta edicion =
+            (DtEdicionConsulta) request.getAttribute("edicion");
 
-    String tituloPagina = edicion.nombre();
-    String bajadaPagina = "Una edición de " + edicion.nombreCurso() + ".";
+    String tituloPagina = edicion.getNombre();
+    String bajadaPagina = "Una edición de " + edicion.getNombreCurso() + ".";
     String paginaActiva = "cursos";
 
     DTAutenticacion usuarioInscripcion =
             (DTAutenticacion) session.getAttribute("usuario");
 
   boolean puedeInscribirse =
-    usuarioInscripcion != null && usuarioInscripcion.getRol() == DTAutenticacion.Rol.ESTUDIANTE && edicion.vigente();
+    usuarioInscripcion != null && usuarioInscripcion.getRol() == DTAutenticacion.Rol.ESTUDIANTE && edicion.isVigente();
 
 %>
 <!DOCTYPE html>
@@ -33,7 +33,7 @@
 <div class="contenido-pagina">
 
 
-    <a class="volver" href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(edicion.nombreCurso()) %>">← Ver el curso</a>
+    <a class="volver" href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(edicion.getNombreCurso()) %>">← Ver el curso</a>
         <% if ("ok".equals(request.getParameter("inscripcion"))) { %>
             <div class="aviso aviso-exito" role="status">
                 Inscripción realizada correctamente.
@@ -47,11 +47,11 @@
         <% } %>
     <section class="panel" aria-label="Información de la edición">
 
-        <% if (edicion.tieneImagen()) { %>
+        <% if (edicion.isTieneImagen()) { %>
 
             <img class="imagen-detalle"
-                 src="${pageContext.request.contextPath}/imagen-edicion?nombre=<%= parametro(edicion.nombre()) %>"
-                 alt="Imagen de la edición <%= escapar(edicion.nombre()) %>">
+                 src="${pageContext.request.contextPath}/imagen-edicion?nombre=<%= parametro(edicion.getNombre()) %>"
+                 alt="Imagen de la edición <%= escapar(edicion.getNombre()) %>">
 
         <% } else { %>
 
@@ -62,9 +62,9 @@
         <% } %>
 
     <div class="titulo-edicion">
-        <h1><%= escapar(edicion.nombre()) %></h1>
+        <h1><%= escapar(edicion.getNombre()) %></h1>
 
-        <% if (!edicion.vigente()) { %>
+        <% if (!edicion.isVigente()) { %>
             <span class="estado-no-vigente">NO VIGENTE</span>
         <% } %>
     </div>
@@ -72,29 +72,29 @@
     <div class="detalle-datos datos-columna">
         <div class="dato">
             <span>Inicio</span>
-            <strong><%= fecha(edicion.inicio()) %></strong>
+            <strong><%= fecha(edicion.getInicio()) %></strong>
         </div>
 
         <div class="dato">
             <span>Fin</span>
-            <strong><%= fecha(edicion.fin()) %></strong>
+            <strong><%= fecha(edicion.getFin()) %></strong>
         </div>
 
         <div class="dato">
             <span>Publicación</span>
-            <strong><%= fecha(edicion.publicacion()) %></strong>
+            <strong><%= fecha(edicion.getPublicacion()) %></strong>
         </div>
 
         <div class="dato">
             <span>Cupo</span>
-            <strong><%= edicion.cupo() == -1 ? "Sin límite" : edicion.cupo() %></strong>
+            <strong><%= edicion.getCupo() == -1 ? "Sin límite" : edicion.getCupo() %></strong>
         </div>
     </div>
 
     <p>
         <strong>Curso:</strong>
-        <a href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(edicion.nombreCurso()) %>">
-            <%= escapar(edicion.nombreCurso()) %>
+        <a href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(edicion.getNombreCurso()) %>">
+            <%= escapar(edicion.getNombreCurso()) %>
         </a>
     </p>
 
@@ -105,7 +105,7 @@
 
             <input type="hidden"
                    name="edicion"
-                   value="<%= escapar(edicion.nombre()) %>">
+                   value="<%= escapar(edicion.getNombre()) %>">
 
             <button type="submit"
                     class="boton boton-inscripcion">
@@ -119,10 +119,10 @@
 </section>
     <section class="panel" aria-labelledby="titulo-docentes">
         <h2 id="titulo-docentes">Docentes de la edición</h2>    
-        <% if (edicion.docentes().isEmpty()) { %><p class="texto-secundario">No hay docentes asignados.</p><% } %>
+        <% if (edicion.getDocente().isEmpty()) { %><p class="texto-secundario">No hay docentes asignados.</p><% } %>
         <ul class="lista-docentes">
-        <% for (DTUsuarioConsulta docente : edicion.docentes()) { %>
-            <li><%= escapar(docente.nombreCompleto()) %> — <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(docente.nick()) %>">@<%= escapar(docente.nick()) %></a></li>
+        <% for (DtDocenteResumen docente : edicion.getDocente()) { %>
+            <li><%= escapar(docente.getNombreCompleto()) %> — <a href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(docente.getNick()) %>">@<%= escapar(docente.getNick()) %></a></li>
         <% } %>
         </ul>
     </section>

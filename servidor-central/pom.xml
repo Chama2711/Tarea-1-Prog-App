@@ -19,6 +19,12 @@
     <name>edEXT - Servidor Central</name>
 
     <dependencies>
+        <dependency>
+            <groupId>com.mycompany</groupId>
+            <artifactId>datos-compartidos</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>junit</groupId>

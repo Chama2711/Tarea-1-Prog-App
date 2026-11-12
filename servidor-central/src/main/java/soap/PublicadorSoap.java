@@ -17,7 +17,8 @@ import logica.IServidorCentral;
 public class PublicadorSoap implements AutoCloseable {
 
     private final HttpServer http;
-    private final Endpoint endpoint;
+    private final Endpoint endpointCatalogo;
+    private final Endpoint endpointEvaluaciones;
 
     public PublicadorSoap(IServidorCentral central) throws IOException {
 
@@ -53,29 +54,67 @@ public class PublicadorSoap implements AutoCloseable {
                 new InetSocketAddress(host, puerto), 0);
 
         Endpoint servicio = null;
+        Endpoint catalogo = null;
+        Endpoint evaluaciones = null;
+
+        // Ambos servicios compartirán el mismo servidor HTTP.
+        String rutaEvaluaciones = ruta.substring(
+                0, ruta.lastIndexOf('/') + 1
+        ) + "evaluaciones";
 
         try {
-            servicio = Endpoint.create(
-                    new ServicioInstitutos(central));
+            // Publicar el servicio de catálogo existente.
+            catalogo = Endpoint.create(
+                    new ServicioCatalogo(central)
+            );
 
-            servicio.publish(http.createContext(ruta));
+            catalogo.publish(http.createContext(ruta));
+
+            // Publicar el nuevo servicio de evaluaciones.
+            evaluaciones = Endpoint.create(
+                    new ServicioEvaluaciones(central)
+            );
+
+            evaluaciones.publish(
+                    http.createContext(rutaEvaluaciones)
+            );
+
+            // Iniciar el servidor HTTP una sola vez.
             http.start();
+
         } catch (RuntimeException error) {
             try {
-                if (servicio != null && servicio.isPublished()) {
-                    servicio.stop();
+                if (evaluaciones != null && evaluaciones.isPublished()) {
+                    evaluaciones.stop();
                 }
             } finally {
-                http.stop(0);
+                try {
+                    if (catalogo != null && catalogo.isPublished()) {
+                        catalogo.stop();
+                    }
+                } finally {
+                    http.stop(0);
+                }
             }
+
             throw error;
         }
 
-        endpoint = servicio;
+        endpointCatalogo = catalogo;
+        endpointEvaluaciones = evaluaciones;
 
-        System.out.println("Servicio SOAP publicado:");
+
+        System.out.println("Servicios SOAP publicados:");
+
         System.out.println(
-                "http://" + host + ":" + puerto + ruta + "?wsdl");
+                "Catálogo: http://" + host + ":" + puerto
+                + ruta + "?wsdl"
+        );
+
+        System.out.println(
+                "Evaluaciones: http://" + host + ":" + puerto
+                + rutaEvaluaciones + "?wsdl"
+        );
     }
 
     private static String requerida(Properties config, String nombre) {
@@ -92,9 +131,13 @@ public class PublicadorSoap implements AutoCloseable {
     @Override
     public void close() {
         try {
-            endpoint.stop();
+            endpointEvaluaciones.stop();
         } finally {
-            http.stop(0);
+            try {
+                endpointCatalogo.stop();
+            } finally {
+                http.stop(0);
+            }
         }
     }
 }

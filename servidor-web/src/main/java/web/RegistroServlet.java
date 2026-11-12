@@ -11,7 +11,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
+import java.util.List;
+import jakarta.xml.ws.WebServiceException;
+
 
 @WebServlet(name = "RegistroServlet", urlPatterns = {"/registro"})
 @MultipartConfig(maxFileSize = 5 * 1024 * 1024, maxRequestSize = 6 * 1024 * 1024)
@@ -67,7 +70,7 @@ public class RegistroServlet extends HttpServlet {
                     imagen = entrada.readAllBytes();
                 }
             }
-            IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+            ClienteCatalogoSoap servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
             String nick = request.getParameter("nick");
             String correo = request.getParameter("correo");
             String nombre = request.getParameter("nombre");
@@ -85,6 +88,12 @@ public class RegistroServlet extends HttpServlet {
             request.setAttribute("error", e.getMessage());
             mostrarFormulario(request, response);
             return;
+        } catch (WebServiceException error) {
+            getServletContext().log("No se pudo registrar el usuario por SOAP.", error);
+            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+            request.setAttribute("error", "No se pudo confirmar el registro. Comprobá si la cuenta existe antes de volver a enviarlo.");
+            mostrarFormulario(request, response);
+            return;
         } catch (IllegalStateException e) {
             getServletContext().log("No se pudo registrar un usuario.", e);
             request.setAttribute("error", "No se pudo guardar la cuenta. Intentá nuevamente.");
@@ -95,12 +104,35 @@ public class RegistroServlet extends HttpServlet {
     }
 
     private void mostrarFormulario(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
-        request.setAttribute("institutos", servidor.listarNombresInstitutos());
+        throws ServletException, IOException {
+
+        try {
+            request.setAttribute(
+                    "institutos",
+                    InicializadorAplicacion
+                            .getClienteCatalogo(getServletContext())
+                            .listarInstitutos()
+            );
+
+        } catch (WebServiceException error) {
+            getServletContext().log(
+                    "No se pudieron consultar los institutos por SOAP.",
+                    error
+            );
+
+            request.setAttribute("institutos", List.of());
+
+            if (request.getAttribute("error") == null) {
+                request.setAttribute(
+                        "error",
+                        "No se pudieron cargar los institutos. Intentá nuevamente más tarde."
+                );
+            }
+        }
+
         request.getRequestDispatcher(VISTA).forward(request, response);
     }
-
+    
     private boolean redirigirAutenticado(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         HttpSession sesion = request.getSession(false);

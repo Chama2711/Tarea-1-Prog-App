@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog"
+         prefer="system">
+
+    <!-- Catálogo -->
+    <system
+        systemId="http://127.0.0.1:18083/edext/catalogo?wsdl"
+        uri="wsdl/127.0.0.1_18083/edext/catalogo.wsdl"/>
+
+    <system
+        systemId="http://127.0.0.1:18083/edext/catalogo?xsd=1"
+        uri="wsdl/127.0.0.1_18083/edext/catalogo.xsd_1.xsd"/>
+
+    <!-- Evaluaciones -->
+    <system
+        systemId="http://127.0.0.1:18083/edext/evaluaciones?wsdl"
+        uri="wsdl/127.0.0.1_18083/edext/evaluaciones.wsdl"/>
+
+    <system
+        systemId="http://127.0.0.1:18083/edext/evaluaciones?xsd=1"
+        uri="wsdl/127.0.0.1_18083/edext/evaluaciones.xsd_1.xsd"/>
+
+</catalog>
+

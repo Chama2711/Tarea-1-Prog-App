@@ -12,9 +12,15 @@ public class UsuariosServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("usuarios", InicializadorAplicacion
-                .getServidor(getServletContext()).listarUsuariosConsulta());
-        request.getRequestDispatcher("/WEB-INF/vistas/usuarios.jsp").forward(request, response);
+        try {
+            request.setAttribute("usuarios", InicializadorAplicacion
+                    .getClienteCatalogo(getServletContext()).listarUsuariosConsulta());
+            request.getRequestDispatcher("/WEB-INF/vistas/usuarios.jsp").forward(request, response);
+        } catch (jakarta.xml.ws.WebServiceException error) {
+            getServletContext().log("No se pudieron consultar los usuarios por SOAP.", error);
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No se pudieron cargar los usuarios. Intentá nuevamente más tarde.");
+        }
     }
 }
 

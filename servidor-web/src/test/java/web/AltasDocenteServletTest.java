@@ -44,6 +44,8 @@ public class AltasDocenteServletTest {
         final Map<String, Object> atributos = new HashMap<>();
         DTAutenticacion usuario = new DTAutenticacion("docente", "Docente", DTAutenticacion.Rol.DOCENTE);
         RuntimeException fallo;
+        boolean falloInstitutos;
+        boolean falloCategorias;
         String redireccion, vista;
         int estado = 200, altas, consultas, logs;
         Object[] argumentosAlta;
@@ -51,14 +53,25 @@ public class AltasDocenteServletTest {
         boolean archivoExcedido;
 
         final IServidorCentral central = proxy(IServidorCentral.class, (p, m, args) -> {
+            if (falloInstitutos && (m.getName().equals("listarNombresInstitutos")
+                    || m.getName().equals("listarNombresInstitutosDocente"))) {
+                throw new IllegalStateException("Detalle privado de conexión SOAP");
+            }
+
+            if (falloCategorias && m.getName().equals("listarNombresCategorias")) {
+                throw new IllegalStateException("Detalle privado SOAP");
+            }
             if (m.getName().startsWith("alta")) {
                 altas++; argumentosAlta = args;
                 if (fallo != null) throw fallo;
                 return null;
             }
+            if (m.getName().equals("obtenerUsuario")) return new logica.Docente("docente", "docente@test", "Docente", "Uno", java.time.LocalDate.of(2000, 1, 1));
             consultas++;
             return switch (m.getName()) {
-                case "listarNombresInstitutosDocente" -> List.of("INCO");
+                case "listarNombresInstitutosDocente" -> {
+                    assertEquals("docente", args[0]); yield List.of("INCO");
+                }
                 case "listarNombresCursosPorInstituto" -> {
                     assertEquals("INCO", args[0]); yield List.of("Curso");
                 }
@@ -67,9 +80,19 @@ public class AltasDocenteServletTest {
                 default -> throw new AssertionError(m.getName());
             };
         });
+        web.soap.ClienteCatalogoSoap clienteCatalogo;
+        final IServidorCentral localSinInstitutos = proxy(IServidorCentral.class, (p, m, a) -> {
+            if (m.getName().equals("listarNombresInstitutos")
+                    || m.getName().equals("listarNombresInstitutosDocente")
+                    || m.getName().equals("listarNombresCategorias")) {
+                throw new AssertionError("Consulta local de institutos: " + m.getName());
+            }
+            try { return m.invoke(central, a); }
+            catch (java.lang.reflect.InvocationTargetException e) { throw e.getCause(); }
+        });
         final ServletContext contexto = proxy(ServletContext.class, (p, m, args) -> {
             return switch (m.getName()) {
-                case "getAttribute" -> central;
+                case "getAttribute" -> ((String) args[0]).endsWith(".clienteCatalogo") ? clienteCatalogo : localSinInstitutos;
                 case "log" -> { logs++; yield null; }
                 default -> throw new AssertionError(m.getName());
             };
@@ -123,6 +146,8 @@ public class AltasDocenteServletTest {
                 case "getInitParameter" -> null;
                 default -> throw new AssertionError(m.getName());
             }));
+            try (var soap = new CatalogoSoapPrueba(central)) {
+                clienteCatalogo = soap.cliente;
             if (servlet instanceof AltaEdicionCursoServlet s) {
                 if (post) s.doPost(request, response); else s.doGet(request, response);
             } else if (servlet instanceof AltaProgramaServlet s) {
@@ -131,6 +156,8 @@ public class AltasDocenteServletTest {
                 AltaCursoServlet s = (AltaCursoServlet) servlet;
                 if (post) s.doPost(request, response); else s.doGet(request, response);
             }
+            }
+
         }
     }
 
@@ -297,5 +324,20 @@ public class AltasDocenteServletTest {
             s.ejecutar(edicion, true); assertEquals(1, s.logs); assertNotNull(s.vista);
             assertFalse(s.atributos.get("error").toString().contains("JDBC"));
         }
+    }
+
+    @Test public void falloSoapEnInstitutosDa503EnAmbasAltas() throws Exception {
+        for (boolean edicion : List.of(false, true)) {
+            Escenario s = new Escenario(); s.falloInstitutos = true;
+            s.ejecutar(edicion, false);
+            assertEquals(503, s.estado); assertEquals(0, s.altas);
+            assertEquals(1, s.logs); assertNull(s.vista);
+        }
+    }
+    @Test public void categoriasDelAltaSeConsultanPorSoapYFalloDevuelve503() throws Exception {
+        var correcto = new Escenario(); correcto.ejecutar(false, false);
+        assertEquals(List.of("Tecnología"), correcto.atributos.get("categorias"));
+        var fallido = new Escenario(); fallido.falloCategorias = true; fallido.ejecutar(false, false);
+        assertEquals(503, fallido.estado); assertNull(fallido.vista); assertEquals(0, fallido.altas);
     }
 }

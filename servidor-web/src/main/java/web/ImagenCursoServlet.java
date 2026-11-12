@@ -6,6 +6,7 @@ package web;
 
 import java.io.IOException;
 import jakarta.servlet.ServletException;
+import jakarta.xml.ws.WebServiceException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +34,7 @@ public class ImagenCursoServlet extends HttpServlet {
         try {
             imagen = obtenerImagen(request, nombre);
 
-        } catch (IOException e) {
+        } catch (IOException | WebServiceException e) {
             getServletContext().log(
                     "No se pudo leer la imagen del curso solicitado.", e);
             mostrarPredeterminada(request, response);
@@ -71,7 +72,7 @@ public class ImagenCursoServlet extends HttpServlet {
     }
 
     protected byte[] obtenerImagen(HttpServletRequest request, String nombre) throws Exception {
-        return InicializadorAplicacion.getServidor(getServletContext()).obtenerImagenCurso(nombre);
+        return InicializadorAplicacion.getClienteCatalogo(getServletContext()).obtenerImagenCurso(nombre);
     }
 
     private void mostrarPredeterminada(HttpServletRequest request, HttpServletResponse response)

@@ -40,7 +40,6 @@ import logica.*;
         }
     }
 
-    /** Materializar los datos de consulta antes de cerrar JPA, sin exponer entidades a la web. */
     private DTUsuarioConsulta datosUsuario(EntityManager em, Usuario usuario, boolean incluirInstitutos) {
         boolean docente = usuario instanceof Docente;
         List<String> institutos = docente && incluirInstitutos ? em.createQuery(
@@ -134,7 +133,7 @@ import logica.*;
     }
 
     public ControladorPersistencia() {
-        this(Persistence.createEntityManagerFactory("edEXTPU"));
+        this(Persistence.createEntityManagerFactory("edEXTPU", ConfiguracionBaseDatos.leer()));
     }
 
     public ControladorPersistencia(EntityManagerFactory emf) {
@@ -273,6 +272,41 @@ import logica.*;
         }
     }
     
+    private soap.dto.DTProgramaConsulta datosPrograma(ProgramaFormacion programa) {
+        List<Curso> cursos = new ArrayList<>(programa.getCursos().values());
+        cursos.sort(java.util.Comparator.comparing(Curso::getNombre));
+        List<String> categorias = cursos.stream().flatMap(c -> c.getCategorias().stream())
+                .map(Categoria::getNombre).distinct().sorted().toList();
+        return new soap.dto.DTProgramaConsulta(programa.getId(), programa.getNombre(),
+                programa.getDescripcion(), programa.getFechaInicio(), programa.getFechaFin(),
+                programa.getFechaAlta(), programa.getImagen() != null && !programa.getImagen().isBlank(),
+                cursos.stream().map(c -> new soap.dto.DTCursoResumen(c.getNombre(), c.getDescripcion())).toList(),
+                categorias);
+    }
+
+    public List<soap.dto.DTProgramaConsulta> listarProgramasConsulta() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT p FROM ProgramaFormacion p ORDER BY p.nombre", ProgramaFormacion.class)
+                    .getResultList().stream().map(this::datosPrograma).toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public soap.dto.DTProgramaConsulta consultarPrograma(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (nombre == null || nombre.isBlank()) return null;
+            List<ProgramaFormacion> encontrados = em.createQuery(
+                    "SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre", ProgramaFormacion.class)
+                    .setParameter("nombre", nombre).getResultList();
+            return encontrados.isEmpty() ? null : datosPrograma(encontrados.get(0));
+        } finally {
+            em.close();
+        }
+    }
+
     public List<ProgramaFormacion> obtenerProgramas() {
     EntityManager em = emf.createEntityManager();
 
@@ -285,16 +319,28 @@ import logica.*;
     }
     }
 
-    public ProgramaFormacion obtenerDetallePrograma(String nombrePrograma) {
+
+    public ProgramaFormacion obtenerDetallePrograma(
+            String nombrePrograma) {
+
         EntityManager em = emf.createEntityManager();
+
         try {
-            return em.createQuery("SELECT DISTINCT p FROM ProgramaFormacion p LEFT JOIN FETCH p.cursos WHERE p.nombre = :nombre", ProgramaFormacion.class)
+            return em.createQuery(
+                    "SELECT DISTINCT p FROM ProgramaFormacion p "
+                    + "LEFT JOIN FETCH p.cursos "
+                    + "WHERE p.nombre = :nombre",
+                    ProgramaFormacion.class)
                     .setParameter("nombre", nombrePrograma)
-                    .getSingleResult();
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+
         } finally {
             em.close();
         }
     }
+
     
     // Requerimiento : Alta de Instituto
     public void altaInstituto(String nombreInstituto) throws Exception {
@@ -522,6 +568,29 @@ public void editarUsuario(Usuario usuario) throws Exception {
 
     public void seguirUsuario(String nickSeguidor, String nickSeguido) {
         cambiarSeguimiento(nickSeguidor, nickSeguido, true);
+    }
+
+    public List<DTUsuarioConsulta> listarSeguidosConsulta(String nick) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT s FROM Usuario u JOIN u.seguidos s WHERE u.nick = :nick ORDER BY s.nick",
+                    Usuario.class).setParameter("nick", nick).getResultList().stream()
+                    .map(u -> datosUsuario(em, u, false)).toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean esSeguidor(String nickSeguidor, String nickSeguido) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT COUNT(s) FROM Usuario u JOIN u.seguidos s "
+                    + "WHERE u.nick = :seguidor AND LOWER(s.nick) = LOWER(:seguido)", Long.class)
+                    .setParameter("seguidor", nickSeguidor).setParameter("seguido", nickSeguido)
+                    .getSingleResult() > 0;
+        } finally {
+            em.close();
+        }
     }
 
     public void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) {
@@ -818,6 +887,337 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
         }
     }
 
+    public List<DTResultadoEvaluacion> consultarResultadosEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        if (nickDocente == null || nickDocente.isBlank()
+                || nombreEdicion == null || nombreEdicion.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar un docente y una edición válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            // 1. Comprobar que existe la edición
+            // y que el docente participa en ella.
+            EdicionCurso edicion = validarDocenteEdicion(
+                    em,
+                    nickDocente,
+                    nombreEdicion
+            );
+
+            // 2. Los resultados definitivos solo
+            // pueden consultarse con la edición cerrada.
+            if (!edicion.isCerrada()) {
+                throw new IllegalStateException(
+                        "No se pueden consultar los resultados "
+                        + "de una edición que todavía está abierta."
+                );
+            }
+
+            // 3. Recuperar las calificaciones
+            // de los estudiantes aceptados.
+            String jpql =
+                    "SELECT new logica.DTResultadoEvaluacion("
+                    + "i.id, "
+                    + "e.nick, "
+                    + "CONCAT(CONCAT(e.nombre, ' '), e.apellido), "
+                    + "i.calificacion, "
+                    + "i.fechaCalificacion) "
+                    + "FROM Estudiante e "
+                    + "JOIN e.inscripciones i "
+                    + "WHERE i.edicion.nombre = :edicion "
+                    + "AND i.estado = :estado "
+                    + "ORDER BY e.apellido, e.nombre, e.nick, i.id";
+
+            return em.createQuery(
+                    jpql,
+                    DTResultadoEvaluacion.class
+            )
+            .setParameter("edicion", nombreEdicion)
+            .setParameter("estado", EstadoInscripcion.ACEPTADA)
+            .getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+
+
+    public void registrarCalificacion(
+            String nickDocente,
+            String nombreEdicion,
+            Long idInscripcion,
+            int nota) {
+
+        if (nickDocente == null || nickDocente.isBlank()
+                || nombreEdicion == null || nombreEdicion.isBlank()
+                || idInscripcion == null || idInscripcion <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Indique docente, edición e inscripción válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            
+            tx.begin();
+
+            // 1. Verificar que el docente participa en la edición.
+            EdicionCurso edicion = validarDocenteEdicion(
+                    em,
+                    nickDocente,
+                    nombreEdicion
+            );
+
+            // 2. Bloquear la edición y actualizar su estado desde MySQL.
+            em.refresh(edicion, LockModeType.PESSIMISTIC_WRITE);
+
+            // 3. No permitir cambios si la edición está cerrada.
+            if (edicion.isCerrada()) {
+                throw new IllegalStateException(
+                        "No se pueden registrar calificaciones "
+                        + "en una edición cerrada."
+                );
+            }
+
+            // 4. Buscar y bloquear la inscripción.
+            Inscripcion inscripcion = em.find(
+                    Inscripcion.class,
+                    idInscripcion,
+                    LockModeType.PESSIMISTIC_WRITE
+            );
+
+
+            // 5. Comprobar que pertenece a la edición seleccionada.
+            if (inscripcion == null
+                    || inscripcion.getEdicionCurso() == null
+                    || !nombreEdicion.equals(
+                            inscripcion.getEdicionCurso().getNombre()
+                    )) {
+
+                throw new IllegalArgumentException(
+                        "La inscripción no pertenece a esta edición."
+                );
+            }
+
+            // 6. Validar la nota y actualizar la entidad.
+            inscripcion.registrarCalificacion(
+                    nota,
+                    LocalDate.now()
+            );
+
+            // 7. Guardar los cambios.
+            tx.commit();
+
+        } catch (RuntimeException e) {
+
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+
+            throw e;
+
+        } finally {
+            em.close();
+        }
+    }
+    
+    public void registrarValoracionCurso(
+            String nickEstudiante,
+            Long idCurso,
+            int puntuacion) {
+
+        if (nickEstudiante == null || nickEstudiante.isBlank()
+                || idCurso == null || idCurso <= 0) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un estudiante y un curso válidos."
+            );
+        }
+
+        if (puntuacion < 1 || puntuacion > 5) {
+            throw new IllegalArgumentException(
+                    "La puntuación debe estar entre 1 y 5."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            // 1. Buscar al estudiante y al curso.
+            Estudiante estudiante =
+                    em.find(Estudiante.class, nickEstudiante);
+
+            Curso curso = em.find(Curso.class, idCurso);
+
+            if (estudiante == null) {
+                throw new SecurityException(
+                        "El estudiante no existe."
+                );
+            }
+
+            if (curso == null) {
+                throw new IllegalArgumentException(
+                        "El curso no existe."
+                );
+            }
+
+            // 2. Verificar que participe en alguna edición del curso.
+            Long participaciones = em.createQuery(
+                    "SELECT COUNT(i) "
+                    + "FROM Estudiante e JOIN e.inscripciones i "
+                    + "WHERE e.nick = :nick "
+                    + "AND i.edicion.curso = :curso "
+                    + "AND i.estado = :estado",
+                    Long.class
+            )
+            .setParameter("nick", nickEstudiante)
+            .setParameter("curso", curso)
+            .setParameter("estado", EstadoInscripcion.ACEPTADA)
+            .getSingleResult();
+
+            if (participaciones == 0) {
+                throw new SecurityException(
+                        "El estudiante no participa en este curso."
+                );
+            }
+
+            // 3. Comprobar que no haya valorado antes el curso.
+            Long existentes = em.createQuery(
+                    "SELECT COUNT(v) FROM ValoracionCurso v "
+                    + "WHERE v.estudiante = :estudiante "
+                    + "AND v.curso = :curso",
+                    Long.class
+            )
+            .setParameter("estudiante", estudiante)
+            .setParameter("curso", curso)
+            .getSingleResult();
+
+            if (existentes > 0) {
+                throw new ValoracionDuplicadaException(
+                        "Ya valoraste este curso."
+                );
+            }
+
+            // 4. Crear y guardar la valoración.
+            ValoracionCurso valoracion = new ValoracionCurso(
+                    estudiante,
+                    curso,
+                    puntuacion,
+                    LocalDate.now()
+            );
+
+            em.persist(valoracion);
+
+            // 5. Confirmar la transacción.
+            tx.commit();
+
+        } catch (RuntimeException e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            // La restricción única también protege dos envíos concurrentes.
+            for (Throwable causa = e; causa != null; causa = causa.getCause()) {
+                if (causa instanceof java.sql.SQLException sql && sql.getErrorCode() == 1062) {
+                    throw new ValoracionDuplicadaException("Ya valoraste este curso.", e);
+                }
+            }
+            throw e;
+
+        } finally {
+            em.close();
+        }
+    }
+
+    
+    public void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        if (nickDocente == null || nickDocente.isBlank()
+                || nombreEdicion == null || nombreEdicion.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Indique un docente y una edición válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            // 1. Verificar que el docente participa en la edición.
+            EdicionCurso edicion = validarDocenteEdicion(
+                    em,
+                    nickDocente,
+                    nombreEdicion
+            );
+
+            // 2. Bloquear la edición y recuperar su estado actual.
+            em.refresh(edicion, LockModeType.PESSIMISTIC_WRITE);
+
+            // 3. Evitar cerrar dos veces la misma edición.
+            if (edicion.isCerrada()) {
+                throw new IllegalStateException(
+                        "La edición ya se encuentra cerrada."
+                );
+            }
+
+            // 4. Contar estudiantes aceptados que todavía no tienen nota.
+            Long pendientes = em.createQuery(
+                    "SELECT COUNT(i) FROM Inscripcion i "
+                    + "WHERE i.edicion = :edicion "
+                    + "AND i.estado = :estado "
+                    + "AND i.calificacion IS NULL",
+                    Long.class
+            )
+                    .setParameter("edicion", edicion)
+                    .setParameter("estado", EstadoInscripcion.ACEPTADA)
+                    .getSingleResult();
+
+            // 5. No cerrar si faltan evaluaciones.
+            if (pendientes > 0) {
+                throw new IllegalStateException(
+                        "No se puede cerrar la edición. "
+                        + "Hay " + pendientes
+                        + " estudiante(s) aceptado(s) sin calificación."
+                );
+            }
+
+            // 6. Cerrar la edición.
+            edicion.cerrar();
+
+            // 7. Confirmar los cambios.
+            tx.commit();
+
+        } catch (RuntimeException e) {
+
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+
+            throw e;
+
+        } finally {
+            em.close();
+        }
+    }
+
+
+    
+    
     public List<DTEdicionConsulta> listarEdicionesParaSeleccion(String nickDocente,
             String nombreInstituto, String nombreCurso, LocalDate referencia) {
         EntityManager em = emf.createEntityManager();
@@ -1107,6 +1507,42 @@ public Curso buscarCursoInstituto(String nombre, Instituto instituto) {
     }
 }  
     
+    /** Copiar las relaciones al DTO mientras la consulta JPA sigue abierta. */
+    public soap.dto.DTCursoConsulta consultarCurso(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (nombre == null || nombre.isBlank()) return null;
+            List<Curso> encontrados = em.createQuery(
+                    "SELECT c FROM Curso c WHERE LOWER(c.nombre) = LOWER(:nombre)", Curso.class)
+                    .setParameter("nombre", nombre).getResultList();
+            if (encontrados.isEmpty()) return null;
+            Curso curso = encontrados.get(0);
+            List<soap.dto.DTEdicionResumen> ediciones = curso.getEdiciones().stream()
+                    .map(e -> new soap.dto.DTEdicionResumen(e.getNombre(), e.getFechaInicio(),
+                            e.getFechaFin(), e.getCupo(), e.getImagen() != null && !e.getImagen().isBlank()))
+                    .toList();
+            var datos = new soap.dto.DTCursoConsulta(curso.getNombre(), curso.getDescripcion(),
+                    curso.getDuracion(), curso.getCantidadHoras(), curso.getCreditos(), curso.getUrl(),
+                    curso.getFechaRegistro(), curso.getInstituto() == null ? null : curso.getInstituto().getNombre(),
+                    curso.getImagen() != null && !curso.getImagen().isBlank(),
+                    curso.getPrevias().stream().map(Curso::getNombre).toList(),
+                    curso.getCategorias().stream().map(Categoria::getNombre).toList(),
+                    curso.getProgramasFormacion().stream().map(ProgramaFormacion::getNombre).toList(), ediciones);
+            var cantidades = new ArrayList<Long>(java.util.Collections.nCopies(5, 0L));
+            var grupos = em.createQuery("SELECT v.puntuacion, COUNT(v) FROM ValoracionCurso v "
+                    + "WHERE v.curso.id = :curso GROUP BY v.puntuacion", Object[].class)
+                    .setParameter("curso", curso.getId()).getResultList();
+            for (Object[] grupo : grupos) {
+                int puntuacion = ((Number) grupo[0]).intValue();
+                if (puntuacion >= 1 && puntuacion <= 5) cantidades.set(puntuacion - 1, ((Number) grupo[1]).longValue());
+            }
+            datos.asignarValoraciones(cantidades);
+            return datos;
+        } finally {
+            em.close();
+        }
+    }
+
     public Curso buscarCurso(String nombre)
     {
         EntityManager em = emf.createEntityManager();
@@ -1581,60 +2017,91 @@ public Categoria buscarCategoria(String nombre) {
     }
 }
 
+    public double obtenerPromedioValoraciones(Long idCurso) {
 
-public float obtenerPromedioCurso(String nombreCurso) {
-    EntityManager em = emf.createEntityManager(); 
-    try {
-        TypedQuery<Double> query = em.createQuery(
-            "SELECT AVG(i.valoracion) FROM Inscripcion i " +
-            "WHERE i.edicionCurso.curso.nombre = :curso AND i.valoracion > 0", 
-            Double.class
-        );
-        query.setParameter("curso", nombreCurso);
-
-        Double promedio = query.getSingleResult();
-        return (promedio != null) ? Math.round(promedio.floatValue() * 10.0f) / 10.0f : 0.0f;
-    } catch (Exception e) {
-        return 0.0f;
-    } finally {
-        em.close();
-    }
-}
-
-public void valorarCurso(String nicknameEstudiante, String nombreCurso, int puntuacion) {
-    EntityManager em = emf.createEntityManager();
-    try {
-        em.getTransaction().begin();
-
-        TypedQuery<Inscripcion> query = em.createQuery(
-            "SELECT i FROM Inscripcion i " +
-            "WHERE i.estudiante.nickname = :nick " +
-            "AND i.edicionCurso.curso.nombre = :curso", 
-            Inscripcion.class
-        );
-        query.setParameter("nick", nicknameEstudiante);
-        query.setParameter("curso", nombreCurso);
-
-        List<Inscripcion> resultados = query.getResultList();
-
-        if (resultados.isEmpty()) {
-            throw new IllegalStateException("El estudiante no posee una inscripción activa en este curso.");
+        if (idCurso == null || idCurso <= 0) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un curso válido."
+            );
         }
 
-        Inscripcion inscripcion = resultados.get(0);
-        inscripcion.setValoracion(puntuacion);
+        EntityManager em = emf.createEntityManager();
 
-        em.getTransaction().commit();
-    } catch (Exception e) {
-        if (em.getTransaction().isActive()) {
-            em.getTransaction().rollback();
+        try {
+            Double promedio = em.createQuery(
+                    "SELECT AVG(v.puntuacion) "
+                    + "FROM ValoracionCurso v "
+                    + "WHERE v.curso.id = :idCurso",
+                    Double.class
+            )
+            .setParameter("idCurso", idCurso)
+            .getSingleResult();
+
+            return promedio != null ? promedio : 0.0;
+
+        } finally {
+            em.close();
         }
-        throw new RuntimeException("Error al guardar la valoración: " + e.getMessage(), e);
-    } finally {
-        em.close();
     }
-}
+    
+    public Integer obtenerValoracionEstudiante(
+        String nickEstudiante,
+        Long idCurso) {
 
+    if (nickEstudiante == null || nickEstudiante.isBlank()
+            || idCurso == null || idCurso <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar un estudiante y un curso válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            List<Integer> resultados = em.createQuery(
+                    "SELECT v.puntuacion "
+                    + "FROM ValoracionCurso v "
+                    + "WHERE v.estudiante.nick = :nick "
+                    + "AND v.curso.id = :idCurso",
+                    Integer.class
+            )
+            .setParameter("nick", nickEstudiante)
+            .setParameter("idCurso", idCurso)
+            .setMaxResults(1)
+            .getResultList();
+
+            return resultados.isEmpty()
+                    ? null
+                    : resultados.get(0);
+
+        } finally {
+            em.close();
+        }
+    }
+    
+    
+    public Estudiante obtenerEstudianteConEvaluaciones(String nick) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            return em.createQuery(
+                    "SELECT DISTINCT e FROM Estudiante e "
+                    + "LEFT JOIN FETCH e.inscripciones i "
+                    + "LEFT JOIN FETCH i.edicion ed "
+                    + "LEFT JOIN FETCH ed.curso "
+                    + "WHERE e.nick = :nick",
+                    Estudiante.class
+            )
+            .setParameter("nick", nick)
+            .getResultStream()
+            .findFirst()
+            .orElse(null);
+
+        } finally {
+            em.close();
+        }
+    }
 
 }
 

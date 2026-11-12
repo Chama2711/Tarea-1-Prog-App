@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import logica.DTAutenticacion;
-import logica.IServidorCentral;
+import web.soap.ClienteCatalogoSoap;
 
 @WebServlet(name = "ModificarUsuarioServlet", urlPatterns = {"/modificarUsuario"})
 public class ModificarUsuarioServlet extends HttpServlet {
@@ -48,7 +48,7 @@ public class ModificarUsuarioServlet extends HttpServlet {
             }
 
             // Obtención e invocación del servidor central
-            IServidorCentral servidor = InicializadorAplicacion.getServidor(getServletContext());
+            ClienteCatalogoSoap servidor = InicializadorAplicacion.getClienteCatalogo(getServletContext());
             servidor.modificarUsuario(nickname, nuevoNombre, nuevoApellido, nuevaFechaNac, nuevaClave, confirmacionClave);
 
             // Actualizar el objeto guardado en la sesión

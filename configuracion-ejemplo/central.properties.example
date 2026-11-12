@@ -1,0 +1,7 @@
+soap.host=127.0.0.1
+soap.port=18083
+soap.path=/edext/catalogo
+
+jdbc.url=jdbc:mysql://localhost:3306/edext_web?zeroDateTimeBehavior=CONVERT_TO_NULL
+jdbc.usuario=root
+jdbc.contrasena=

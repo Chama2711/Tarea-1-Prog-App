@@ -13,7 +13,19 @@ public interface IServidorCentral {
 
     DTPerfilUsuario consultarPerfilUsuario(String nick, String nickConsultante);
 
+    List<DTUsuarioConsulta> listarSeguidosConsulta(String nick);
+
+    boolean esSeguidor(String nickSeguidor, String nickSeguido);
+
+    void inscribirEstudianteAEdicion(String nickEstudiante, String nombreEdicion);
+
+    void inscribirEstudianteAPrograma(String nickEstudiante, String nombrePrograma);
+
     DTEdicionConsulta consultarEdicion(String nombre);
+
+    List<soap.dto.DTProgramaConsulta> listarProgramasConsulta();
+
+    soap.dto.DTProgramaConsulta consultarPrograma(String nombre);
     
     EdicionCurso buscarEdicion(String nombre);
 
@@ -48,6 +60,8 @@ public interface IServidorCentral {
     );
 
     Curso buscarCurso(String nombre);
+
+    soap.dto.DTCursoConsulta consultarCurso(String nombre);
 
     Curso buscarCursoInstituto(
             String nombre,
@@ -154,6 +168,11 @@ public interface IServidorCentral {
 
     List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion);
 
+    List<DTResultadoEvaluacion> consultarResultadosEdicion(
+            String nickDocente,
+            String nombreEdicion
+    );
+
     List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante);
 
     void inscriboAEdicionCurso(
@@ -161,6 +180,33 @@ public interface IServidorCentral {
         EdicionCurso edicion,
         LocalDate fecha
     );
+    
+    void registrarCalificacion(
+        String nickDocente,
+        String nombreEdicion,
+        Long idInscripcion,
+        int nota
+    );
+    
+    void registrarValoracionCurso(
+        String nickEstudiante,
+        Long idCurso,
+        int puntuacion
+    );
+    
+    double obtenerPromedioValoraciones(Long idCurso);
+
+    Integer obtenerValoracionEstudiante(
+            String nickEstudiante,
+            Long idCurso
+    );
+
+    void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion
+    );
+
+    
     
     // ========================
     //  PROGRAMAS DE FORMACIÓN 
@@ -251,6 +297,11 @@ public interface IServidorCentral {
     void seguirUsuario(String nickSeguidor, String nickSeguido) throws Exception;
     void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) throws Exception;
     
+    ValidadorAprobacionPrograma.ResultadoPrograma
+        validarAprobacionPrograma(
+                String nickEstudiante,
+                String nombrePrograma,
+                int notaMinima);
     
     void valorarCurso(String nicknameEstudiante, String nombreCurso, int puntuacion);
 

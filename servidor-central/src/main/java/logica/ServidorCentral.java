@@ -23,8 +23,55 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
 
     @Override
+    public List<DTUsuarioConsulta> listarSeguidosConsulta(String nick) {
+        return persistencia.listarSeguidosConsulta(nick);
+    }
+
+    @Override
+    public boolean esSeguidor(String nickSeguidor, String nickSeguido) {
+        return persistencia.esSeguidor(nickSeguidor, nickSeguido);
+    }
+
+    @Override
+    public void inscribirEstudianteAEdicion(String nickEstudiante, String nombreEdicion) {
+        if (nickEstudiante == null || nickEstudiante.isBlank()) throw new SecurityException("Se requiere un estudiante registrado.");
+        if (nombreEdicion == null || nombreEdicion.isBlank()) throw new IllegalArgumentException("Debe seleccionar una edición.");
+        Usuario usuario = obtenerUsuario(nickEstudiante);
+        if (!(usuario instanceof Estudiante estudiante)) {
+            throw new SecurityException("El usuario autenticado no es un estudiante.");
+        }
+        EdicionCurso edicion = buscarEdicion(nombreEdicion);
+        if (edicion == null) throw new RecursoNoEncontradoException("La edición solicitada no existe.");
+        inscriboAEdicionCurso(estudiante, edicion, LocalDate.now());
+    }
+
+    @Override
+    public void inscribirEstudianteAPrograma(String nickEstudiante, String nombrePrograma) {
+        if (nickEstudiante == null || nickEstudiante.isBlank()) throw new SecurityException("Se requiere un estudiante registrado.");
+        if (nombrePrograma == null || nombrePrograma.isBlank()) throw new IllegalArgumentException("Debe seleccionar un programa.");
+        Usuario usuario = obtenerUsuario(nickEstudiante);
+        if (!(usuario instanceof Estudiante estudiante)) {
+            throw new SecurityException("El usuario autenticado no es un estudiante.");
+        }
+        if (consultarPrograma(nombrePrograma) == null) {
+            throw new RecursoNoEncontradoException("El programa solicitado no existe.");
+        }
+        inscriboAProgramaFormacion(estudiante, obtenerDetallePrograma(nombrePrograma), LocalDate.now());
+    }
+
+    @Override
     public DTEdicionConsulta consultarEdicion(String nombre) {
         return persistencia.consultarEdicion(nombre);
+    }
+
+    @Override
+    public List<soap.dto.DTProgramaConsulta> listarProgramasConsulta() {
+        return persistencia.listarProgramasConsulta();
+    }
+
+    @Override
+    public soap.dto.DTProgramaConsulta consultarPrograma(String nombre) {
+        return persistencia.consultarPrograma(nombre);
     }
 
     @Override
@@ -168,6 +215,11 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
 
     @Override
+    public soap.dto.DTCursoConsulta consultarCurso(String nombre) {
+        return persistencia.consultarCurso(nombre);
+    }
+
+    @Override
     public Curso buscarCursoInstituto(
             String nombre,
             Instituto instituto) {
@@ -254,6 +306,17 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     @Override
     public List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion) {
         return controladorInscripcion.listarAceptadosEdicion(nickDocente, nombreEdicion);
+    }
+
+    @Override
+    public List<DTResultadoEvaluacion> consultarResultadosEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        return controladorInscripcion.consultarResultadosEdicion(
+                nickDocente,
+                nombreEdicion
+        );
     }
 
     @Override
@@ -352,6 +415,46 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
             fechaInscripcion
     );
     }
+   
+    @Override
+    public void registrarCalificacion(
+            String nickDocente,
+            String nombreEdicion,
+            Long idInscripcion,
+            int nota) {
+
+        controladorInscripcion.registrarCalificacion(
+                nickDocente,
+                nombreEdicion,
+                idInscripcion,
+                nota
+        );
+    }
+    
+    @Override
+    public void registrarValoracionCurso(
+            String nickEstudiante,
+            Long idCurso,
+            int puntuacion) {
+
+        persistencia.registrarValoracionCurso(
+                nickEstudiante,
+                idCurso,
+                puntuacion
+        );
+    }
+    
+    @Override
+    public void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        controladorInscripcion.cerrarEdicion(
+                nickDocente,
+                nombreEdicion
+        );
+    }
+
 
     // ==================== PROGRAMAS DE FORMACIÓN ====================
 
@@ -568,6 +671,8 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     }
 
     @Override
+    public double obtenerPromedioValoraciones(Long idCurso) {
+        return persistencia.obtenerPromedioValoraciones(idCurso);
     public float obtenerPromedioCurso(String nombreCurso) {
         if (nombreCurso == null || nombreCurso.isBlank()) {
             return 0.0f;
@@ -575,6 +680,65 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
         return persistencia.obtenerPromedioCurso(nombreCurso);
     }
 
+    @Override
+    public Integer obtenerValoracionEstudiante(
+            String nickEstudiante,
+            Long idCurso) {
+
+        return persistencia.obtenerValoracionEstudiante(
+                nickEstudiante,
+                idCurso
+        );
+    }
+
+    
+    public ValidadorAprobacionPrograma.ResultadoPrograma
+            validarAprobacionPrograma(
+                    String nickEstudiante,
+                    String nombrePrograma,
+                    int notaMinima) {
+
+        if (nickEstudiante == null || nickEstudiante.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un estudiante.");
+        }
+
+        if (nombrePrograma == null || nombrePrograma.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un programa.");
+        }
+
+        ProgramaFormacion programa =
+                persistencia.obtenerDetallePrograma(nombrePrograma);
+
+        if (programa == null) {
+            throw new RecursoNoEncontradoException(
+                    "El programa no existe.");
+        }
+
+        Estudiante estudiante =
+                persistencia.obtenerEstudianteConEvaluaciones(nickEstudiante);
+
+        if (estudiante == null) {
+            throw new RecursoNoEncontradoException(
+                    "El estudiante no existe.");
+        }
+
+        if (!persistencia.estaInscriptoAPrograma(
+                nickEstudiante, programa.getId())) {
+
+            throw new IllegalStateException(
+                    "El estudiante no está inscripto al programa.");
+        }
+
+        ValidadorAprobacionPrograma validador =
+                new ValidadorAprobacionPrograma();
+
+        return validador.validar(
+                estudiante,
+                programa,
+                notaMinima);
+    }
 
 
 }

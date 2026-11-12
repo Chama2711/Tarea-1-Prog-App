@@ -14,37 +14,43 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import logica.Categoria;
 import logica.IServidorCentral;
 import org.junit.After;
 import org.junit.Test;
-import soap.ServicioInstitutos;
-import web.soap.ClienteInstitutosSoap;
+import soap.ServicioCatalogo;
+import web.soap.ClienteCatalogoSoap;
 import static org.junit.Assert.*;
 
 /** Comprueba el filtro usando HTTP/SOAP real, sin conectar a MySQL. */
 public class NavegacionFilterTest {
     private HttpServer http;
     private Endpoint endpoint;
+    private boolean fallarCategorias;
+    private final AtomicInteger llamadasCategorias = new AtomicInteger();
 
     private static <T> T proxy(Class<T> tipo, InvocationHandler manejador) {
         return tipo.cast(Proxy.newProxyInstance(tipo.getClassLoader(), new Class<?>[]{tipo}, manejador));
     }
 
-    private ClienteInstitutosSoap publicar(List<String> nombres, AtomicInteger llamadas,
+    private ClienteCatalogoSoap publicar(List<String> nombres, AtomicInteger llamadas,
             boolean fallar) throws Exception {
         IServidorCentral remoto = proxy(IServidorCentral.class, (p, m, a) -> {
+            if (m.getName().equals("listarNombresCategorias")) {
+                llamadasCategorias.incrementAndGet();
+                if (fallarCategorias) throw new IllegalStateException("Detalle privado SOAP");
+                return List.of("Educación & Tecnología");
+            }
             if (!m.getName().equals("listarNombresInstitutos")) throw new AssertionError(m.getName());
             llamadas.incrementAndGet();
             if (fallar) throw new IllegalStateException("Servicio no disponible");
             return nombres;
         });
         http = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        endpoint = Endpoint.create(new ServicioInstitutos(remoto));
-        endpoint.publish(http.createContext("/edext/institutos"));
+        endpoint = Endpoint.create(new ServicioCatalogo(remoto));
+        endpoint.publish(http.createContext("/edext/catalogo"));
         http.start();
-        return new ClienteInstitutosSoap(URI.create("http://127.0.0.1:"
-                + http.getAddress().getPort() + "/edext/institutos?wsdl").toURL());
+        return new ClienteCatalogoSoap(URI.create("http://127.0.0.1:"
+                + http.getAddress().getPort() + "/edext/catalogo?wsdl").toURL());
     }
 
     @After public void cerrar() {
@@ -58,17 +64,14 @@ public class NavegacionFilterTest {
     private static class Escenario {
         final Map<String, Object> contextoDatos = new HashMap<>();
         final Map<String, Object> atributos = new HashMap<>();
-        final List<Categoria> categorias = List.of(new Categoria("Educación"));
+        final List<String> categorias = List.of("Educación & Tecnología");
         final AtomicInteger consultasCategorias = new AtomicInteger();
         final AtomicInteger peticionesContinuadas = new AtomicInteger();
         final AtomicInteger erroresRegistrados = new AtomicInteger();
         String ruta = "/inicio";
 
         final IServidorCentral local = proxy(IServidorCentral.class, (p, m, a) -> {
-            // La consulta local de institutos ya no debe utilizarse.
-            if (!m.getName().equals("listarCategorias")) throw new AssertionError(m.getName());
-            consultasCategorias.incrementAndGet();
-            return categorias;
+            throw new AssertionError("El menú no debe consultar el central local: " + m.getName());
         });
         final ServletContext contexto = proxy(ServletContext.class, (p, m, a) -> {
             if (m.getName().equals("log")) {
@@ -89,24 +92,25 @@ public class NavegacionFilterTest {
         });
         final FilterChain siguiente = (request, response) -> peticionesContinuadas.incrementAndGet();
 
-        Escenario(ClienteInstitutosSoap cliente) {
+        Escenario(ClienteCatalogoSoap cliente) {
             contextoDatos.put(InicializadorAplicacion.class.getName() + ".servidor", local);
-            contextoDatos.put(InicializadorAplicacion.class.getName() + ".clienteInstitutos", cliente);
+            contextoDatos.put(InicializadorAplicacion.class.getName() + ".clienteCatalogo", cliente);
         }
         void ejecutar() throws Exception {
             new NavegacionFilter().doFilter(request, response, siguiente);
         }
     }
 
-    @Test public void institutosDelMenuVienenDeSoapYCategoriasSiguenLocales() throws Exception {
+    @Test public void institutosYCategoriasDelMenuVienenDeSoap() throws Exception {
         var llamadas = new AtomicInteger();
         List<String> nombres = List.of("INCO", "Eléctrica", "Educación & Extensión");
         var s = new Escenario(publicar(nombres, llamadas, false));
         s.ejecutar();
         assertEquals(nombres, s.atributos.get("navInstitutos"));
-        assertSame(s.categorias, s.atributos.get("navCategorias"));
+        assertEquals(s.categorias, s.atributos.get("navCategorias"));
         assertEquals(1, llamadas.get());
-        assertEquals(1, s.consultasCategorias.get());
+        assertEquals(0, s.consultasCategorias.get());
+        assertEquals(1, llamadasCategorias.get());
         assertEquals(1, s.peticionesContinuadas.get());
         assertFalse(s.atributos.containsKey("errorInstitutos"));
     }
@@ -132,7 +136,7 @@ public class NavegacionFilterTest {
         assertEquals("No se pudieron cargar los institutos. Intentá nuevamente más tarde.",
                 s.atributos.get("errorInstitutos"));
         assertEquals(1, s.erroresRegistrados.get());
-        assertSame(s.categorias, s.atributos.get("navCategorias"));
+        assertEquals(s.categorias, s.atributos.get("navCategorias"));
     }
 
     @Test public void centralApagadoMuestraAvisoYPermiteContinuarLaPagina() throws Exception {
@@ -141,6 +145,20 @@ public class NavegacionFilterTest {
         s.ejecutar();
         assertEquals(List.of(), s.atributos.get("navInstitutos"));
         assertNotNull(s.atributos.get("errorInstitutos"));
+        assertEquals(2, s.erroresRegistrados.get());
+        assertEquals(List.of(), s.atributos.get("navCategorias"));
+        assertNotNull(s.atributos.get("errorCategorias"));
+        assertEquals(1, s.peticionesContinuadas.get());
+    }
+    @Test public void falloDeCategoriasNoOcultaInstitutosNiInterrumpeLaPagina() throws Exception {
+        fallarCategorias = true;
+        var s = new Escenario(publicar(List.of("INCO"), new AtomicInteger(), false));
+        s.ejecutar();
+        assertEquals(List.of("INCO"), s.atributos.get("navInstitutos"));
+        assertEquals(List.of(), s.atributos.get("navCategorias"));
+        assertEquals("No se pudieron cargar las categorías. Intentá nuevamente más tarde.",
+                s.atributos.get("errorCategorias"));
+        assertFalse(s.atributos.containsKey("errorInstitutos"));
         assertEquals(1, s.erroresRegistrados.get());
         assertEquals(1, s.peticionesContinuadas.get());
     }
