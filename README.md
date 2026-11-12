@@ -1,95 +1,74 @@
-# edEXT — Ejecutar Swing y SOAP
+# edEXT — Ejecutar y probar en el CURE
 
-Necesitan **Java 21, NetBeans y MySQL iniciado**.
+En el CURE usen dos PC con Ubuntu. En una corren **el servidor central y MySQL** y en la otra **Tomcat 10.1**. Ambas necesitan Java 21 y deben poder comunicarse por red. La PC que compila también necesita Maven. El central abre Swing, así que ejecútenlo desde una sesión de escritorio.
 
-Para compilar y ejecutar **sin NetBeans**, en Ubuntu o Windows, sigan [EJECUTAR.md](EJECUTAR.md). Los scripts generan `servidor.jar` y `web.war`.
+## 1. Generar los paquetes
 
-## 1. Preparar la base
+Para la demo con el anexo de la Tarea 3, abran una terminal en la carpeta del proyecto, donde está el `pom.xml`.
 
-Si ya tienen `edext_web` con los datos, salteen este paso.
-
-En MySQL:
-
-```sql
-CREATE DATABASE edext_web;
+```bash
+git fetch origin
+git switch Main-datos_prueba
+git pull --ff-only
+sh compilar.sh
 ```
 
-En NetBeans, dentro de `servidor-central`, ejecuten `persistencia.CargarDatosPruebaWeb`. Crea las tablas y carga los datos iniciales. Por defecto usa `root` sin contraseña; si usan otras credenciales, recibe usuario y contraseña como argumentos.
+En Windows, el equivalente al último comando es `.\compilar.cmd` en PowerShell o `compilar.cmd` en CMD. Si usan el Maven de NetBeans y no está en PATH, definan `MVN` con la ruta de su `mvn.cmd`.
 
-Revisen la conexión de MySQL en el archivo externo:
+Los scripts dejan `servidor.jar`, `web.war`, `configuracion-ejemplo`, `migraciones` y una copia de esta guía como `LEEME.md` en **`target/distribucion`**. Si ya llevan esa carpeta compilada, pasen al paso 2.
 
-```text
-~/.edEXT/central.properties
-```
+## 2. Configurar y cargar la base en la PC del central
 
-Agreguen `jdbc.url`, `jdbc.usuario` y `jdbc.contrasena` según la plantilla `configuracion-ejemplo/central.properties.example`. La contraseña puede quedar vacía. El arranque normal utiliza las tablas existentes.
+En Ubuntu, ejecuten `mkdir -p ~/.edEXT`. En Windows, abran **Win + R → %USERPROFILE%** y creen allí la carpeta `.edEXT`. Guarden los archivos `.properties` en UTF-8.
 
-## 2. Configurar SOAP
+Copien `configuracion-ejemplo/central.properties.example` a `~/.edEXT/central.properties`. Cambien `soap.host` por la **IP de la PC del central**. En Ubuntu pueden verla con `hostname -I`. Ajusten `jdbc.usuario` y `jdbc.contrasena` según su MySQL. El ejemplo mantiene el puerto SOAP `18083` y la base local `edext_web`.
 
-**En Windows:**
+Desde la carpeta donde está `servidor.jar`, hagan la carga con Swing cerrado:
 
-1. Presionen **Windows + R**, escriban `%USERPROFILE%` y acepten.
-2. En la carpeta que se abre, creen una carpeta llamada `.edEXT`.
-3. Abran el Bloc de notas y peguen este contenido:
+1. **Base nueva.** Creen `edext_web` en MySQL con `CREATE DATABASE edext_web;` si aún no existe. Con la base sin tablas, ejecuten una vez:
 
-```properties
-soap.host=127.0.0.1
-soap.port=18083
-soap.path=/edext/catalogo
-jdbc.url=jdbc:mysql://localhost:3306/edext_web?zeroDateTimeBehavior=CONVERT_TO_NULL
-jdbc.usuario=root
-jdbc.contrasena=
-```
+   ```bash
+   java -cp servidor.jar persistencia.CargarDatosPruebaWeb TU_USUARIO_MYSQL 'TU_CONTRASEÑA'
+   ```
 
-4. En el Bloc de notas, elijan **Guardar como** y seleccionen la carpeta `.edEXT` que crearon.
-5. Pongan como nombre `central.properties`, tipo **Todos los archivos** y codificación **UTF-8**. Guarden y comprueben que no termine en `.txt`.
+   En Ubuntu, pasen `''` como último argumento si la contraseña está vacía. En CMD usen comillas dobles.
 
-**En Ubuntu:**
+2. **Base existente.** Si ya tiene los datos iniciales, salteen la carga inicial. Si el esquema es anterior a la Tarea 3, apliquen únicamente las migraciones que falten. `2026-11-07-evaluaciones.sql` agrega el estado de cierre y las columnas de nota y fecha. `2026-11-09-valoraciones.sql` crea `VALORACION_CURSO`.
 
-1. Abran **Archivos → Carpeta personal**.
-2. Presionen **Ctrl + H** para mostrar las carpetas ocultas.
-3. Creen una carpeta llamada `.edEXT`.
-4. Abran el editor de texto y peguen las mismas líneas de configuración de arriba.
-5. Guarden el archivo como `central.properties` dentro de `.edEXT`, sin extensión `.txt`.
+3. **Anexo de Tarea 3.** Tanto en una base nueva como en una base con los datos iniciales, ejecuten:
 
-Queda en `/home/SU_USUARIO/.edEXT/central.properties`. El programa encuentra esa carpeta automáticamente; el resto de los pasos es el mismo.
+   ```bash
+   java -cp servidor.jar persistencia.CargarDatosPruebaTarea3
+   ```
 
-Cada compañero debe crear este archivo; no viene con Git.
+   El comando usa la base indicada en `central.properties`. Esperen el mensaje **«Datos de prueba de la Tarea 3 cargados.»** Si el cargador informa que un estado, una nota o una valoración difiere del anexo, revisen esa fila antes de reintentar.
 
-Para el cliente SOAP de la web, creen también `web.properties` en esa misma carpeta `.edEXT`, con:
+4. Arranquen el central con `java -jar servidor.jar` y dejen Swing abierto. Al cerrar Swing se detienen los servicios SOAP.
 
-```properties
-soap.catalogo.wsdl=http://127.0.0.1:18083/edext/catalogo?wsdl
-soap.evaluaciones.wsdl=http://127.0.0.1:18083/edext/evaluaciones?wsdl
-```
+## 3. Desplegar en la PC de Tomcat
 
-Hay una plantilla en `configuracion-ejemplo/web.properties.example`. La aplicación web crea el cliente SOAP al arrancar. Consulta los institutos del menú, registro, selección, altas y aceptados; también las categorías del menú, alta de curso, búsqueda y detalles de cursos y programas. Si cambian la dirección, reinicien la aplicación web; no necesitan recompilar.
+1. Desde la PC de Tomcat, abran ambos WSDL con la IP del central. En este ejemplo la IP es `192.168.1.50`:
 
-## 3. Ejecutar
+   ```text
+   http://192.168.1.50:18083/edext/catalogo?wsdl
+   http://192.168.1.50:18083/edext/evaluaciones?wsdl
+   ```
 
-1. Abran el proyecto raíz en NetBeans y hagan **Clean and Build**.
-2. Dentro de `estacion-trabajo`, ejecuten `presentacion.PrincipalFrame`.
-3. Se abre Swing y se publica SOAP. No hace falta iniciar Tomcat.
-4. Abran [el WSDL](http://127.0.0.1:18083/edext/catalogo?wsdl): debe aparecer XML.
+   Los dos deben devolver XML. Si fallan, revisen que Swing siga abierto y que la IP y el puerto sean accesibles desde la PC de Tomcat.
 
-Al cerrar Swing también se detiene SOAP. La dirección funciona en la misma PC donde ejecutan el proyecto.
+2. Copien `configuracion-ejemplo/web.properties.example` a `.edEXT/web.properties` en la **carpeta personal del usuario que ejecuta Tomcat**. Sustituyan `127.0.0.1` por la IP del central en las dos direcciones SOAP.
+3. Desplieguen `web.war` en el **HTML App Manager** de Tomcat. En esa misma PC, abran `http://localhost:8080/web/inicio`. Desde otra PC, usen la IP de Tomcat. Si Tomcat usa otro puerto o contexto, ajusten la URL.
 
-Para probar la web, dejen el central abierto y después inicien Tomcat con el WAR actualizado. Las consultas y acciones de los servlets usan SOAP: catálogo, usuarios, login, registro, perfiles, imágenes, seguimiento, altas, agregar cursos a programas, inscripciones, selección, ranking, aceptados y selectores de formularios. El catálogo y las evaluaciones usan sus respectivos clientes SOAP, configurados en el mismo archivo. Tomcat ya no crea un central local ni se conecta a MySQL: la base de datos la utiliza únicamente el central externo. El usuario que ejecuta Tomcat debe tener el archivo `.edEXT/web.properties` en su carpeta personal.
+Para probar todo en una sola PC, usen `127.0.0.1` en ambos archivos de configuración. Después de editar `.properties`, reinicien la aplicación correspondiente para que vuelva a leerlos.
 
-El módulo `datos-compartidos` contiene los DTO y enumeraciones que usan la web y el central; mantiene el paquete `logica`. Compilen desde el proyecto raíz para generar todos los módulos.
+## 4. Probar la Tarea 3
 
-Después de actualizar las operaciones SOAP, reinicien el central y vuelvan a desplegar el WAR actualizado. Maven regenera el cliente desde el WSDL incluido en el proyecto.
-
-Si apagan el central con la web ya iniciada, el menú muestra avisos en lugar de los institutos y las categorías. Al volver a iniciar el central y recargar la página, el listado se recupera.
-
-## Valoraciones de cursos (Tarea 3)
-
-Como estudiante, entren en **Valorar un curso** desde el menú. Aparecen los cursos en los que tienen una inscripción aceptada; cada curso admite una única puntuación del 1 al 5. La consulta muestra el promedio numérico y la puntuación propia.
-
-Después de actualizar el proyecto, compilen desde la raíz, reinicien el central y desplieguen el WAR actualizado. Si usan una base anterior y todavía no existe `VALORACION_CURSO`, apliquen una vez `migraciones/2026-11-09-valoraciones.sql`.
-
-`ClienteCatalogoSoap` ofrece `registrarValoracionCurso`, `obtenerPromedioValoraciones` y `obtenerValoracionEstudiante`. La consulta del curso devuelve el promedio, el total y las cantidades por puntuación. La búsqueda y el detalle muestran el promedio con estrellas, y el detalle muestra la distribución de los votos.
+- **Estrellas.** Busquen **Flor del Ceibo**. Debe mostrar **6 votos y un promedio de 3,67**. En el detalle, comprueben tres votos de 3, dos de 4 y uno de 5.
+- **Mis notas.** Como estudiante `chechi`, entren a **Mi perfil → Mis notas**. Deben figurar **7 en Dalavuelta, 9 en Extensionismo Industrial y 11 en Inclusión Energética**.
+- **Certificado.** Si la base ya tiene la inscripción de `chechi` a **EFI Ingeniería Mecánica** de la Tarea 2, descarguen su certificado desde **Mi perfil → Programas**. Si solo hicieron las cargas inicial y de Tarea 3, creen un programa que empiece hoy, agreguen **Dalavuelta** e inscriban allí a `chechi`. Con su nota de la edición cerrada ya puede obtener ese PDF.
+- **Altas, notas y acta docente.** Creen un curso y una edición que empiece hoy. Asígnense como docente y comprueben que la edición aparezca enseguida en el detalle del curso. Inscriban a un estudiante, acéptenlo en **Seleccionar estudiantes**, guarden una nota en **Ingresar evaluaciones → Instituto → Curso** y cierren la edición. Abran **Ver resultados definitivos** para comprobar el acta. El estudiante también puede valorar ese curso desde **Valorar un curso**.
+- **Curso asociado a un programa.** Agreguen el curso a un programa y comprueben que la asociación aparezca enseguida desde ambos detalles.
 
 ## Datos adicionales de Tarea 2
 
-Para esta prueba de institutos alcanza la carga inicial. Si necesitan los datos adicionales, ejecuten después `persistencia.CargarDatosPruebaTarea2`: requiere la variable `EDEXT_DB_PASSWORD` y las imágenes originales en `%USERPROFILE%\Descargas\edext-imagenes-tarea2`, con sus subcarpetas. Ese cargador rechaza una variable no definida, incluso si MySQL usa contraseña vacía.
+Si necesitan la carga completa de Tarea 2, ejecuten `java -cp servidor.jar persistencia.CargarDatosPruebaTarea2` después de la carga inicial. Ese cargador usa `root`, requiere la variable `EDEXT_DB_PASSWORD` definida y busca las imágenes originales con sus subcarpetas en `Descargas/edext-imagenes-tarea2`, dentro de la carpeta personal.
