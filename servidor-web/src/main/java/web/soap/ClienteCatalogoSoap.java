@@ -108,10 +108,17 @@ public final class ClienteCatalogoSoap {
     }
 
     public logica.DTAutenticacion autenticarUsuario(String identificador, String clave) {
+        return iniciarSesion(identificador, clave).usuario();
+    }
+
+    public record InicioSesion(logica.DTAutenticacion usuario, String tokenNotas) { }
+
+    public InicioSesion iniciarSesion(String identificador, String clave) {
         var identidad = ejecutar(() -> servicio.getCatalogoPort().autenticarUsuario(identificador, clave));
         if (identidad == null) throw new jakarta.xml.ws.WebServiceException("El central no devolvió una identidad.");
-        return new logica.DTAutenticacion(identidad.getNick(), identidad.getNombre(),
+        var usuario = new logica.DTAutenticacion(identidad.getNick(), identidad.getNombre(),
                 logica.DTAutenticacion.Rol.valueOf(identidad.getRol()));
+        return new InicioSesion(usuario, identidad.getTokenNotas());
     }
 
     public List<logica.DTUsuarioConsulta> listarUsuariosConsulta() {

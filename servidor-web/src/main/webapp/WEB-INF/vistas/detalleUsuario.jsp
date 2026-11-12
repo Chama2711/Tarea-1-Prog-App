@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="logica.*,java.util.*" %>
+<%@ page import="web.soap.evaluaciones.generado.DtNotaEstudianteSoap" %>
 <%@ include file="/WEB-INF/vistas/fragmentos/base.jspf" %>
 <%
     DTPerfilUsuario perfil = (DTPerfilUsuario) request.getAttribute("perfil");
@@ -21,6 +22,8 @@
         listaSeguidos = new ArrayList<>();
     }
     DTAutenticacion autenticado = (DTAutenticacion) session.getAttribute("usuario");
+    boolean mostrarMisNotas = perfil.propio() && autenticado != null
+            && autenticado.getRol() == DTAutenticacion.Rol.ESTUDIANTE;
     
     // Mensajes de feedback tras modificar datos
     String mensajeExito = (String) session.getAttribute("mensajeExito");
@@ -88,6 +91,7 @@
         <nav class="perfil-pestanas" aria-label="Secciones del perfil">
             <a id="tab-general" href="#perfil-general">General</a>
             <a id="tab-ediciones" href="#perfil-ediciones">Ediciones</a>
+            <% if (mostrarMisNotas) { %><a id="tab-notas" href="#perfil-notas">Mis notas</a><% } %>
             <% if (!docente) { %><a id="tab-programas" href="#perfil-programas">Programas</a><% } %>
             <% if (docente && perfil.propio()) { %><a id="tab-aceptados" href="#perfil-aceptados">Estudiantes aceptados</a><% } %>
         
@@ -214,6 +218,39 @@
                 </div>
             <% } %>
         </section>
+        <% if (mostrarMisNotas) {
+            List<DtNotaEstudianteSoap> notas = (List<DtNotaEstudianteSoap>) request.getAttribute("misNotas");
+            String aviso = (String) request.getAttribute("avisoMisNotas");
+        %>
+        <section id="perfil-notas" class="perfil-panel" aria-labelledby="tab-notas">
+            <h3>Resultados de ediciones cerradas</h3>
+            <% if (aviso != null) { %>
+                <p class="aviso" role="status"><%= escapar(aviso) %></p>
+            <% } else if (notas == null || notas.isEmpty()) { %>
+                <p class="texto-secundario">Todavía no tenés inscripciones a ediciones cerradas.</p>
+            <% } else { %>
+                <div class="ediciones">
+                    <% for (DtNotaEstudianteSoap nota : notas) { %>
+                        <article class="edicion">
+                            <h4><%= escapar(nota.getCurso()) %></h4>
+                            <p><a href="${pageContext.request.contextPath}/edicion?nombre=<%= parametro(nota.getEdicion()) %>"><%= escapar(nota.getEdicion()) %></a></p>
+                            <div class="edicion-datos">
+                                <span><strong>Nota:</strong> <%= nota.getNota() == null ? "Sin calificación" : nota.getNota() %></span>
+                                <% if ("RECHAZADA".equals(nota.getEstado())) { %>
+                                    <span>Inscripción rechazada</span>
+                                <% } else if ("INSCRIPTO".equals(nota.getEstado())) { %>
+                                    <span>Inscripto</span>
+                                <% } %>
+                                <% if (nota.getFechaCalificacion() != null) { %>
+                                    <span><strong>Fecha:</strong> <%= fecha(nota.getFechaCalificacion()) %></span>
+                                <% } %>
+                            </div>
+                        </article>
+                    <% } %>
+                </div>
+            <% } %>
+        </section>
+        <% } %>
         <% if (!docente) { %>
         <section id="perfil-programas" class="perfil-panel" aria-labelledby="titulo-programas-usuario">
             <h3 id="titulo-programas-usuario">Programas en los que está inscripto</h3>

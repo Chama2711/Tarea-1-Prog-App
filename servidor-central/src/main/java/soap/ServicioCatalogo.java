@@ -128,7 +128,14 @@ import java.util.List;
 
         @WebMethod(operationName = "autenticarUsuario")
         public soap.dto.DTIdentidad autenticarUsuario(@WebParam(name = "identificador") String identificador, @WebParam(name = "clave") String clave) throws OperacionRechazada {
-            return ejecutar(() -> new soap.dto.DTIdentidad(central.autenticarUsuario(identificador, clave)));
+            return ejecutar(() -> {
+                var usuario = central.autenticarUsuario(identificador, clave);
+                var identidad = new soap.dto.DTIdentidad(usuario);
+                if (usuario.getRol() == logica.DTAutenticacion.Rol.ESTUDIANTE) {
+                    identidad.tokenNotas = TokenNotas.emitir(usuario.getNick());
+                }
+                return identidad;
+            });
         }
 
         @WebMethod(operationName = "listarUsuariosConsulta")

@@ -474,6 +474,7 @@
 <xs:element name="nick" type="xs:string" minOccurs="0"/>
 <xs:element name="nombre" type="xs:string" minOccurs="0"/>
 <xs:element name="rol" type="xs:string" minOccurs="0"/>
+<xs:element name="tokenNotas" type="xs:string" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="obtenerImagenUsuario">

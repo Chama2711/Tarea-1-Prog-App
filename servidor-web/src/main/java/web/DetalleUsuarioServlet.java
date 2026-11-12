@@ -48,9 +48,12 @@ public class DetalleUsuarioServlet extends HttpServlet {
             request.setAttribute("esSeguidor", esSeguidor);
 
             request.setAttribute("perfil", perfil);
-            if (perfil.propio() && autenticado != null
-                    && autenticado.getRol() == DTAutenticacion.Rol.ESTUDIANTE
-                    && !perfil.programas().isEmpty()) {
+            boolean estudiantePropio = perfil.propio() && autenticado != null
+                    && autenticado.getRol() == DTAutenticacion.Rol.ESTUDIANTE;
+            if (estudiantePropio) {
+                prepararNotas(request, (String) sesion.getAttribute(LoginServlet.TOKEN_NOTAS));
+            }
+            if (estudiantePropio && !perfil.programas().isEmpty()) {
                 try {
                     var evaluaciones = InicializadorAplicacion.getClienteEvaluaciones(getServletContext());
                     Set<String> programasAprobados = new HashSet<>();
@@ -76,6 +79,21 @@ public class DetalleUsuarioServlet extends HttpServlet {
             getServletContext().log("No se pudo consultar el perfil por SOAP.", error);
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
                     "No se pudo cargar el perfil. Intentá nuevamente más tarde.");
+        }
+    }
+
+    private void prepararNotas(HttpServletRequest request, String token) {
+        if (token == null || token.isBlank()) {
+            request.setAttribute("avisoMisNotas", "Volvé a iniciar sesión para consultar tus notas.");
+            return;
+        }
+        try {
+            var evaluaciones = InicializadorAplicacion.getClienteEvaluaciones(getServletContext());
+            request.setAttribute("misNotas", evaluaciones.listarMisNotas(token));
+        } catch (WebServiceException | IllegalStateException error) {
+            getServletContext().log("No se pudieron consultar las notas del estudiante.", error);
+            request.setAttribute("avisoMisNotas",
+                    "No se pudieron consultar tus notas. Intentá nuevamente o volvé a iniciar sesión.");
         }
     }
 }

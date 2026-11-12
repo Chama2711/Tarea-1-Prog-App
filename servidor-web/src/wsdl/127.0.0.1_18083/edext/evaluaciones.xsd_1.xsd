@@ -8,6 +8,8 @@
 <xs:element name="listarAceptadosEdicionResponse" type="tns:listarAceptadosEdicionResponse"/>
 <xs:element name="listarEdicionesDocente" type="tns:listarEdicionesDocente"/>
 <xs:element name="listarEdicionesDocenteResponse" type="tns:listarEdicionesDocenteResponse"/>
+<xs:element name="listarMisNotas" type="tns:listarMisNotas"/>
+<xs:element name="listarMisNotasResponse" type="tns:listarMisNotasResponse"/>
 <xs:element name="obtenerActaEstudio" type="tns:obtenerActaEstudio"/>
 <xs:element name="obtenerActaEstudioResponse" type="tns:obtenerActaEstudioResponse"/>
 <xs:element name="registrarCalificacion" type="tns:registrarCalificacion"/>
@@ -71,6 +73,25 @@
 <xs:complexType name="listarEdicionesDocenteResponse">
 <xs:sequence>
 <xs:element name="return" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="listarMisNotas">
+<xs:sequence>
+<xs:element name="tokenNotas" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="listarMisNotasResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:dtNotaEstudianteSoap" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="dtNotaEstudianteSoap" final="extension restriction">
+<xs:sequence>
+<xs:element name="curso" type="xs:string" minOccurs="0"/>
+<xs:element name="edicion" type="xs:string" minOccurs="0"/>
+<xs:element name="estado" type="xs:string" minOccurs="0"/>
+<xs:element name="nota" type="xs:int" minOccurs="0"/>
+<xs:element name="fechaCalificacion" type="xs:string" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="registrarCalificacion">

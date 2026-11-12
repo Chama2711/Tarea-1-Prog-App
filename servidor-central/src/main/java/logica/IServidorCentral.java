@@ -175,6 +175,8 @@ public interface IServidorCentral {
 
     List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante);
 
+    List<DTNotaEstudiante> listarNotasEstudiante(String nickEstudiante);
+
     void inscriboAEdicionCurso(
         Estudiante estudiante,
         EdicionCurso edicion,

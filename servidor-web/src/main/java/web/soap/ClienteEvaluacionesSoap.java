@@ -18,6 +18,7 @@ import java.util.Properties;
 import web.soap.evaluaciones.generado.EvaluacionesService;
 import web.soap.evaluaciones.generado.ServicioEvaluaciones;
 import web.soap.evaluaciones.generado.DtInscripcionSoap;
+import web.soap.evaluaciones.generado.DtNotaEstudianteSoap;
 import web.soap.evaluaciones.generado.DtResultadoEvaluacionSoap;
 import web.soap.evaluaciones.generado.DtActaEstudio;
 
@@ -92,6 +93,11 @@ public final class ClienteEvaluacionesSoap {
         return resultados == null
                 ? List.of()
                 : List.copyOf(resultados);
+    }
+
+    public List<DtNotaEstudianteSoap> listarMisNotas(String tokenNotas) {
+        var notas = servicio.getEvaluacionesPort().listarMisNotas(tokenNotas);
+        return notas == null ? List.of() : List.copyOf(notas);
     }
 
     // Lee la dirección del servicio desde web.properties.

@@ -13,11 +13,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import logica.DTAutenticacion;
 import web.soap.ClienteCatalogoSoap;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
+    static final String TOKEN_NOTAS = LoginServlet.class.getName() + ".tokenNotas";
+
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -40,11 +41,12 @@ public class LoginServlet extends HttpServlet {
             ClienteCatalogoSoap servidor =
                     InicializadorAplicacion.getClienteCatalogo(getServletContext());
 
-            DTAutenticacion usuario =
-                    servidor.autenticarUsuario(identificador, clave);
+            var inicio = servidor.iniciarSesion(identificador, clave);
 
             HttpSession sesion = request.getSession();
-            sesion.setAttribute("usuario", usuario);
+            request.changeSessionId();
+            sesion.setAttribute("usuario", inicio.usuario());
+            sesion.setAttribute(TOKEN_NOTAS, inicio.tokenNotas());
 
             response.sendRedirect(
                     request.getContextPath() + "/inicio"

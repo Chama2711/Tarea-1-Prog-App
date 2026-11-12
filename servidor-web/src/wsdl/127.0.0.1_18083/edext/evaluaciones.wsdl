@@ -42,7 +42,17 @@
 <message name="consultarResultadosEdicionResponse">
 <part name="parameters" element="tns:consultarResultadosEdicionResponse"/>
 </message>
+<message name="listarMisNotas">
+<part name="parameters" element="tns:listarMisNotas"/>
+</message>
+<message name="listarMisNotasResponse">
+<part name="parameters" element="tns:listarMisNotasResponse"/>
+</message>
 <portType name="ServicioEvaluaciones">
+<operation name="listarMisNotas">
+<input wsam:Action="http://soap.edext/ServicioEvaluaciones/listarMisNotasRequest" message="tns:listarMisNotas"/>
+<output wsam:Action="http://soap.edext/ServicioEvaluaciones/listarMisNotasResponse" message="tns:listarMisNotasResponse"/>
+</operation>
 <operation name="registrarCalificacion">
 <input wsam:Action="http://soap.edext/ServicioEvaluaciones/registrarCalificacionRequest" message="tns:registrarCalificacion"/>
 <output wsam:Action="http://soap.edext/ServicioEvaluaciones/registrarCalificacionResponse" message="tns:registrarCalificacionResponse"/>
@@ -70,6 +80,15 @@
 </portType>
 <binding name="EvaluacionesPortBinding" type="tns:ServicioEvaluaciones">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+<operation name="listarMisNotas">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
 <operation name="registrarCalificacion">
 <soap:operation soapAction=""/>
 <input>

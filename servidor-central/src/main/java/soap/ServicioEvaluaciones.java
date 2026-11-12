@@ -12,6 +12,7 @@ import jakarta.jws.WebService;
 import java.util.Objects;
 import logica.IServidorCentral;
 import soap.dto.DTInscripcionSoap;
+import soap.dto.DTNotaEstudianteSoap;
 import logica.DTResultadoEvaluacion;
 import soap.dto.DTResultadoEvaluacionSoap;
 
@@ -64,6 +65,13 @@ public class ServicioEvaluaciones {
         ).stream()
          .map(DTResultadoEvaluacionSoap::desde)
          .toArray(DTResultadoEvaluacionSoap[]::new);
+    }
+
+    @WebMethod(operationName = "listarMisNotas")
+    public DTNotaEstudianteSoap[] listarMisNotas(@WebParam(name = "tokenNotas") String tokenNotas) {
+        return central.listarNotasEstudiante(TokenNotas.estudiante(tokenNotas)).stream()
+                .map(DTNotaEstudianteSoap::new)
+                .toArray(DTNotaEstudianteSoap[]::new);
     }
 
     @WebMethod(operationName = "registrarCalificacion")

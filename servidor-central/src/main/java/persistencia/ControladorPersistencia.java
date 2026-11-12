@@ -1289,6 +1289,22 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
         }
     }
 
+    public List<DTNotaEstudiante> listarNotasEstudiante(String nickEstudiante) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT new logica.DTNotaEstudiante(ed.curso.nombre, ed.nombre, "
+                    + "i.estado, i.calificacion, i.fechaCalificacion) "
+                    + "FROM Estudiante e JOIN e.inscripciones i JOIN i.edicion ed "
+                    + "WHERE e.nick = :nick AND ed.cerrada = TRUE "
+                    + "ORDER BY ed.fechaFin DESC, ed.nombre, i.id", DTNotaEstudiante.class)
+                    .setParameter("nick", nickEstudiante)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
     ////////
     public ArrayList<Curso> listarCursosPorInstituto(String nombreInstituto)
     {

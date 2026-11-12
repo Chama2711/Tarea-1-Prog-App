@@ -323,6 +323,11 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     public List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante) {
         return controladorInscripcion.listarResultadosInscripciones(nickEstudiante);
     }
+
+    @Override
+    public List<DTNotaEstudiante> listarNotasEstudiante(String nickEstudiante) {
+        return persistencia.listarNotasEstudiante(nickEstudiante);
+    }
     // INSTITUTOS
     // =========================
 
