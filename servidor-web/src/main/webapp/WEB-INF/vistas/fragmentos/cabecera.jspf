@@ -1,0 +1,28 @@
+<%@ page pageEncoding="UTF-8" %>
+<a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+<header class="cabecera"><div class="contenedor cabecera-interior">
+    <a class="marca" href="${pageContext.request.contextPath}/inicio" aria-label="edEXT, inicio">ed<span>EXT</span></a>
+    <nav class="navegacion" aria-label="Navegación principal">
+        <a href="${pageContext.request.contextPath}/inicio" <%= "inicio".equals(paginaActiva) ? "aria-current=\"page\"" : "" %>>Inicio</a>
+        <a href="${pageContext.request.contextPath}/usuarios" <%= "usuarios".equals(paginaActiva) ? "aria-current=\"page\"" : "" %>>Usuarios</a>
+        <a href="${pageContext.request.contextPath}/cursos" <%= "cursos".equals(paginaActiva) ? "aria-current=\"page\"" : "" %>>Cursos</a>
+        <a href="${pageContext.request.contextPath}/programas" <%= "programas".equals(paginaActiva) ? "aria-current=\"page\"" : "" %>>Programas</a>
+    </nav>
+    <div class="sesion">
+        <% DTAutenticacion usuarioSesion = (DTAutenticacion) session.getAttribute("usuario");
+           if (usuarioSesion != null) { %>
+            <a class="identidad" href="${pageContext.request.contextPath}/usuario?nick=<%= parametro(usuarioSesion.getNick()) %>" aria-label="Mi perfil">Hola, <%= escapar(usuarioSesion.getNombre()) %><small><%= usuarioSesion.getRol() == DTAutenticacion.Rol.DOCENTE ? "Docente" : "Estudiante" %></small></a>
+            <a href="${pageContext.request.contextPath}/logout">Cerrar sesión</a>
+        <% } else { %>
+            <a href="${pageContext.request.contextPath}/login" <%= "login".equals(paginaActiva) ? "aria-current=\"page\"" : "" %>>Iniciar sesión</a>
+            <a class="boton boton-pequeno" href="${pageContext.request.contextPath}/registro" <%= "registro".equals(paginaActiva) ? "aria-current=\"page\"" : "" %>>Registrarse</a>
+        <% } %>
+    </div>
+</div></header>
+
+<div class="contenedor buscador-compartido">
+<form method="get" action="${pageContext.request.contextPath}/busqueda" role="search">
+<label class="solo-lectores" for="busqueda-global">Buscar cursos o programas</label>
+<input id="busqueda-global" type="search" name="q" placeholder="Buscar cursos o programas…" value="<%= escapar(request.getParameter("q")) %>">
+<button class="boton" type="submit">Buscar</button>
+</form></div>

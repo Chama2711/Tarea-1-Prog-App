@@ -1,0 +1,2127 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package persistencia;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityTransaction;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.LockModeType;
+import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
+import logica.*;
+
+/**
+ *
+ * @author elizeth
+ */
+    public class ControladorPersistencia implements AutoCloseable {
+
+    private final EntityManagerFactory emf;
+
+    public List<String> listarNombresInstitutosDocente(String nickDocente) {
+        if (nickDocente == null || nickDocente.isBlank()) {
+            throw new SecurityException("Se requiere un docente registrado.");
+        }
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (!(em.find(Usuario.class, nickDocente) instanceof Docente)) {
+                throw new SecurityException("Se requiere un docente registrado.");
+            }
+            return em.createQuery("SELECT DISTINCT i.nombre FROM Docente d JOIN d.institutos i "
+                    + "WHERE d.nick = :nick ORDER BY i.nombre", String.class)
+                    .setParameter("nick", nickDocente).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    private DTUsuarioConsulta datosUsuario(EntityManager em, Usuario usuario, boolean incluirInstitutos) {
+        boolean docente = usuario instanceof Docente;
+        List<String> institutos = docente && incluirInstitutos ? em.createQuery(
+                "SELECT i.nombre FROM Docente d JOIN d.institutos i WHERE d.nick = :nick ORDER BY i.nombre",
+                String.class).setParameter("nick", usuario.getNick()).getResultList() : List.of();
+        return new DTUsuarioConsulta(usuario.getNick(), usuario.getNombre(), usuario.getApellido(),
+                usuario.getMail(), usuario.getFechaNacimiento(),
+                docente ? DTAutenticacion.Rol.DOCENTE : DTAutenticacion.Rol.ESTUDIANTE,
+                usuario.getImagen() != null && !usuario.getImagen().isBlank(), institutos);
+    }
+
+    public List<DTUsuarioConsulta> listarUsuariosConsulta() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT u FROM Usuario u ORDER BY u.nick", Usuario.class)
+                    .getResultList().stream().map(u -> datosUsuario(em, u, false)).toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    private DTEdicionConsulta datosEdicion(EntityManager em, EdicionCurso edicion) {
+        List<DTUsuarioConsulta> docentes = edicion.getDocentes().stream()
+                .sorted(java.util.Comparator.comparing(Usuario::getNick))
+                .map(d -> datosUsuario(em, d, false)).toList();
+       return new DTEdicionConsulta(
+        edicion.getNombre(),
+        edicion.getCurso().getNombre(),
+        edicion.getFechaInicio(),
+        edicion.getFechaFin(),
+        edicion.getFechaPublicacion(),
+        edicion.getCupo(),
+        edicion.esVigente(),
+        edicion.getImagen() != null && !edicion.getImagen().isBlank(),
+        docentes,
+        edicion.isCerrada()
+        );
+    }
+
+    public DTEdicionConsulta consultarEdicion(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            EdicionCurso edicion = nombre == null ? null : em.find(EdicionCurso.class, nombre);
+            return edicion == null ? null : datosEdicion(em, edicion);
+        } finally {
+            em.close();
+        }
+    }
+
+    public DTPerfilUsuario consultarPerfilUsuario(String nick, String nickConsultante) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Usuario usuario = nick == null ? null : em.find(Usuario.class, nick);
+            if (usuario == null) return null;
+            DTUsuarioConsulta datos = datosUsuario(em, usuario, true);
+            List<DTInscripcion> inscripciones = List.of();
+            List<DTEdicionConsulta> ediciones = List.of();
+            List<String> programas = List.of();
+            List<DTInscripcion> aceptados = List.of();
+            if (usuario instanceof Estudiante) {
+                inscripciones = em.createQuery(CONSULTA_INSCRIPCIONES
+                        + "WHERE e.nick = :nick AND i.edicion IS NOT NULL "
+                        + "ORDER BY i.fechaInscripcion, i.edicion.nombre, i.id",
+                        DTInscripcion.class).setParameter("nick", nick).getResultList();
+                // Las inscripciones a programas también se consultan, sin crear ni modificar ninguna.
+                programas = em.createQuery(
+                        "SELECT DISTINCT i.programa.nombre FROM Estudiante e JOIN e.inscripciones i "
+                        + "WHERE e.nick = :nick AND i.programa IS NOT NULL "
+                        + "AND (:propio = TRUE OR i.estado IN :estados) ORDER BY i.programa.nombre",
+                        String.class).setParameter("nick", nick)
+                        .setParameter("propio", nick.equals(nickConsultante))
+                        .setParameter("estados", List.of(EstadoInscripcion.INSCRIPTO, EstadoInscripcion.ACEPTADA))
+                        .getResultList();
+            } else if (usuario instanceof Docente) {
+                ediciones = em.createQuery(
+                        "SELECT DISTINCT e FROM EdicionCurso e JOIN e.docentes d "
+                        + "WHERE d.nick = :nick ORDER BY e.nombre", EdicionCurso.class)
+                        .setParameter("nick", nick).getResultList().stream()
+                        .map(e -> datosEdicion(em, e)).toList();
+                if (nick.equals(nickConsultante)) {
+                    aceptados = em.createQuery(CONSULTA_INSCRIPCIONES
+                            + "JOIN i.edicion.docentes d WHERE d.nick = :nick AND i.estado = :estado "
+                            + "ORDER BY i.edicion.nombre, e.nick", DTInscripcion.class)
+                            .setParameter("nick", nick).setParameter("estado", EstadoInscripcion.ACEPTADA)
+                            .getResultList();
+                }
+            }
+            return DTPerfilUsuario.crear(datos, nickConsultante, inscripciones, ediciones, programas, aceptados);
+        } finally {
+            em.close();
+        }
+    }
+
+    public ControladorPersistencia() {
+        this(Persistence.createEntityManagerFactory("edEXTPU", ConfiguracionBaseDatos.leer()));
+    }
+
+    public ControladorPersistencia(EntityManagerFactory emf) {
+        this.emf = java.util.Objects.requireNonNull(emf);
+    }
+
+    /** Conecta con una base ya preparada, sin crear ni modificar su esquema. */
+    public static ControladorPersistencia conectarBaseExistente(
+            String url, String usuario, String contrasena) {
+        if (url == null || url.isBlank() || !url.startsWith("jdbc:")) {
+            throw new IllegalArgumentException("Indique una URL JDBC válida para la base de datos.");
+        }
+        if (usuario == null || usuario.isBlank() || contrasena == null) {
+            throw new IllegalArgumentException("Indique el usuario y la contraseña de la base de datos.");
+        }
+        java.util.Map<String, Object> propiedades = java.util.Map.of(
+                "javax.persistence.jdbc.url", url,
+                "javax.persistence.jdbc.user", usuario,
+                "javax.persistence.jdbc.password", contrasena,
+                "javax.persistence.schema-generation.database.action", "none");
+        return new ControladorPersistencia(
+                Persistence.createEntityManagerFactory("edEXTPU", propiedades));
+    }
+
+    /** Libera la fábrica recibida al construir este controlador. */
+    @Override
+    public void close() {
+        if (emf.isOpen()) {
+            emf.close();
+        }
+    }
+    
+    public boolean existeProgramaFormacion(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return contarProgramas(em, nombre) > 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    private long contarProgramas(EntityManager em, String nombre) {
+        return em.createQuery("SELECT COUNT(p) FROM ProgramaFormacion p WHERE p.nombre = :nombre", Long.class)
+                .setParameter("nombre", nombre).getSingleResult();
+    }
+
+    public void altaProgramaFormacion(ProgramaFormacion programa) {
+
+    EntityManager em = emf.createEntityManager();
+    EntityTransaction tx = em.getTransaction();
+
+    try {
+        tx.begin();
+
+        if (contarProgramas(em, programa.getNombre()) > 0) {
+            throw new IllegalArgumentException("Ya existe un programa con ese nombre.");
+        }
+        em.persist(programa);
+
+        tx.commit();
+
+    } catch (Exception e) {
+
+        if (tx.isActive()) {
+            tx.rollback();
+        }
+
+        throw e;
+
+    } finally {
+        em.close();
+    }
+    }
+
+    public void altaProgramaFormacion(ProgramaFormacion programa, byte[] imagen) {
+        guardarConImagen(imagen, ImagenesEntidades.programas(), programa::setImagen,
+                () -> altaProgramaFormacion(programa));
+    }
+
+    // Requerimiento: Agregar Curso a Programa de Formación
+    public void agregarCursoAPrograma(String nombrePrograma, String nombreCurso) throws Exception {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            ProgramaFormacion pf = em.createQuery("SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre", ProgramaFormacion.class)
+                    .setParameter("nombre", nombrePrograma)
+                    .getSingleResult();
+
+            Curso curso = em.createQuery("SELECT c FROM Curso c WHERE c.nombre = :nombre", Curso.class)
+                    .setParameter("nombre", nombreCurso)
+                    .getSingleResult();
+
+            if (pf.getCursos().containsKey(nombreCurso)) {
+                throw new Exception("El curso ya está dentro del programa de formación.");
+            }
+
+            pf.agregarCurso(curso);
+            curso.getProgramasFormacion().add(pf);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+    
+    public List<String> listarNombresCursos() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT c.nombre FROM Curso c", String.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // Requerimiento: Consulta de Programa de Formación
+    public List<String> listarNombresProgramas() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT p.nombre FROM ProgramaFormacion p", String.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<String> listarNombresProgramasCurso(String nombreCurso) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT DISTINCT p.nombre FROM ProgramaFormacion p JOIN p.cursos c "
+                    + "WHERE c.nombre = :nombreCurso ORDER BY p.nombre", String.class)
+                    .setParameter("nombreCurso", nombreCurso).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+    
+    private soap.dto.DTProgramaConsulta datosPrograma(ProgramaFormacion programa) {
+        List<Curso> cursos = new ArrayList<>(programa.getCursos().values());
+        cursos.sort(java.util.Comparator.comparing(Curso::getNombre));
+        List<String> categorias = cursos.stream().flatMap(c -> c.getCategorias().stream())
+                .map(Categoria::getNombre).distinct().sorted().toList();
+        return new soap.dto.DTProgramaConsulta(programa.getId(), programa.getNombre(),
+                programa.getDescripcion(), programa.getFechaInicio(), programa.getFechaFin(),
+                programa.getFechaAlta(), programa.getImagen() != null && !programa.getImagen().isBlank(),
+                cursos.stream().map(c -> new soap.dto.DTCursoResumen(c.getNombre(), c.getDescripcion())).toList(),
+                categorias);
+    }
+
+    public List<soap.dto.DTProgramaConsulta> listarProgramasConsulta() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT p FROM ProgramaFormacion p ORDER BY p.nombre", ProgramaFormacion.class)
+                    .getResultList().stream().map(this::datosPrograma).toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public soap.dto.DTProgramaConsulta consultarPrograma(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (nombre == null || nombre.isBlank()) return null;
+            List<ProgramaFormacion> encontrados = em.createQuery(
+                    "SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre", ProgramaFormacion.class)
+                    .setParameter("nombre", nombre).getResultList();
+            return encontrados.isEmpty() ? null : datosPrograma(encontrados.get(0));
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<ProgramaFormacion> obtenerProgramas() {
+    EntityManager em = emf.createEntityManager();
+
+    try {
+
+        return em.createQuery(
+                "SELECT p FROM ProgramaFormacion p",ProgramaFormacion.class).getResultList();
+    } finally {
+        em.close();
+    }
+    }
+
+
+    public ProgramaFormacion obtenerDetallePrograma(
+            String nombrePrograma) {
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            return em.createQuery(
+                    "SELECT DISTINCT p FROM ProgramaFormacion p "
+                    + "LEFT JOIN FETCH p.cursos "
+                    + "WHERE p.nombre = :nombre",
+                    ProgramaFormacion.class)
+                    .setParameter("nombre", nombrePrograma)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+
+        } finally {
+            em.close();
+        }
+    }
+
+    
+    // Requerimiento : Alta de Instituto
+    public void altaInstituto(String nombreInstituto) throws Exception {
+        EntityManager em = emf.createEntityManager();
+        try {
+            // Verificar si el nombre del instituto ya existe
+            Long existe = em.createQuery("SELECT COUNT(i) FROM Instituto i WHERE i.nombre = :nombre", Long.class)
+                    .setParameter("nombre", nombreInstituto)
+                    .getSingleResult();
+
+            if (existe > 0) {
+                throw new Exception("Ya existe un instituto registrado con el nombre: " + nombreInstituto);
+            }
+
+            em.getTransaction().begin();
+            Instituto inst = new Instituto(nombreInstituto);
+            em.persist(inst);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Método auxiliar para listar institutos (necesario para Alta de Curso o Consultas)
+    public List<Instituto> obtenerInstitutos() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT i FROM Instituto i", Instituto.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+    
+    
+    // ALTA DE USUARIO
+public void crearUsuario(Usuario usuario) throws Exception {
+    crearUsuario(usuario, null);
+}
+
+public void crearUsuario(Usuario usuario, String nombreInstituto) throws Exception {
+    if (usuario == null || usuario.getNick() == null || usuario.getNick().isBlank()
+            || usuario.getMail() == null || usuario.getMail().isBlank()) {
+        throw new IllegalArgumentException("Faltan nickname o correo.");
+    }
+    EntityManager em = emf.createEntityManager();
+    try {
+        em.getTransaction().begin();
+        if (em.find(Usuario.class, usuario.getNick()) != null) {
+            throw new IllegalArgumentException("Ya existe ese nickname.");
+        }
+        Long correos = em.createQuery(
+                "SELECT COUNT(u) FROM Usuario u WHERE LOWER(u.mail) = LOWER(:mail)",
+                Long.class).setParameter("mail", usuario.getMail()).getSingleResult();
+        if (correos > 0) {
+            throw new IllegalArgumentException("Ya existe ese correo.");
+        }
+        if (usuario instanceof Docente) {
+            if (nombreInstituto == null || nombreInstituto.isBlank()) {
+                throw new IllegalArgumentException("Seleccione el instituto del docente.");
+            }
+            List<Instituto> institutos = em.createQuery(
+                    "SELECT i FROM Instituto i WHERE i.nombre = :nombre", Instituto.class)
+                    .setParameter("nombre", nombreInstituto).getResultList();
+            if (institutos.size() != 1) {
+                throw new IllegalArgumentException("El instituto seleccionado ya no existe o es ambiguo.");
+            }
+            ((Docente) usuario).agregoInstituto(institutos.get(0));
+        }
+        em.persist(usuario);
+        em.getTransaction().commit();
+    } catch (Exception e) {
+        if (em.getTransaction().isActive()) em.getTransaction().rollback();
+        throw e;
+    } finally {
+        em.close();
+    }
+}
+    
+    
+    
+    
+
+    // MODIFICAR USUARIO
+public void editarUsuario(Usuario usuario) throws Exception {
+    if (usuario == null || usuario.getNick() == null) {
+        throw new IllegalArgumentException("Seleccione un usuario.");
+    }
+    EntityManager em = emf.createEntityManager();
+    try {
+        em.getTransaction().begin();
+        Usuario actual = em.find(Usuario.class, usuario.getNick());
+        if (actual == null) throw new IllegalArgumentException("El usuario ya no existe.");
+        actual.setNombre(usuario.getNombre());
+        actual.setApellido(usuario.getApellido());
+        actual.setFechaNacimiento(usuario.getFechaNacimiento());
+        actual.setContrasena(usuario.getContrasena());
+        em.getTransaction().commit();
+    } catch (Exception e) {
+        if (em.getTransaction().isActive()) em.getTransaction().rollback();
+        throw e;
+    } finally {
+        em.close();
+    }
+}
+    
+    
+    
+    public void guardarUsuario(Usuario usuario) throws Exception {
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        em.getTransaction().begin();
+
+        em.persist(usuario);
+
+        em.getTransaction().commit();
+
+    } catch (Exception e) {
+
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+
+        throw e;
+
+    } finally {
+        em.close();
+    }
+}
+    
+    public Usuario obtenerUsuario(String nick) {
+    EntityManager em = emf.createEntityManager();
+
+    try {
+
+        return em.createQuery(
+                "SELECT u FROM Usuario u WHERE u.nick = :nick",
+                Usuario.class)
+                .setParameter("nick", nick)
+                .getSingleResult();
+
+    } catch (javax.persistence.NoResultException e) {
+        // Al capturar la excepción, indicamos que el usuario no existe aún (comportamiento esperado)
+        return null; 
+    } finally {
+        em.close();
+    }
+}
+    
+    public Usuario obtenerUsuarioPorIdentificador(String identificador) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            List<Usuario> usuarios = em.createQuery(
+                    "SELECT u FROM Usuario u WHERE u.nick = :identificador "
+                            + "OR LOWER(u.mail) = LOWER(:identificador)", Usuario.class)
+                    .setParameter("identificador", identificador)
+                    .setMaxResults(2).getResultList();
+            // Si un nickname coincide con el correo de otro usuario, no elegir una cuenta arbitraria.
+            return usuarios.size() == 1 ? usuarios.get(0) : null;
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Usuario> obtenerUsuarios() {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+
+            return em.createQuery(
+                    "SELECT u FROM Usuario u",
+                    Usuario.class)
+                    .getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+    
+    public List<Estudiante> obtenerEstudiantes(){
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            return em.createQuery("SELECT e FROM Estudiante e", Estudiante.class).getResultList();
+        } finally {
+            em.close();
+        }
+        
+    }
+    
+    public List<Curso> obtenerCursosDeInstituto(Long idInstituto) {
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        return em.createQuery(
+                "SELECT c FROM Curso c WHERE c.instituto.id = :id",
+                Curso.class)
+                .setParameter("id", idInstituto)
+                .getResultList();
+
+    } finally {
+        em.close();
+    }
+}
+    
+    public List<Curso> obtenerTodosLosCursos() {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        return em.createQuery(
+                "SELECT c FROM Curso c",
+                Curso.class)
+                .getResultList();
+
+    } finally {
+        em.close();
+    }
+}
+
+    public void seguirUsuario(String nickSeguidor, String nickSeguido) {
+        cambiarSeguimiento(nickSeguidor, nickSeguido, true);
+    }
+
+    public List<DTUsuarioConsulta> listarSeguidosConsulta(String nick) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT s FROM Usuario u JOIN u.seguidos s WHERE u.nick = :nick ORDER BY s.nick",
+                    Usuario.class).setParameter("nick", nick).getResultList().stream()
+                    .map(u -> datosUsuario(em, u, false)).toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean esSeguidor(String nickSeguidor, String nickSeguido) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT COUNT(s) FROM Usuario u JOIN u.seguidos s "
+                    + "WHERE u.nick = :seguidor AND LOWER(s.nick) = LOWER(:seguido)", Long.class)
+                    .setParameter("seguidor", nickSeguidor).setParameter("seguido", nickSeguido)
+                    .getSingleResult() > 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    public void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) {
+        cambiarSeguimiento(nickSeguidor, nickSeguido, false);
+    }
+
+    private void cambiarSeguimiento(String nickSeguidor, String nickSeguido, boolean seguir) {
+        if (nickSeguidor == null || nickSeguidor.isBlank()) {
+            throw new SecurityException("Se requiere un usuario registrado.");
+        }
+        if (nickSeguido == null || nickSeguido.isBlank()) {
+            throw new IllegalArgumentException("Seleccione un usuario.");
+        }
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // Serializa cambios de la misma lista para evitar seguimientos duplicados.
+            Usuario seguidor = em.find(Usuario.class, nickSeguidor, LockModeType.PESSIMISTIC_WRITE);
+            Usuario seguido = em.find(Usuario.class, nickSeguido);
+            if (seguidor == null) throw new SecurityException("El usuario autenticado ya no existe.");
+            if (seguido == null) throw new IllegalArgumentException("El usuario seleccionado no existe.");
+            if (seguidor.getNick().equalsIgnoreCase(seguido.getNick())) {
+                throw new IllegalArgumentException("No podés seguirte a vos mismo.");
+            }
+            boolean existente = seguidor.getSeguidos().stream()
+                    .anyMatch(u -> u.getNick().equalsIgnoreCase(seguido.getNick()));
+            if (seguir && existente) throw new IllegalArgumentException("Ya seguís a ese usuario.");
+            if (!seguir && !existente) throw new IllegalArgumentException("No seguís a ese usuario.");
+            if (seguir) seguidor.getSeguidos().add(seguido);
+            else seguidor.getSeguidos().removeIf(u -> u.getNick().equalsIgnoreCase(seguido.getNick()));
+            em.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (e instanceof IllegalArgumentException || e instanceof SecurityException) throw e;
+            throw new IllegalStateException("No se pudo actualizar el seguimiento.", e);
+        } finally {
+            em.close();
+        }
+    }
+    
+    
+    
+    
+    
+//// INSCRIPCIONES    
+    
+public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
+        LocalDate fechaInscripcion) {
+    if (estudiante == null || estudiante.getNick() == null || edicion == null
+            || edicion.getNombre() == null || fechaInscripcion == null) {
+        throw new IllegalArgumentException("Seleccione estudiante, edición y fecha.");
+    }
+    if (fechaInscripcion.isAfter(LocalDate.now())) {
+        throw new IllegalArgumentException("La fecha de inscripción no puede ser futura.");
+    }
+    EntityManager em = emf.createEntityManager();
+    try {
+        em.getTransaction().begin();
+        // Serializa las inscripciones a la misma edición que pasan por este método.
+        EdicionCurso edicionBD = em.find(EdicionCurso.class, edicion.getNombre(),
+                javax.persistence.LockModeType.PESSIMISTIC_WRITE);
+        Estudiante estudianteBD = em.find(Estudiante.class, estudiante.getNick());
+        if (edicionBD == null || estudianteBD == null) {
+            throw new IllegalArgumentException("El estudiante o la edición ya no existen.");
+        }
+        if (!edicionBD.esVigente()) throw new IllegalArgumentException("La edición ya no está vigente.");
+        if (fechaInscripcion.isBefore(edicionBD.getFechaInicio())
+                || fechaInscripcion.isAfter(edicionBD.getFechaFin())) {
+            throw new IllegalArgumentException(
+                    "La fecha de inscripción debe estar entre el inicio y el fin de la edición, inclusive.");
+        }
+        Long repetidas = em.createQuery(
+                "SELECT COUNT(i) FROM Estudiante e JOIN e.inscripciones i "
+                + "WHERE e.nick = :nick AND i.edicion.nombre = :edicion", Long.class)
+                .setParameter("nick", estudianteBD.getNick())
+                .setParameter("edicion", edicionBD.getNombre()).getSingleResult();
+        if (repetidas > 0) {
+            throw new IllegalArgumentException("El estudiante ya está inscripto en esa edición. Cambie la selección o cancele.");
+        }
+        int cupo = edicionBD.getCupo();
+        if (cupo < -1) throw new IllegalArgumentException("La edición tiene un cupo inválido; revíselo antes de inscribir.");
+        Inscripcion nueva = new Inscripcion(fechaInscripcion, edicionBD);
+        em.persist(nueva);
+        estudianteBD.agregoInscripcion(nueva);
+        em.getTransaction().commit();
+    } catch (RuntimeException e) {
+        if (em.getTransaction().isActive()) em.getTransaction().rollback();
+        if (e instanceof IllegalArgumentException) throw e;
+        throw new IllegalStateException("No se pudo guardar la inscripción.", e);
+    } finally {
+        em.close();
+    }
+}
+
+public void inscriboAProgramaFormacion(
+        Estudiante estudiante,
+        ProgramaFormacion programa,
+        LocalDate fechaInscripcion) {
+
+    if (estudiante == null || estudiante.getNick() == null
+            || programa == null || programa.getId() == null
+            || fechaInscripcion == null) {
+
+        throw new IllegalArgumentException(
+                "Seleccione estudiante, programa y fecha."
+        );
+    }
+
+    if (fechaInscripcion.isAfter(LocalDate.now())) {
+        throw new IllegalArgumentException(
+                "La fecha de inscripción no puede ser futura."
+        );
+    }
+    
+    EntityManager em = emf.createEntityManager();
+
+    try {
+    em.getTransaction().begin();
+
+    Estudiante estudianteBD =
+            em.find(Estudiante.class, estudiante.getNick());
+
+    ProgramaFormacion programaBD = em.find(
+            ProgramaFormacion.class,
+            programa.getId(),
+            LockModeType.PESSIMISTIC_WRITE
+    );
+
+    if (estudianteBD == null || programaBD == null) {
+        throw new IllegalArgumentException(
+                "El estudiante o el programa ya no existen."
+        );
+    }
+    
+    LocalDate inicio = programaBD.getFechaInicio();
+    LocalDate fin = programaBD.getFechaFin();
+
+    if (fechaInscripcion.isAfter(fin)) {
+        throw new IllegalArgumentException(
+            "No puedes inscribirte porque el programa ya finalizó."
+        );
+    }
+
+    if (fechaInscripcion.isAfter(inicio.plusDays(14))) {
+        throw new IllegalArgumentException(
+            "El plazo de inscripción terminó. "
+            + "Solo puedes inscribirte durante los primeros 14 días."
+        );
+    }
+    
+    Long repetidas = em.createQuery(
+        "SELECT COUNT(i) FROM Estudiante e JOIN e.inscripciones i "
+        + "WHERE e.nick = :nick AND i.programa.id = :programaId",
+        Long.class)
+    .setParameter("nick", estudianteBD.getNick())
+    .setParameter("programaId", programaBD.getId())
+    .getSingleResult();
+
+    if (repetidas > 0) {
+        throw new IllegalArgumentException(
+                "El estudiante ya está inscripto en este programa."
+        );
+    }
+
+    Inscripcion nueva = new Inscripcion(
+            fechaInscripcion,
+            programaBD
+    );
+
+    em.persist(nueva);
+
+    estudianteBD.agregoInscripcion(nueva);
+
+    em.getTransaction().commit();
+    
+    } catch (RuntimeException e) {
+
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+
+        throw e;
+
+    } finally {
+        em.close();
+    }
+    
+}
+
+public boolean estaInscriptoAPrograma(String nick, Long programaId) {
+
+    if (nick == null || nick.isBlank() || programaId == null) {
+        throw new IllegalArgumentException(
+                "Debe indicar el estudiante y el programa."
+        );
+    }
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        Long cantidad = em.createQuery(
+                "SELECT COUNT(i) "
+                + "FROM Estudiante e JOIN e.inscripciones i "
+                + "WHERE e.nick = :nick "
+                + "AND i.programa.id = :programaId",
+                Long.class
+        )
+        .setParameter("nick", nick)
+        .setParameter("programaId", programaId)
+        .getSingleResult();
+
+        return cantidad > 0;
+
+    } finally {
+        em.close();
+    }
+}
+
+    public void seleccionarEstudiantes(String nickDocente, String nombreEdicion,
+            java.util.Map<Long, EstadoInscripcion> decisiones) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            EdicionCurso edicion = em.find(EdicionCurso.class, nombreEdicion,
+                    javax.persistence.LockModeType.PESSIMISTIC_WRITE);
+            if (edicion == null) throw new IllegalArgumentException("La edición ya no existe.");
+            edicion.validarDocenteParticipante(nickDocente);
+            if (!edicion.esVigente()) throw new IllegalArgumentException("La edición ya no está vigente.");
+            if (decisiones == null || decisiones.isEmpty()) {
+                throw new IllegalArgumentException("Seleccione al menos una inscripción.");
+            }
+            long aceptadas = em.createQuery(
+                    "SELECT COUNT(i) FROM Inscripcion i WHERE i.edicion.nombre = :edicion AND i.estado = :estado",
+                    Long.class).setParameter("edicion", nombreEdicion)
+                    .setParameter("estado", EstadoInscripcion.ACEPTADA).getSingleResult();
+            java.util.Map<Inscripcion, EstadoInscripcion> seleccion = new java.util.LinkedHashMap<>();
+            for (var decision : decisiones.entrySet()) {
+                if (decision.getKey() == null) throw new IllegalArgumentException("Indique la inscripción.");
+                Inscripcion inscripcion = em.find(Inscripcion.class, decision.getKey(),
+                        javax.persistence.LockModeType.PESSIMISTIC_WRITE);
+                edicion.validarSeleccion(inscripcion, decision.getValue(), aceptadas);
+                seleccion.put(inscripcion, decision.getValue());
+                if (decision.getValue() == EstadoInscripcion.ACEPTADA) aceptadas++;
+            }
+            // Valida todas las decisiones antes de modificar la primera inscripción.
+            for (var decision : seleccion.entrySet()) {
+                decision.getKey().cambiarEstado(decision.getValue());
+            }
+            em.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (e instanceof IllegalArgumentException || e instanceof IllegalStateException) throw e;
+            throw new IllegalStateException("No se pudo guardar la selección de estudiantes.", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    private static final String CONSULTA_INSCRIPCIONES =
+            "SELECT new logica.DTInscripcion(i.id, e.nick, CONCAT(CONCAT(e.nombre, ' '), e.apellido), "
+            + "i.edicion.nombre, i.edicion.curso.nombre, i.fechaInscripcion, i.estado) "
+            + "FROM Estudiante e JOIN e.inscripciones i ";
+
+    private EdicionCurso validarDocenteEdicion(EntityManager em, String nickDocente, String nombreEdicion) {
+        EdicionCurso edicion = em.find(EdicionCurso.class, nombreEdicion);
+        if (edicion == null) throw new IllegalArgumentException("La edición ya no existe.");
+        edicion.validarDocenteParticipante(nickDocente);
+        return edicion;
+    }
+
+    public List<DTInscripcion> listarInscripcionesEdicion(String nickDocente, String nombreEdicion) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            EdicionCurso edicion = validarDocenteEdicion(em, nickDocente, nombreEdicion);
+            if (!edicion.esVigente()) throw new IllegalArgumentException("La edición ya no está vigente.");
+            return em.createQuery(CONSULTA_INSCRIPCIONES
+                    + "WHERE i.edicion.nombre = :edicion ORDER BY i.fechaInscripcion, e.nick, i.id",
+                    DTInscripcion.class).setParameter("edicion", nombreEdicion).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            validarDocenteEdicion(em, nickDocente, nombreEdicion);
+            return em.createQuery(CONSULTA_INSCRIPCIONES
+                    + "WHERE i.edicion.nombre = :edicion AND i.estado = :estado ORDER BY i.fechaInscripcion, e.nick, i.id",
+                    DTInscripcion.class).setParameter("edicion", nombreEdicion)
+                    .setParameter("estado", EstadoInscripcion.ACEPTADA).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<DTResultadoEvaluacion> consultarResultadosEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        if (nickDocente == null || nickDocente.isBlank()
+                || nombreEdicion == null || nombreEdicion.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar un docente y una edición válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            // 1. Comprobar que existe la edición
+            // y que el docente participa en ella.
+            EdicionCurso edicion = validarDocenteEdicion(
+                    em,
+                    nickDocente,
+                    nombreEdicion
+            );
+
+            // 2. Los resultados definitivos solo
+            // pueden consultarse con la edición cerrada.
+            if (!edicion.isCerrada()) {
+                throw new IllegalStateException(
+                        "No se pueden consultar los resultados "
+                        + "de una edición que todavía está abierta."
+                );
+            }
+
+            // 3. Recuperar las calificaciones
+            // de los estudiantes aceptados.
+            String jpql =
+                    "SELECT new logica.DTResultadoEvaluacion("
+                    + "i.id, "
+                    + "e.nick, "
+                    + "CONCAT(CONCAT(e.nombre, ' '), e.apellido), "
+                    + "i.calificacion, "
+                    + "i.fechaCalificacion) "
+                    + "FROM Estudiante e "
+                    + "JOIN e.inscripciones i "
+                    + "WHERE i.edicion.nombre = :edicion "
+                    + "AND i.estado = :estado "
+                    + "ORDER BY e.apellido, e.nombre, e.nick, i.id";
+
+            return em.createQuery(
+                    jpql,
+                    DTResultadoEvaluacion.class
+            )
+            .setParameter("edicion", nombreEdicion)
+            .setParameter("estado", EstadoInscripcion.ACEPTADA)
+            .getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+
+
+    public void registrarCalificacion(
+            String nickDocente,
+            String nombreEdicion,
+            Long idInscripcion,
+            int nota) {
+
+        if (nickDocente == null || nickDocente.isBlank()
+                || nombreEdicion == null || nombreEdicion.isBlank()
+                || idInscripcion == null || idInscripcion <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Indique docente, edición e inscripción válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            
+            tx.begin();
+
+            // 1. Verificar que el docente participa en la edición.
+            EdicionCurso edicion = validarDocenteEdicion(
+                    em,
+                    nickDocente,
+                    nombreEdicion
+            );
+
+            // 2. Bloquear la edición y actualizar su estado desde MySQL.
+            em.refresh(edicion, LockModeType.PESSIMISTIC_WRITE);
+
+            // 3. No permitir cambios si la edición está cerrada.
+            if (edicion.isCerrada()) {
+                throw new IllegalStateException(
+                        "No se pueden registrar calificaciones "
+                        + "en una edición cerrada."
+                );
+            }
+
+            // 4. Buscar y bloquear la inscripción.
+            Inscripcion inscripcion = em.find(
+                    Inscripcion.class,
+                    idInscripcion,
+                    LockModeType.PESSIMISTIC_WRITE
+            );
+
+
+            // 5. Comprobar que pertenece a la edición seleccionada.
+            if (inscripcion == null
+                    || inscripcion.getEdicionCurso() == null
+                    || !nombreEdicion.equals(
+                            inscripcion.getEdicionCurso().getNombre()
+                    )) {
+
+                throw new IllegalArgumentException(
+                        "La inscripción no pertenece a esta edición."
+                );
+            }
+
+            // 6. Validar la nota y actualizar la entidad.
+            inscripcion.registrarCalificacion(
+                    nota,
+                    LocalDate.now()
+            );
+
+            // 7. Guardar los cambios.
+            tx.commit();
+
+        } catch (RuntimeException e) {
+
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+
+            throw e;
+
+        } finally {
+            em.close();
+        }
+    }
+    
+    public void registrarValoracionCurso (
+            String nickEstudiante,
+            Long idCurso,
+            int puntuacion) throws ValoracionDuplicadaException {
+
+        if (nickEstudiante == null || nickEstudiante.isBlank()
+                || idCurso == null || idCurso <= 0) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un estudiante y un curso válidos."
+            );
+        }
+
+        if (puntuacion < 1 || puntuacion > 5) {
+            throw new IllegalArgumentException(
+                    "La puntuación debe estar entre 1 y 5."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            // 1. Buscar al estudiante y al curso.
+            Estudiante estudiante =
+                    em.find(Estudiante.class, nickEstudiante);
+
+            Curso curso = em.find(Curso.class, idCurso);
+
+            if (estudiante == null) {
+                throw new SecurityException(
+                        "El estudiante no existe."
+                );
+            }
+
+            if (curso == null) {
+                throw new IllegalArgumentException(
+                        "El curso no existe."
+                );
+            }
+
+            // 2. Verificar que participe en alguna edición del curso.
+            Long participaciones = em.createQuery(
+                    "SELECT COUNT(i) "
+                    + "FROM Estudiante e JOIN e.inscripciones i "
+                    + "WHERE e.nick = :nick "
+                    + "AND i.edicion.curso = :curso "
+                    + "AND i.estado = :estado",
+                    Long.class
+            )
+            .setParameter("nick", nickEstudiante)
+            .setParameter("curso", curso)
+            .setParameter("estado", EstadoInscripcion.ACEPTADA)
+            .getSingleResult();
+
+            if (participaciones == 0) {
+                throw new SecurityException(
+                        "El estudiante no participa en este curso."
+                );
+            }
+
+            // 3. Comprobar que no haya valorado antes el curso.
+            Long existentes = em.createQuery(
+                    "SELECT COUNT(v) FROM ValoracionCurso v "
+                    + "WHERE v.estudiante = :estudiante "
+                    + "AND v.curso = :curso",
+                    Long.class
+            )
+            .setParameter("estudiante", estudiante)
+            .setParameter("curso", curso)
+            .getSingleResult();
+
+            if (existentes > 0) {
+                throw new ValoracionDuplicadaException(
+                        "Ya valoraste este curso."
+                );
+            }
+
+            // 4. Crear y guardar la valoración.
+            ValoracionCurso valoracion = new ValoracionCurso(
+                    estudiante,
+                    curso,
+                    puntuacion,
+                    LocalDate.now()
+            );
+
+            em.persist(valoracion);
+
+            // 5. Confirmar la transacción.
+            tx.commit();
+
+        } catch (RuntimeException e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            // La restricción única también protege dos envíos concurrentes.
+            for (Throwable causa = e; causa != null; causa = causa.getCause()) {
+                if (causa instanceof java.sql.SQLException sql && sql.getErrorCode() == 1062) {
+                    throw new ValoracionDuplicadaException("Ya valoraste este curso.", e);
+                }
+            }
+            throw e;
+
+        } finally {
+            em.close();
+        }
+    }
+
+    
+    public void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        if (nickDocente == null || nickDocente.isBlank()
+                || nombreEdicion == null || nombreEdicion.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Indique un docente y una edición válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            // 1. Verificar que el docente participa en la edición.
+            EdicionCurso edicion = validarDocenteEdicion(
+                    em,
+                    nickDocente,
+                    nombreEdicion
+            );
+
+            // 2. Bloquear la edición y recuperar su estado actual.
+            em.refresh(edicion, LockModeType.PESSIMISTIC_WRITE);
+
+            // 3. Evitar cerrar dos veces la misma edición.
+            if (edicion.isCerrada()) {
+                throw new IllegalStateException(
+                        "La edición ya se encuentra cerrada."
+                );
+            }
+
+            // 4. Contar estudiantes aceptados que todavía no tienen nota.
+            Long pendientes = em.createQuery(
+                    "SELECT COUNT(i) FROM Inscripcion i "
+                    + "WHERE i.edicion = :edicion "
+                    + "AND i.estado = :estado "
+                    + "AND i.calificacion IS NULL",
+                    Long.class
+            )
+                    .setParameter("edicion", edicion)
+                    .setParameter("estado", EstadoInscripcion.ACEPTADA)
+                    .getSingleResult();
+
+            // 5. No cerrar si faltan evaluaciones.
+            if (pendientes > 0) {
+                throw new IllegalStateException(
+                        "No se puede cerrar la edición. "
+                        + "Hay " + pendientes
+                        + " estudiante(s) aceptado(s) sin calificación."
+                );
+            }
+
+            // 6. Cerrar la edición.
+            edicion.cerrar();
+
+            // 7. Confirmar los cambios.
+            tx.commit();
+
+        } catch (RuntimeException e) {
+
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+
+            throw e;
+
+        } finally {
+            em.close();
+        }
+    }
+
+
+    
+    
+    public List<DTEdicionConsulta> listarEdicionesParaSeleccion(String nickDocente,
+            String nombreInstituto, String nombreCurso, LocalDate referencia) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (!(em.find(Usuario.class, nickDocente) instanceof Docente)) {
+                throw new SecurityException("Se requiere un docente registrado.");
+            }
+            return em.createQuery("SELECT DISTINCT e FROM EdicionCurso e JOIN e.docentes d "
+                    + "WHERE d.nick = :docente AND e.curso.instituto.nombre = :instituto "
+                    + "AND e.curso.nombre = :curso AND e.fechaInicio <= :hoy "
+                    + "AND e.fechaFin >= :hoy ORDER BY e.nombre", EdicionCurso.class)
+                    .setParameter("docente", nickDocente).setParameter("instituto", nombreInstituto)
+                    .setParameter("curso", nombreCurso).setParameter("hoy", referencia)
+                    .getResultList().stream().map(edicion -> datosEdicion(em, edicion)).toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    /** Consulta los antecedentes en bloque; no modifica inscripciones ni guarda la prioridad. */
+    public List<DTRankingInscripcion> listarInscripcionesConPrioridad(String nickDocente,
+            String nombreEdicion, LocalDate referencia) {
+        if (referencia == null) throw new IllegalArgumentException("Indique la fecha de referencia.");
+        EntityManager em = emf.createEntityManager();
+        try {
+            EdicionCurso edicion = validarDocenteEdicion(em, nickDocente, nombreEdicion);
+            if (referencia.isBefore(edicion.getFechaInicio()) || referencia.isAfter(edicion.getFechaFin())) {
+                throw new IllegalArgumentException("La edición no está vigente.");
+            }
+            List<DTInscripcion> actuales = em.createQuery(CONSULTA_INSCRIPCIONES
+                    + "WHERE i.edicion.nombre = :edicion", DTInscripcion.class)
+                    .setParameter("edicion", nombreEdicion).getResultList();
+            if (actuales.isEmpty()) return List.of();
+
+            List<String> nicks = actuales.stream().map(DTInscripcion::getNicknameEstudiante).distinct().toList();
+            List<Object[]> antecedentes = em.createQuery(
+                    "SELECT e.nick, COUNT(i) FROM Estudiante e JOIN e.inscripciones i "
+                    + "WHERE e.nick IN :nicks AND i.edicion.curso.id = :curso "
+                    + "AND i.edicion.nombre <> :edicion AND i.estado = :rechazada "
+                    + "AND i.edicion.fechaFin < :referencia GROUP BY e.nick", Object[].class)
+                    .setParameter("nicks", nicks)
+                    .setParameter("curso", edicion.getCurso().getId())
+                    .setParameter("edicion", nombreEdicion)
+                    .setParameter("rechazada", EstadoInscripcion.RECHAZADA)
+                    .setParameter("referencia", referencia).getResultList();
+            java.util.Map<String, Long> rechazos = new java.util.HashMap<>();
+            for (Object[] antecedente : antecedentes) {
+                rechazos.put((String) antecedente[0], ((Number) antecedente[1]).longValue());
+            }
+            return actuales.stream().map(inscripcion -> new DTRankingInscripcion(inscripcion,
+                    rechazos.getOrDefault(inscripcion.getNicknameEstudiante(), 0L))).toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (em.find(Estudiante.class, nickEstudiante) == null) {
+                throw new IllegalArgumentException("El estudiante ya no existe.");
+            }
+            return em.createQuery(CONSULTA_INSCRIPCIONES
+                    + "WHERE e.nick = :nick AND i.edicion IS NOT NULL ORDER BY i.fechaInscripcion, i.edicion.nombre, i.id",
+                    DTInscripcion.class).setParameter("nick", nickEstudiante).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<DTNotaEstudiante> listarNotasEstudiante(String nickEstudiante) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT new logica.DTNotaEstudiante(ed.curso.nombre, ed.nombre, "
+                    + "i.estado, i.calificacion, i.fechaCalificacion) "
+                    + "FROM Estudiante e JOIN e.inscripciones i JOIN i.edicion ed "
+                    + "WHERE e.nick = :nick AND ed.cerrada = TRUE "
+                    + "ORDER BY ed.fechaFin DESC, ed.nombre, i.id", DTNotaEstudiante.class)
+                    .setParameter("nick", nickEstudiante)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    ////////
+    public ArrayList<Curso> listarCursosPorInstituto(String nombreInstituto)
+    {
+        EntityManager em = emf.createEntityManager();
+        
+        try
+        {
+            ArrayList<Curso> lista = new ArrayList<>(em.createQuery("SELECT c FROM Curso c " + "WHERE LOWER(c.instituto.nombre) = LOWER(:nombre)", Curso.class).setParameter("nombre", nombreInstituto).getResultList());
+            
+            return lista;
+            
+        }
+        finally
+        {
+            em.close();
+        }
+    } 
+    
+    public ArrayList<EdicionCurso> listarEdicionesCurso(Curso curso)
+    {
+        EntityManager em = emf.createEntityManager();
+
+        try
+        {
+            return new ArrayList<>(em.createQuery("SELECT e FROM EdicionCurso e " + "WHERE e.curso.id = :cursoId",EdicionCurso.class).setParameter("cursoId", curso.getId()).getResultList());
+        }
+        finally
+        {
+            em.close();
+        }
+    }
+                
+    
+    //metodos
+    public ArrayList<Instituto> listarInstitutos()
+    {
+        EntityManager em = emf.createEntityManager();
+        
+        try
+        {
+            ArrayList<Instituto> lista = new ArrayList<>(em.createQuery("SELECT i FROM Instituto i", Instituto.class).getResultList());
+            
+            return lista;
+        }
+        
+        finally
+        {
+            em.close();
+        }
+    }
+
+    public ArrayList<Docente> listarDocentes()
+    {
+        EntityManager em = emf.createEntityManager();
+        
+        try 
+        {
+            return new ArrayList<>(em.createQuery("SELECT d  FROM Docente d",Docente.class).getResultList());
+            
+        }
+        finally
+        {
+            em.close();
+        }
+    }
+    
+    public ArrayList<Curso> listarCursos()
+    {
+         EntityManager em = emf.createEntityManager();
+        
+        try
+        {
+            ArrayList<Curso> lista = new ArrayList<>(em.createQuery("SELECT c FROM Curso c", Curso.class).getResultList());
+            
+            return lista;
+        }
+        
+        finally
+        {
+            em.close();
+        }
+    }
+    
+    
+    
+    
+public void altaCurso(Curso curso, byte[] imagen) {
+    guardarConImagen(imagen, ImagenesEntidades.cursos(), curso::setImagen, () -> altaCurso(curso));
+}
+
+public void altaEdicionCurso(Curso curso, EdicionCurso edicion, byte[] imagen) {
+    guardarConImagen(imagen, ImagenesEntidades.ediciones(), edicion::setImagen,
+            () -> altaEdicionCurso(curso, edicion));
+}
+
+/** El archivo se conserva únicamente si se pudo completar el alta en JPA. */
+private void guardarConImagen(byte[] imagen, ImagenesUsuario archivos,
+        java.util.function.Consumer<String> asignar, Runnable guardar) {
+    if (imagen == null || imagen.length == 0) {
+        guardar.run();
+        return;
+    }
+    if (imagen.length > 5 * 1024 * 1024) {
+        throw new IllegalArgumentException("La imagen no puede superar los 5 MB.");
+    }
+    String nombre;
+    try {
+        nombre = archivos.guardar(imagen);
+    } catch (java.io.IOException error) {
+        throw new IllegalStateException("No se pudo guardar la imagen.", error);
+    }
+    try {
+        asignar.accept(nombre);
+        guardar.run();
+    } catch (RuntimeException error) {
+        asignar.accept(null);
+        try {
+            archivos.eliminar(nombre);
+        } catch (java.io.IOException limpieza) {
+            error.addSuppressed(limpieza);
+        }
+        throw error;
+    }
+}
+
+public void altaCurso(Curso curso) {
+    if (curso == null || curso.getNombre() == null || curso.getNombre().isBlank()
+            || curso.getInstituto() == null || curso.getInstituto().getId() == null) {
+        throw new IllegalArgumentException("Indique nombre e instituto del curso.");
+    }
+    EntityManager em = emf.createEntityManager();
+    try {
+        em.getTransaction().begin();
+        curso.setNombre(curso.getNombre().trim());
+        Long cantidad = em.createQuery(
+                "SELECT COUNT(c) FROM Curso c WHERE LOWER(c.nombre) = LOWER(:nombre)",
+                Long.class).setParameter("nombre", curso.getNombre()).getSingleResult();
+        if (cantidad > 0) throw new IllegalArgumentException("Ya existe ese nombre de curso en la plataforma.");
+        Instituto instituto = em.find(Instituto.class, curso.getInstituto().getId());
+        if (instituto == null) throw new IllegalArgumentException("El instituto ya no existe.");
+        curso.setInstituto(instituto);
+        java.util.Set<Curso> previas = new java.util.HashSet<>();
+        for (Curso previa : curso.getPrevias()) {
+            Curso existente = previa == null || previa.getId() == null
+                    ? null : em.find(Curso.class, previa.getId());
+            if (existente == null) throw new IllegalArgumentException("Una previa seleccionada ya no existe.");
+            previas.add(existente);
+        }
+        curso.setPrevias(previas);
+        em.persist(curso);
+        em.getTransaction().commit();
+    } catch (RuntimeException e) {
+        if (em.getTransaction().isActive()) em.getTransaction().rollback();
+        if (e instanceof IllegalArgumentException) throw e;
+        throw new IllegalStateException("No se pudo guardar el curso.", e);
+    } finally {
+        em.close();
+    }
+}
+    
+    
+public boolean existeCurso(String nombre) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        return em.createQuery(
+                "SELECT COUNT(c) FROM Curso c WHERE LOWER(c.nombre) = LOWER(:nombre)",
+                Long.class).setParameter("nombre", nombre.trim()).getSingleResult() > 0;
+    } finally {
+        em.close();
+    }
+}
+    
+    
+    public boolean existeEdicion(String nombre)
+    {
+        EntityManager em = emf.createEntityManager();
+
+        try
+        {
+            Long cantidad = em.createQuery("SELECT COUNT(e) FROM EdicionCurso e " + "WHERE LOWER(e.nombre) = LOWER(:nombre)",Long.class).setParameter("nombre", nombre).getSingleResult();
+
+            return cantidad > 0;
+        }
+        finally
+        {
+            em.close();
+        }
+    }
+    
+    
+    public Instituto buscarInstituto(String nombre)
+{
+    EntityManager em = emf.createEntityManager();
+    
+    try
+    {
+        return em.createQuery("SELECT i FROM Instituto i " + "WHERE LOWER (i.nombre) = LOWER(:nombre)",Instituto.class).setParameter("nombre", nombre).getResultStream().findFirst().orElse(null);
+    }
+    finally
+    {
+        em.close();
+    }
+}
+    
+public Curso buscarCursoInstituto(String nombre, Instituto instituto) {
+    if (nombre == null || instituto == null || instituto.getId() == null) return null;
+    EntityManager em = emf.createEntityManager();
+    try {
+        List<Curso> cursos = em.createQuery(
+                "SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.previas "
+                + "WHERE LOWER(c.nombre) = LOWER(:nombre) AND c.instituto.id = :institutoId",
+                Curso.class).setParameter("nombre", nombre)
+                .setParameter("institutoId", instituto.getId()).getResultList();
+        return cursos.isEmpty() ? null : cursos.get(0);
+    } finally {
+        em.close();
+    }
+}  
+    
+    /** Copiar las relaciones al DTO mientras la consulta JPA sigue abierta. */
+    public soap.dto.DTCursoConsulta consultarCurso(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            if (nombre == null || nombre.isBlank()) return null;
+            List<Curso> encontrados = em.createQuery(
+                    "SELECT c FROM Curso c WHERE LOWER(c.nombre) = LOWER(:nombre)", Curso.class)
+                    .setParameter("nombre", nombre).getResultList();
+            if (encontrados.isEmpty()) return null;
+            Curso curso = encontrados.get(0);
+            List<soap.dto.DTEdicionResumen> ediciones = curso.getEdiciones().stream()
+                    .map(e -> new soap.dto.DTEdicionResumen(e.getNombre(), e.getFechaInicio(),
+                            e.getFechaFin(), e.getCupo(), e.getImagen() != null && !e.getImagen().isBlank()))
+                    .toList();
+            var datos = new soap.dto.DTCursoConsulta(curso.getNombre(), curso.getDescripcion(),
+                    curso.getDuracion(), curso.getCantidadHoras(), curso.getCreditos(), curso.getUrl(),
+                    curso.getFechaRegistro(), curso.getInstituto() == null ? null : curso.getInstituto().getNombre(),
+                    curso.getImagen() != null && !curso.getImagen().isBlank(),
+                    curso.getPrevias().stream().map(Curso::getNombre).toList(),
+                    curso.getCategorias().stream().map(Categoria::getNombre).toList(),
+                    curso.getProgramasFormacion().stream().map(ProgramaFormacion::getNombre).toList(), ediciones);
+            var cantidades = new ArrayList<Long>(java.util.Collections.nCopies(5, 0L));
+            var grupos = em.createQuery("SELECT v.puntuacion, COUNT(v) FROM ValoracionCurso v "
+                    + "WHERE v.curso.id = :curso GROUP BY v.puntuacion", Object[].class)
+                    .setParameter("curso", curso.getId()).getResultList();
+            for (Object[] grupo : grupos) {
+                int puntuacion = ((Number) grupo[0]).intValue();
+                if (puntuacion >= 1 && puntuacion <= 5) cantidades.set(puntuacion - 1, ((Number) grupo[1]).longValue());
+            }
+            datos.asignarValoraciones(cantidades);
+            return datos;
+        } finally {
+            em.close();
+        }
+    }
+
+    public Curso buscarCurso(String nombre)
+    {
+        EntityManager em = emf.createEntityManager();
+
+        try
+        {
+            return em.createQuery("SELECT c FROM Curso c " + "WHERE LOWER(c.nombre) = LOWER(:nombre)",Curso.class).setParameter("nombre", nombre).getResultStream().findFirst().orElse(null);
+        }
+        finally
+        {
+            em.close();
+        }
+    }
+    
+    
+public void altaEdicionCurso(Curso curso, EdicionCurso edicion) {
+    if (curso == null || curso.getId() == null || edicion == null
+            || edicion.getNombre() == null || edicion.getNombre().isBlank()) {
+        throw new IllegalArgumentException("Seleccione un curso e indique el nombre de la edición.");
+    }
+    if (edicion.getFechaInicio() == null || edicion.getFechaFin() == null
+            || edicion.getFechaFin().isBefore(edicion.getFechaInicio())) {
+        throw new IllegalArgumentException("Revise las fechas de inicio y fin.");
+    }
+    if (edicion.getCupo() < -1) throw new IllegalArgumentException("Cupo inválido: use -1 para sin límite o un entero no negativo.");
+    EntityManager em = emf.createEntityManager();
+    try {
+        em.getTransaction().begin();
+        edicion.setNombre(edicion.getNombre().trim());
+        Long cantidad = em.createQuery(
+                "SELECT COUNT(e) FROM EdicionCurso e WHERE LOWER(e.nombre) = LOWER(:nombre)",
+                Long.class).setParameter("nombre", edicion.getNombre()).getSingleResult();
+        if (cantidad > 0) throw new IllegalArgumentException("Ya existe ese nombre de edición.");
+        Curso cursoBD = em.find(Curso.class, curso.getId(),
+                javax.persistence.LockModeType.PESSIMISTIC_WRITE);
+        if (cursoBD == null) throw new IllegalArgumentException("El curso ya no existe.");
+        Long superpuestas = em.createQuery(
+                "SELECT COUNT(e) FROM EdicionCurso e WHERE e.curso.id = :cursoId "
+                + "AND e.fechaInicio <= :fin AND e.fechaFin >= :inicio", Long.class)
+                .setParameter("cursoId", cursoBD.getId())
+                .setParameter("inicio", edicion.getFechaInicio())
+                .setParameter("fin", edicion.getFechaFin()).getSingleResult();
+        if (superpuestas > 0) {
+            throw new IllegalArgumentException(
+                    "Las fechas se superponen con otra edición del mismo curso. "
+                    + "Elija un período sin días en común.");
+        }
+        java.util.Set<Docente> docentes = new java.util.HashSet<>();
+        if (edicion.getDocentes() == null) throw new IllegalArgumentException("La colección de docentes no puede ser nula.");
+        for (Docente docente : edicion.getDocentes()) {
+            Docente existente = docente == null || docente.getNick() == null
+                    ? null : em.find(Docente.class, docente.getNick());
+            if (existente == null) throw new IllegalArgumentException("Un docente seleccionado ya no existe.");
+            Long pertenece = em.createQuery(
+                    "SELECT COUNT(d) FROM Docente d JOIN d.institutos i "
+                    + "WHERE d.nick = :nick AND i.id = :institutoId", Long.class)
+                    .setParameter("nick", existente.getNick())
+                    .setParameter("institutoId", cursoBD.getInstituto().getId()).getSingleResult();
+            if (pertenece == 0) {
+                throw new IllegalArgumentException("El docente " + existente.getNick()
+                        + " no pertenece al instituto del curso.");
+            }
+            docentes.add(existente);
+        }
+        edicion.setCurso(cursoBD);
+        edicion.setDocentes(docentes);
+        em.persist(edicion);
+        cursoBD.agregoEdicion(edicion);
+        em.getTransaction().commit();
+    } catch (RuntimeException e) {
+        if (em.getTransaction().isActive()) em.getTransaction().rollback();
+        if (e instanceof IllegalArgumentException) throw e;
+        throw new IllegalStateException("No se pudo guardar la edición.", e);
+    } finally {
+        em.close();
+    }
+}
+   
+public List<String> listarNicknamesDocentesPorInstituto(String nombreInstituto) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        return em.createQuery(
+                "SELECT DISTINCT d.nick FROM Docente d JOIN d.institutos i "
+                + "WHERE i.nombre = :nombre ORDER BY d.nick", String.class)
+                .setParameter("nombre", nombreInstituto).getResultList();
+    } finally {
+        em.close();
+    }
+}
+
+public Docente buscarDocentePorNick(String nick) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        return nick == null ? null : em.find(Docente.class, nick);
+    } finally {
+        em.close();
+    }
+}
+    ////////
+    
+
+public List<String> listarCursosOEdicionesUsuario(String nick) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        Usuario usuario = em.find(Usuario.class, nick);
+        if (usuario instanceof Docente) {
+            java.util.Set<String> nombres = new java.util.TreeSet<>();
+            nombres.addAll(em.createQuery(
+                    "SELECT DISTINCT c.nombre FROM Docente d JOIN d.cursos c WHERE d.nick = :nick",
+                    String.class).setParameter("nick", nick).getResultList());
+            nombres.addAll(em.createQuery(
+                    "SELECT DISTINCT e.curso.nombre FROM EdicionCurso e JOIN e.docentes d WHERE d.nick = :nick",
+                    String.class).setParameter("nick", nick).getResultList());
+            return new ArrayList<>(nombres);
+        }
+        if (usuario instanceof Estudiante) {
+            return em.createQuery(
+                    "SELECT DISTINCT i.edicion.nombre FROM Estudiante e JOIN e.inscripciones i "
+                    + "WHERE e.nick = :nick AND i.edicion IS NOT NULL ORDER BY i.edicion.nombre",
+                    String.class).setParameter("nick", nick).getResultList();
+        }
+        return new ArrayList<>();
+    } finally {
+        em.close();
+    }
+}
+
+public List<String> listarEdicionesDocente(String nick) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        return em.createQuery(
+                "SELECT DISTINCT e.nombre FROM EdicionCurso e JOIN e.docentes d "
+                + "WHERE d.nick = :nick ORDER BY e.nombre", String.class)
+                .setParameter("nick", nick).getResultList();
+    } finally {
+        em.close();
+    }
+}
+
+public void crearUsuario(Usuario usuario, String nombreInstituto, byte[] imagen) throws Exception {
+    if (imagen == null) {
+        crearUsuario(usuario, nombreInstituto);
+        return;
+    }
+    if (usuario == null) throw new IllegalArgumentException("Faltan los datos del usuario.");
+    ImagenesUsuario archivos = new ImagenesUsuario();
+    String nombre = archivos.guardar(imagen);
+    usuario.setImagen(nombre);
+    try {
+        crearUsuario(usuario, nombreInstituto);
+    } catch (Exception e) {
+        usuario.setImagen(null);
+        try {
+            archivos.eliminar(nombre);
+        } catch (Exception limpieza) {
+            e.addSuppressed(limpieza);
+        }
+        throw e;
+    }
+}
+
+public byte[] obtenerImagenUsuario(String nick) throws java.io.IOException {
+    Usuario usuario = obtenerUsuario(nick);
+    return usuario == null ? null : new ImagenesUsuario().leer(usuario.getImagen());
+}
+
+
+
+public byte[] obtenerImagenCurso(String nombreCurso) throws java.io.IOException {
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        List<Curso> cursos = em.createQuery(
+                "SELECT c FROM Curso c WHERE c.nombre = :nombre",
+                Curso.class
+        )
+        .setParameter("nombre", nombreCurso)
+        .getResultList();
+
+        if (cursos.isEmpty()) {
+            return null;
+        }
+
+        String nombreImagen = cursos.get(0).getImagen();
+
+        if (nombreImagen == null || nombreImagen.isBlank()) {
+            return null;
+        }
+
+        return ImagenesEntidades.cursos().leer(nombreImagen);
+
+    } finally {
+        em.close();
+    }
+}
+
+public byte[] obtenerImagenEdicion(String nombreEdicion)
+        throws java.io.IOException {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        List<EdicionCurso> ediciones = em.createQuery(
+                "SELECT e FROM EdicionCurso e WHERE e.nombre = :nombre",
+                EdicionCurso.class
+        )
+        .setParameter("nombre", nombreEdicion)
+        .getResultList();
+
+        if (ediciones.isEmpty()) {
+            return null;
+        }
+
+        String nombreImagen = ediciones.get(0).getImagen();
+
+        if (nombreImagen == null || nombreImagen.isBlank()) {
+            return null;
+        }
+
+        return ImagenesEntidades.ediciones().leer(nombreImagen);
+
+    } finally {
+        em.close();
+    }
+}
+
+
+public byte[] obtenerImagenPrograma(String nombrePrograma)
+        throws java.io.IOException {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        List<ProgramaFormacion> programas = em.createQuery(
+                "SELECT p FROM ProgramaFormacion p WHERE p.nombre = :nombre",
+                ProgramaFormacion.class
+        )
+        .setParameter("nombre", nombrePrograma)
+        .getResultList();
+
+        if (programas.isEmpty()) {
+            return null;
+        }
+
+        String nombreImagen = programas.get(0).getImagen();
+
+        if (nombreImagen == null || nombreImagen.isBlank()) {
+            return null;
+        }
+
+        return ImagenesEntidades.programas().leer(nombreImagen);
+
+    } finally {
+        em.close();
+    }
+}
+
+
+public List<String> listarProgramasUsuario(String nick) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        Usuario usuario = em.find(Usuario.class, nick);
+        if (usuario instanceof Docente) {
+            List<String> cursos = listarCursosOEdicionesUsuario(nick);
+            if (cursos.isEmpty()) return new ArrayList<>();
+            return em.createQuery(
+                    "SELECT DISTINCT p.nombre FROM ProgramaFormacion p JOIN p.cursos c "
+                    + "WHERE c.nombre IN :cursos ORDER BY p.nombre", String.class)
+                    .setParameter("cursos", cursos).getResultList();
+        }
+        if (usuario instanceof Estudiante) {
+            return em.createQuery(
+                    "SELECT DISTINCT i.programa.nombre FROM Estudiante e JOIN e.inscripciones i "
+                    + "WHERE e.nick = :nick AND i.programa IS NOT NULL ORDER BY i.programa.nombre",
+                    String.class).setParameter("nick", nick).getResultList();
+        }
+        return new ArrayList<>();
+    } finally {
+        em.close();
+    }
+}
+
+public EdicionCurso buscarEdicion(String nombre) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        return nombre == null ? null : em.find(EdicionCurso.class, nombre);
+    } finally {
+        em.close();
+    }
+}
+
+public static class ControladoraPersistencia {
+
+        public ControladoraPersistencia() {
+        }
+    }
+
+//Requerimientos  Categorias
+public void altaCategoria(String nombreCategoria) throws Exception {
+
+    if (nombreCategoria == null || nombreCategoria.trim().isEmpty()) {
+        throw new Exception("El nombre de la categoría no puede estar vacío.");
+    }
+
+    nombreCategoria = nombreCategoria.trim();
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        Long existe = em.createQuery(
+                "SELECT COUNT(c) FROM Categoria c WHERE c.nombre = :nombre",
+                Long.class)
+                .setParameter("nombre", nombreCategoria)
+                .getSingleResult();
+
+        if (existe > 0) {
+            throw new Exception(
+                    "Ya existe una categoría registrada con el nombre: "
+                    + nombreCategoria
+            );
+        }
+
+        em.getTransaction().begin();
+
+        Categoria categoria = new Categoria(nombreCategoria);
+
+        em.persist(categoria);
+
+        em.getTransaction().commit();
+
+    } catch (Exception e) {
+
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+
+        throw e;
+
+    } finally {
+        em.close();
+    }
+}
+public List<Categoria> listarCategorias() {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        return em.createQuery(
+                "SELECT c FROM Categoria c ORDER BY c.nombre",
+                Categoria.class
+        ).getResultList();
+
+    } finally {
+        em.close();
+    }
+}
+
+public List<String> listarNombresCategoriasPrograma(String nombrePrograma) {
+    EntityManager em = emf.createEntityManager();
+    try {
+        return em.createQuery(
+                "SELECT DISTINCT categoria.nombre FROM ProgramaFormacion p "
+                + "JOIN p.cursos curso JOIN curso.categorias categoria "
+                + "WHERE p.nombre = :nombre ORDER BY categoria.nombre", String.class)
+                .setParameter("nombre", nombrePrograma).getResultList();
+    } finally {
+        em.close();
+    }
+}
+public void agregarCategoriaACurso(String nombreCurso, String nombreCategoria)
+        throws Exception {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        em.getTransaction().begin();
+
+        Curso curso = em.createQuery(
+                "SELECT c FROM Curso c WHERE c.nombre = :nombre",
+                Curso.class)
+                .setParameter("nombre", nombreCurso)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+
+        if (curso == null) {
+            throw new Exception(
+                    "No existe un curso con el nombre: " + nombreCurso
+            );
+        }
+
+        Categoria categoria = em.createQuery(
+                "SELECT c FROM Categoria c WHERE c.nombre = :nombre",
+                Categoria.class)
+                .setParameter("nombre", nombreCategoria)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+
+        if (categoria == null) {
+            throw new Exception(
+                    "No existe una categoría con el nombre: " + nombreCategoria
+            );
+        }
+
+        if (curso.getCategorias().contains(categoria)) {
+            throw new Exception(
+                    "El curso ya tiene asociada la categoría: "
+                    + nombreCategoria
+            );
+        }
+
+        curso.agregarCategoria(categoria);
+
+        em.getTransaction().commit();
+
+    } catch (Exception e) {
+
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+
+        throw e;
+
+    } finally {
+        em.close();
+    }
+}
+public List<Categoria> listarCategoriasCurso(String nombreCurso)
+        throws Exception {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        Curso curso = em.createQuery(
+                "SELECT c FROM Curso c WHERE c.nombre = :nombre",
+                Curso.class)
+                .setParameter("nombre", nombreCurso)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+
+        if (curso == null) {
+            throw new Exception(
+                    "No existe un curso con el nombre: " + nombreCurso
+            );
+        }
+
+        // Inicializamos la colección mientras el EntityManager sigue abierto.
+        return new java.util.ArrayList<>(curso.getCategorias());
+
+    } finally {
+        em.close();
+    }
+}
+public Categoria buscarCategoria(String nombre) {
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+
+        return em.createQuery(
+                "SELECT c FROM Categoria c WHERE c.nombre = :nombre",
+                Categoria.class
+        )
+        .setParameter("nombre", nombre)
+        .getResultStream()
+        .findFirst()
+        .orElse(null);
+
+    } finally {
+        em.close();
+    }
+}
+
+    public double obtenerPromedioValoraciones(Long idCurso) {
+
+        if (idCurso == null || idCurso <= 0) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un curso válido."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            Double promedio = em.createQuery(
+                    "SELECT AVG(v.puntuacion) "
+                    + "FROM ValoracionCurso v "
+                    + "WHERE v.curso.id = :idCurso",
+                    Double.class
+            )
+            .setParameter("idCurso", idCurso)
+            .getSingleResult();
+
+            return promedio != null ? promedio : 0.0;
+
+        } finally {
+            em.close();
+        }
+    }
+    
+    public Integer obtenerValoracionEstudiante(
+        String nickEstudiante,
+        Long idCurso) {
+
+    if (nickEstudiante == null || nickEstudiante.isBlank()
+            || idCurso == null || idCurso <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar un estudiante y un curso válidos."
+            );
+        }
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            List<Integer> resultados = em.createQuery(
+                    "SELECT v.puntuacion "
+                    + "FROM ValoracionCurso v "
+                    + "WHERE v.estudiante.nick = :nick "
+                    + "AND v.curso.id = :idCurso",
+                    Integer.class
+            )
+            .setParameter("nick", nickEstudiante)
+            .setParameter("idCurso", idCurso)
+            .setMaxResults(1)
+            .getResultList();
+
+            return resultados.isEmpty()
+                    ? null
+                    : resultados.get(0);
+
+        } finally {
+            em.close();
+        }
+    }
+    
+    
+    public Estudiante obtenerEstudianteConEvaluaciones(String nick) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            return em.createQuery(
+                    "SELECT DISTINCT e FROM Estudiante e "
+                    + "LEFT JOIN FETCH e.inscripciones i "
+                    + "LEFT JOIN FETCH i.edicion ed "
+                    + "LEFT JOIN FETCH ed.curso "
+                    + "WHERE e.nick = :nick",
+                    Estudiante.class
+            )
+            .setParameter("nick", nick)
+            .getResultStream()
+            .findFirst()
+            .orElse(null);
+
+        } finally {
+            em.close();
+        }
+    }
+
+}
+
+

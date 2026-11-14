@@ -1,0 +1,2 @@
+soap.catalogo.wsdl=http://127.0.0.1:18083/edext/catalogo?wsdl
+soap.evaluaciones.wsdl=http://127.0.0.1:18083/edext/evaluaciones?wsdl

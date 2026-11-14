@@ -1,0 +1,95 @@
+# edEXT — Ejecutar Swing y SOAP
+
+Necesitan **Java 21, NetBeans y MySQL iniciado**.
+
+Para compilar y ejecutar **sin NetBeans**, en Ubuntu o Windows, sigan [EJECUTAR.md](EJECUTAR.md). Los scripts generan `servidor.jar` y `web.war`.
+
+## 1. Preparar la base
+
+Si ya tienen `edext_web` con los datos, salteen este paso.
+
+En MySQL:
+
+```sql
+CREATE DATABASE edext_web;
+```
+
+En NetBeans, dentro de `servidor-central`, ejecuten `persistencia.CargarDatosPruebaWeb`. Crea las tablas y carga los datos iniciales. Por defecto usa `root` sin contraseña; si usan otras credenciales, recibe usuario y contraseña como argumentos.
+
+Revisen la conexión de MySQL en el archivo externo:
+
+```text
+~/.edEXT/central.properties
+```
+
+Agreguen `jdbc.url`, `jdbc.usuario` y `jdbc.contrasena` según la plantilla `configuracion-ejemplo/central.properties.example`. La contraseña puede quedar vacía. El arranque normal utiliza las tablas existentes.
+
+## 2. Configurar SOAP
+
+**En Windows:**
+
+1. Presionen **Windows + R**, escriban `%USERPROFILE%` y acepten.
+2. En la carpeta que se abre, creen una carpeta llamada `.edEXT`.
+3. Abran el Bloc de notas y peguen este contenido:
+
+```properties
+soap.host=127.0.0.1
+soap.port=18083
+soap.path=/edext/catalogo
+jdbc.url=jdbc:mysql://localhost:3306/edext_web?zeroDateTimeBehavior=CONVERT_TO_NULL
+jdbc.usuario=root
+jdbc.contrasena=
+```
+
+4. En el Bloc de notas, elijan **Guardar como** y seleccionen la carpeta `.edEXT` que crearon.
+5. Pongan como nombre `central.properties`, tipo **Todos los archivos** y codificación **UTF-8**. Guarden y comprueben que no termine en `.txt`.
+
+**En Ubuntu:**
+
+1. Abran **Archivos → Carpeta personal**.
+2. Presionen **Ctrl + H** para mostrar las carpetas ocultas.
+3. Creen una carpeta llamada `.edEXT`.
+4. Abran el editor de texto y peguen las mismas líneas de configuración de arriba.
+5. Guarden el archivo como `central.properties` dentro de `.edEXT`, sin extensión `.txt`.
+
+Queda en `/home/SU_USUARIO/.edEXT/central.properties`. El programa encuentra esa carpeta automáticamente; el resto de los pasos es el mismo.
+
+Cada compañero debe crear este archivo; no viene con Git.
+
+Para el cliente SOAP de la web, creen también `web.properties` en esa misma carpeta `.edEXT`, con:
+
+```properties
+soap.catalogo.wsdl=http://127.0.0.1:18083/edext/catalogo?wsdl
+soap.evaluaciones.wsdl=http://127.0.0.1:18083/edext/evaluaciones?wsdl
+```
+
+Hay una plantilla en `configuracion-ejemplo/web.properties.example`. La aplicación web crea el cliente SOAP al arrancar. Consulta los institutos del menú, registro, selección, altas y aceptados; también las categorías del menú, alta de curso, búsqueda y detalles de cursos y programas. Si cambian la dirección, reinicien la aplicación web; no necesitan recompilar.
+
+## 3. Ejecutar
+
+1. Abran el proyecto raíz en NetBeans y hagan **Clean and Build**.
+2. Dentro de `estacion-trabajo`, ejecuten `presentacion.PrincipalFrame`.
+3. Se abre Swing y se publica SOAP. No hace falta iniciar Tomcat.
+4. Abran [el WSDL](http://127.0.0.1:18083/edext/catalogo?wsdl): debe aparecer XML.
+
+Al cerrar Swing también se detiene SOAP. La dirección funciona en la misma PC donde ejecutan el proyecto.
+
+Para probar la web, dejen el central abierto y después inicien Tomcat con el WAR actualizado. Las consultas y acciones de los servlets usan SOAP: catálogo, usuarios, login, registro, perfiles, imágenes, seguimiento, altas, agregar cursos a programas, inscripciones, selección, ranking, aceptados y selectores de formularios. El catálogo y las evaluaciones usan sus respectivos clientes SOAP, configurados en el mismo archivo. Tomcat ya no crea un central local ni se conecta a MySQL: la base de datos la utiliza únicamente el central externo. El usuario que ejecuta Tomcat debe tener el archivo `.edEXT/web.properties` en su carpeta personal.
+
+El módulo `datos-compartidos` contiene los DTO y enumeraciones que usan la web y el central; mantiene el paquete `logica`. Compilen desde el proyecto raíz para generar todos los módulos.
+
+Después de actualizar las operaciones SOAP, reinicien el central y vuelvan a desplegar el WAR actualizado. Maven regenera el cliente desde el WSDL incluido en el proyecto.
+
+Si apagan el central con la web ya iniciada, el menú muestra avisos en lugar de los institutos y las categorías. Al volver a iniciar el central y recargar la página, el listado se recupera.
+
+## Valoraciones de cursos (Tarea 3)
+
+Como estudiante, entren en **Valorar un curso** desde el menú. Aparecen los cursos en los que tienen una inscripción aceptada; cada curso admite una única puntuación del 1 al 5. La consulta muestra el promedio numérico y la puntuación propia.
+
+Después de actualizar el proyecto, compilen desde la raíz, reinicien el central y desplieguen el WAR actualizado. Si usan una base anterior y todavía no existe `VALORACION_CURSO`, apliquen una vez `migraciones/2026-11-09-valoraciones.sql`.
+
+`ClienteCatalogoSoap` ofrece `registrarValoracionCurso`, `obtenerPromedioValoraciones` y `obtenerValoracionEstudiante`. La consulta del curso devuelve el promedio, el total y las cantidades por puntuación. La búsqueda y el detalle muestran el promedio con estrellas, y el detalle muestra la distribución de los votos.
+
+## Datos adicionales de Tarea 2
+
+Para esta prueba de institutos alcanza la carga inicial. Si necesitan los datos adicionales, ejecuten después `persistencia.CargarDatosPruebaTarea2`: requiere la variable `EDEXT_DB_PASSWORD` y las imágenes originales en `%USERPROFILE%\Descargas\edext-imagenes-tarea2`, con sus subcarpetas. Ese cargador rechaza una variable no definida, incluso si MySQL usa contraseña vacía.

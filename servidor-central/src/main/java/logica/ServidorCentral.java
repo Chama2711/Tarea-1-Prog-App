@@ -1,0 +1,764 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package logica;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import persistencia.ControladorPersistencia;
+
+public class ServidorCentral implements IServidorCentral, AutoCloseable {
+    @Override
+    public List<DTUsuarioConsulta> listarUsuariosConsulta() {
+        return persistencia.listarUsuariosConsulta();
+    }
+
+    @Override
+    public DTPerfilUsuario consultarPerfilUsuario(String nick, String nickConsultante) {
+        return persistencia.consultarPerfilUsuario(nick, nickConsultante);
+    }
+
+    @Override
+    public List<DTUsuarioConsulta> listarSeguidosConsulta(String nick) {
+        return persistencia.listarSeguidosConsulta(nick);
+    }
+
+    @Override
+    public boolean esSeguidor(String nickSeguidor, String nickSeguido) {
+        return persistencia.esSeguidor(nickSeguidor, nickSeguido);
+    }
+
+    @Override
+    public void inscribirEstudianteAEdicion(String nickEstudiante, String nombreEdicion) {
+        if (nickEstudiante == null || nickEstudiante.isBlank()) throw new SecurityException("Se requiere un estudiante registrado.");
+        if (nombreEdicion == null || nombreEdicion.isBlank()) throw new IllegalArgumentException("Debe seleccionar una edición.");
+        Usuario usuario = obtenerUsuario(nickEstudiante);
+        if (!(usuario instanceof Estudiante estudiante)) {
+            throw new SecurityException("El usuario autenticado no es un estudiante.");
+        }
+        EdicionCurso edicion = buscarEdicion(nombreEdicion);
+        if (edicion == null) throw new RecursoNoEncontradoException("La edición solicitada no existe.");
+        inscriboAEdicionCurso(estudiante, edicion, LocalDate.now());
+    }
+
+    @Override
+    public void inscribirEstudianteAPrograma(String nickEstudiante, String nombrePrograma) {
+        if (nickEstudiante == null || nickEstudiante.isBlank()) throw new SecurityException("Se requiere un estudiante registrado.");
+        if (nombrePrograma == null || nombrePrograma.isBlank()) throw new IllegalArgumentException("Debe seleccionar un programa.");
+        Usuario usuario = obtenerUsuario(nickEstudiante);
+        if (!(usuario instanceof Estudiante estudiante)) {
+            throw new SecurityException("El usuario autenticado no es un estudiante.");
+        }
+        if (consultarPrograma(nombrePrograma) == null) {
+            throw new RecursoNoEncontradoException("El programa solicitado no existe.");
+        }
+        inscriboAProgramaFormacion(estudiante, obtenerDetallePrograma(nombrePrograma), LocalDate.now());
+    }
+
+    @Override
+    public DTEdicionConsulta consultarEdicion(String nombre) {
+        return persistencia.consultarEdicion(nombre);
+    }
+
+    @Override
+    public List<soap.dto.DTProgramaConsulta> listarProgramasConsulta() {
+        return persistencia.listarProgramasConsulta();
+    }
+
+    @Override
+    public soap.dto.DTProgramaConsulta consultarPrograma(String nombre) {
+        return persistencia.consultarPrograma(nombre);
+    }
+
+    @Override
+    public EdicionCurso buscarEdicion(String nombre) {
+        return persistencia.buscarEdicion(nombre);
+    }
+
+    private final ControladorPersistencia persistencia;
+    private final ControladorCurso controladorCurso;
+    private final ControladorUsuario controladorUsuario;
+    private final ControladorProgramaFormacion controladorProgramaFormacion;
+    private final ControladorInscripcion controladorInscripcion;
+
+    @Override
+    public List<String> listarNombresInstitutosDocente(String nickDocente) {
+        return persistencia.listarNombresInstitutosDocente(nickDocente);
+    }
+
+    @Override
+    public void altaCursoDocente(String nickDocente, String nombreInstituto, String nombre,
+            String descripcion, String duracion, int horas, int creditos, String url,
+            List<String> nombresPrevias, List<String> nombresCategorias) {
+        controladorCurso.altaCursoDocente(nickDocente, nombreInstituto, nombre,
+                descripcion, duracion, horas, creditos, url, nombresPrevias, nombresCategorias);
+    }
+
+    @Override
+    public void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
+            String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
+            int cupo, List<String> nicknamesDocentes) {
+        controladorCurso.altaEdicionCursoDocente(nickDocente, nombreInstituto,
+                nombreCurso, nombreEdicion, inicio, fin, cupo, nicknamesDocentes);
+    }
+
+    @Override
+    public void altaCursoDocente(String nickDocente, String nombreInstituto, String nombre,
+            String descripcion, String duracion, int horas, int creditos, String url,
+            List<String> nombresPrevias, List<String> nombresCategorias, byte[] imagen) {
+        controladorCurso.altaCursoDocente(nickDocente, nombreInstituto, nombre,
+                descripcion, duracion, horas, creditos, url, nombresPrevias, nombresCategorias, imagen);
+    }
+
+    @Override
+    public void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
+            String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
+            int cupo, List<String> nicknamesDocentes, byte[] imagen) {
+        controladorCurso.altaEdicionCursoDocente(nickDocente, nombreInstituto,
+                nombreCurso, nombreEdicion, inicio, fin, cupo, nicknamesDocentes, imagen);
+    }
+
+    public ServidorCentral() {
+        this(new ControladorPersistencia());
+    }
+
+    /** El servidor se hace responsable de cerrar la persistencia recibida. */
+    public ServidorCentral(ControladorPersistencia persistencia) {
+        this.persistencia = java.util.Objects.requireNonNull(persistencia);
+        this.controladorCurso = new ControladorCurso(persistencia);
+        this.controladorUsuario = new ControladorUsuario(this);
+        this.controladorProgramaFormacion = new ControladorProgramaFormacion(persistencia);
+        this.controladorInscripcion = new ControladorInscripcion(persistencia);
+    }
+
+    /** Permite que cada aplicación elija su base sin cambiar persistence.xml. */
+    public static ServidorCentral conectarBaseExistente(
+            String url, String usuario, String contrasena) {
+        return new ServidorCentral(
+                ControladorPersistencia.conectarBaseExistente(url, usuario, contrasena));
+    }
+
+    /** Llamar al detener la aplicación, cuando ya no haya operaciones en curso. */
+    @Override
+    public void close() {
+        persistencia.close();
+    }
+
+    // =========================
+    // CATEGORÍAS
+    // =========================
+
+    @Override
+    public void altaCategoria(String nombreCategoria)
+            throws Exception {
+
+        persistencia.altaCategoria(nombreCategoria);
+    }
+
+    @Override
+    public List<Categoria> listarCategorias() {
+        return persistencia.listarCategorias();
+    }
+
+    @Override
+    public Categoria buscarCategoria(String nombre) {
+        return persistencia.buscarCategoria(nombre);
+    }
+
+    @Override
+    public void agregarCategoriaACurso(
+            String nombreCurso,
+            String nombreCategoria)
+            throws Exception {
+
+        persistencia.agregarCategoriaACurso(
+                nombreCurso,
+                nombreCategoria
+        );
+    }
+
+    @Override
+    public List<Categoria> listarCategoriasCurso(
+            String nombreCurso)
+            throws Exception {
+
+        return persistencia.listarCategoriasCurso(
+                nombreCurso
+        );
+    }
+
+    // =========================
+    // CURSOS
+    // =========================
+
+    @Override
+    public ArrayList<Curso> listarCursos() {
+        return persistencia.listarCursos();
+    }
+
+    @Override
+    public ArrayList<Curso> listarCursosPorInstituto(
+            String nombreInstituto) {
+
+        return persistencia.listarCursosPorInstituto(
+                nombreInstituto
+        );
+    }
+
+    @Override
+    public Curso buscarCurso(String nombre) {
+        return persistencia.buscarCurso(nombre);
+    }
+
+    @Override
+    public soap.dto.DTCursoConsulta consultarCurso(String nombre) {
+        return persistencia.consultarCurso(nombre);
+    }
+
+    @Override
+    public Curso buscarCursoInstituto(
+            String nombre,
+            Instituto instituto) {
+
+        return persistencia.buscarCursoInstituto(
+                nombre,
+                instituto
+        );
+    }
+
+    @Override
+    public boolean existeCurso(String nombre) {
+        return persistencia.existeCurso(nombre);
+    }
+
+    @Override
+    public List<String> listarNombresInstitutos() {
+        return controladorCurso.listarNombresInstitutos();
+    }
+
+    @Override
+    public List<String> listarNombresCursosPorInstituto(String nombreInstituto) {
+        return controladorCurso.listarNombresCursosPorInstituto(nombreInstituto);
+    }
+
+    @Override
+    public List<String> listarNombresCategorias() {
+        return controladorCurso.listarNombresCategorias();
+    }
+
+    @Override
+    public List<String> listarNombresCategoriasPrograma(String nombrePrograma) {
+        return persistencia.listarNombresCategoriasPrograma(nombrePrograma);
+    }
+
+    @Override
+    public void altaCurso(
+            String nombreInstituto,
+            String nombre,
+            String descripcion,
+            String duracion,
+            int horas,
+            int creditos,
+            String url,
+            List<String> nombresPrevias,
+            List<String> nombresCategorias) {
+        controladorCurso.altaCurso(nombreInstituto, nombre, descripcion,
+                duracion, horas, creditos, url, nombresPrevias, nombresCategorias);
+    }
+
+    @Override
+    public void altaCurso(String nombreInstituto, String nombre, String descripcion,
+            String duracion, int horas, int creditos, String url, LocalDate fechaAlta,
+            List<String> nombresPrevias, List<String> nombresCategorias) {
+        controladorCurso.altaCurso(nombreInstituto, nombre, descripcion,
+                duracion, horas, creditos, url, fechaAlta, nombresPrevias, nombresCategorias);
+    }
+
+    // =========================
+
+    @Override
+    public void seleccionarEstudiantes(String nickDocente, String nombreEdicion,
+            java.util.Map<Long, EstadoInscripcion> decisiones) {
+        controladorInscripcion.seleccionarEstudiantes(nickDocente, nombreEdicion, decisiones);
+    }
+
+    @Override
+    public List<DTInscripcion> listarInscripcionesEdicion(String nickDocente, String nombreEdicion) {
+        return controladorInscripcion.listarInscripcionesEdicion(nickDocente, nombreEdicion);
+    }
+
+    @Override
+    public List<DTRankingInscripcion> listarInscripcionesParaSeleccion(String nickDocente,
+            String nombreEdicion, OrdenInscripciones orden) {
+        return controladorInscripcion.listarInscripcionesParaSeleccion(nickDocente, nombreEdicion, orden);
+    }
+
+    @Override
+    public List<DTEdicionConsulta> listarEdicionesParaSeleccion(String nickDocente,
+            String nombreInstituto, String nombreCurso) {
+        return controladorInscripcion.listarEdicionesParaSeleccion(nickDocente, nombreInstituto, nombreCurso);
+    }
+
+    @Override
+    public List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion) {
+        return controladorInscripcion.listarAceptadosEdicion(nickDocente, nombreEdicion);
+    }
+
+    @Override
+    public List<DTResultadoEvaluacion> consultarResultadosEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        return controladorInscripcion.consultarResultadosEdicion(
+                nickDocente,
+                nombreEdicion
+        );
+    }
+
+    @Override
+    public List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante) {
+        return controladorInscripcion.listarResultadosInscripciones(nickEstudiante);
+    }
+
+    @Override
+    public List<DTNotaEstudiante> listarNotasEstudiante(String nickEstudiante) {
+        return persistencia.listarNotasEstudiante(nickEstudiante);
+    }
+    // INSTITUTOS
+    // =========================
+
+    @Override
+    public ArrayList<Instituto> listarInstitutos() {
+        return persistencia.listarInstitutos();
+    }
+
+    @Override
+    public Instituto buscarInstituto(String nombre) {
+        return persistencia.buscarInstituto(nombre);
+    }
+
+    @Override
+    public void altaInstituto(String nombreInstituto) throws Exception {
+    persistencia.altaInstituto(nombreInstituto);
+    }
+
+
+
+    // =========================
+    // EDICIONES
+    // =========================
+
+    @Override
+    public ArrayList<EdicionCurso> listarEdicionesCurso(
+            Curso curso) {
+
+        return persistencia.listarEdicionesCurso(curso);
+    }
+
+
+    @Override
+    public ArrayList<Docente> listarDocentes() {
+       return persistencia.listarDocentes();
+    }
+
+    @Override
+    public Docente buscarDocentePorNick(String nick) {
+       return persistencia.buscarDocentePorNick(nick);
+    }
+
+    @Override
+    public List<Instituto> obtenerInstitutos() {
+       return persistencia.obtenerInstitutos();
+    }
+
+   @Override
+   public List<Curso> obtenerCursosDeInstituto(Long idInstituto) {
+      return persistencia.obtenerCursosDeInstituto(idInstituto);
+    }
+
+    @Override
+    public List<Estudiante> obtenerEstudiantes() {
+       return persistencia.obtenerEstudiantes();
+    }
+
+   @Override
+    public void altaEdicionCurso(
+            String nombreInstituto,
+            String nombreCurso,
+            String nombreEdicion,
+            LocalDate inicio,
+            LocalDate fin,
+            int cupo,
+            List<String> nicknamesDocentes) {
+        controladorCurso.altaEdicionCurso(nombreInstituto, nombreCurso,
+                nombreEdicion, inicio, fin, cupo, nicknamesDocentes);
+    }
+
+    @Override
+    public List<String> listarNicknamesDocentes() {
+        return controladorCurso.listarNicknamesDocentes();
+    }
+
+    @Override
+    public List<String> listarNicknamesDocentesPorInstituto(String nombreInstituto) {
+        return persistencia.listarNicknamesDocentesPorInstituto(nombreInstituto);
+    }
+
+   @Override
+   public void inscriboAEdicionCurso(
+        Estudiante estudiante,
+        EdicionCurso edicion,
+        LocalDate fechaInscripcion) {
+
+    persistencia.inscriboAEdicionCurso(
+            estudiante,
+            edicion,
+            fechaInscripcion
+    );
+    }
+   
+    @Override
+    public void registrarCalificacion(
+            String nickDocente,
+            String nombreEdicion,
+            Long idInscripcion,
+            int nota) {
+
+        controladorInscripcion.registrarCalificacion(
+                nickDocente,
+                nombreEdicion,
+                idInscripcion,
+                nota
+        );
+    }
+    
+    @Override
+    public void registrarValoracionCurso (
+            String nickEstudiante,
+            Long idCurso,
+            int puntuacion) throws ValoracionDuplicadaException{
+
+        persistencia.registrarValoracionCurso(
+                nickEstudiante,
+                idCurso,
+                puntuacion
+        );
+    }
+    
+    @Override
+    public void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion) {
+
+        controladorInscripcion.cerrarEdicion(
+                nickDocente,
+                nombreEdicion
+        );
+    }
+
+
+    // ==================== PROGRAMAS DE FORMACIÓN ====================
+
+    @Override
+    public void altaProgramaFormacion(String nombre, String descripcion,
+            LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta, byte[] imagen) {
+        controladorProgramaFormacion.altaProgramaFormacion(
+                nombre, descripcion, fechaInicio, fechaFin, fechaAlta, imagen);
+    }
+
+    @Override
+    public void altaProgramaFormacion(String nombre, String descripcion,
+            LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta) {
+        controladorProgramaFormacion.altaProgramaFormacion(
+                nombre, descripcion, fechaInicio, fechaFin, fechaAlta);
+    }
+
+    @Override
+    public void agregarCursoAPrograma(
+        String nombrePrograma,
+        String nombreCurso) throws Exception {
+
+    persistencia.agregarCursoAPrograma(
+            nombrePrograma,
+            nombreCurso
+    );
+    }
+
+    @Override
+    public List<String> listarNombresCursos() {
+    return persistencia.listarNombresCursos();
+    }
+
+    @Override
+    public List<String> listarNombresProgramas() {
+    return persistencia.listarNombresProgramas();
+    }
+
+    @Override
+    public List<String> listarNombresProgramasCurso(String nombreCurso) {
+        return persistencia.listarNombresProgramasCurso(nombreCurso);
+    }
+
+    @Override
+    public List<ProgramaFormacion> obtenerProgramas() {
+    return persistencia.obtenerProgramas();
+    }
+
+    @Override
+    public ProgramaFormacion obtenerDetallePrograma(
+        String nombrePrograma) {
+
+    return persistencia.obtenerDetallePrograma(nombrePrograma);
+    }
+
+    @Override
+    public void inscriboAProgramaFormacion(
+        Estudiante estudiante,
+        ProgramaFormacion programa,
+        LocalDate fechaInscripcion) {
+
+    persistencia.inscriboAProgramaFormacion(
+            estudiante,
+            programa,
+            fechaInscripcion
+    );
+    }
+
+    @Override
+    public boolean estaInscriptoAPrograma(String nick, Long programaId) {
+        return persistencia.estaInscriptoAPrograma(nick, programaId);
+    }
+
+    // ====================
+    //     USUARIOS
+    //=====================
+
+    @Override
+    public List<Usuario> obtenerUsuarios() {
+    return persistencia.obtenerUsuarios();
+    }
+
+    @Override
+    public List<String> listarNicknamesUsuarios() {
+        return controladorUsuario.listarNicknamesUsuarios();
+    }
+
+    @Override
+    public Usuario obtenerUsuario(String nick) {
+    return persistencia.obtenerUsuario(nick);
+    }
+
+    @Override
+    public Usuario obtenerUsuarioPorIdentificador(String identificador) {
+        return persistencia.obtenerUsuarioPorIdentificador(identificador);
+    }
+
+    @Override
+    public DTAutenticacion autenticarUsuario(String identificador, String clave) {
+        return controladorUsuario.autenticarUsuario(identificador, clave);
+    }
+
+    @Override
+    public void registrarEstudiante(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String clave, String confirmacion) {
+        controladorUsuario.registrarEstudiante(nick, mail, nombre, apellido,
+                fechaNacimiento, clave, confirmacion);
+    }
+
+    @Override
+    public void registrarEstudiante(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String clave, String confirmacion, byte[] imagen) {
+        controladorUsuario.registrarEstudiante(nick, mail, nombre, apellido,
+                fechaNacimiento, clave, confirmacion, imagen);
+    }
+
+    @Override
+    public void registrarDocente(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String instituto, String clave, String confirmacion) {
+        controladorUsuario.registrarDocente(nick, mail, nombre, apellido,
+                fechaNacimiento, instituto, clave, confirmacion);
+    }
+
+    @Override
+    public void registrarDocente(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String instituto, String clave, String confirmacion,
+            byte[] imagen) {
+        controladorUsuario.registrarDocente(nick, mail, nombre, apellido,
+                fechaNacimiento, instituto, clave, confirmacion, imagen);
+    }
+
+    @Override
+    public void modificarUsuario(String nickname, String nuevoNombre, String nuevoApellido,
+            LocalDate nuevaFechaNacimiento, String nuevaClave, String confirmacion) {
+        controladorUsuario.modificarUsuario(nickname, nuevoNombre, nuevoApellido,
+                nuevaFechaNacimiento, nuevaClave, confirmacion);
+    }
+
+    @Override
+    public void crearUsuario(
+        Usuario usuario,
+        String nombreInstituto) throws Exception {
+
+    persistencia.crearUsuario(usuario, nombreInstituto);
+    }
+
+    @Override
+    public void editarUsuario(Usuario usuario) throws Exception {
+    persistencia.editarUsuario(usuario);
+    }
+
+    @Override
+    public List<String> listarCursosOEdicionesUsuario(String nick) {
+    return persistencia.listarCursosOEdicionesUsuario(nick);
+    }
+
+    @Override
+    public List<String> listarProgramasUsuario(String nick) {
+    return persistencia.listarProgramasUsuario(nick);
+    }
+
+    @Override
+    public void crearUsuario(Usuario usuario, String nombreInstituto, byte[] imagen) throws Exception {
+        persistencia.crearUsuario(usuario, nombreInstituto, imagen);
+    }
+
+    @Override
+    public byte[] obtenerImagenUsuario(String nick) throws Exception {
+        return persistencia.obtenerImagenUsuario(nick);
+    }
+
+   @Override
+    public byte[] obtenerImagenCurso(String nombreCurso) throws Exception {
+        return persistencia.obtenerImagenCurso(nombreCurso);
+    }
+
+
+    @Override
+    public byte[] obtenerImagenEdicion(String nombreEdicion)
+            throws Exception {
+
+        return persistencia.obtenerImagenEdicion(nombreEdicion);
+    }
+
+    @Override
+    public byte[] obtenerImagenPrograma(String nombrePrograma)
+            throws Exception {
+
+        return persistencia.obtenerImagenPrograma(nombrePrograma);
+   }
+
+    @Override
+    public List<String> listarEdicionesDocente(String nick) {
+        return persistencia.listarEdicionesDocente(nick);
+    }
+
+    @Override
+    public void seguirUsuario(String nickSeguidor, String nickSeguido) throws Exception {
+        persistencia.seguirUsuario(nickSeguidor, nickSeguido);
+    }
+
+    @Override
+    public void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) throws Exception {
+        persistencia.dejarDeSeguirUsuario(nickSeguidor, nickSeguido);
+    }
+    
+
+    
+
+    @Override
+    public double obtenerPromedioValoraciones(Long idCurso) {
+        return persistencia.obtenerPromedioValoraciones(idCurso);
+    }    
+      
+    
+
+    @Override
+    public Integer obtenerValoracionEstudiante(
+            String nickEstudiante,
+            Long idCurso) {
+
+        return persistencia.obtenerValoracionEstudiante(
+                nickEstudiante,
+                idCurso
+        );
+    }
+
+    
+    public ValidadorAprobacionPrograma.ResultadoPrograma
+            validarAprobacionPrograma(
+                    String nickEstudiante,
+                    String nombrePrograma,
+                    int notaMinima) {
+
+        if (nickEstudiante == null || nickEstudiante.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un estudiante.");
+        }
+
+        if (nombrePrograma == null || nombrePrograma.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Debe indicar un programa.");
+        }
+
+        ProgramaFormacion programa =
+                persistencia.obtenerDetallePrograma(nombrePrograma);
+
+        if (programa == null) {
+            throw new RecursoNoEncontradoException(
+                    "El programa no existe.");
+        }
+
+        Estudiante estudiante =
+                persistencia.obtenerEstudianteConEvaluaciones(nickEstudiante);
+
+        if (estudiante == null) {
+            throw new RecursoNoEncontradoException(
+                    "El estudiante no existe.");
+        }
+
+        if (!persistencia.estaInscriptoAPrograma(
+                nickEstudiante, programa.getId())) {
+
+            throw new IllegalStateException(
+                    "El estudiante no está inscripto al programa.");
+        }
+
+        ValidadorAprobacionPrograma validador =
+                new ValidadorAprobacionPrograma();
+
+        return validador.validar(
+                estudiante,
+                programa,
+                notaMinima);
+    }
+
+
+    @Override
+    public DTActaEstudio obtenerActaEstudio(String nickEstudiante, String nombrePrograma) {
+        final int notaMinima = 6;
+        ValidadorAprobacionPrograma.ResultadoPrograma resultado;
+        try {
+            resultado = validarAprobacionPrograma(nickEstudiante, nombrePrograma, notaMinima);
+        } catch (RecursoNoEncontradoException | IllegalStateException error) {
+            return null;
+        }
+        if (!resultado.aprobado()) {
+            return null;
+        }
+
+        Usuario estudiante = obtenerUsuario(resultado.estudiante());
+        if (estudiante == null) {
+            return null;
+        }
+        List<DTCursoAprobado> cursos = resultado.resultados().stream()
+                .map(curso -> new DTCursoAprobado(curso.curso(), curso.nota(), curso.fechaResultado()))
+                .toList();
+        return new DTActaEstudio(estudiante.getNombre() + " " + estudiante.getApellido(),
+                resultado.estudiante(), resultado.programa(), LocalDate.now(), cursos);
+    }
+            
+}

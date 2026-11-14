@@ -1,0 +1,2 @@
+<%@ page pageEncoding="UTF-8" %>
+<section class="intro-pagina"><h1><%= escapar(tituloPagina) %></h1><p><%= escapar(bajadaPagina) %></p></section>

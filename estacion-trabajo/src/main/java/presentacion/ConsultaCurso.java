@@ -1,0 +1,419 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
+ */
+package presentacion;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+import java.util.ArrayList;
+import java.util.Set;
+import logica.IServidorCentral;
+import logica.*;
+/**
+ *
+ * @author Chama
+ */
+public class ConsultaCurso extends javax.swing.JInternalFrame {
+    
+   private IServidorCentral servidorCentral;
+
+public void seleccionarCurso(String nombre) {
+    Curso curso = servidorCentral.buscarCurso(nombre);
+    if (curso == null || curso.getInstituto() == null) {
+        throw new IllegalArgumentException("El curso ya no está disponible.");
+    }
+    ComboInstitutoConsulta.setSelectedItem(curso.getInstituto().getNombre());
+    ComboCursoConsulta.setSelectedItem(nombre);
+}
+
+private void limpiarDetalleCurso() {
+    txtNombreInstituto.setText("");
+    txtDescripcionCurso.setText("");
+    txtDuracionCurso.setText("");
+    txtHorasCurso.setText("");
+    txtCreditosCurso.setText("");
+    txtFechaCurso.setText("");
+    txturlCurso.setText("");
+    
+    ListaPreviasCurso.setModel(new DefaultListModel<>());
+    ListaEdiciones.setModel(new DefaultListModel<>());
+    ListaProgramas.setModel(new DefaultListModel<>());
+    ListaCategoriasCurso.setModel(new DefaultListModel<>());
+}
+    /**
+     * Creates new form ConsultaCurso
+     */
+    public ConsultaCurso(IServidorCentral servidorCentral) {
+        
+        this.servidorCentral = servidorCentral;
+        initComponents();
+        
+        ComboInstitutoConsulta.removeAllItems();
+        ComboCursoConsulta.removeAllItems();
+        
+        ArrayList<Instituto> institutos = servidorCentral.listarInstitutos();
+        
+        for(int i = 0; i < institutos.size(); i++)
+        {
+            ComboInstitutoConsulta.addItem(institutos.get(i).getNombre());
+        }
+        
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel2 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        txtNombreInstituto = new javax.swing.JTextField();
+        txtDescripcionCurso = new javax.swing.JTextField();
+        txtDuracionCurso = new javax.swing.JTextField();
+        txtHorasCurso = new javax.swing.JTextField();
+        txtCreditosCurso = new javax.swing.JTextField();
+        txtFechaCurso = new javax.swing.JTextField();
+        txturlCurso = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        ListaPreviasCurso = new javax.swing.JList<>();
+        jLabel12 = new javax.swing.JLabel();
+        ComboInstitutoConsulta = new javax.swing.JComboBox<>();
+        btnSalir = new javax.swing.JButton();
+        ComboCursoConsulta = new javax.swing.JComboBox<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        ListaEdiciones = new javax.swing.JList<>();
+        jLabel13 = new javax.swing.JLabel();
+        lblCategorias = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        ListaCategoriasCurso = new javax.swing.JList<>();
+        lblProgramas = new javax.swing.JLabel();
+        scrollProgramas = new javax.swing.JScrollPane();
+        ListaProgramas = new javax.swing.JList<>();
+
+        setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
+        setTitle("Consulta Curso");
+
+        jLabel2.setText("Nombre de curso:");
+
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel4.setText("Instituto:");
+
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel5.setText("Descripción:");
+
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel6.setText("Duración:");
+
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel7.setText("Horas:");
+
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel8.setText("Créditos:");
+
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel9.setText("Fecha:");
+
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel10.setText("URL:");
+
+        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel11.setText("Previas:");
+
+        txtNombreInstituto.setEditable(false);
+
+        txtDescripcionCurso.setEditable(false);
+
+        txtDuracionCurso.setEditable(false);
+
+        txtHorasCurso.setEditable(false);
+
+        txtCreditosCurso.setEditable(false);
+
+        txtFechaCurso.setEditable(false);
+
+        txturlCurso.setEditable(false);
+
+        jScrollPane1.setViewportView(ListaPreviasCurso);
+
+        jLabel12.setText("Instituto:");
+
+        ComboInstitutoConsulta.addActionListener(this::ComboInstitutoConsultaActionPerformed);
+
+        btnSalir.setText("Salir");
+        btnSalir.addActionListener(this::btnSalirActionPerformed);
+
+        ComboCursoConsulta.addActionListener(this::ComboCursoConsultaActionPerformed);
+
+        jScrollPane2.setViewportView(ListaEdiciones);
+        ListaEdiciones.setToolTipText("Doble clic para consultar la edición");
+        ListaEdiciones.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ListaEdicionesMouseClicked(evt);
+            }
+        });
+        lblProgramas.setText("Programas:");
+        ListaProgramas.setToolTipText("Doble clic para consultar el programa");
+        ListaProgramas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ListaProgramasMouseClicked(evt);
+            }
+        });
+        scrollProgramas.setViewportView(ListaProgramas);
+
+        jLabel13.setText("Ediciones:");
+
+        lblCategorias.setText("Categorias:");
+
+        ListaCategoriasCurso.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane3.setViewportView(ListaCategoriasCurso);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblCategorias)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel9)
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel12)
+                            .addComponent(lblProgramas)
+                            .addComponent(jLabel13))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtDescripcionCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                            .addComponent(txtNombreInstituto, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                            .addComponent(txtDuracionCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                            .addComponent(txtHorasCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                            .addComponent(txtCreditosCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                            .addComponent(txtFechaCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                            .addComponent(txturlCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(scrollProgramas)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                            .addComponent(btnSalir, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(ComboInstitutoConsulta, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(ComboCursoConsulta, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane3))))
+                .addContainerGap(144, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel12)
+                    .addComponent(ComboInstitutoConsulta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(ComboCursoConsulta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtNombreInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtDescripcionCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtDuracionCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtHorasCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtCreditosCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(txtFechaCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(txturlCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel11)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblProgramas)
+                    .addComponent(scrollProgramas, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(lblCategorias))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addComponent(btnSalir)
+                .addGap(24, 24, 24))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+        // TODO add your handling code here:
+        dispose();
+    }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void ComboCursoConsultaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboCursoConsultaActionPerformed
+limpiarDetalleCurso();
+String nombreInstituto = (String) ComboInstitutoConsulta.getSelectedItem();
+String nombreCurso = (String) ComboCursoConsulta.getSelectedItem();
+if (nombreInstituto == null || nombreCurso == null) return;
+try {
+    Instituto instituto = servidorCentral.buscarInstituto(nombreInstituto);
+    if (instituto == null) throw new IllegalArgumentException("El instituto ya no existe.");
+    Curso curso = servidorCentral.buscarCursoInstituto(nombreCurso, instituto);
+    if (curso == null) throw new IllegalArgumentException("El curso ya no existe.");
+    DefaultListModel<String> previas = new DefaultListModel<>();
+    for (Curso previa : curso.getPrevias()) previas.addElement(previa.getNombre());
+    DefaultListModel<String> ediciones = new DefaultListModel<>();
+    for (EdicionCurso edicion : servidorCentral.listarEdicionesCurso(curso)) ediciones.addElement(edicion.getNombre());
+    DefaultListModel<String> categorias = new DefaultListModel<>();
+    DefaultListModel<String> programas = new DefaultListModel<>();
+    for (String programa : servidorCentral.listarNombresProgramasCurso(nombreCurso)) {
+        programas.addElement(programa);
+    }
+    for (Categoria categoria : curso.getCategorias()) {
+    categorias.addElement(categoria.getNombre());
+    }
+    txtNombreInstituto.setText(instituto.getNombre());
+    txtDescripcionCurso.setText(curso.getDescripcion());
+    txtDuracionCurso.setText(curso.getDuracion());
+    txtHorasCurso.setText(String.valueOf(curso.getCantidadHoras()));
+    txtCreditosCurso.setText(String.valueOf(curso.getCreditos()));
+    txtFechaCurso.setText(curso.getFechaRegistro() == null ? "" : curso.getFechaRegistro().toString());
+    txturlCurso.setText(curso.getUrl());
+    ListaPreviasCurso.setModel(previas);
+    ListaEdiciones.setModel(ediciones);
+    ListaProgramas.setModel(programas);
+    ListaCategoriasCurso.setModel(categorias);
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    JOptionPane.showMessageDialog(this, "No se pudo consultar el curso: " + e.getMessage());
+}
+    }//GEN-LAST:event_ComboCursoConsultaActionPerformed
+
+    private void ComboInstitutoConsultaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboInstitutoConsultaActionPerformed
+        // TODO add your handling code here:
+        
+        String nombreInstituto = (String) ComboInstitutoConsulta.getSelectedItem();
+        
+        if(nombreInstituto == null)
+        {
+            return;
+        }
+        
+        ComboCursoConsulta.removeAllItems();
+        
+        ArrayList<Curso> cursos = servidorCentral.listarCursosPorInstituto(nombreInstituto);
+        
+        for(int i = 0; i < cursos.size(); i++)
+        {
+            ComboCursoConsulta.addItem(cursos.get(i).getNombre());
+        }
+    }//GEN-LAST:event_ComboInstitutoConsultaActionPerformed
+
+
+    private void ListaEdicionesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaEdicionesMouseClicked
+        if (evt.getClickCount() != 2 || ListaEdiciones.getSelectedValue() == null
+                || getDesktopPane() == null) return;
+        try {
+            ConsultaEdicionDeCursoInternalFrame ventana =
+                    new ConsultaEdicionDeCursoInternalFrame(servidorCentral);
+            ventana.seleccionarEdicion(ListaEdiciones.getSelectedValue());
+            abrirConsulta(ventana);
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo abrir la edición: " + e.getMessage());
+        }
+    }//GEN-LAST:event_ListaEdicionesMouseClicked
+
+    private void ListaProgramasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaProgramasMouseClicked
+        if (evt.getClickCount() != 2 || ListaProgramas.getSelectedValue() == null
+                || getDesktopPane() == null) return;
+        try {
+            ConsultaProgramaFormacionInternalFrame ventana =
+                    new ConsultaProgramaFormacionInternalFrame(servidorCentral);
+            ventana.seleccionarPrograma(ListaProgramas.getSelectedValue());
+            abrirConsulta(ventana);
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo abrir el programa: " + e.getMessage());
+        }
+    }//GEN-LAST:event_ListaProgramasMouseClicked
+
+    private void abrirConsulta(javax.swing.JInternalFrame ventana) {
+        getDesktopPane().add(ventana);
+        ventana.setVisible(true);
+        ventana.toFront();
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JList<String> ListaProgramas;
+    private javax.swing.JLabel lblProgramas;
+    private javax.swing.JScrollPane scrollProgramas;
+    private javax.swing.JComboBox<String> ComboCursoConsulta;
+    private javax.swing.JComboBox<String> ComboInstitutoConsulta;
+    private javax.swing.JList<String> ListaCategoriasCurso;
+    private javax.swing.JList<String> ListaEdiciones;
+    private javax.swing.JList<String> ListaPreviasCurso;
+    private javax.swing.JButton btnSalir;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel lblCategorias;
+    private javax.swing.JTextField txtCreditosCurso;
+    private javax.swing.JTextField txtDescripcionCurso;
+    private javax.swing.JTextField txtDuracionCurso;
+    private javax.swing.JTextField txtFechaCurso;
+    private javax.swing.JTextField txtHorasCurso;
+    private javax.swing.JTextField txtNombreInstituto;
+    private javax.swing.JTextField txturlCurso;
+    // End of variables declaration//GEN-END:variables
+}

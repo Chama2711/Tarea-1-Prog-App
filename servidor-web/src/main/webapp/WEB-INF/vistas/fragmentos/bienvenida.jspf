@@ -1,0 +1,6 @@
+<section class="bienvenida" aria-labelledby="titulo-pagina"><div class="contenedor bienvenida-interior">
+    <h1 id="titulo-pagina"><%= escapar(tituloPagina) %></h1>
+    <p><%= escapar(bajadaPagina) %></p>
+    <img class="bienvenida-ilustracion" src="${pageContext.request.contextPath}/imagenes/bienvenida.svg" alt="" width="230" height="140">
+</div></section>
+<%@ page pageEncoding="UTF-8" %>

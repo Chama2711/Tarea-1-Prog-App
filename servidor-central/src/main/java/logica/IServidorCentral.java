@@ -1,0 +1,310 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
+package logica;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+public interface IServidorCentral {
+    List<DTUsuarioConsulta> listarUsuariosConsulta();
+
+    DTPerfilUsuario consultarPerfilUsuario(String nick, String nickConsultante);
+
+    List<DTUsuarioConsulta> listarSeguidosConsulta(String nick);
+
+    boolean esSeguidor(String nickSeguidor, String nickSeguido);
+
+    void inscribirEstudianteAEdicion(String nickEstudiante, String nombreEdicion);
+
+    void inscribirEstudianteAPrograma(String nickEstudiante, String nombrePrograma);
+
+    DTEdicionConsulta consultarEdicion(String nombre);
+
+    List<soap.dto.DTProgramaConsulta> listarProgramasConsulta();
+
+    soap.dto.DTProgramaConsulta consultarPrograma(String nombre);
+    
+    EdicionCurso buscarEdicion(String nombre);
+
+    // =========================
+    // CATEGORÍAS
+    // =========================
+
+    void altaCategoria(String nombreCategoria) throws Exception;
+
+    List<Categoria> listarCategorias();
+
+    Categoria buscarCategoria(String nombre);
+
+    void agregarCategoriaACurso(
+            String nombreCurso,
+            String nombreCategoria
+    ) throws Exception;
+
+    List<Categoria> listarCategoriasCurso(
+            String nombreCurso
+    ) throws Exception;
+
+
+    // =========================
+    // CURSOS
+    // =========================
+
+    ArrayList<Curso> listarCursos();
+
+    ArrayList<Curso> listarCursosPorInstituto(
+            String nombreInstituto
+    );
+
+    Curso buscarCurso(String nombre);
+
+    soap.dto.DTCursoConsulta consultarCurso(String nombre);
+
+    Curso buscarCursoInstituto(
+            String nombre,
+            Instituto instituto
+    );
+
+    boolean existeCurso(String nombre);
+
+    List<String> listarNombresInstitutos();
+
+    List<String> listarNombresInstitutosDocente(String nickDocente);
+
+    void altaCursoDocente(String nickDocente, String nombreInstituto, String nombre,
+            String descripcion, String duracion, int horas, int creditos, String url,
+            List<String> nombresPrevias, List<String> nombresCategorias);
+
+    void altaCursoDocente(String nickDocente, String nombreInstituto, String nombre,
+            String descripcion, String duracion, int horas, int creditos, String url,
+            List<String> nombresPrevias, List<String> nombresCategorias, byte[] imagen);
+
+    void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
+            String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
+            int cupo, List<String> nicknamesDocentes);
+
+    void altaEdicionCursoDocente(String nickDocente, String nombreInstituto,
+            String nombreCurso, String nombreEdicion, LocalDate inicio, LocalDate fin,
+            int cupo, List<String> nicknamesDocentes, byte[] imagen);
+
+    List<String> listarNombresCursosPorInstituto(String nombreInstituto);
+
+    List<String> listarNombresCategorias();
+
+    List<String> listarNombresCategoriasPrograma(String nombrePrograma);
+
+    void altaCurso(
+            String nombreInstituto,
+            String nombre,
+            String descripcion,
+            String duracion,
+            int horas,
+            int creditos,
+            String url,
+            List<String> nombresPrevias,
+            List<String> nombresCategorias
+    );
+
+
+    void altaCurso(String nombreInstituto, String nombre, String descripcion,
+            String duracion, int horas, int creditos, String url, LocalDate fechaAlta,
+            List<String> nombresPrevias, List<String> nombresCategorias);
+
+    // =========================
+    // INSTITUTOS
+    // =========================
+
+    ArrayList<Instituto> listarInstitutos();
+
+    Instituto buscarInstituto(String nombre);
+    
+    void altaInstituto(String nombreInstituto) throws Exception;
+
+
+    // =========================
+    // EDICIONES
+    // =========================
+
+    ArrayList<EdicionCurso> listarEdicionesCurso(
+            Curso curso
+    );
+
+    ArrayList<Docente> listarDocentes();
+
+    Docente buscarDocentePorNick(String nick);
+
+    List<Instituto> obtenerInstitutos();
+
+    List<Curso> obtenerCursosDeInstituto(Long institutoId);
+
+    List<String> listarNicknamesDocentes();
+    List<String> listarNicknamesDocentesPorInstituto(String nombreInstituto);
+
+    void altaEdicionCurso(
+            String nombreInstituto,
+            String nombreCurso,
+            String nombreEdicion,
+            LocalDate inicio,
+            LocalDate fin,
+            int cupo,
+            List<String> nicknamesDocentes
+    );
+
+    List<Estudiante> obtenerEstudiantes();
+
+    void seleccionarEstudiantes(String nickDocente, String nombreEdicion,
+            java.util.Map<Long, EstadoInscripcion> decisiones);
+
+    List<DTInscripcion> listarInscripcionesEdicion(String nickDocente, String nombreEdicion);
+
+    List<DTRankingInscripcion> listarInscripcionesParaSeleccion(String nickDocente,
+            String nombreEdicion, OrdenInscripciones orden);
+
+    List<DTEdicionConsulta> listarEdicionesParaSeleccion(String nickDocente,
+            String nombreInstituto, String nombreCurso);
+
+    List<DTInscripcion> listarAceptadosEdicion(String nickDocente, String nombreEdicion);
+
+    List<DTResultadoEvaluacion> consultarResultadosEdicion(
+            String nickDocente,
+            String nombreEdicion
+    );
+
+    List<DTInscripcion> listarResultadosInscripciones(String nickEstudiante);
+
+    List<DTNotaEstudiante> listarNotasEstudiante(String nickEstudiante);
+
+    void inscriboAEdicionCurso(
+        Estudiante estudiante,
+        EdicionCurso edicion,
+        LocalDate fecha
+    );
+    
+    void registrarCalificacion(
+        String nickDocente,
+        String nombreEdicion,
+        Long idInscripcion,
+        int nota
+    );
+    
+    void registrarValoracionCurso(
+        String nickEstudiante,
+        Long idCurso,
+        int puntuacion
+    )throws ValoracionDuplicadaException;
+    
+    double obtenerPromedioValoraciones(Long idCurso);
+
+    Integer obtenerValoracionEstudiante(
+            String nickEstudiante,
+            Long idCurso
+    );
+
+    void cerrarEdicion(
+            String nickDocente,
+            String nombreEdicion
+    );
+
+    
+    
+    // ========================
+    //  PROGRAMAS DE FORMACIÓN 
+    //=========================
+
+    void altaProgramaFormacion(String nombre, String descripcion,
+            LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta);
+
+    void altaProgramaFormacion(String nombre, String descripcion,
+            LocalDate fechaInicio, LocalDate fechaFin, LocalDate fechaAlta, byte[] imagen);
+
+    void agregarCursoAPrograma(
+        String nombrePrograma,
+        String nombreCurso
+    ) throws Exception;
+    
+    void inscriboAProgramaFormacion(
+        Estudiante estudiante,
+        ProgramaFormacion programa,
+        LocalDate fechaInscripcion
+    );
+    
+    List<String> listarNombresCursos();
+
+    List<String> listarNombresProgramas();
+    List<String> listarNombresProgramasCurso(String nombreCurso);
+
+    List<ProgramaFormacion> obtenerProgramas();
+
+    ProgramaFormacion obtenerDetallePrograma(String nombrePrograma);
+    
+    boolean estaInscriptoAPrograma(String nick, Long programaId);
+    
+   // ==================== 
+   //    USUARIOS
+   //====================
+ 
+    List<Usuario> obtenerUsuarios();
+
+    List<String> listarNicknamesUsuarios();
+
+    Usuario obtenerUsuario(String nickname);
+
+    Usuario obtenerUsuarioPorIdentificador(String nicknameOCorreo);
+
+    DTAutenticacion autenticarUsuario(String nicknameOCorreo, String clave);
+
+    void registrarEstudiante(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String clave, String confirmacion);
+
+    void registrarEstudiante(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String clave, String confirmacion, byte[] imagen);
+
+    void registrarDocente(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String nombreInstituto,
+            String clave, String confirmacion);
+
+    void registrarDocente(String nick, String mail, String nombre, String apellido,
+            LocalDate fechaNacimiento, String nombreInstituto,
+            String clave, String confirmacion, byte[] imagen);
+
+    /** Una contraseña y confirmación vacías conservan la contraseña actual. */
+    void modificarUsuario(String nickname, String nuevoNombre, String nuevoApellido,
+            LocalDate nuevaFechaNacimiento, String nuevaClave, String confirmacion);
+
+    void crearUsuario(
+        Usuario usuario,
+        String nombreInstituto
+    ) throws Exception;
+
+    void editarUsuario(Usuario usuario) throws Exception;
+
+    void crearUsuario(Usuario usuario, String nombreInstituto, byte[] imagen) throws Exception;
+
+    byte[] obtenerImagenUsuario(String nick) throws Exception;
+    byte[] obtenerImagenCurso(String nombreCurso) throws Exception;
+    byte[] obtenerImagenEdicion(String nombreEdicion) throws Exception;
+    byte[] obtenerImagenPrograma(String nombrePrograma) throws Exception;
+
+    List<String> listarCursosOEdicionesUsuario(String nick);
+
+    List<String> listarEdicionesDocente(String nick);
+
+    List<String> listarProgramasUsuario(String nick);
+
+    
+    
+    void seguirUsuario(String nickSeguidor, String nickSeguido) throws Exception;
+    void dejarDeSeguirUsuario(String nickSeguidor, String nickSeguido) throws Exception;
+    
+    ValidadorAprobacionPrograma.ResultadoPrograma
+        validarAprobacionPrograma(
+                String nickEstudiante,
+                String nombrePrograma,
+                int notaMinima);
+    
+    public logica.DTActaEstudio obtenerActaEstudio(String nickEstudiante, String nombrePrograma);
+    
+}

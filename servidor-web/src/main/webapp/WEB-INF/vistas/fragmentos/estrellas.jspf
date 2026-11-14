@@ -1,0 +1,11 @@
+<% if (totalValoraciones == 0) { %>
+    <p class="texto-secundario">Sin valoraciones</p>
+<% } else { %>
+    <p class="valoracion-promedio">
+        <span class="estrellas-promedio" aria-hidden="true">
+            ★★★★★<span class="estrellas-llenas" style="width: <%= promedioValoraciones * 20 %>%">★★★★★</span>
+        </span>
+        <span><%= String.format(java.util.Locale.forLanguageTag("es-UY"), "%.2f", promedioValoraciones) %> de 5
+            (<%= totalValoraciones %> <%= totalValoraciones == 1 ? "voto" : "votos" %>)</span>
+    </p>
+<% } %>

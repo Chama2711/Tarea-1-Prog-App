@@ -1,0 +1,16 @@
+<%@ page import="java.time.LocalDate,java.time.format.DateTimeFormatter,java.net.URLEncoder,java.nio.charset.StandardCharsets,logica.DTAutenticacion" %>
+<%!
+private String escapar(Object valor) {
+    if (valor == null) return "";
+    return valor.toString().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#39;");
+}
+private String fecha(Object valor) {
+    if (valor == null) return "No indicada";
+    return valor instanceof LocalDate ? ((LocalDate) valor).format(DateTimeFormatter.ofPattern("dd/MM/uuuu")) : escapar(valor);
+}
+private String fecha(String valor) {
+    return valor == null || valor.isBlank() ? "No indicada" : fecha(LocalDate.parse(valor));
+}
+private String parametro(String valor) { return escapar(URLEncoder.encode(valor, StandardCharsets.UTF_8)); }
+%>
+<%@ page pageEncoding="UTF-8" %>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence           http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+  <persistence-unit name="edEXTPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>logica.Instituto</class>
+    <class>logica.ProgramaFormacion</class>
+    <class>logica.Curso</class>
+    <class>logica.Usuario</class>
+    <class>logica.Estudiante</class>
+    <class>logica.Docente</class>
+    <class>logica.Inscripcion</class>
+    <class>logica.EdicionCurso</class>
+    <class>logica.Categoria</class>
+    <class>logica.ValoracionCurso</class>
+    <properties>
+      <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+      <property name="javax.persistence.schema-generation.database.action" value="none"/>
+      <property name="eclipselink.ddl-generation" value="none"/>
+    </properties>
+  </persistence-unit>
+</persistence>

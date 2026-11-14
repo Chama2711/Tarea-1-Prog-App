@@ -1,0 +1,83 @@
+<%@ page pageEncoding="UTF-8" %>
+<%
+    List<String> institutosEvaluaciones = (List<String>) request.getAttribute("navInstitutos");
+    List<String> cursosEvaluaciones = (List<String>) request.getAttribute("cursosEvaluaciones");
+    List<DTEdicionConsulta> opcionesEvaluaciones =
+            (List<DTEdicionConsulta>) request.getAttribute("edicionesEvaluaciones");
+    String filtroInstituto = Objects.toString(request.getAttribute("institutoEvaluaciones"), "");
+    String filtroCurso = Objects.toString(request.getAttribute("cursoEvaluaciones"), "");
+    DTEdicionConsulta detalleEdicion = (DTEdicionConsulta) request.getAttribute("detalleEdicion");
+%>
+<section class="panel" aria-labelledby="titulo-seleccion-evaluaciones">
+    <h2 id="titulo-seleccion-evaluaciones">Seleccionar instituto y curso</h2>
+    <% if (institutosEvaluaciones == null || institutosEvaluaciones.isEmpty()) { %>
+        <p class="aviso">No hay institutos disponibles.</p>
+    <% } else { %>
+        <form method="get" action="${pageContext.request.contextPath}<%= rutaEvaluaciones %>">
+            <div class="campo">
+                <label for="instituto">Instituto</label>
+                <select id="instituto" name="instituto" required>
+                    <option value="">Seleccioná un instituto</option>
+                    <% for (String instituto : institutosEvaluaciones) { %>
+                        <option value="<%= escapar(instituto) %>" <%= instituto.equals(filtroInstituto) ? "selected" : "" %>>
+                            <%= escapar(instituto) %>
+                        </option>
+                    <% } %>
+                </select>
+            </div>
+            <button type="submit" class="boton">Ver cursos</button>
+        </form>
+    <% } %>
+    <% if (cursosEvaluaciones != null && cursosEvaluaciones.isEmpty()) { %>
+        <p class="aviso">El instituto seleccionado no tiene cursos.</p>
+    <% } else if (cursosEvaluaciones != null) { %>
+        <form method="get" action="${pageContext.request.contextPath}<%= rutaEvaluaciones %>">
+            <input type="hidden" name="instituto" value="<%= escapar(filtroInstituto) %>">
+            <div class="campo">
+                <label for="curso">Curso</label>
+                <select id="curso" name="curso" required>
+                    <option value="">Seleccioná un curso</option>
+                    <% for (String curso : cursosEvaluaciones) { %>
+                        <option value="<%= escapar(curso) %>" <%= curso.equals(filtroCurso) ? "selected" : "" %>>
+                            <%= escapar(curso) %>
+                        </option>
+                    <% } %>
+                </select>
+            </div>
+            <button type="submit" class="boton">Ver edición</button>
+        </form>
+    <% } %>
+    <% if (opcionesEvaluaciones != null && opcionesEvaluaciones.isEmpty()) { %>
+        <p class="aviso"><%= mensajeSinEdiciones %></p>
+    <% } else if (opcionesEvaluaciones != null && opcionesEvaluaciones.size() > 1) { %>
+        <form method="get" action="${pageContext.request.contextPath}<%= rutaEvaluaciones %>">
+            <input type="hidden" name="instituto" value="<%= escapar(filtroInstituto) %>">
+            <input type="hidden" name="curso" value="<%= escapar(filtroCurso) %>">
+            <div class="campo">
+                <label for="edicion">Edición</label>
+                <select id="edicion" name="edicion" required>
+                    <option value="">Seleccioná una edición</option>
+                    <% for (DTEdicionConsulta opcion : opcionesEvaluaciones) { %>
+                        <option value="<%= escapar(opcion.nombre()) %>" <%= opcion.nombre().equals(edicion) ? "selected" : "" %>>
+                            <%= escapar(opcion.nombre()) %>
+                        </option>
+                    <% } %>
+                </select>
+            </div>
+            <button type="submit" class="boton">Consultar edición</button>
+        </form>
+    <% } %>
+</section>
+
+<% if (detalleEdicion != null) { %>
+    <section class="panel" aria-labelledby="titulo-detalle-evaluaciones">
+        <h2 id="titulo-detalle-evaluaciones"><%= escapar(detalleEdicion.nombre()) %></h2>
+        <div class="edicion-datos">
+            <span><strong>Curso:</strong> <%= escapar(detalleEdicion.nombreCurso()) %></span>
+            <span><strong>Inicio:</strong> <%= fecha(detalleEdicion.inicio()) %></span>
+            <span><strong>Fin:</strong> <%= fecha(detalleEdicion.fin()) %></span>
+            <span><strong>Cupo:</strong> <%= detalleEdicion.cupo() < 0 ? "Sin límite" : detalleEdicion.cupo() %></span>
+            <span><strong>Estado:</strong> <%= detalleEdicion.cerrada() ? "Cerrada" : "Abierta" %></span>
+        </div>
+    </section>
+<% } %>

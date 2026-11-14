@@ -1,0 +1,390 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
+ */
+package presentacion;
+
+import javax.swing.DefaultListModel;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
+import logica.IServidorCentral;
+
+/**
+ *
+ * @author Chama
+ */
+public class AltaCurso extends javax.swing.JInternalFrame {
+
+    private final IServidorCentral servidorCentral;
+    private DefaultListModel<String> modeloDisponibles;
+    private DefaultListModel<String> modeloPrevias;
+    private DefaultListModel<String> modeloCategorias;
+    private boolean cargandoInstitutos = true;
+    
+    public AltaCurso(IServidorCentral servidorCentral) {
+        this.servidorCentral = servidorCentral;
+        
+        modeloDisponibles = new DefaultListModel<>();
+        modeloPrevias = new DefaultListModel<>();
+        modeloCategorias = new DefaultListModel<>();
+        initComponents();
+        FechasFormulario.configurar(dcFechaAlta);
+
+        ListaCursosDisponibles.setModel(modeloDisponibles);
+        ListaPreviasSeleccionadas.setModel(modeloPrevias);
+        
+        ComboInstitutoCurso.removeAllItems();
+        for (String nombre : servidorCentral.listarNombresInstitutos()) {
+            ComboInstitutoCurso.addItem(nombre);
+        }
+
+        for (String nombre : servidorCentral.listarNombresCategorias()) {
+            modeloCategorias.addElement(nombre);
+        }
+        ListaCategorias.setModel(modeloCategorias);
+        ListaCategorias.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        cargandoInstitutos = false;
+        cargarCursosDelInstituto();
+    }
+
+    private void cargarCursosDelInstituto() {
+        modeloDisponibles.clear();
+        modeloPrevias.clear();
+        String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
+        if (nombreInstituto == null) {
+            return;
+        }
+        try {
+            for (String nombre : servidorCentral.listarNombresCursosPorInstituto(nombreInstituto)) {
+                modeloDisponibles.addElement(nombre);
+            }
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "No se pudieron cargar los cursos del instituto.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel2 = new javax.swing.JLabel();
+        ComboInstitutoCurso = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
+        txtNombreCurso = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtDescripcionCurso = new javax.swing.JTextArea();
+        jLabel6 = new javax.swing.JLabel();
+        txtDuracionCurso = new javax.swing.JTextField();
+        txtCantidadHorasCurso = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        txtCreditosCurso = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        txtURLCurso = new javax.swing.JTextField();
+        lblFechaAlta = new javax.swing.JLabel();
+        dcFechaAlta = new com.toedter.calendar.JDateChooser();
+        jLabel9 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        ListaCursosDisponibles = new javax.swing.JList<>();
+        jLabel10 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        ListaPreviasSeleccionadas = new javax.swing.JList<>();
+        btnAceptar = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
+        btnAgregar = new javax.swing.JButton();
+        btnQuitar = new javax.swing.JButton();
+        txtCategorias = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        ListaCategorias = new javax.swing.JList<>();
+
+        setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
+        setTitle("Alta Curso");
+
+        jLabel2.setText("Instituto: ");
+
+        ComboInstitutoCurso.addActionListener(this::ComboInstitutoCursoActionPerformed);
+
+        jLabel3.setText("Nombre:");
+
+        jLabel4.setText("Descripción:");
+
+        txtDescripcionCurso.setColumns(20);
+        txtDescripcionCurso.setRows(5);
+        jScrollPane1.setViewportView(txtDescripcionCurso);
+
+        jLabel6.setText("Duración:");
+
+        txtCantidadHorasCurso.addActionListener(this::txtCantidadHorasCursoActionPerformed);
+
+        jLabel7.setText("Cantidad de horas:");
+
+        jLabel8.setText("Créditos:");
+
+        jLabel5.setText("URL:");
+        lblFechaAlta.setText("Fecha de alta:");
+
+        jLabel9.setText("Cursos disponibles");
+
+        ListaCursosDisponibles.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(ListaCursosDisponibles);
+
+        jLabel10.setText("Previas seleccionadas");
+
+        ListaPreviasSeleccionadas.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane3.setViewportView(ListaPreviasSeleccionadas);
+
+        btnAceptar.setText("Aceptar");
+        btnAceptar.addActionListener(this::btnAceptarActionPerformed);
+
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(this::btnCancelarActionPerformed);
+
+        btnAgregar.setText("Agregar");
+        btnAgregar.addActionListener(this::btnAgregarActionPerformed);
+
+        btnQuitar.setText("Quitar");
+        btnQuitar.addActionListener(this::btnQuitarActionPerformed);
+
+        txtCategorias.setText("Categorias:");
+
+        ListaCategorias.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane4.setViewportView(ListaCategorias);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(208, 208, 208)
+                        .addComponent(btnAgregar)
+                        .addGap(121, 121, 121)
+                        .addComponent(btnQuitar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(jLabel4)
+                                    .addGap(51, 51, 51))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel6)
+                                        .addComponent(jLabel3)
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel7))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel5)
+                                    .addComponent(lblFechaAlta)
+                                    .addComponent(txtCategorias))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(ComboInstitutoCurso, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtNombreCurso)
+                            .addComponent(jScrollPane1)
+                            .addComponent(txtCreditosCurso)
+                            .addComponent(txtCantidadHorasCurso)
+                            .addComponent(txtDuracionCurso)
+                            .addComponent(txtURLCurso)
+                            .addComponent(dcFechaAlta)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGap(12, 12, 12)
+                                                .addComponent(jLabel9))
+                                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel10)
+                                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnAceptar)
+                                        .addGap(52, 52, 52)
+                                        .addComponent(btnCancelar)
+                                        .addGap(32, 32, 32))
+                                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addGap(17, 17, 17)))))
+                .addContainerGap(56, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(ComboInstitutoCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtNombreCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtDuracionCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtCantidadHorasCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(txtCreditosCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtURLCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblFechaAlta)
+                    .addComponent(dcFechaAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel10))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAgregar)
+                    .addComponent(btnQuitar))
+                .addGap(26, 26, 26)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtCategorias)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCancelar)
+                    .addComponent(btnAceptar))
+                .addGap(32, 32, 32))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void ComboInstitutoCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboInstitutoCursoActionPerformed
+        if (!cargandoInstitutos) {
+            cargarCursosDelInstituto();
+        }
+    }//GEN-LAST:event_ComboInstitutoCursoActionPerformed
+
+    private void txtCantidadHorasCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadHorasCursoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCantidadHorasCursoActionPerformed
+
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+try {
+    String nombreInstituto = (String) ComboInstitutoCurso.getSelectedItem();
+    String nombre = txtNombreCurso.getText().trim();
+    String descripcion = txtDescripcionCurso.getText().trim();
+    String duracion = txtDuracionCurso.getText().trim();
+    String url = txtURLCurso.getText().trim();
+    int horas = Integer.parseInt(txtCantidadHorasCurso.getText().trim());
+    int creditos = Integer.parseInt(txtCreditosCurso.getText().trim());
+    java.time.LocalDate fechaAlta = FechasFormulario.leer(dcFechaAlta, "la fecha de alta");
+    List<String> nombresPrevias = new ArrayList<>();
+    for (int i = 0; i < modeloPrevias.size(); i++) {
+        nombresPrevias.add(modeloPrevias.getElementAt(i));
+    }
+    List<String> categoriasSeleccionadas =
+        ListaCategorias.getSelectedValuesList();
+
+    servidorCentral.altaCurso(nombreInstituto, nombre, descripcion, duracion,
+            horas, creditos, url, fechaAlta, nombresPrevias, categoriasSeleccionadas);
+    
+    JOptionPane.showMessageDialog(this, "Curso creado correctamente.");
+    dispose();
+} catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, "Horas y créditos deben ser números enteros.");
+} catch (IllegalArgumentException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(), "Revise los datos", JOptionPane.WARNING_MESSAGE);
+} catch (RuntimeException e) {
+    e.printStackTrace();
+    JOptionPane.showMessageDialog(this, "No se pudo crear el curso.", "Error", JOptionPane.ERROR_MESSAGE);
+}
+    }//GEN-LAST:event_btnAceptarActionPerformed
+
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+String seleccionado = ListaCursosDisponibles.getSelectedValue();
+if (seleccionado == null) return;
+if (!modeloPrevias.contains(seleccionado)) modeloPrevias.addElement(seleccionado);
+modeloDisponibles.removeElement(seleccionado);
+    }//GEN-LAST:event_btnAgregarActionPerformed
+
+    private void btnQuitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarActionPerformed
+String seleccionado = ListaPreviasSeleccionadas.getSelectedValue();
+if (seleccionado == null) return;
+if (!modeloDisponibles.contains(seleccionado)) modeloDisponibles.addElement(seleccionado);
+modeloPrevias.removeElement(seleccionado);
+    }//GEN-LAST:event_btnQuitarActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        // TODO add your handling code here:
+        dispose();
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private com.toedter.calendar.JDateChooser dcFechaAlta;
+    private javax.swing.JLabel lblFechaAlta;
+    private javax.swing.JComboBox<String> ComboInstitutoCurso;
+    private javax.swing.JList<String> ListaCategorias;
+    private javax.swing.JList<String> ListaCursosDisponibles;
+    private javax.swing.JList<String> ListaPreviasSeleccionadas;
+    private javax.swing.JButton btnAceptar;
+    private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnQuitar;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTextField txtCantidadHorasCurso;
+    private javax.swing.JLabel txtCategorias;
+    private javax.swing.JTextField txtCreditosCurso;
+    private javax.swing.JTextArea txtDescripcionCurso;
+    private javax.swing.JTextField txtDuracionCurso;
+    private javax.swing.JTextField txtNombreCurso;
+    private javax.swing.JTextField txtURLCurso;
+    // End of variables declaration//GEN-END:variables
+}
