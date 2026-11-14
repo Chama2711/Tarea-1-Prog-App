@@ -2,7 +2,7 @@
 set -eu
 
 cd "$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-"${MVN:-mvn}" --batch-mode --no-transfer-progress clean verify "$@"
+"${MVN:-./mvnw}" --batch-mode --no-transfer-progress clean verify "$@"
 
 mkdir -p target/distribucion
 cp estacion-trabajo/target/servidor.jar target/distribucion/servidor.jar
