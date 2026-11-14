@@ -1,3 +1,4 @@
+
 package persistencia;
 
 import java.time.LocalDate;
@@ -13,11 +14,23 @@ import logica.Estudiante;
 import logica.Inscripcion;
 import logica.ValoracionCurso;
 
-/** Carga el anexo de Tarea 3 sobre los datos de CargarDatosPruebaWeb. */
+/**
+ * Carga el anexo de Tarea 3 sobre los datos de
+ * CargarDatosPruebaWeb.
+ *
+ * Los videos se agregan únicamente a inscripciones
+ * que ya aparecen en esta clase.
+ */
 public final class CargarDatosPruebaTarea3 {
+
     private static final Map<String, String> ESTUDIANTES_BASE = Map.of(
-            "EL", "eleven11", "CH", "chechi", "CO", "costas",
-            "RO", "roro", "WE", "weiss", "JW", "jeffw");
+            "EL", "eleven11",
+            "CH", "chechi",
+            "CO", "costas",
+            "RO", "roro",
+            "WE", "weiss",
+            "JW", "jeffw"
+    );
 
     private static final Map<String, String> EDICIONES = Map.ofEntries(
             Map.entry("E1", "Flor del Ceibo - 2010"),
@@ -34,7 +47,8 @@ public final class CargarDatosPruebaTarea3 {
             Map.entry("E11", "Herramientas de apoyo a la\nenseñanza de inglés. Instalación y\nevaluación - 26"),
             Map.entry("E12", "MicroBit - 2026"),
             Map.entry("E13", "Talleres plenarios - 2026"),
-            Map.entry("E14", "Seminarios de Resolución de\nProblemas - 2026"));
+            Map.entry("E14", "Seminarios de Resolución de\nProblemas - 2026")
+    );
 
     private static final Map<String, String> CURSOS = Map.of(
             "C1", "Talleres plenarios",
@@ -45,10 +59,12 @@ public final class CargarDatosPruebaTarea3 {
             "C6", "Flor del Ceibo",
             "C7", "Taller de robótica educativa",
             "C8", "Participación en investigación\nsobre el empleo del juego\nKomikan como recurso\n"
-                    + "didáctico en la Escuela");
+                    + "didáctico en la Escuela"
+    );
 
-    // Edición, estudiante de la carga inicial, fecha de inscripción, estado y nota según el anexo.
-    // El 0 del anexo se interpreta como una evaluación pendiente.
+    // Edición, estudiante, fecha, estado y nota.
+    // Se conservan las inscripciones originales.
+    // El 0 del anexo se interpreta como evaluación pendiente.
     private static final String INSCRIPCIONES = """
             E1 EL 2010-02-20 ACEPTADA 6
             E1 CH 2010-02-25 ACEPTADA 8
@@ -98,7 +114,33 @@ public final class CargarDatosPruebaTarea3 {
             E14 CH 2026-08-30 RECHAZADA -
             """;
 
-    // Estudiante, curso y puntuación. El anexo no indica la fecha del voto.
+    /**
+     * Videos de motivación del anexo de Tarea 3.
+     *
+     * Clave: referencia de edición + referencia de estudiante.
+     *
+     * No se crean estudiantes ni inscripciones adicionales.
+     * Solo se asigna el video cuando la inscripción ya
+     * aparece en INSCRIPCIONES.
+     */
+    private static final Map<String, String> VIDEOS = Map.ofEntries(
+            Map.entry("E1 CH", "c4ZoticPW1s"),
+            Map.entry("E2 CO", "1qfw6Rd_-ic"),
+            Map.entry("E2 RO", "Ov4usZlSieM"),
+            Map.entry("E3 RO", "eIvqPPcMepU"),
+            Map.entry("E4 CH", "vfc42Pb5RA8"),
+            Map.entry("E4 RO", "Hg469wSrZhI"),
+            Map.entry("E6 RO", "dG3niF2GgHM"),
+            Map.entry("E8 RO", "qYEWtIBmscA"),
+            Map.entry("E9 WE", "sJq7EE0cuVE"),
+            Map.entry("E9 CH", "QUYKSWQmkrg"),
+            Map.entry("E10 CH", "AHZw09PoIU0"),
+            Map.entry("E12 CH", "lSm4QZqN8cA"),
+            Map.entry("E12 RO", "SWOz-kIwDuU"),
+            Map.entry("E12 EL", "AfqdNJ75544")
+    );
+
+    // Se mantienen las valoraciones originales.
     private static final String VALORACIONES = """
             EL C6 3
             CH C6 4
@@ -124,112 +166,279 @@ public final class CargarDatosPruebaTarea3 {
             RO C2 2
             """;
 
-    private CargarDatosPruebaTarea3() { }
+    private CargarDatosPruebaTarea3() {
+    }
 
     public static void main(String[] args) {
-        var emf = Persistence.createEntityManagerFactory("edEXTPU", ConfiguracionBaseDatos.leer());
+
+        var emf = Persistence.createEntityManagerFactory(
+                "edEXTPU",
+                ConfiguracionBaseDatos.leer()
+        );
+
         try {
             var em = emf.createEntityManager();
+
             try {
                 var transaccion = em.getTransaction();
                 transaccion.begin();
+
                 try {
                     cargar(em);
                     transaccion.commit();
+
                 } catch (RuntimeException error) {
-                    if (transaccion.isActive()) transaccion.rollback();
+
+                    if (transaccion.isActive()) {
+                        transaccion.rollback();
+                    }
+
                     throw error;
                 }
+
             } finally {
                 em.close();
             }
+
         } finally {
             emf.close();
         }
-        System.out.println("Datos de prueba de la Tarea 3 cargados.");
+
+        System.out.println(
+                "Datos de prueba de la Tarea 3 cargados."
+        );
     }
 
     static void cargar(EntityManager em) {
-        Map<String, EdicionCurso> ediciones = new LinkedHashMap<>();
+
+        Map<String, EdicionCurso> ediciones =
+                new LinkedHashMap<>();
+
         for (String fila : INSCRIPCIONES.lines().toList()) {
+
             String[] dato = fila.split(" ");
-            EdicionCurso edicion = ediciones.computeIfAbsent(dato[0], ref -> buscarEdicion(em, ref));
-            Estudiante estudiante = buscarEstudiante(em, dato[1]);
-            EstadoInscripcion estado = EstadoInscripcion.valueOf(dato[3]);
-            Integer nota = "-".equals(dato[4]) || "0".equals(dato[4]) ? null : Integer.valueOf(dato[4]);
-            cargarInscripcion(em, estudiante, edicion, LocalDate.parse(dato[2]), estado, nota);
+
+            EdicionCurso edicion = ediciones.computeIfAbsent(
+                    dato[0],
+                    ref -> buscarEdicion(em, ref)
+            );
+
+            Estudiante estudiante =
+                    buscarEstudiante(em, dato[1]);
+
+            EstadoInscripcion estado =
+                    EstadoInscripcion.valueOf(dato[3]);
+
+            Integer nota =
+                    "-".equals(dato[4]) || "0".equals(dato[4])
+                    ? null
+                    : Integer.valueOf(dato[4]);
+
+            // Video correspondiente a esta inscripción.
+            // Si no figura en el mapa, queda en null.
+            String videoId = VIDEOS.get(
+                    dato[0] + " " + dato[1]
+            );
+
+            cargarInscripcion(
+                    em,
+                    estudiante,
+                    edicion,
+                    LocalDate.parse(dato[2]),
+                    estado,
+                    nota,
+                    videoId
+            );
         }
+
         em.flush();
+
         cerrarEdicionesEvaluadas(em, ediciones);
+
         cargarValoraciones(em);
     }
 
-    private static EdicionCurso buscarEdicion(EntityManager em, String referencia) {
-        EdicionCurso edicion = em.find(EdicionCurso.class, EDICIONES.get(referencia), LockModeType.PESSIMISTIC_WRITE);
+    private static EdicionCurso buscarEdicion(
+            EntityManager em,
+            String referencia) {
+
+        EdicionCurso edicion = em.find(
+                EdicionCurso.class,
+                EDICIONES.get(referencia),
+                LockModeType.PESSIMISTIC_WRITE
+        );
+
         if (edicion == null) {
-            throw new IllegalStateException("Falta la edición " + referencia + ". Ejecutá primero la carga inicial.");
+            throw new IllegalStateException(
+                    "Falta la edición " + referencia
+                    + ". Ejecutá primero la carga inicial."
+            );
         }
+
         return edicion;
     }
 
-    private static Estudiante buscarEstudiante(EntityManager em, String referencia) {
+    private static Estudiante buscarEstudiante(
+            EntityManager em,
+            String referencia) {
+
         String nickBase = ESTUDIANTES_BASE.get(referencia);
+
         if (nickBase == null) {
-            throw new IllegalArgumentException("Referencia de estudiante desconocida: " + referencia);
+            throw new IllegalArgumentException(
+                    "Referencia de estudiante desconocida: "
+                    + referencia
+            );
         }
 
-        Estudiante estudiante = em.find(Estudiante.class, nickBase);
+        Estudiante estudiante = em.find(
+                Estudiante.class,
+                nickBase
+        );
+
         if (estudiante == null) {
-            throw new IllegalStateException("Falta el estudiante " + nickBase + " de la carga inicial.");
+            throw new IllegalStateException(
+                    "Falta el estudiante " + nickBase
+                    + " de la carga inicial."
+            );
         }
+
         return estudiante;
     }
 
-    private static void cargarInscripcion(EntityManager em, Estudiante estudiante, EdicionCurso edicion,
-            LocalDate fechaInscripcion, EstadoInscripcion estado, Integer nota) {
-        var coincidencias = estudiante.getInscripciones().stream()
-                .filter(inscripcion -> inscripcion.getEdicionCurso() != null
-                        && edicion.getNombre().equals(inscripcion.getEdicionCurso().getNombre()))
-                .toList();
-        String referencia = estudiante.getNick() + " / " + edicion.getNombre();
+    private static void cargarInscripcion(
+            EntityManager em,
+            Estudiante estudiante,
+            EdicionCurso edicion,
+            LocalDate fechaInscripcion,
+            EstadoInscripcion estado,
+            Integer nota,
+            String videoId) {
+
+        var coincidencias =
+                estudiante.getInscripciones().stream()
+                        .filter(inscripcion ->
+                                inscripcion.getEdicionCurso() != null
+                                && edicion.getNombre().equals(
+                                        inscripcion.getEdicionCurso().getNombre()
+                                )
+                        )
+                        .toList();
+
+        String referencia =
+                estudiante.getNick() + " / " + edicion.getNombre();
+
         if (coincidencias.size() > 1) {
-            throw new IllegalStateException("Hay inscripciones duplicadas para " + referencia);
+            throw new IllegalStateException(
+                    "Hay inscripciones duplicadas para "
+                    + referencia
+            );
         }
+
         Inscripcion inscripcion;
+
         if (coincidencias.isEmpty()) {
-            inscripcion = new Inscripcion(fechaInscripcion, edicion);
+
+            inscripcion = new Inscripcion(
+                    fechaInscripcion,
+                    edicion
+            );
+
             estudiante.agregoInscripcion(inscripcion);
+
             em.persist(inscripcion);
+
         } else {
             inscripcion = coincidencias.getFirst();
         }
 
+        // Mantener la validación original de estados.
         if (inscripcion.getEstado() != estado) {
-            if (inscripcion.getEstado() != EstadoInscripcion.INSCRIPTO) {
-                throw new IllegalStateException("El estado existente difiere del anexo: " + referencia);
+
+            if (inscripcion.getEstado()
+                    != EstadoInscripcion.INSCRIPTO) {
+
+                throw new IllegalStateException(
+                        "El estado existente difiere del anexo: "
+                        + referencia
+                );
             }
+
             inscripcion.cambiarEstado(estado);
         }
-        if (inscripcion.getCalificacion() != null && !inscripcion.getCalificacion().equals(nota)) {
-            throw new IllegalStateException("La calificación existente difiere del anexo: " + referencia);
+
+        // Mantener la validación original de notas.
+        if (inscripcion.getCalificacion() != null
+                && !inscripcion.getCalificacion().equals(nota)) {
+
+            throw new IllegalStateException(
+                    "La calificación existente difiere del anexo: "
+                    + referencia
+            );
         }
+
         inscripcion.setFechaInscripcion(fechaInscripcion);
-        if (nota != null && inscripcion.getCalificacion() == null) {
-            // El anexo da la fecha de inscripción, no la fecha de calificación.
-            inscripcion.registrarCalificacion(nota, edicion.getFechaFin());
+
+        if (nota != null
+                && inscripcion.getCalificacion() == null) {
+
+            // Se conserva el criterio existente.
+            inscripcion.registrarCalificacion(
+                    nota,
+                    edicion.getFechaFin()
+            );
+        }
+
+        // NUEVO: asociar el video del anexo.
+        if (videoId != null) {
+
+            String url =
+                    "https://www.youtube.com/watch?v=" + videoId;
+
+            String existente =
+                    inscripcion.getVideoMotivacionUrl();
+
+            if (existente == null || existente.isBlank()) {
+
+                inscripcion.setVideoMotivacionUrl(url);
+
+            } else if (!existente.equals(url)) {
+
+                throw new IllegalStateException(
+                        "El video existente difiere del anexo: "
+                        + referencia
+                );
+            }
         }
     }
 
-    private static void cerrarEdicionesEvaluadas(EntityManager em, Map<String, EdicionCurso> ediciones) {
+    private static void cerrarEdicionesEvaluadas(
+            EntityManager em,
+            Map<String, EdicionCurso> ediciones) {
+
         for (EdicionCurso edicion : ediciones.values()) {
-            if (edicion.isCerrada()) continue;
-            Object[] cantidades = em.createQuery("SELECT COUNT(i), COUNT(i.calificacion) FROM Inscripcion i "
-                    + "WHERE i.edicion = :edicion AND i.estado = :estado", Object[].class)
+
+            if (edicion.isCerrada()) {
+                continue;
+            }
+
+            Object[] cantidades = em.createQuery(
+                    "SELECT COUNT(i), COUNT(i.calificacion) "
+                    + "FROM Inscripcion i "
+                    + "WHERE i.edicion = :edicion "
+                    + "AND i.estado = :estado",
+                    Object[].class
+            )
                     .setParameter("edicion", edicion)
-                    .setParameter("estado", EstadoInscripcion.ACEPTADA)
+                    .setParameter(
+                            "estado",
+                            EstadoInscripcion.ACEPTADA
+                    )
                     .getSingleResult();
+
             long aceptados = (Long) cantidades[0];
             long evaluados = (Long) cantidades[1];
+
             if (aceptados > 0 && aceptados == evaluados) {
                 edicion.cerrar();
             }
@@ -237,25 +446,75 @@ public final class CargarDatosPruebaTarea3 {
     }
 
     private static void cargarValoraciones(EntityManager em) {
+
         LocalDate fechaCarga = LocalDate.now();
+
         for (String fila : VALORACIONES.lines().toList()) {
+
             String[] dato = fila.split(" ");
-            Estudiante estudiante = buscarEstudiante(em, dato[0]);
-            Curso curso = em.createQuery("SELECT c FROM Curso c WHERE c.nombre = :nombre", Curso.class)
-                    .setParameter("nombre", CURSOS.get(dato[1]))
-                    .getResultStream().findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Falta el curso " + dato[1] + " de la carga inicial."));
-            int puntuacion = Integer.parseInt(dato[2]);
-            var existentes = em.createQuery("SELECT v.puntuacion FROM ValoracionCurso v "
-                    + "WHERE v.estudiante = :estudiante AND v.curso = :curso", Integer.class)
-                    .setParameter("estudiante", estudiante)
-                    .setParameter("curso", curso)
+
+            Estudiante estudiante =
+                    buscarEstudiante(em, dato[0]);
+
+            Curso curso = em.createQuery(
+                    "SELECT c FROM Curso c "
+                    + "WHERE c.nombre = :nombre",
+                    Curso.class
+            )
+                    .setParameter(
+                            "nombre",
+                            CURSOS.get(dato[1])
+                    )
+                    .getResultStream()
+                    .findFirst()
+                    .orElseThrow(() ->
+                            new IllegalStateException(
+                                    "Falta el curso "
+                                    + dato[1]
+                                    + " de la carga inicial."
+                            )
+                    );
+
+            int puntuacion =
+                    Integer.parseInt(dato[2]);
+
+            var existentes = em.createQuery(
+                    "SELECT v.puntuacion "
+                    + "FROM ValoracionCurso v "
+                    + "WHERE v.estudiante = :estudiante "
+                    + "AND v.curso = :curso",
+                    Integer.class
+            )
+                    .setParameter(
+                            "estudiante",
+                            estudiante
+                    )
+                    .setParameter(
+                            "curso",
+                            curso
+                    )
                     .getResultList();
+
             if (existentes.isEmpty()) {
-                em.persist(new ValoracionCurso(estudiante, curso, puntuacion, fechaCarga));
-            } else if (existentes.size() != 1 || existentes.getFirst() != puntuacion) {
-                throw new IllegalStateException("La valoración existente difiere del anexo: "
-                        + estudiante.getNick() + " / " + curso.getNombre());
+
+                em.persist(
+                        new ValoracionCurso(
+                                estudiante,
+                                curso,
+                                puntuacion,
+                                fechaCarga
+                        )
+                );
+
+            } else if (existentes.size() != 1
+                    || existentes.getFirst() != puntuacion) {
+
+                throw new IllegalStateException(
+                        "La valoración existente difiere del anexo: "
+                        + estudiante.getNick()
+                        + " / "
+                        + curso.getNombre()
+                );
             }
         }
     }
