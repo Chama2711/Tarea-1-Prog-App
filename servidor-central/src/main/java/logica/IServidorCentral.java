@@ -18,6 +18,10 @@ public interface IServidorCentral {
     boolean esSeguidor(String nickSeguidor, String nickSeguido);
 
     void inscribirEstudianteAEdicion(String nickEstudiante, String nombreEdicion);
+    
+    void inscribirEstudianteAEdicion(String nickEstudiante, String nombreEdicion, String videoMotivacionUrl);
+    
+    void cancelarInscripcionEdicion(String nickEstudiante, String nombreEdicion);
 
     void inscribirEstudianteAPrograma(String nickEstudiante, String nombrePrograma);
 

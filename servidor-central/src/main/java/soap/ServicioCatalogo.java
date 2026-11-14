@@ -244,6 +244,25 @@ import java.util.List;
         public void inscribirEstudianteAEdicion(@WebParam(name = "nickEstudiante") String nickEstudiante, @WebParam(name = "nombre") String nombre) throws OperacionRechazada {
             ejecutar(() -> { central.inscribirEstudianteAEdicion(nickEstudiante, nombre); return null; });
         }
+        
+        @WebMethod(operationName = "inscribirEstudianteAEdicionConVideo")
+        public void inscribirEstudianteAEdicionConVideo(
+                @WebParam(name = "nickEstudiante") String nickEstudiante,
+                @WebParam(name = "nombre") String nombre,
+                @WebParam(name = "videoMotivacionUrl") String videoMotivacionUrl)
+                throws OperacionRechazada 
+        {
+            ejecutar(() -> { central.inscribirEstudianteAEdicion(nickEstudiante, nombre, videoMotivacionUrl); return null; });
+        }
+        
+        @WebMethod(operationName = "cancelarInscripcionEdicion")
+        public void cancelarInscripcionEdicion(
+                @WebParam(name = "nickEstudiante") String nickEstudiante,
+                @WebParam(name = "nombreEdicion") String nombreEdicion)
+                throws OperacionRechazada {
+
+            ejecutar(() -> { central.cancelarInscripcionEdicion(nickEstudiante, nombreEdicion); return null; });
+        }
 
         @WebMethod(operationName = "registrarValoracionCurso")
         public void registrarValoracionCurso(
