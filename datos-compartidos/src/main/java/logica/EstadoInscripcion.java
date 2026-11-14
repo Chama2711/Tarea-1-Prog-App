@@ -3,7 +3,8 @@ package logica;
 public enum EstadoInscripcion {
     INSCRIPTO("Inscripto"),
     ACEPTADA("Aceptada"),
-    RECHAZADA("Rechazada");
+    RECHAZADA("Rechazada"),
+    CANCELADA("Cancelada");
 
     private final String descripcion;
 

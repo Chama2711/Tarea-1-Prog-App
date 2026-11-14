@@ -13,6 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Column;
 import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -54,6 +56,38 @@ public class Inscripcion {
 
     @Column(name = "FECHA_CALIFICACION")
     private LocalDate fechaCalificacion;
+    
+    @Column(name = "VIDEO_MOTIVACION_URL", length = 2048)
+    private String videoMotivacionUrl;
+
+    public String getVideoMotivacionUrl() {
+        return videoMotivacionUrl;
+    }
+
+    public void setVideoMotivacionUrl(String videoMotivacionUrl) {
+        
+        if (videoMotivacionUrl == null || videoMotivacionUrl.isBlank()) {
+            this.videoMotivacionUrl = null;
+            return;
+        }
+        
+        String url = videoMotivacionUrl.trim();
+        
+        String patron = "^https://(?:(?:www\\.|m\\.)?youtube\\.com/" + "(?:watch\\?v=|shorts/|live/)|youtu\\.be/)" + "([A-Za-z0-9_-]{11})(?:[?&][^\\s]*)?$";
+
+        Pattern pattern = Pattern.compile(patron);
+        Matcher matcher = pattern.matcher(url);
+
+        if (!matcher.matches()) {
+                throw new IllegalArgumentException("Ingresá un enlace válido de youtube.com.");
+            }
+
+        String idVideo = matcher.group(1);
+
+            // Guarda el enlace en un formato estándar.
+        this.videoMotivacionUrl = "https://www.youtube.com/watch?v=" + idVideo;
+
+    }
 
     public EstadoInscripcion getEstado() {
         return estado;
@@ -122,6 +156,19 @@ public class Inscripcion {
             throw new IllegalStateException("La inscripción ya fue resuelta.");
         }
         estado = nuevoEstado;
+    }
+    
+    public void cancelar() {
+        if (edicion == null) {
+            throw new IllegalStateException("Solo se pueden cancelar inscripciones a ediciones.");
+        }
+
+        if (estado != EstadoInscripcion.INSCRIPTO) {
+            throw new IllegalStateException("Solo se puede cancelar una inscripción pendiente.");
+        }
+
+        estado = EstadoInscripcion.CANCELADA;
+        videoMotivacionUrl = null;
     }
     
     public LocalDate getFechaInscripcion(){

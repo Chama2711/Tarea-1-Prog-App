@@ -24,13 +24,14 @@ public class InscripcionEdicionServlet extends HttpServlet {
             return;
         }
         String nombre = FormulariosDocente.valor(request, "edicion");
+        String videoMotivacionUrl = request.getParameter("videoMotivacionUrl");
         if (nombre.isBlank()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Debe seleccionar una edición.");
             return;
         }
         String destino = request.getContextPath() + "/edicion?nombre=" + URLEncoder.encode(nombre, StandardCharsets.UTF_8);
         try {
-            InicializadorAplicacion.getClienteCatalogo(getServletContext()).inscribirEstudianteAEdicion(usuario.getNick(), nombre);
+            InicializadorAplicacion.getClienteCatalogo(getServletContext()).inscribirEstudianteAEdicionConVideo(usuario.getNick(), nombre, videoMotivacionUrl);
             response.sendRedirect(destino + "&inscripcion=ok");
         } catch (RecursoNoEncontradoException error) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, error.getMessage());
