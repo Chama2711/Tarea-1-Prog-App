@@ -2,9 +2,7 @@ package persistencia;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.Persistence;
@@ -20,8 +18,6 @@ public final class CargarDatosPruebaTarea3 {
     private static final Map<String, String> ESTUDIANTES_BASE = Map.of(
             "EL", "eleven11", "CH", "chechi", "CO", "costas",
             "RO", "roro", "WE", "weiss", "JW", "jeffw");
-    private static final Set<String> ESTUDIANTES_ADICIONALES =
-            Set.of("OM", "AK", "NV", "SG", "AB", "SO", "SH", "JS");
 
     private static final Map<String, String> EDICIONES = Map.ofEntries(
             Map.entry("E1", "Flor del Ceibo - 2010"),
@@ -51,7 +47,7 @@ public final class CargarDatosPruebaTarea3 {
             "C8", "Participación en investigación\nsobre el empleo del juego\nKomikan como recurso\n"
                     + "didáctico en la Escuela");
 
-    // Edición, estudiante, fecha de inscripción, estado y nota según el anexo.
+    // Edición, estudiante de la carga inicial, fecha de inscripción, estado y nota según el anexo.
     // El 0 del anexo se interpreta como una evaluación pendiente.
     private static final String INSCRIPCIONES = """
             E1 EL 2010-02-20 ACEPTADA 6
@@ -61,9 +57,6 @@ public final class CargarDatosPruebaTarea3 {
             E2 WE 2012-07-30 ACEPTADA 0
             E3 RO 2025-03-10 ACEPTADA 9
             E3 JW 2025-03-15 ACEPTADA 6
-            E3 OM 2025-03-02 ACEPTADA 10
-            E3 AK 2025-03-11 ACEPTADA 9
-            E3 NV 2025-03-10 RECHAZADA -
             E4 CH 2024-07-25 ACEPTADA 7
             E4 EL 2024-07-28 RECHAZADA -
             E4 RO 2024-08-02 ACEPTADA 7
@@ -86,19 +79,10 @@ public final class CargarDatosPruebaTarea3 {
             E9 WE 2026-08-18 INSCRIPTO -
             E9 CH 2026-08-22 INSCRIPTO -
             E9 RO 2026-09-03 INSCRIPTO -
-            E9 AK 2026-09-01 INSCRIPTO -
-            E9 SG 2026-09-02 INSCRIPTO -
-            E9 AB 2026-08-31 INSCRIPTO -
-            E9 SO 2026-09-01 INSCRIPTO -
             E10 CH 2026-07-13 ACEPTADA 0
             E10 WE 2026-07-20 ACEPTADA 0
             E10 RO 2026-07-22 ACEPTADA 0
             E11 WE 2026-06-04 INSCRIPTO -
-            E11 SH 2026-08-01 INSCRIPTO -
-            E11 JS 2026-08-15 INSCRIPTO -
-            E11 NV 2026-07-23 INSCRIPTO -
-            E11 SG 2026-08-01 INSCRIPTO -
-            E11 OM 2026-08-17 INSCRIPTO -
             E11 EL 2026-07-18 INSCRIPTO -
             E11 JW 2026-08-20 INSCRIPTO -
             E12 CH 2026-07-12 INSCRIPTO -
@@ -190,22 +174,13 @@ public final class CargarDatosPruebaTarea3 {
 
     private static Estudiante buscarEstudiante(EntityManager em, String referencia) {
         String nickBase = ESTUDIANTES_BASE.get(referencia);
-        if (nickBase != null) {
-            Estudiante estudiante = em.find(Estudiante.class, nickBase);
-            if (estudiante == null) {
-                throw new IllegalStateException("Falta el estudiante " + nickBase + " de la carga inicial.");
-            }
-            return estudiante;
-        }
-        if (!ESTUDIANTES_ADICIONALES.contains(referencia)) {
+        if (nickBase == null) {
             throw new IllegalArgumentException("Referencia de estudiante desconocida: " + referencia);
         }
 
-        String nick = "tarea3-" + referencia.toLowerCase(Locale.ROOT);
-        Estudiante estudiante = em.find(Estudiante.class, nick);
+        Estudiante estudiante = em.find(Estudiante.class, nickBase);
         if (estudiante == null) {
-            estudiante = new Estudiante(nick, nick + "@example.invalid", "Estudiante", referencia, null);
-            em.persist(estudiante);
+            throw new IllegalStateException("Falta el estudiante " + nickBase + " de la carga inicial.");
         }
         return estudiante;
     }
