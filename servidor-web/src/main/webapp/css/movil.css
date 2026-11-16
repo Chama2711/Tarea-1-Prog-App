@@ -1,0 +1,398 @@
+/* Paleta y estética edEXT Escritorio + RWD Móvil */
+:root {
+    --edext-nav: #2c3840;
+    --edext-nav-sub: #36444e;
+    --edext-cyan: #00a3e0;
+    --edext-cyan-hover: #0088bd;
+    --edext-cyan-soft: #e6f6fc;
+    --edext-bg: #f4f7f9;
+    --edext-card: #ffffff;
+    --edext-border: #e1e8ed;
+    --edext-text: #1e293b;
+    --edext-muted: #52606d;
+}
+
+body.movil-body {
+    margin: 0;
+    padding-bottom: 2.5rem;
+    background-color: var(--edext-bg);
+    color: var(--edext-text);
+    overflow-x: hidden;
+}
+
+/* Barra superior estilo escritorio */
+.movil-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--edext-nav);
+    color: #ffffff;
+    border-top: 3px solid var(--edext-cyan);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+.movil-topbar-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.movil-marca {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.45rem;
+    letter-spacing: -0.02em;
+    display: inline-flex;
+    align-items: center;
+}
+
+.movil-marca span {
+    color: var(--edext-cyan);
+}
+
+.movil-saludo-top {
+    font-size: 0.9rem;
+    color: #e2e8f0;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movil-hamburguesa {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 0.4rem 0.65rem;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    min-width: 42px;
+    min-height: 42px;
+    flex-shrink: 0;
+}
+
+.movil-hamburguesa:hover {
+    border-color: var(--edext-cyan);
+    color: var(--edext-cyan);
+}
+
+.movil-menu {
+    display: none;
+    flex-direction: column;
+    background-color: var(--edext-nav-sub);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem 0.9rem;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.movil-menu.abierto {
+    display: flex;
+}
+
+.movil-menu-usuario {
+    padding: 0.55rem 0.5rem;
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 0.35rem;
+}
+
+.movil-menu a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.7rem 0.65rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.15s ease;
+}
+
+.movil-menu a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.movil-menu a.activo {
+    background-color: var(--edext-cyan);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.movil-menu a.salir {
+    color: #fca5a5;
+    margin-top: 0.25rem;
+}
+
+/* Contenedor principal y banner celeste suave como en escritorio */
+.movil-contenedor {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.movil-banner {
+    background-color: var(--edext-cyan-soft);
+    border-radius: 12px;
+    padding: 1.15rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.movil-banner h1 {
+    font-size: 1.45rem;
+    margin: 0 0 0.3rem;
+    color: var(--edext-text);
+}
+
+.movil-banner p {
+    margin: 0;
+    color: var(--edext-muted);
+    font-size: 0.95rem;
+}
+
+/* Tarjetas blancas estilo escritorio */
+.movil-panel {
+    background-color: var(--edext-card);
+    border: 1px solid var(--edext-border);
+    border-radius: 12px;
+    padding: 1.15rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+/* Botones y chips en celeste edEXT */
+.movil-btn-primario {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--edext-cyan);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1.1rem;
+    font-weight: 600;
+    font-size: 0.96rem;
+    text-decoration: none;
+    cursor: pointer;
+    min-height: 44px;
+    box-sizing: border-box;
+    transition: background-color 0.15s ease;
+}
+
+.movil-btn-primario:hover {
+    background-color: var(--edext-cyan-hover);
+}
+
+.movil-btn-ancho {
+    width: 100%;
+}
+
+.movil-chip {
+    display: inline-block;
+    background-color: var(--edext-cyan-soft);
+    color: var(--edext-cyan-hover);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    text-decoration: none;
+}
+
+.movil-chip:hover {
+    background-color: var(--edext-cyan);
+    color: #ffffff;
+}
+
+/* Formulario de filtros */
+.movil-filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.movil-filtros label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.88rem;
+    margin-bottom: 0.3rem;
+    color: var(--edext-text);
+}
+
+.movil-filtros select,
+.movil-input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.96rem;
+    background-color: #ffffff;
+    box-sizing: border-box;
+}
+
+.movil-filtros select:focus,
+.movil-input:focus {
+    outline: none;
+    border-color: var(--edext-cyan);
+    box-shadow: 0 0 0 3px rgba(0, 163, 224, 0.18);
+}
+
+/* Grilla responsiva de cursos / ediciones (1 col en móvil, 2 cols en tablet) */
+.movil-grilla {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 560px) {
+    .movil-grilla {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.movil-tarjeta {
+    background-color: var(--edext-card);
+    border: 1px solid var(--edext-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.movil-tarjeta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+.movil-tarjeta-enlace-foto {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.movil-tarjeta-img {
+    width: 100%;
+    height: 175px;
+    object-fit: cover;
+    display: block;
+    background-color: var(--edext-cyan-soft);
+}
+
+.movil-tarjeta-cuerpo {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    flex: 1;
+}
+
+.movil-tarjeta-titulo {
+    font-size: 1.12rem;
+    margin: 0;
+    color: var(--edext-text);
+}
+
+.movil-tarjeta-titulo a {
+    color: var(--edext-text);
+    text-decoration: none;
+}
+
+.movil-tarjeta-titulo a:hover {
+    color: var(--edext-cyan-hover);
+}
+
+/* Tablas responsivas (Requerimiento 7.1 - Figura 3c) */
+.movil-tabla-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.movil-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+}
+
+.movil-tabla th,
+.movil-tabla td {
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--edext-border);
+}
+
+.movil-tabla th {
+    background-color: var(--edext-bg);
+    color: var(--edext-muted);
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.movil-tabla tr:last-child td {
+    border-bottom: none;
+}
+
+.movil-tabla a {
+    color: var(--edext-cyan-hover);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.movil-tabla a:hover {
+    text-decoration: underline;
+}
+
+/* Lista rápida de institutos estilo barra lateral de escritorio */
+.movil-lista-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.movil-lista-links a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    color: var(--edext-text);
+    text-decoration: none;
+    font-weight: 500;
+    background-color: var(--edext-bg);
+}
+
+.movil-lista-links a:hover {
+    background-color: var(--edext-cyan-soft);
+    color: var(--edext-cyan-hover);
+}
+
+/* Caja de Login (Figura 2) */
+.movil-login-caja {
+    max-width: 420px;
+    margin: 1.75rem auto;
+    padding: 0 1rem;
+}
+
+.movil-check-fila {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.25rem 0 0.75rem;
+    font-size: 0.93rem;
+    color: var(--edext-text);
+    cursor: pointer;
+}
+
+.movil-check-fila input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--edext-cyan);
+}

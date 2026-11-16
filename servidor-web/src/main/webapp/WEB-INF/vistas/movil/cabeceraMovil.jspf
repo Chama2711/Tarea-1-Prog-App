@@ -1,0 +1,32 @@
+<%@ page pageEncoding="UTF-8" %>
+<%
+    logica.DTAutenticacion usuarioMovil =
+            (logica.DTAutenticacion) session.getAttribute("usuario");
+%>
+<header class="movil-topbar">
+    <div class="movil-topbar-fila">
+        <a class="movil-marca" href="${pageContext.request.contextPath}/movil/inicio">
+            edEXT <span class="movil-badge">Móvil</span>
+        </a>
+        <button type="button"
+                class="movil-hamburguesa"
+                aria-label="Abrir menú de navegación"
+                aria-expanded="false"
+                aria-controls="movilMenuNav"
+                onclick="var m = document.getElementById('movilMenuNav'); var abierto = m.classList.toggle('abierto'); this.setAttribute('aria-expanded', abierto);">
+            &#9776;
+        </button>
+    </div>
+    <nav id="movilMenuNav" class="movil-menu" aria-label="Menú móvil">
+        <% if (usuarioMovil != null) { %>
+            <div class="movil-menu-usuario">
+                Estudiante: <strong><%= escapar(usuarioMovil.getNombre()) %></strong> (@<%= escapar(usuarioMovil.getNick()) %>)
+            </div>
+        <% } %>
+        <a href="${pageContext.request.contextPath}/movil/inicio"
+           class="<%= "inicio".equals(paginaActiva) ? "activo" : "" %>">Inicio</a>
+        <a href="${pageContext.request.contextPath}/movil/cursos"
+           class="<%= "cursos".equals(paginaActiva) ? "activo" : "" %>">Consulta de Cursos</a>
+        <a href="${pageContext.request.contextPath}/movil/logout" class="salir">Cerrar sesión</a>
+    </nav>
+</header>
