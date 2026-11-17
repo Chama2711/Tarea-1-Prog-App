@@ -13,33 +13,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Inicio | edEXT Móvil</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/movil.css?v=1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/movil.css?v=2">
 </head>
 <body class="movil-body">
 <%@ include file="/WEB-INF/vistas/movil/cabeceraMovil.jspf" %>
 
 <main class="movil-contenedor">
-    <section class="movil-hero">
-        <h1>Hola, <%= escapar(usuarioMovil != null ? usuarioMovil.getNombre() : "") %></h1>
-        <p class="texto-secundario" style="margin-bottom: 1rem;">
-            Consultá los cursos disponibles y sus ediciones desde tu dispositivo móvil.
-        </p>
-        <a class="boton movil-boton-ancho"
-           style="display: inline-flex; justify-content: center; align-items: center; text-decoration: none;"
-           href="${pageContext.request.contextPath}/movil/cursos">
-            Explorar todos los cursos
-        </a>
+    <section class="movil-banner">
+        <h1>Bienvenido, <%= escapar(usuarioMovil != null ? usuarioMovil.getNombre() : "") %></h1>
+        <p>Explorá la oferta académica de edEXT desde tu dispositivo móvil.</p>
+    </section>
+
+    <section class="movil-panel">
+        <h2 style="font-size: 1.15rem; margin: 0 0 0.75rem;">Accesos rápidos</h2>
+        <div class="movil-grilla">
+            <a class="movil-btn-primario movil-btn-ancho"
+               href="${pageContext.request.contextPath}/movil/cursos">
+                Ver Cursos
+            </a>
+            <a class="movil-btn-primario movil-btn-ancho"
+               style="background-color: var(--edext-nav);"
+               href="${pageContext.request.contextPath}/movil/ediciones">
+                Ver Ediciones
+            </a>
+        </div>
     </section>
 
     <% if (institutos != null && !institutos.isEmpty()) { %>
-        <section class="movil-hero">
-            <h2 style="font-size: 1.1rem; margin-top: 0;">Filtrar por Instituto</h2>
-            <div class="movil-lista" style="gap: 0.5rem;">
+        <section class="movil-panel">
+            <h2 style="font-size: 1.1rem; margin: 0 0 0.7rem;">Institutos</h2>
+            <div class="movil-lista-links">
                 <% for (String inst : institutos) { %>
-                    <a class="volver"
-                       style="display: block; padding: 0.65rem 0.85rem; background: #f8fafc; border-radius: 8px; text-decoration: none;"
-                       href="${pageContext.request.contextPath}/movil/cursos?instituto=<%= parametro(inst) %>">
-                        <%= escapar(inst) %> &rarr;
+                    <a href="${pageContext.request.contextPath}/movil/cursos?instituto=<%= parametro(inst) %>">
+                        <span><%= escapar(inst) %></span>
+                        <span style="color: var(--edext-cyan-hover);">&rarr;</span>
                     </a>
                 <% } %>
             </div>
@@ -47,11 +54,11 @@
     <% } %>
 
     <% if (categorias != null && !categorias.isEmpty()) { %>
-        <section class="movil-hero">
-            <h2 style="font-size: 1.1rem; margin-top: 0;">Filtrar por Categoría</h2>
-            <div class="categorias">
+        <section class="movil-panel">
+            <h2 style="font-size: 1.1rem; margin: 0 0 0.7rem;">Categorías</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.45rem;">
                 <% for (String cat : categorias) { %>
-                    <a class="categoria-chip" style="text-decoration: none;"
+                    <a class="movil-chip"
                        href="${pageContext.request.contextPath}/movil/cursos?categoria=<%= parametro(cat) %>">
                         <%= escapar(cat) %>
                     </a>
