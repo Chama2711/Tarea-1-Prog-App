@@ -56,4 +56,14 @@
         <param-value></param-value>
     </context-param>
     
+    <servlet>
+        <servlet-name>CancelarInscripcionEdicionServlet</servlet-name>
+        <servlet-class>web.CancelarInscripcionEdicionServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>CancelarInscripcionEdicionServlet</servlet-name>
+        <url-pattern>/cancelar-inscripcion-edicion</url-pattern>
+    </servlet-mapping>
+    
 </web-app>

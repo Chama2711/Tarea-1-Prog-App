@@ -641,6 +641,12 @@ public void editarUsuario(Usuario usuario) throws Exception {
     
 public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
         LocalDate fechaInscripcion) {
+    
+        inscriboAEdicionCurso(estudiante, edicion, fechaInscripcion, null);
+}
+public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
+        LocalDate fechaInscripcion, String videoMotivacionUrl) {
+    
     if (estudiante == null || estudiante.getNick() == null || edicion == null
             || edicion.getNombre() == null || fechaInscripcion == null) {
         throw new IllegalArgumentException("Seleccione estudiante, edición y fecha.");
@@ -664,17 +670,34 @@ public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
             throw new IllegalArgumentException(
                     "La fecha de inscripción debe estar entre el inicio y el fin de la edición, inclusive.");
         }
-        Long repetidas = em.createQuery(
-                "SELECT COUNT(i) FROM Estudiante e JOIN e.inscripciones i "
-                + "WHERE e.nick = :nick AND i.edicion.nombre = :edicion", Long.class)
+        
+        List<Inscripcion> existentes = em.createQuery(
+                "SELECT i FROM Estudiante e JOIN e.inscripciones i "
+                + "WHERE e.nick = :nick AND i.edicion.nombre = :edicion",
+                Inscripcion.class)
                 .setParameter("nick", estudianteBD.getNick())
-                .setParameter("edicion", edicionBD.getNombre()).getSingleResult();
-        if (repetidas > 0) {
-            throw new IllegalArgumentException("El estudiante ya está inscripto en esa edición. Cambie la selección o cancele.");
+                .setParameter("edicion", edicionBD.getNombre())
+                .getResultList();
+
+        if (!existentes.isEmpty()) {
+            Inscripcion actual = existentes.get(0);
+
+            if (actual.getEstado() != EstadoInscripcion.INSCRIPTO) {
+                throw new IllegalArgumentException("No se puede modificar una inscripción que ya fue resuelta.");
+            }
+
+            actual.setVideoMotivacionUrl(videoMotivacionUrl);
+
+            em.getTransaction().commit();
+            return;
         }
+
         int cupo = edicionBD.getCupo();
         if (cupo < -1) throw new IllegalArgumentException("La edición tiene un cupo inválido; revíselo antes de inscribir.");
         Inscripcion nueva = new Inscripcion(fechaInscripcion, edicionBD);
+        nueva.setVideoMotivacionUrl(
+            videoMotivacionUrl == null || videoMotivacionUrl.isBlank() ? null : videoMotivacionUrl.trim()
+        );
         em.persist(nueva);
         estudianteBD.agregoInscripcion(nueva);
         em.getTransaction().commit();
@@ -686,6 +709,67 @@ public void inscriboAEdicionCurso(Estudiante estudiante, EdicionCurso edicion,
         em.close();
     }
 }
+
+public void cancelarInscripcionEdicion(String nickEstudiante, String nombreEdicion) {
+
+    if (nickEstudiante == null || nickEstudiante.isBlank()
+        || nombreEdicion == null || nombreEdicion.isBlank()) {
+        throw new IllegalArgumentException("Debe indicar un estudiante y una edición.");
+    }
+
+    EntityManager em = emf.createEntityManager();
+
+    try {
+        em.getTransaction().begin();
+
+        EdicionCurso edicionBD = em.find(
+                EdicionCurso.class,
+                nombreEdicion,
+                LockModeType.PESSIMISTIC_WRITE
+        );
+
+        Estudiante estudianteBD = em.find(Estudiante.class, nickEstudiante);
+
+        if (edicionBD == null || estudianteBD == null) {
+            throw new IllegalArgumentException("El estudiante o la edición no existen.");
+        }
+
+        List<Inscripcion> existentes = em.createQuery(
+                "SELECT i FROM Estudiante e JOIN e.inscripciones i "
+                + "WHERE e.nick = :nick AND i.edicion.nombre = :edicion",
+                Inscripcion.class)
+                .setParameter("nick", estudianteBD.getNick())
+                .setParameter("edicion", edicionBD.getNombre())
+                .getResultList();
+
+        if (existentes.isEmpty()) {
+            throw new IllegalArgumentException("No existe una inscripción para cancelar.");
+        }
+
+        Inscripcion actual = existentes.get(0);
+
+        actual.cancelar();
+
+        em.getTransaction().commit();
+
+    } catch (RuntimeException e) {
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+
+        if (e instanceof IllegalArgumentException
+                || e instanceof IllegalStateException
+                || e instanceof SecurityException) {
+            throw e;
+        }
+
+        throw new IllegalStateException("No se pudo cancelar la inscripción.", e);
+
+    } finally {
+        em.close();
+    }
+}
+
 
 public void inscriboAProgramaFormacion(
         Estudiante estudiante,
@@ -853,7 +937,7 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
 
     private static final String CONSULTA_INSCRIPCIONES =
             "SELECT new logica.DTInscripcion(i.id, e.nick, CONCAT(CONCAT(e.nombre, ' '), e.apellido), "
-            + "i.edicion.nombre, i.edicion.curso.nombre, i.fechaInscripcion, i.estado) "
+            + "i.edicion.nombre, i.edicion.curso.nombre, i.fechaInscripcion, i.estado, i.videoMotivacionUrl) "
             + "FROM Estudiante e JOIN e.inscripciones i ";
 
     private EdicionCurso validarDocenteEdicion(EntityManager em, String nickDocente, String nombreEdicion) {
@@ -1250,8 +1334,10 @@ public boolean estaInscriptoAPrograma(String nick, Long programaId) {
                 throw new IllegalArgumentException("La edición no está vigente.");
             }
             List<DTInscripcion> actuales = em.createQuery(CONSULTA_INSCRIPCIONES
-                    + "WHERE i.edicion.nombre = :edicion", DTInscripcion.class)
-                    .setParameter("edicion", nombreEdicion).getResultList();
+                    + "WHERE i.edicion.nombre = :edicion AND i.estado <> :cancelada", DTInscripcion.class)
+                    .setParameter("edicion", nombreEdicion)
+                    .setParameter("cancelada", EstadoInscripcion.CANCELADA)
+                    .getResultList();
             if (actuales.isEmpty()) return List.of();
 
             List<String> nicks = actuales.stream().map(DTInscripcion::getNicknameEstudiante).distinct().toList();

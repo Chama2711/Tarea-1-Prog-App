@@ -40,9 +40,7 @@ public static void main(String[] args) {
     String contrasena = System.getenv("EDEXT_DB_PASSWORD");
 
     if (contrasena == null) {
-        throw new IllegalStateException(
-                "Falta configurar EDEXT_DB_PASSWORD."
-        );
+        contrasena ="";
     }
 
     Map<String, Object> propiedades = Map.of(
@@ -87,68 +85,68 @@ public static void main(String[] args) {
             // Imágenes oficiales de usuarios
 
             cargarImagenUsuario(
-                    em, "heisenberg", "heisenberg.png", imagenesNuevas
+                    em, "heisenberg", "WW.png", imagenesNuevas
             );
 
             cargarImagenUsuario(
-                    em, "roro", "roro.jpg", imagenesNuevas
+                    em, "roro", "RO.jpeg", imagenesNuevas
             );
 
 
             cargarImagenUsuario(
-                    em, "chechi", "chechi.jpg", imagenesNuevas
+                    em, "chechi", "CH.jpeg", imagenesNuevas
             );
 
             cargarImagenUsuario(
-                    em, "jeffw", "jeffw.jpg", imagenesNuevas
+                    em, "jeffw", "JW.jpeg", imagenesNuevas
             );
 
             cargarImagenUsuario(
-                    em, "benkenobi", "benkenobi.jpg", imagenesNuevas
+                    em, "benkenobi", "OK.jpg", imagenesNuevas
             );
 
             cargarImagenUsuario(
-                    em, "waston", "waston.jpg", imagenesNuevas
+                    em, "waston", "EW.jpg", imagenesNuevas
+            );  
+
+            cargarImagenUsuario(
+                    em, "timmy", "TC.jpeg", imagenesNuevas
             );
 
             cargarImagenUsuario(
-                    em, "timmy", "timmy.jpg", imagenesNuevas
-            );
-
-            cargarImagenUsuario(
-                    em, "house", "house.jpg", imagenesNuevas
+                    em, "house", "GH.jpeg", imagenesNuevas
             );
 
             // Imágenes oficiales de cursos
 
             cargarImagenCurso(
                     em, "Dalavuelta",
-                    "dalavuelta.png", imagenesCursosNuevas
+                    "C3.png", imagenesCursosNuevas
             );
 
             cargarImagenCurso(
                     em, "Inclusión Energética",
-                    "inclusion-energetica.jpg", imagenesCursosNuevas
+                    "C5.jpg", imagenesCursosNuevas
             );
 
             cargarImagenCurso(
                     em, "Flor del Ceibo",
-                    "extensionismo-industrial.png", imagenesCursosNuevas
+                    "C6.png", imagenesCursosNuevas
             );
 
             cargarImagenCurso(
                     em, "Taller de robótica educativa",
-                    "microbit.jpg", imagenesCursosNuevas
+                    "C7.JPG", imagenesCursosNuevas
             );
 
             cargarImagenCurso(
                     em, "MicroBit",
-                    "curso-c10.jpg", imagenesCursosNuevas
+                    "C10.jpg", imagenesCursosNuevas
             );
 
             cargarImagenCurso(
                     em,"Participacion en investigacion\nsobre el empleo del juego\nKomikan como recurso\ndidactico en la Escuela",
-                    "komikan.png", imagenesCursosNuevas
+                    "C8.png", imagenesCursosNuevas
             );
 
             // Imágenes oficiales de ediciones de cursos
@@ -156,43 +154,43 @@ public static void main(String[] args) {
             // E1 - Flor del Ceibo - 2010
             cargarImagenEdicion(
                     em, "Flor del Ceibo - 2010",
-                    "edicion-e1.jpg", imagenesEdicionesNuevas
+                    "E1.jpeg", imagenesEdicionesNuevas
             );
 
             // E2 - Flor del Ceibo - 2012
             cargarImagenEdicion(
                     em, "Flor del Ceibo - 2012",
-                    "edicion-e2.jpg", imagenesEdicionesNuevas
+                    "E2.jpg", imagenesEdicionesNuevas
             );
 
             // E3 - Flor del Ceibo - 2025
             cargarImagenEdicion(
                     em, "Flor del Ceibo - 2025",
-                    "edicion-e3.jpg", imagenesEdicionesNuevas
+                    "E3.jpeg", imagenesEdicionesNuevas
             );
 
             // E4 - Dalavuelta - 2025
             cargarImagenEdicion(
                     em, "Dalavuelta - 2025",
-                    "edicion-e4.jpg", imagenesEdicionesNuevas
+                    "E4.jpeg", imagenesEdicionesNuevas
             );
 
             // E7 - Taller de robótica educativa - 2024
             cargarImagenEdicion(
                     em, "Taller de robótica educativa - 2024",
-                    "edicion-e7.jpg", imagenesEdicionesNuevas
+                    "E7.jpeg", imagenesEdicionesNuevas
             );
 
             // E8 - Taller de robótica educativa - 2026
             cargarImagenEdicion(
                     em, "Taller de robótica educativa - 2026",
-                    "edicion-e8.jpg", imagenesEdicionesNuevas
+                    "E8.jpeg", imagenesEdicionesNuevas
             );
 
             // E9 - Taller de robótica educativa - 2026-2
             cargarImagenEdicion(
                     em, "Taller de robótica educativa - 2026-2",
-                    "edicion-e9.jpg", imagenesEdicionesNuevas
+                    "E9.jpeg", imagenesEdicionesNuevas
             );
 
             // Imágenes oficiales de programas de formación
@@ -200,19 +198,19 @@ public static void main(String[] args) {
             // P1 - EFI Ingeniería Mecánica
             cargarImagenPrograma(
                     em, "EFI Ingeniería Mecánica",
-                    "programa-p1.jpg", imagenesProgramasNuevas
+                    "P1.jpeg", imagenesProgramasNuevas
             );
 
             // P2 - Formación integral
             cargarImagenPrograma(
                     em, "Formación integral",
-                    "programa-p2.jpg", imagenesProgramasNuevas
+                    "P2.jpeg", imagenesProgramasNuevas
             );
 
             // P3 - EFI Robótica
             cargarImagenPrograma(
                     em, "EFI Robótica",
-                    "programa-p3.jpg", imagenesProgramasNuevas
+                    "P3.jpeg", imagenesProgramasNuevas
             );
 
 

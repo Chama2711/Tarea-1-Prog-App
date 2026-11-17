@@ -16,7 +16,7 @@ xcopy "configuracion-ejemplo" "target\distribucion\configuracion-ejemplo\" /e /i
 if errorlevel 1 goto :error
 xcopy "migraciones" "target\distribucion\migraciones\" /e /i /y >nul
 if errorlevel 1 goto :error
-copy /y "EJECUTAR.md" "target\distribucion\LEEME.md" >nul
+copy /y "README.md" "target\distribucion\LEEME.md" >nul
 if errorlevel 1 goto :error
 
 echo.

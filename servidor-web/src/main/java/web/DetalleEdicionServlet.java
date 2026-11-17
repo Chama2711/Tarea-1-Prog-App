@@ -24,6 +24,28 @@ public class DetalleEdicionServlet extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "La edición solicitada no existe.");
                 return;
             }
+            
+            var sesion = request.getSession(false);
+
+            logica.DTAutenticacion estudiante = sesion == null
+                    ? null
+                    : (logica.DTAutenticacion) sesion.getAttribute("usuario");
+
+            if (estudiante != null && estudiante.getRol() == logica.DTAutenticacion.Rol.ESTUDIANTE) {
+
+                logica.DTPerfilUsuario perfil = InicializadorAplicacion.getClienteCatalogo(getServletContext())
+                                .consultarPerfilUsuario(estudiante.getNick(), estudiante.getNick());
+
+                if (perfil != null && perfil.propio()) {
+                    for (logica.DTInscripcion inscripcion : perfil.inscripciones()) {
+
+                        if (nombre.equals(inscripcion.getNombreEdicion())) {
+                            request.setAttribute("inscripcionActual", inscripcion);
+                            break;
+                        }
+                    }
+                }
+            }
             request.setAttribute("edicion", edicion);
             request.getRequestDispatcher("/WEB-INF/vistas/detalleEdicion.jsp").forward(request, response);
         } catch (WebServiceException error) {

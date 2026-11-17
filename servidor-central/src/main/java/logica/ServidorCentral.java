@@ -31,18 +31,49 @@ public class ServidorCentral implements IServidorCentral, AutoCloseable {
     public boolean esSeguidor(String nickSeguidor, String nickSeguido) {
         return persistencia.esSeguidor(nickSeguidor, nickSeguido);
     }
-
+    
     @Override
     public void inscribirEstudianteAEdicion(String nickEstudiante, String nombreEdicion) {
-        if (nickEstudiante == null || nickEstudiante.isBlank()) throw new SecurityException("Se requiere un estudiante registrado.");
-        if (nombreEdicion == null || nombreEdicion.isBlank()) throw new IllegalArgumentException("Debe seleccionar una edición.");
+        inscribirEstudianteAEdicion(nickEstudiante, nombreEdicion, null);
+    }
+
+    public void inscribirEstudianteAEdicion(String nickEstudiante, String nombreEdicion, String videoMotivacionUrl) {
+
+        if (nickEstudiante == null || nickEstudiante.isBlank()) {
+            throw new SecurityException("Se requiere un estudiante registrado.");
+        }
+
+        if (nombreEdicion == null || nombreEdicion.isBlank()) {
+            throw new IllegalArgumentException("Debe seleccionar una edición.");
+        }
+
         Usuario usuario = obtenerUsuario(nickEstudiante);
+
         if (!(usuario instanceof Estudiante estudiante)) {
             throw new SecurityException("El usuario autenticado no es un estudiante.");
         }
+
         EdicionCurso edicion = buscarEdicion(nombreEdicion);
-        if (edicion == null) throw new RecursoNoEncontradoException("La edición solicitada no existe.");
-        inscriboAEdicionCurso(estudiante, edicion, LocalDate.now());
+
+        if (edicion == null) {
+            throw new RecursoNoEncontradoException("La edición solicitada no existe.");
+        }
+
+        persistencia.inscriboAEdicionCurso(
+                estudiante,
+                edicion,
+                LocalDate.now(),
+                videoMotivacionUrl
+        );
+    }
+    
+    public void cancelarInscripcionEdicion(String nickEstudiante, String nombreEdicion) {
+        if (nickEstudiante == null || nickEstudiante.isBlank()
+            || nombreEdicion == null || nombreEdicion.isBlank()) {
+            throw new IllegalArgumentException("Debe indicar un estudiante y una edición.");
+        }
+
+        persistencia.cancelarInscripcionEdicion(nickEstudiante, nombreEdicion);
     }
 
     @Override

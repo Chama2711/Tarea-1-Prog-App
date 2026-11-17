@@ -9,11 +9,15 @@
     String bajadaPagina = "Una edición de " + edicion.getNombreCurso() + ".";
     String paginaActiva = "cursos";
 
-    DTAutenticacion usuarioInscripcion =
-            (DTAutenticacion) session.getAttribute("usuario");
+    DTAutenticacion usuarioInscripcion = (DTAutenticacion) session.getAttribute("usuario");
 
-  boolean puedeInscribirse =
-    usuarioInscripcion != null && usuarioInscripcion.getRol() == DTAutenticacion.Rol.ESTUDIANTE && edicion.isVigente();
+    DTInscripcion inscripcionActual = (DTInscripcion) request.getAttribute("inscripcionActual");
+
+    boolean esEstudiante = usuarioInscripcion != null && usuarioInscripcion.getRol() == DTAutenticacion.Rol.ESTUDIANTE;
+
+    boolean puedeInscribirse = esEstudiante && edicion.isVigente() && inscripcionActual == null;
+
+    boolean puedeModificarVideo = esEstudiante && edicion.isVigente() && inscripcionActual != null && inscripcionActual.getEstado() == EstadoInscripcion.INSCRIPTO;
 
 %>
 <!DOCTYPE html>
@@ -22,7 +26,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= escapar(tituloPagina) %> | edEXT</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=5">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css?v=6">
     
 </head>
 <body>
@@ -34,9 +38,16 @@
 
 
     <a class="volver" href="${pageContext.request.contextPath}/curso?nombre=<%= parametro(edicion.getNombreCurso()) %>">← Ver el curso</a>
+        
+        <% if ("ok".equals(request.getParameter("cancelacion"))) { %>
+            <div class="aviso aviso-exito" role="status">
+                Tu inscripción fue cancelada correctamente.
+            </div>
+        <% } %>
+        
         <% if ("ok".equals(request.getParameter("inscripcion"))) { %>
             <div class="aviso aviso-exito" role="status">
-                Inscripción realizada correctamente.
+                Los datos de la inscripción se guardaron correctamente.
             </div>
         <% } %>
 
@@ -106,6 +117,24 @@
             <input type="hidden"
                    name="edicion"
                    value="<%= escapar(edicion.getNombre()) %>">
+            
+            <div class="campo-formulario">
+                <label for="videoMotivacionUrl">
+                    Video de motivación (opcional)
+                </label>
+
+                <input type="url"
+                       id="videoMotivacionUrl"
+                       name="videoMotivacionUrl"
+                       maxlength="2048"
+                       placeholder="https://www.youtube.com/watch?v=..."
+                       autocomplete="off">
+
+                <small>
+                    Ingresá el enlace de tu video de YouTube.
+                    Solo se aceptan enlaces de youtube.com.
+                </small>
+            </div>
 
             <button type="submit"
                     class="boton boton-inscripcion">
@@ -113,6 +142,102 @@
             </button>
 
         </form>
+
+    <% } else if (puedeModificarVideo) { %>
+
+       
+        
+        <div class="aviso aviso-exito">
+            Ya estás inscripto a esta edición.
+        </div>
+
+        <form method="post"
+              action="${pageContext.request.contextPath}/inscripcion-edicion">
+
+            <input type="hidden"
+                   name="edicion"
+                   value="<%= escapar(edicion.getNombre()) %>">
+
+            <div class="campo-formulario">
+                <label for="videoMotivacionUrl">
+                    Modificar video de motivación
+                </label>
+
+                <input type="url"
+                       id="videoMotivacionUrl"
+                       name="videoMotivacionUrl"
+                       maxlength="2048"
+                       value="<%= escapar(inscripcionActual.getVideoMotivacionUrl() == null ? "" : inscripcionActual.getVideoMotivacionUrl()) %>"
+                       placeholder="https://www.youtube.com/watch?v=..."
+                       autocomplete="off">
+
+                <small>
+                    Podés cambiar el enlace por otro video de YouTube.
+                    Para eliminar tu video, dejá el campo vacío y guardá.
+                </small>
+            </div>
+
+            <button type="submit" class="boton boton-inscripcion">
+                Guardar cambios del video
+            </button>
+
+        </form>
+                       
+        <button type="button"
+               class="boton-cancelar-inscripcion"
+               onclick="document.getElementById('confirmarCancelacion').showModal()">
+            Cancelar inscripción
+        </button>
+
+        <dialog id="confirmarCancelacion"
+                style="border: none; border-radius: 16px;
+                       padding: 30px; max-width: 420px; width: 90%;
+                       box-shadow: 0 12px 40px rgba(0,0,0,0.2);">
+
+            <h2 style="margin-top: 0;">¿Cancelar inscripción?</h2>
+
+            <p>
+                ¿Estás seguro de que querés cancelar tu inscripción
+                a esta edición?
+            </p>
+
+            <p style="color: #666;">
+                Esta acción no se puede deshacer.
+            </p>
+
+            <div style="display: flex; gap: 12px;
+                        justify-content: flex-end; margin-top: 25px;">
+
+                <button type="button"
+                        onclick="document.getElementById('confirmarCancelacion').close()"
+                        style="padding: 12px 18px; border-radius: 8px;
+                               border: 1px solid #ccc; background: white;
+                               cursor: pointer;">
+                    Volver
+                </button>
+
+                <form method="post"
+                      action="<%= request.getContextPath() %>/cancelar-inscripcion-edicion?edicion=<%= java.net.URLEncoder.encode(edicion.getNombre(), java.nio.charset.StandardCharsets.UTF_8) %>">
+
+                    <button type="submit"
+                            style="padding: 12px 18px; border: none;
+                                   border-radius: 8px; background: #dc3545;
+                                   color: white; font-weight: bold;
+                                   cursor: pointer;">
+                        Sí, cancelar inscripción
+                    </button>
+
+                </form>
+            </div>
+        </dialog>               
+
+    <% } else if (inscripcionActual != null) { %>
+
+        <p class="aviso">
+            Estado de tu inscripción:
+            <strong><%= escapar(inscripcionActual.getEstado()) %></strong>.
+            Ya no es posible modificar el video de motivación.
+        </p>
 
     <% } %>
 

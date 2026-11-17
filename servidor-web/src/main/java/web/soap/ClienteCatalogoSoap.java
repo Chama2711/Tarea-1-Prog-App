@@ -211,6 +211,14 @@ public final class ClienteCatalogoSoap {
     public void inscribirEstudianteAEdicion(String nick, String nombre) {
         ejecutar(() -> { servicio.getCatalogoPort().inscribirEstudianteAEdicion(nick, nombre); return null; });
     }
+    
+    public void inscribirEstudianteAEdicionConVideo(String nick, String nombre, String videoMotivacionUrl) {
+        ejecutar(() -> { servicio.getCatalogoPort().inscribirEstudianteAEdicionConVideo(nick, nombre, videoMotivacionUrl); return null; });
+    }
+    
+    public void cancelarInscripcionEdicion(String nickEstudiante, String nombreEdicion) {
+        ejecutar(() -> { servicio.getCatalogoPort().cancelarInscripcionEdicion(nickEstudiante, nombreEdicion); return null; });
+    }
 
     public void inscribirEstudianteAPrograma(String nick, String nombre) {
         ejecutar(() -> { servicio.getCatalogoPort().inscribirEstudianteAPrograma(nick, nombre); return null; });
@@ -279,7 +287,7 @@ public final class ClienteCatalogoSoap {
     private static logica.DTInscripcion inscripcion(web.soap.generado.DtInscripcionConsulta d) {
         return new logica.DTInscripcion(d.getId(), d.getNicknameEstudiante(), d.getNombreEstudiante(),
                 d.getNombreEdicion(), d.getNombreCurso(), fecha(d.getFechaInscripcion()),
-                logica.EstadoInscripcion.valueOf(d.getEstado()));
+                logica.EstadoInscripcion.valueOf(d.getEstado()), d.getVideoMotivacionUrl());
     }
 
     private static logica.DTEdicionConsulta edicion(web.soap.generado.DtEdicionConsulta d) {

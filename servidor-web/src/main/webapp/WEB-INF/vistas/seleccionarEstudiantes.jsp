@@ -141,6 +141,37 @@
                         <span><strong>Rechazos anteriores:</strong> <%= fila.getRechazosAnteriores() %></span>
                         <span><strong>Prioridad:</strong> <%= String.format(java.util.Locale.forLanguageTag("es-UY"), "%.1f", fila.getPrioridad()) %></span>
                     </div>
+                    
+                    <%
+                        String enlaceVideo = inscripcion.getVideoMotivacionUrl();
+                        String idVideo = null;
+
+                        if (enlaceVideo != null) {
+                            java.util.regex.Matcher matcherVideo = java.util.regex.Pattern.compile(
+                                    "^https://www\\.youtube\\.com/watch\\?v=([A-Za-z0-9_-]{11})$")
+                                    .matcher(enlaceVideo);
+
+                            if (matcherVideo.matches()) {
+                                idVideo = matcherVideo.group(1);
+                            }
+                        }
+                    %>
+
+                    <% if (idVideo != null) { %>
+                        <div class="video-motivacion">
+                            <p><strong>Video de motivación</strong></p>
+
+                            <iframe
+                                src="https://www.youtube.com/embed/<%= idVideo %>"
+                                title="Video de motivación de <%= escapar(inscripcion.getNombreEstudiante()) %>"
+                                loading="lazy"
+                                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen
+                                style="width:100%; max-width:560px; aspect-ratio:16/9; border:0; border-radius:8px;">
+                            </iframe>
+                        </div>
+                    <% } %>
+
                     <% if (inscripcion.getEstado() == EstadoInscripcion.INSCRIPTO) { hayPendientes = true; %>
                     <div class="campo"><label for="decision-<%= inscripcion.getId() %>">Decisión para <%= escapar(inscripcion.getNombreEstudiante()) %></label>
                         <select id="decision-<%= inscripcion.getId() %>" name="decision_<%= inscripcion.getId() %>">

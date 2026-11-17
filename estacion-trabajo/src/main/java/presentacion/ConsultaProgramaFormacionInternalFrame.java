@@ -189,34 +189,40 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblFechaAlta = new javax.swing.JLabel();
+        txtFechaAlta = new javax.swing.JTextField();
+        lblCategorias = new javax.swing.JLabel();
+        scrollCategorias = new javax.swing.JScrollPane();
+        lstCategorias = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         cbProgramas = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        txtFechaInicio = new javax.swing.JTextField(10);
-        txtFechaFin = new javax.swing.JTextField(10);
-        lblFechaAlta = new javax.swing.JLabel("Fecha de alta:");
-        txtFechaAlta = new javax.swing.JTextField(10);
-        txtFechaAlta.setEditable(false);
+        txtFechaInicio = new javax.swing.JTextField();
+        txtFechaFin = new javax.swing.JTextField();
         btCerrar = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         jtreeProgramasCursos = new javax.swing.JTree();
         scrollPane1 = new java.awt.ScrollPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtDescripcion = new javax.swing.JTextArea();
-        lblCategorias = new javax.swing.JLabel("Categorías:");
-        scrollCategorias = new javax.swing.JScrollPane();
-        lstCategorias = new javax.swing.JList<>();
-        lstCategorias.setModel(new DefaultListModel<>());
-        scrollCategorias.setViewportView(lstCategorias);
 
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
         setTitle("Consulta Programa de Formacion");
+
+        lblFechaAlta.setText("Fecha de alta:");
+
+        txtFechaAlta.setColumns(10);
+        txtFechaAlta.setEditable(false);
+
+        lblCategorias.setText("Categorías:");
+
+        scrollCategorias.setViewportView(lstCategorias);
 
         jLabel1.setText("Seleccione Programa:");
 
@@ -230,16 +236,20 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
 
         jLabel6.setText("Cursos:");
 
+        txtFechaInicio.setColumns(10);
+
+        txtFechaFin.setColumns(10);
+
         btCerrar.setText("Salir");
         btCerrar.addActionListener(this::btCerrarActionPerformed);
 
-        jScrollPane3.setViewportView(jtreeProgramasCursos);
         jtreeProgramasCursos.setToolTipText("Doble clic en un curso para consultar sus datos");
         jtreeProgramasCursos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jtreeProgramasCursosMouseClicked(evt);
             }
         });
+        jScrollPane3.setViewportView(jtreeProgramasCursos);
 
         txtDescripcion.setColumns(20);
         txtDescripcion.setRows(5);
@@ -272,7 +282,7 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
                                 .addComponent(scrollCategorias)))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(lblFechaAlta)
-                            .addGap(18, 18, 18)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(txtFechaAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(jLabel2)
@@ -282,7 +292,7 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
                             .addComponent(jLabel4)
                             .addGap(18, 18, 18)
                             .addComponent(txtFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -306,17 +316,19 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
                     .addComponent(jLabel5)
                     .addComponent(scrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel6)
+                        .addGap(96, 96, 96)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblCategorias)
-                    .addComponent(scrollCategorias, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
+                    .addComponent(scrollCategorias, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btCerrar)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -346,11 +358,6 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel lblFechaAlta;
-    private javax.swing.JTextField txtFechaAlta;
-    private javax.swing.JLabel lblCategorias;
-    private javax.swing.JScrollPane scrollCategorias;
-    private javax.swing.JList<String> lstCategorias;
     private javax.swing.JButton btCerrar;
     private javax.swing.JComboBox<String> cbProgramas;
     private javax.swing.JLabel jLabel1;
@@ -361,8 +368,13 @@ String seleccionado = (String) cbProgramas.getSelectedItem();
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTree jtreeProgramasCursos;
+    private javax.swing.JLabel lblCategorias;
+    private javax.swing.JLabel lblFechaAlta;
+    private javax.swing.JList<String> lstCategorias;
+    private javax.swing.JScrollPane scrollCategorias;
     private java.awt.ScrollPane scrollPane1;
     private javax.swing.JTextArea txtDescripcion;
+    private javax.swing.JTextField txtFechaAlta;
     private javax.swing.JTextField txtFechaFin;
     private javax.swing.JTextField txtFechaInicio;
     // End of variables declaration//GEN-END:variables
